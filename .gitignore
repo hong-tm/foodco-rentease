@@ -67,3 +67,4 @@ tsconfig.tsbuildinfo
 .vscode
 
 fileoperation/
+fc-back/.env
