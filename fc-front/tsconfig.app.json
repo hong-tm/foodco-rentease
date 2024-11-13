@@ -25,5 +25,5 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src"]
+	"include": ["src", "../fc-back/src/api/auth/auth.ts"]
 }

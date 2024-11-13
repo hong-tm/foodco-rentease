@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function AvatarUser() {
+export default function UserProfile() {
 	return (
 		<Avatar>
 			<AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />

@@ -1,0 +1,36 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 3000
+  },
+  "sequelize": {
+    "database": "mingMing",
+    "username": "root",
+    "password": "",
+    "options": {
+      "dialect": "sqlite",
+      "host": "localhost",
+      "storage": "data/database/database.sqlite",
+      "logging": false,
+      "define": {
+        "timestamps": false
+      },
+      "dev": true
+    }
+  },
+  "email": {
+    "smtp": {
+      "host": "smtp-relay.brevo.com",
+      "port": 587,
+      "secure": true,
+      "smtpUsername": "770e86003@smtp-brevo.com",
+      "smtpPassword": "NhJYbMK0BLW3zfwd",
+      "senderName": "Ming Ming Food Court",
+      "senderEmail": "MingMingFoodCourt@gmail.com"
+    }
+  },
+  "website": {
+    "websiteName": "",
+    "websiteUrl": "http://localhost:8080"
+  }
+}
