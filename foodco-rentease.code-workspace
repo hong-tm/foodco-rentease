@@ -6,5 +6,8 @@
 		{
 			"path": "fc-front"
 		}
-	]
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
 }
