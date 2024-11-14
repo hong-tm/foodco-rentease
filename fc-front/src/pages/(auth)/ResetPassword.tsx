@@ -48,6 +48,8 @@ export default function ResetPasswordPreview() {
 		},
 	});
 
+	const navigate = useNavigate();
+
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			// Assuming an async reset password function
@@ -55,13 +57,12 @@ export default function ResetPasswordPreview() {
 			toast.success(
 				"Password reset successful. You can now log in with your new password."
 			);
+			navigate("/", { replace: true });
 		} catch (error) {
 			console.error("Error resetting password", error);
 			toast.error("Failed to reset the password. Please try again.");
 		}
 	}
-
-	const navigate = useNavigate();
 
 	return (
 		<div className="flex h-screen w-full items-center justify-center px-4">
@@ -122,11 +123,7 @@ export default function ResetPasswordPreview() {
 										)}
 									/>
 
-									<Button
-										type="submit"
-										className="w-full"
-										onClick={() => navigate("/", { replace: true })}
-									>
+									<Button type="submit" className="w-full">
 										Reset Password
 									</Button>
 								</div>

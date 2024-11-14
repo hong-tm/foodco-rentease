@@ -1,19 +1,19 @@
 import * as React from "react";
 import {
-	Bot,
 	TowerControl,
-	Frame,
 	LifeBuoy,
-	Map,
-	PieChart,
 	Send,
-	Settings2,
-	SquareTerminal,
 	Sun,
+	ChartArea,
+	Command,
+	Users,
+	BadgeDollarSign,
+	BellElectric,
+	BookDown,
+	Scroll,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -25,6 +25,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { NavQuick } from "@/components/nav-quick";
 
 const data = {
 	user: {
@@ -34,63 +35,86 @@ const data = {
 	},
 	navMain: [
 		{
-			title: "Playground",
+			title: "Dashboard",
 			url: "#",
-			icon: SquareTerminal,
+			icon: ChartArea,
 			isActive: true,
 			items: [
 				{
-					title: "History",
+					title: "Monthly Rent Overview",
 					url: "#",
 				},
 				{
-					title: "Starred",
+					title: "Stall Vacancy Rate",
 					url: "#",
 				},
 				{
-					title: "Settings",
-					url: "#",
-				},
-			],
-		},
-		{
-			title: "Models",
-			url: "#",
-			icon: Bot,
-			items: [
-				{
-					title: "Genesis",
+					title: "Income & Expenses",
 					url: "#",
 				},
 				{
-					title: "Explorer",
+					title: "Stall Rate",
 					url: "#",
 				},
 				{
-					title: "Quantum",
+					title: "New Tenant",
 					url: "#",
 				},
 			],
 		},
 		{
-			title: "Settings",
+			title: "Stall",
 			url: "#",
-			icon: Settings2,
+			icon: Command,
 			items: [
 				{
-					title: "General",
+					title: "Stall Availability",
 					url: "#",
 				},
 				{
-					title: "Team",
+					title: "Stall Details",
 					url: "#",
 				},
 				{
-					title: "Billing",
+					title: "Rental History",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Tenant",
+			url: "#",
+			icon: Users,
+			items: [
+				{
+					title: "Tenant Information",
 					url: "#",
 				},
 				{
-					title: "Limits",
+					title: "Tenant Contracts",
+					url: "#",
+				},
+				{
+					title: "Tenant Reminders",
+					url: "#",
+				},
+			],
+		},
+		{
+			title: "Financial",
+			url: "#",
+			icon: BadgeDollarSign,
+			items: [
+				{
+					title: "Revenue & Payments",
+					url: "#",
+				},
+				{
+					title: "Invoices & Billing",
+					url: "#",
+				},
+				{
+					title: "Export Financial Report",
 					url: "#",
 				},
 			],
@@ -113,21 +137,21 @@ const data = {
 			icon: Sun,
 		},
 	],
-	projects: [
+	navQuick: [
 		{
-			name: "Design Engineering",
+			title: "Tenant Reminders",
 			url: "#",
-			icon: Frame,
+			icon: BellElectric,
 		},
 		{
-			name: "Sales & Marketing",
+			title: "Export Report",
 			url: "#",
-			icon: PieChart,
+			icon: BookDown,
 		},
 		{
-			name: "Travel",
+			title: "Tenant Contracts",
 			url: "#",
-			icon: Map,
+			icon: Scroll,
 		},
 	],
 };
@@ -156,7 +180,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavProjects projects={data.projects} />
+				<NavQuick items={data.navQuick} />
 				<NavSecondary items={data.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>

@@ -38,18 +38,19 @@ export default function ForgetPassword() {
 		},
 	});
 
+	const navigate = useNavigate();
+
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
 			// Assuming a function to send reset email
 			console.log(values);
 			toast.success("Password reset email sent. Please check your inbox.");
+			navigate("/reset-password", { replace: true });
 		} catch (error) {
 			console.error("Error sending password reset email", error);
 			toast.error("Failed to send password reset email. Please try again.");
 		}
 	}
-
-	const navigate = useNavigate();
 
 	return (
 		<div className="flex h-screen w-full items-center justify-center px-4">
@@ -88,15 +89,7 @@ export default function ForgetPassword() {
 											</FormItem>
 										)}
 									/>
-									<Button
-										type="submit"
-										className="w-full"
-										onClick={() =>
-											navigate("/reset-password", {
-												replace: true,
-											})
-										}
-									>
+									<Button type="submit" className="w-full">
 										Send Reset Link
 									</Button>
 								</div>
