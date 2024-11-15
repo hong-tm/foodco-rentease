@@ -104,344 +104,344 @@ export class SQDatabase
 
     }
 
-    //     async authenticate()
-    //     {
-    //         try
-    //         {
-    //             await this.sequelize.authenticate();
-    //             console.log('Connection has been established successfully.');
-    //         } catch (error)
-    //         {
-    //             console.error('Unable to connect to the database:', error);
-    //         }
-    //     }
+    async authenticate()
+    {
+        try
+        {
+            await this.sequelize.authenticate();
+            console.log('Connection has been established successfully.');
+        } catch (error)
+        {
+            console.error('Unable to connect to the database:', error);
+        }
+    }
 
-    //     public async createTable()
-    //     {
-    //         const user = await this.tableUser();
-    //         const notification = this.tableNotification();
-    //         const Stall = this.tableStall();
-    //         const feedback = this.tableFeedback();
-    //         const payment = this.tablePayment();
-    //         const utilities = this.tableUtilities();
-    //         const rental = this.tableRental();
+    public async createTable()
+    {
+        const user = await this.tableUser();
+        const notification = this.tableNotification();
+        const Stall = this.tableStall();
+        const feedback = this.tableFeedback();
+        const payment = this.tablePayment();
+        const utilities = this.tableUtilities();
+        const rental = this.tableRental();
 
-    //         await this.sequelize.sync({ alter: true });
-    //         return { user, notification, feedback, Stall, payment, utilities, rental };
-    //     }
+        await this.sequelize.sync({ alter: true });
+        return { user, notification, feedback, Stall, payment, utilities, rental };
+    }
 
-    //     private async tableUser()
-    //     {
+    private async tableUser()
+    {
 
-    //         return await User.init({
-    //             id: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             username: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             password: {
-    //                 type: DataTypes.STRING(64),
-    //                 allowNull: false
-    //             },
-    //             email: {
-    //                 type: DataTypes.STRING(100),
-    //                 allowNull: false
-    //             },
-    //             userRole: {
-    //                 type: DataTypes.SMALLINT,
-    //                 allowNull: false,
-    //                 defaultValue: '2',
-    //                 validate: { isIn: [['0', '1', '2']] }
-    //             },
-    //             phoneNumber: {
-    //                 type: DataTypes.STRING(13),
-    //                 allowNull: true,
-    //             },
-    //             city: {
-    //                 type: DataTypes.STRING(50),
-    //                 allowNull: true,
-    //             },
-    //             postCode: {
-    //                 type: DataTypes.STRING(5),
-    //                 allowNull: true,
-    //             },
-    //             state: {
-    //                 type: DataTypes.STRING(50),
-    //                 allowNull: true,
-    //             },
-    //             imageUrl: {
-    //                 type: DataTypes.STRING(255),
-    //                 allowNull: true,
-    //                 defaultValue: 'default.png'
-    //             },
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'User',
-    //         });
-    //     }
+        return await User.init({
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            username: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            password: {
+                type: DataTypes.STRING(64),
+                allowNull: false
+            },
+            email: {
+                type: DataTypes.STRING(100),
+                allowNull: false
+            },
+            userRole: {
+                type: DataTypes.SMALLINT,
+                allowNull: false,
+                defaultValue: '2',
+                validate: { isIn: [['0', '1', '2']] }
+            },
+            phoneNumber: {
+                type: DataTypes.STRING(13),
+                allowNull: true,
+            },
+            city: {
+                type: DataTypes.STRING(50),
+                allowNull: true,
+            },
+            postCode: {
+                type: DataTypes.STRING(5),
+                allowNull: true,
+            },
+            state: {
+                type: DataTypes.STRING(50),
+                allowNull: true,
+            },
+            imageUrl: {
+                type: DataTypes.STRING(255),
+                allowNull: true,
+                defaultValue: 'default.png'
+            },
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'User',
+        });
+    }
 
-    //     private tableNotification()
-    //     {
-    //         return Notification.init({
-    //             notificationId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: false
-    //             },
-    //             message: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             read: {
-    //                 type: DataTypes.BOOLEAN,
-    //                 allowNull: false,
-    //                 defaultValue: false
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Notification'
-    //         });
-    //     }
+    private tableNotification()
+    {
+        return Notification.init({
+            notificationId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            message: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            read: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Notification'
+        });
+    }
 
-    //     private tableFeedback()
-    //     {
-    //         return Feedback.init({
-    //             feedbackId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             feedbackType: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             feedback: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Feedback'
-    //         });
-    //     }
+    private tableFeedback()
+    {
+        return Feedback.init({
+            feedbackId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            feedbackType: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            feedback: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Feedback'
+        });
+    }
 
-    //     private tableStall()
-    //     {
-    //         return Stall.init({
-    //             stallId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             rentalId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             stallNo: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: false
-    //             },
-    //             stallName: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: true
-    //             },
-    //             description: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: true
-    //             },
-    //             imageUrl: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: true
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Stall'
-    //         });
-    //     }
+    private tableStall()
+    {
+        return Stall.init({
+            stallId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            rentalId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            stallNo: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            stallName: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            description: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            imageUrl: {
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Stall'
+        });
+    }
 
-    //     private tablePayment()
-    //     {
-    //         return Payment.init({
-    //             paymentId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             rentalId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             utilitiesId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             amount: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: false
-    //             },
-    //             paymentDate: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false
-    //             },
-    //             paymentStatus: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             paymentType: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Payment'
-    //         });
-    //     }
+    private tablePayment()
+    {
+        return Payment.init({
+            paymentId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            rentalId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            utilitiesId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            amount: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            paymentDate: {
+                type: DataTypes.DATE,
+                allowNull: false
+            },
+            paymentStatus: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            paymentType: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Payment'
+        });
+    }
 
-    //     private tableUtilities()
-    //     {
-    //         return Utilities.init({
-    //             utilitiesId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             rentalId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             utilitiesType: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             utilitiesAmount: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: false
-    //             },
-    //             utilitiesStatus: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Utilities'
-    //         });
-    //     }
+    private tableUtilities()
+    {
+        return Utilities.init({
+            utilitiesId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            rentalId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            utilitiesType: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            utilitiesAmount: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            utilitiesStatus: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Utilities'
+        });
+    }
 
-    //     private tableRental()
-    //     {
-    //         return Rental.init({
-    //             rentalId: {
-    //                 type: DataTypes.INTEGER,
-    //                 autoIncrement: true,
-    //                 primaryKey: true
-    //             },
-    //             userId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             stallId: {
-    //                 type: DataTypes.INTEGER,
-    //                 allowNull: true
-    //             },
-    //             rentalStartDate: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false
-    //             },
-    //             rentalEndDate: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false
-    //             },
-    //             rentalStatus: {
-    //                 type: DataTypes.STRING,
-    //                 allowNull: false
-    //             },
-    //             createdAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             },
-    //             updatedAt: {
-    //                 type: DataTypes.DATE,
-    //                 allowNull: false,
-    //                 defaultValue: DataTypes.NOW
-    //             }
-    //         }, {
-    //             sequelize: this.sequelize,
-    //             modelName: 'Rental'
-    //         });
-    //     }
+    private tableRental()
+    {
+        return Rental.init({
+            rentalId: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            stallId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            rentalStartDate: {
+                type: DataTypes.DATE,
+                allowNull: false
+            },
+            rentalEndDate: {
+                type: DataTypes.DATE,
+                allowNull: false
+            },
+            rentalStatus: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: DataTypes.NOW
+            }
+        }, {
+            sequelize: this.sequelize,
+            modelName: 'Rental'
+        });
+    }
 }

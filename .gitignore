@@ -68,3 +68,5 @@ tsconfig.tsbuildinfo
 
 fileoperation/
 fc-back/.env
+fc-back/config
+fc-back/data
