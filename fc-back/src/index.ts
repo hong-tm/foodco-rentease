@@ -1,7 +1,6 @@
-// src/server.ts
 import express, { Request, Response } from 'express';
 // import { Login } from './api/login/Login';
-// import { SQDatabase } from './database/SQDatabase';
+import { SQDatabase } from './database/SQDatabase';
 import { FileOperation } from './fileoperation/FileOperation';
 import cors from 'cors';
 import path from 'path';
@@ -9,7 +8,7 @@ import { SQ } from './database/SQInterface';
 // import { Register } from './api/register/Register';
 // import { GetImages } from './api/getImages/GetImages';
 // import { UpdatePassword } from './api/updatePassword/UpdatePassword';
-// import { get } from 'http';
+import { get } from 'http';
 // import { AddStall } from './api/addStall/AddStall';
 // import { AddFeedback } from './api/addFeedback/AddFeedback';
 
@@ -34,15 +33,15 @@ class app
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors());
 
-        // const sqDatabase = new SQDatabase(config);
-        // const tables = await sqDatabase.createTable();
-        // const SQ: SQ = {
-        //     sequelize: sqDatabase.sequelize,
-        //     User: tables.user,
-        //     Notification: tables.notification,
-        //     Feedback: tables.feedback,
-        //     Stall: tables.Stall,
-        // }
+        const sqDatabase = new SQDatabase(config);
+        const tables = await sqDatabase.createTable();
+        const SQ: SQ = {
+            sequelize: sqDatabase.sequelize,
+            User: tables.user,
+            Notification: tables.notification,
+            Feedback: tables.feedback,
+            Stall: tables.Stall,
+        }
 
         // const login = new Login();
         // const register = new Register();
@@ -82,6 +81,7 @@ class app
         await this.fileOperation.createDefaultImages();
         await this.fileOperation.createDefaultAvatar();
         await this.fileOperation.createDefaultIcon();
+
     }
 }
 
