@@ -1,6 +1,3 @@
-"use client";
-
-// import Link from "next/link";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
