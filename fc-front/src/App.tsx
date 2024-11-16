@@ -2,7 +2,7 @@ import "./App.scss";
 import "./index.scss";
 import LoginPage from "./pages/(auth)/SigninForm";
 
-function App() {
+export default function App() {
 	return (
 		<>
 			<div>
@@ -11,5 +11,3 @@ function App() {
 		</>
 	);
 }
-
-export default App;

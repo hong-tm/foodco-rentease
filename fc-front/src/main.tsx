@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-// import App from "./App.tsx";
 import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
@@ -9,13 +8,13 @@ import RegisterPreview from "./pages/(auth)/SignupForm.tsx";
 import ForgetPassword from "./pages/(auth)/ForgetPassword.tsx";
 import ResetPassword from "./pages/(auth)/ResetPassword.tsx";
 import { AdminMain } from "./pages/admin/AdminMain.tsx";
-import LoginPage from "./pages/(auth)/SigninForm.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
+import App from "./App.tsx";
 
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <LoginPage />,
+		element: <App />,
 		errorElement: <NotFoundPage />,
 	},
 	{
