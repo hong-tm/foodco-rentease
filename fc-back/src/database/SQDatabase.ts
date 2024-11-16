@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes, Model } from "@sequelize/core";
 import { Config } from "../fileoperation/FileOperation";
+import mariadb from 'mariadb';
 
 export class User extends Model
 {
@@ -97,9 +98,9 @@ export class SQDatabase
     constructor(config: Config)
     {
         this.sequelize = new Sequelize({
-            dialect: config.sequelize.options.dialect,
-            storage: `${ config.sequelize.options.storage }`,
-            logging: config.sequelize.options.logging,
+            dialect: "mariadb",
+            // storage: `${ config.sequelize.options.storage }`,
+            logging: false,
         });
 
     }

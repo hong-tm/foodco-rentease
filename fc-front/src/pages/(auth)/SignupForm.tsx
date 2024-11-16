@@ -28,6 +28,7 @@ import { PasswordInput } from "@/components/ui/passwod-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
+import { FishSymbolIcon } from "@/components/fish-symbol";
 
 // Define validation schema using Zod
 const formSchema = z
@@ -80,8 +81,13 @@ export default function RegisterPreview() {
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
 				<Card className="mx-auto max-w-lg z-10">
 					<CardHeader>
-						<CardTitle className="text-2xl">Create New Account</CardTitle>
-						<CardDescription>
+						<div className="flex w-full items-center justify-center select-none motion-preset-wiggle motion-preset-bounce motion-delay-150">
+							<FishSymbolIcon />
+						</div>
+						<CardTitle className="text-2xl select-none ">
+							Create New Account
+						</CardTitle>
+						<CardDescription className="select-none">
 							Join FoodCo-RentEase to Simplify Your Stall Management Today!
 						</CardDescription>
 					</CardHeader>
@@ -98,7 +104,9 @@ export default function RegisterPreview() {
 										name="name"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="name">Full Name</FormLabel>
+												<FormLabel htmlFor="name" className="select-none">
+													Full Name
+												</FormLabel>
 												<FormControl>
 													<Input id="name" placeholder="John Doe" {...field} />
 												</FormControl>
@@ -113,7 +121,9 @@ export default function RegisterPreview() {
 										name="email"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="email">Email</FormLabel>
+												<FormLabel htmlFor="email" className="select-none">
+													Email
+												</FormLabel>
 												<FormControl>
 													<Input
 														id="email"
@@ -134,9 +144,15 @@ export default function RegisterPreview() {
 										name="phone"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="phone">Phone Number</FormLabel>
+												<FormLabel htmlFor="phone" className="select-none">
+													Phone Number
+												</FormLabel>
 												<FormControl>
-													<PhoneInput {...field} defaultCountry="MY" />
+													<PhoneInput
+														{...field}
+														defaultCountry="MY"
+														placeholder="012-345 6789"
+													/>
 													{/* <Input
 												id="phone"
 												placeholder="555-123-4567"
@@ -156,7 +172,9 @@ export default function RegisterPreview() {
 										name="password"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="password">Password</FormLabel>
+												<FormLabel htmlFor="password" className="select-none">
+													Password
+												</FormLabel>
 												<FormControl>
 													<PasswordInput
 														id="password"
@@ -176,7 +194,10 @@ export default function RegisterPreview() {
 										name="confirmPassword"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="confirmPassword">
+												<FormLabel
+													htmlFor="confirmPassword"
+													className="select-none"
+												>
 													Confirm Password
 												</FormLabel>
 												<FormControl>
@@ -198,7 +219,7 @@ export default function RegisterPreview() {
 								</div>
 							</form>
 						</Form>
-						<div className="mt-4 text-center text-sm">
+						<div className="mt-4 text-center text-sm select-none">
 							Already have an account?{" "}
 							<Link to="/" className="underline">
 								Login

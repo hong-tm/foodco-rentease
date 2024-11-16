@@ -29,6 +29,7 @@ import { PasswordInput } from "@/components/ui/passwod-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
+import { FishSymbolIcon } from "@/components/fish-symbol";
 
 // Improved schema with additional validation rules
 const formSchema = z.object({
@@ -70,6 +71,9 @@ export default function LoginPage() {
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
 				<Card className="mx-auto max-w-lg z-10">
 					<CardHeader>
+						<div className="flex w-full items-center justify-center motion-preset-wiggle motion-preset-bounce motion-delay-150">
+							<FishSymbolIcon />
+						</div>
 						<CardTitle className="text-2xl select-none">
 							Welcome to FoodCo-RentEase
 						</CardTitle>
