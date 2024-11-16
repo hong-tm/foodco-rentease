@@ -8,6 +8,9 @@
 		}
 	],
 	"settings": {
-		"git.ignoreLimitWarning": true
+		"git.ignoreLimitWarning": true,
+		"github.copilot.enable": {
+			"markdown": true
+		}
 	}
 }
