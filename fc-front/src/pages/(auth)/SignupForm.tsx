@@ -80,14 +80,12 @@ export default function RegisterPreview() {
 		<div className="flex h-screen w-full items-center justify-center px-4">
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
 				<Card className="mx-auto max-w-lg z-10">
-					<CardHeader>
-						<div className="flex w-full items-center justify-center select-none motion-preset-wiggle motion-preset-bounce motion-delay-150">
+					<CardHeader className="flex w-full items-center justify-center select-none text-center">
+						<div className="flex w-full items-center justify-center motion-preset-wiggle motion-preset-bounce motion-delay-150">
 							<FishSymbolIcon />
 						</div>
-						<CardTitle className="text-2xl select-none ">
-							Create New Account
-						</CardTitle>
-						<CardDescription className="select-none">
+						<CardTitle className="text-2xl">Create New Account</CardTitle>
+						<CardDescription>
 							Join FoodCo-RentEase to Simplify Your Stall Management Today!
 						</CardDescription>
 					</CardHeader>
