@@ -66,7 +66,7 @@ export default function LoginPage() {
 	return (
 		<div className="flex h-screen w-full items-center justify-center px-4 ">
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
-				<Card className="mx-auto max-w-lg z-10">
+				<Card className="mx-auto max-w-lg z-10 lg:min-w-[500px]">
 					<CardHeader className="flex w-full items-center justify-center select-none text-center">
 						<div className="flex w-full items-center justify-center motion-preset-wiggle motion-preset-bounce motion-delay-150">
 							<FishSymbolIcon />
