@@ -1,9 +1,7 @@
 import * as React from "react";
 import {
-	TowerControl,
 	LifeBuoy,
 	Send,
-	Sun,
 	ChartArea,
 	Command,
 	Users,
@@ -11,11 +9,12 @@ import {
 	BellElectric,
 	BookDown,
 	Scroll,
+	CookingPot,
 } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/pages/dashboard/components/nav-main";
+import { NavSecondary } from "@/pages/dashboard/components/nav-secondary";
+import { NavUser } from "@/pages/dashboard/components/nav-user";
 import {
 	Sidebar,
 	SidebarContent,
@@ -25,7 +24,8 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { NavQuick } from "@/components/nav-quick";
+import { NavQuick } from "@/pages/dashboard/components/nav-quick";
+import { Link } from "react-router-dom";
 
 const data = {
 	user: {
@@ -131,11 +131,6 @@ const data = {
 			url: "#",
 			icon: Send,
 		},
-		{
-			title: "Mode",
-			url: "#",
-			icon: Sun,
-		},
 	],
 	navQuick: [
 		{
@@ -156,24 +151,24 @@ const data = {
 	],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function RentalSidebar({
+	...props
+}: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar variant="inset" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<a href="#">
+							<Link to="#">
 								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-									<TowerControl className="size-4" />
+									<CookingPot className="size-4" />
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">
-										FoodCo-RentEase
-									</span>
-									<span className="truncate text-xs">Enterprise</span>
+									<span className="truncate font-semibold">Ming</span>
+									<span className="truncate text-xs">Rental</span>
 								</div>
-							</a>
+							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
