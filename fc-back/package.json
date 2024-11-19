@@ -2,9 +2,10 @@
 	"name": "fc-back",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch src/index.ts",
-		"build": "tsc",
-		"start": "node dist/index.js"
+		"dev": "tsx watch index.ts",
+		"build": "tsc --outDir dist",
+		"start": "node dist/index.js",
+		"preview": "vite preview"
 	},
 	"keywords": [],
 	"author": "",
@@ -14,6 +15,9 @@
 		"@hono/node-server": "^1.13.7",
 		"@hono/zod-validator": "^0.4.1",
 		"hono": "^4.6.10",
+		"tsc": "^2.0.4",
+		"typescript": "^5.6.3",
+		"vite": "^5.4.11",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {

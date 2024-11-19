@@ -18,8 +18,9 @@ import {
 	SidebarMenuSubButton,
 	SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router-dom";
 
-export function NavQuick({
+export function NavMain({
 	items,
 }: {
 	items: {
@@ -41,10 +42,10 @@ export function NavQuick({
 					<Collapsible key={item.title} asChild defaultOpen={item.isActive}>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild tooltip={item.title}>
-								<a href={item.url}>
+								<Link to={item.url}>
 									<item.icon />
 									<span>{item.title}</span>
-								</a>
+								</Link>
 							</SidebarMenuButton>
 							{item.items?.length ? (
 								<>

@@ -3,6 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
+	"homepage": "./",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
@@ -37,6 +38,7 @@
 		"fc-front": "file:../fc-front",
 		"framer-motion": "^11.11.15",
 		"icons-react": "^3.7.1",
+		"js-cookie": "^3.0.5",
 		"lucide-react": "^0.456.0",
 		"mariadb": "^3.3.2",
 		"motion": "^11.11.17",

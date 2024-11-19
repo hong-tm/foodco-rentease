@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -13,11 +12,12 @@ import {
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { RentalSidebar } from "./rental-sidebar";
 
-export function AdminMain() {
+export function RentalMain() {
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<RentalSidebar />
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2">
 					<div className="flex items-center gap-2 px-4">

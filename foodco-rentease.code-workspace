@@ -11,6 +11,7 @@
 		"git.ignoreLimitWarning": true,
 		"github.copilot.enable": {
 			"markdown": true
-		}
+		},
+		"liveServer.settings.multiRootWorkspaceName": "fc-front"
 	}
 }
