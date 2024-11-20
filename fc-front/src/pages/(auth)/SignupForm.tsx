@@ -4,49 +4,35 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import
+	{
+		Form,
+		FormControl,
+		FormField,
+		FormItem,
+		FormLabel,
+		FormMessage,
+	} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import
+	{
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle,
+	} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwod-input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
+import { formSchema } from "@/lib/auth-schema";
 
-// Define validation schema using Zod
-const formSchema = z
-	.object({
-		name: z
-			.string()
-			.min(2, { message: "Name must be at least 2 characters long" }),
-		email: z.string().email({ message: "Invalid email address" }),
-		phone: z.string().min(10, { message: "Phone number must be valid" }),
-		password: z
-			.string()
-			.min(6, { message: "Password must be at least 6 characters long" })
-			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
-		confirmPassword: z.string(),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		path: ["confirmPassword"],
-		message: "Passwords do not match",
-	});
 
-export default function RegisterPreview() {
+export default function RegisterPage()
+{
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -58,8 +44,10 @@ export default function RegisterPreview() {
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
+	async function onSubmit(values: z.infer<typeof formSchema>)
+	{
+		try
+		{
 			// Assuming an async registration function
 			console.log(values);
 			toast(
@@ -67,7 +55,8 @@ export default function RegisterPreview() {
 					<code className="text-white">{JSON.stringify(values, null, 2)}</code>
 				</pre>
 			);
-		} catch (error) {
+		} catch (error)
+		{
 			console.error("Form submission error", error);
 			toast.error("Failed to submit the form. Please try again.");
 		}

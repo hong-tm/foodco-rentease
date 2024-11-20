@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FcGoogle } from "react-icons/fc";
 
-import {
+import
+{
 	Form,
 	FormControl,
 	FormField,
@@ -14,7 +15,8 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import {
+import
+{
 	Card,
 	CardContent,
 	CardDescription,
@@ -27,27 +29,22 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
+import { signinFormSchema } from "@/lib/auth-schema";
 
-// Improved schema with additional validation rules
-const formSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }),
-	password: z
-		.string()
-		.min(6, { message: "Password must be at least 6 characters long" })
-		.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
-});
-
-export default function LoginPage() {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+export default function LoginPage()
+{
+	const form = useForm<z.infer<typeof signinFormSchema>>({
+		resolver: zodResolver(signinFormSchema),
 		defaultValues: {
 			email: "",
 			password: "",
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
+	async function onSubmit(values: z.infer<typeof signinFormSchema>)
+	{
+		try
+		{
 			// Assuming an async login function
 			console.log(values);
 			toast(
@@ -55,7 +52,8 @@ export default function LoginPage() {
 					<code className="text-white">{JSON.stringify(values, null, 2)}</code>
 				</pre>
 			);
-		} catch (error) {
+		} catch (error)
+		{
 			console.error("Form submission error", error);
 			toast.error("Failed to submit the form. Please try again.");
 		}
@@ -150,6 +148,7 @@ export default function LoginPage() {
 										Continue with Google
 									</Button>
 									<Button
+										asChild
 										variant="outline"
 										className="w-full flex items-center justify-center gap-2"
 									>
