@@ -1,4 +1,5 @@
-import {
+import
+{
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbLink,
@@ -7,19 +8,48 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import {
+import
+{
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./admin-sidebar";
+import { ModeToggle } from "@/components/mode-toggle";
+import
+{
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { api } from "@/lib/api";
 
-export function AdminMain() {
+import { useQuery } from '@tanstack/react-query'
+import { Outlet } from "react-router-dom";
+
+
+async function getTotalSpent()
+{
+	const res = await api.expenses["total-spent"].$get();
+	if (!res.ok) { throw new Error("Server error"); }
+	const data = await res.json();
+	return data;
+
+}
+
+export function AdminMain()
+{
+	const { isPending, error, data } = useQuery({ queryKey: ['get-total-spend'], queryFn: getTotalSpent });
+
+	if (error) return 'An error has occurred: ' + error.message;
+
 	return (
 		<SidebarProvider>
 			<AdminSidebar />
 			<SidebarInset>
-				<header className="flex h-16 shrink-0 items-center gap-2">
+				<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
 					<div className="flex items-center gap-2 px-4">
 						<SidebarTrigger className="-ml-1" />
 						<Separator orientation="vertical" className="mr-2 h-4" />
@@ -35,14 +65,21 @@ export function AdminMain() {
 							</BreadcrumbList>
 						</Breadcrumb>
 					</div>
+					<div className="px-4">
+						<ModeToggle />
+					</div>
 				</header>
 				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-					<div className="grid auto-rows-min gap-4 md:grid-cols-3">
-						<div className="aspect-video rounded-xl bg-muted/50" />
-						<div className="aspect-video rounded-xl bg-muted/50" />
-						<div className="aspect-video rounded-xl bg-muted/50" />
-					</div>
-					<div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+					<Card className="w-[350px]">
+						<CardHeader>
+							<CardTitle>Create project</CardTitle>
+							<CardDescription>
+								Deploy your new project in one-click.
+							</CardDescription>
+						</CardHeader>
+						<CardContent>{isPending ? "..." : data.total}</CardContent>
+					</Card>
+					<Outlet />
 				</div>
 			</SidebarInset>
 		</SidebarProvider>

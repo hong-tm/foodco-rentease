@@ -15,7 +15,8 @@ app.get("/api", (c) => {
 	return c.text("API is running!");
 });
 
-app.route("/api/expenses", expensesRoute);
+const apiRoutes = app.basePath("/api").route("/expenses", expensesRoute);
+
 
 // Server static files
 app.get("*", serveStatic({ root: "./webpage" }));
@@ -23,9 +24,11 @@ app.get("*", serveStatic({ path: "./webpage/index.html" }));
 
 //do route up there
 const port = 3000;
-console.log(`Server is running on http://localhost:${port}`);
+console.log(`Server is running on http://localhost:${ port }`);
 
 serve({
 	fetch: app.fetch,
 	port,
 });
+
+export type ApiRoutes = typeof apiRoutes;

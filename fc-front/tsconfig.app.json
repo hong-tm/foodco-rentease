@@ -8,8 +8,10 @@
 
 		"baseUrl": ".",
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["./src/*"],
+			"@server/*": ["../fc-back/*"]
 		},
+		
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
