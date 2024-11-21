@@ -14,19 +14,18 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
 		"@hono/zod-validator": "^0.4.1",
-		"@libsql/client": "^0.14.0",
-		"better-auth": "^1.0.0-canary.2",
-		"dotenv": "^16.4.5",
-		"drizzle-orm": "^0.36.3",
+		"@sequelize/core": "^7.0.0-alpha.43",
+		"@sequelize/sqlite3": "^7.0.0-alpha.43",
 		"hono": "^4.6.11",
-		"tsc": "^2.0.4",
-		"typescript": "^5.6.3",
+		"sqlite3": "^5.1.7",
 		"vite": "^5.4.11",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.17",
-		"drizzle-kit": "^0.28.1",
-		"tsx": "^4.19.2"
+		"nodemon": "^3.1.7",
+		"ts-node": "^10.9.2",
+		"tsx": "^4.19.2",
+		"typescript": "^5.6.3"
 	}
 }

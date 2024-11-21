@@ -1,21 +1,23 @@
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-	SidebarGroup,
-	SidebarGroupLabel,
-	SidebarMenu,
-	SidebarMenuAction,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarMenuSub,
-	SidebarMenuSubButton,
-	SidebarMenuSubItem,
-} from "@/components/ui/sidebar";
+import
+	{
+		Collapsible,
+		CollapsibleContent,
+		CollapsibleTrigger,
+	} from "@/components/ui/collapsible";
+import
+	{
+		SidebarGroup,
+		SidebarGroupLabel,
+		SidebarMenu,
+		SidebarMenuAction,
+		SidebarMenuButton,
+		SidebarMenuItem,
+		SidebarMenuSub,
+		SidebarMenuSubButton,
+		SidebarMenuSubItem,
+	} from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 
 export function NavQuick({
@@ -31,10 +33,11 @@ export function NavQuick({
 			url: string;
 		}[];
 	}[];
-}) {
+})
+{
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>Platform</SidebarGroupLabel>
+			<SidebarGroupLabel>Quick Access</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => (
 					<Collapsible key={item.title} asChild defaultOpen={item.isActive}>

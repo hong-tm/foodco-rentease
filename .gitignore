@@ -70,3 +70,4 @@ fileoperation/
 fc-back/.env
 fc-back/config
 fc-back/data
+fc-back/database.sqlite
