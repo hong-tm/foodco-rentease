@@ -5,23 +5,23 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import
-	{
-		Form,
-		FormControl,
-		FormField,
-		FormItem,
-		FormLabel,
-		FormMessage,
-	} from "@/components/ui/form";
+{
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import
-	{
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle,
-	} from "@/components/ui/card";
+{
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwod-input";
 import { PhoneInput } from "@/components/ui/phone-input";

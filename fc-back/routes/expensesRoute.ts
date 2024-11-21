@@ -44,10 +44,9 @@ expensesRoute.post("/", zValidator("json", createPostSchema), async (c) => {
 	return c.json({ expense });
 });
 
-expensesRoute.get("/total-spent", async (c) =>
-{
-	const total = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-	return c.json({ total });
+expensesRoute.get("/total-spent", async (c) => {
+  const total = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+  return c.json({ total });
 });
 
 expensesRoute.get("/:id{[0-9]+}", (c) => {

@@ -53,10 +53,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
-		<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-			<QueryClientProvider client={queryClient}>
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
 				<RouterProvider router={router} />
-			</QueryClientProvider>
-		</ThemeProvider>
+			</ThemeProvider>
+		</QueryClientProvider>
 	</StrictMode>
 );

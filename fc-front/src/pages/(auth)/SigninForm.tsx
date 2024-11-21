@@ -30,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
 import { signinFormSchema } from "@/lib/auth-schema";
+import { FeedbackButton } from "../feedback/feedback-button";
 
 export default function LoginPage()
 {
@@ -147,13 +148,7 @@ export default function LoginPage()
 										<FcGoogle className="text-xl" />
 										Continue with Google
 									</Button>
-									<Button
-										asChild
-										variant="outline"
-										className="w-full flex items-center justify-center gap-2"
-									>
-										<Link to="feedback-guest">Feedback without Account</Link>
-									</Button>
+									<FeedbackButton />
 								</div>
 							</form>
 						</Form>
