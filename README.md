@@ -22,7 +22,7 @@ A streamlined rental management platform for food courts, designed to manage sta
 
 **Backend**:
 
-- 🚀 Express.js, Sequelize ORM
+- 🚀 Hono.js, Sequelize ORM
 - 💳 Stripe (for payments), aaPanel, Nginx
 
 ---
