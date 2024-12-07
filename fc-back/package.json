@@ -14,16 +14,20 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
 		"@hono/zod-validator": "^0.4.1",
+		"@sendgrid/mail": "^8.1.4",
 		"@sequelize/core": "^7.0.0-alpha.43",
 		"@sequelize/sqlite3": "^7.0.0-alpha.43",
+		"better-auth": "^1.0.8",
+		"better-sqlite3": "^11.5.0",
+		"dotenv": "^16.4.5",
 		"hono": "^4.6.11",
-		"sqlite3": "^5.1.7",
+		"npm": "^10.9.1",
 		"vite": "^5.4.11",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.12",
 		"@types/node": "^20.11.17",
-		"nodemon": "^3.1.7",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.19.2",
 		"typescript": "^5.6.3"

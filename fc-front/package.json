@@ -11,7 +11,6 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
-		"@hono/client": "^0.0.3",
 		"@hookform/resolvers": "^3.9.0",
 		"@radix-ui/react-alert-dialog": "^1.1.2",
 		"@radix-ui/react-avatar": "^1.1.1",
@@ -32,7 +31,7 @@
 		"@tabler/icons-react": "^3.21.0",
 		"@tanstack/react-query": "^5.61.0",
 		"aceternity-ui": "^0.2.2",
-		"better-auth": "^1.0.0-canary.2",
+		"better-auth": "^1.0.8",
 		"blurhash": "^2.0.5",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.1",
@@ -46,7 +45,6 @@
 		"lucide-react": "^0.456.0",
 		"mariadb": "^3.3.2",
 		"motion": "^11.11.17",
-		"next-themes": "^0.4.3",
 		"react": "^18.3.1",
 		"react-blurhash": "^0.3.0",
 		"react-day-picker": "^8.10.1",
@@ -60,6 +58,7 @@
 		"sonner": "^1.7.0",
 		"tailwind-merge": "^2.5.4",
 		"tailwindcss-animate": "^1.0.7",
+		"vaul": "^1.1.1",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
