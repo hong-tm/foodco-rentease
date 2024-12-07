@@ -1,5 +1,4 @@
-import
-{
+import {
 	Breadcrumb,
 	BreadcrumbItem,
 	BreadcrumbLink,
@@ -9,16 +8,14 @@ import
 } from "@/components/ui/breadcrumb";
 
 import { Separator } from "@/components/ui/separator";
-import
-{
+import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./admin-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
-import
-{
+import {
 	Card,
 	// CardContent,
 	CardDescription,
@@ -26,30 +23,26 @@ import
 	CardTitle,
 } from "@/components/ui/card";
 
-// import { useQuery } from '@tanstack/react-query'
+// import { useQuery } from "@tanstack/react-query";
 import { Outlet } from "react-router-dom";
 // import { api } from "@/lib/api";
 
-// interface TotalSpentData
-// {
-// 	total: number;
-// }
-// async function getTotalSpent(): Promise<TotalSpentData>
-// {
-// 	const res = await api.api.expenses["total-spent"].$get();
-// 	if (!res.ok)
-// 	{
+// async function getTotalSpent() {
+// 	const res = await api.expenses["total-spent"].$get();
+// 	if (!res.ok) {
 // 		throw new Error("Server error");
 // 	}
 // 	const data = await res.json();
-// 	return data; // Return typed data
+// 	return data;
 // }
 
-export function AdminMain()
-{
-	// const { isPending, error, data } = useQuery({ queryKey: ['get-total-spend'], queryFn: getTotalSpent });
+export function AdminMain() {
+	// const { isPending, error, data } = useQuery({
+	// 	queryKey: ["get-total-spend"],
+	// 	queryFn: getTotalSpent,
+	// });
 
-	// if (error instanceof Error) return 'An error has occurred: ' + error.message;
+	// if (error instanceof Error) return "An error has occurred: " + error.message;
 
 	return (
 		<SidebarProvider>
@@ -83,7 +76,7 @@ export function AdminMain()
 								Deploy your new project in one-click.
 							</CardDescription>
 						</CardHeader>
-						{/* <CardContent>{isPending ? "..." : data?.total}</CardContent> */}
+						{/* <CardContent>{isPending ? "..." : data.total}</CardContent> */}
 					</Card>
 					<Outlet />
 				</div>

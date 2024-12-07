@@ -3,7 +3,6 @@
 	"style": "new-york",
 	"rsc": false,
 	"tsx": true,
-	"iconLibrary": "lucide",
 	"tailwind": {
 		"config": "tailwind.config.ts",
 		"css": "app/globals.css",
@@ -19,5 +18,6 @@
 		"hooks": "@/hooks",
 		"examples": "@/components/examples",
 		"blocks": "@/components/blocks"
-	}
+	},
+	"iconLibrary": "lucide"
 }

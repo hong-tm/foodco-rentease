@@ -1,31 +1,31 @@
 import * as React from "react";
 import
-	{
-		LifeBuoy,
-		Send,
-		ChartArea,
-		Command,
-		Users,
-		BadgeDollarSign,
-		BellElectric,
-		BookDown,
-		Scroll,
-		CookingPot,
-	} from "lucide-react";
+{
+	LifeBuoy,
+	Send,
+	ChartArea,
+	Command,
+	Users,
+	BadgeDollarSign,
+	BellElectric,
+	BookDown,
+	Scroll,
+	CookingPot,
+} from "lucide-react";
 
 import { NavMain } from "@/pages/dashboard/components/nav-main";
 import { NavSecondary } from "@/pages/dashboard/components/nav-secondary";
 import { NavUser } from "@/pages/dashboard/components/nav-user";
 import
-	{
-		Sidebar,
-		SidebarContent,
-		SidebarFooter,
-		SidebarHeader,
-		SidebarMenu,
-		SidebarMenuButton,
-		SidebarMenuItem,
-	} from "@/components/ui/sidebar";
+{
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
 import { Link } from "react-router-dom";
 
@@ -158,7 +158,7 @@ export function RentalSidebar({
 }: React.ComponentProps<typeof Sidebar>)
 {
 	return (
-		<Sidebar variant="inset" {...props}>
+		<Sidebar collapsible="icon" variant="inset" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>

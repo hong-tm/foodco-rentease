@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import
-{
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -14,8 +13,7 @@ import
 	FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import
-{
+import {
 	Card,
 	CardContent,
 	CardDescription,
@@ -24,41 +22,72 @@ import
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/passwod-input";
-import { PhoneInput } from "@/components/ui/phone-input";
+// import { PhoneInput } from "@/components/ui/phone-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
 import { formSchema } from "@/lib/auth-schema";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
-
-export default function RegisterPage()
-{
+export default function RegisterPage() {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			name: "",
 			email: "",
-			phone: "",
 			password: "",
 			confirmPassword: "",
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>)
-	{
-		try
-		{
-			// Assuming an async registration function
-			console.log(values);
-			toast(
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(values, null, 2)}</code>
-				</pre>
+	const navigate = useNavigate();
+
+	const [isLoading, setIsLoading] = useState(false);
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		try {
+			const { name, email, password } = values;
+
+			const { data, error } = await authClient.signUp.email(
+				{
+					email,
+					password,
+					name,
+					callbackURL: "/email-verified",
+				},
+				{
+					onRequest: () => {
+						setIsLoading(true);
+					},
+					onSuccess: () => {
+						form.reset();
+						toast.success(`Registration successful, ${name}!`);
+						setIsLoading(false); // This works fine for success cases
+						navigate("/");
+					},
+					onError: (ctx) => {
+						toast.error(ctx.error.message);
+						setIsLoading(false); // This works fine for errors returned by `authClient`
+					},
+				}
 			);
-		} catch (error)
-		{
-			console.error("Form submission error", error);
-			toast.error("Failed to submit the form. Please try again.");
+			console.log(form.watch());
+
+			if (error) {
+				console.error("Sign-up failed:", error);
+				// Additional handling for unexpected errors
+			}
+
+			if (data) {
+				console.log("Sign-up successful:", data);
+			}
+		} catch (err) {
+			console.error("Unexpected error:", err);
+			toast.error("An unexpected error occurred. Please try again.");
+		} finally {
+			setIsLoading(false); // Guarantees the loader stops
 		}
 	}
 
@@ -111,7 +140,7 @@ export default function RegisterPage()
 												<FormControl>
 													<Input
 														id="email"
-														placeholder="johndoe@mail.com"
+														placeholder="johndoe@gmail.com"
 														type="email"
 														autoComplete="email"
 														{...field}
@@ -123,7 +152,7 @@ export default function RegisterPage()
 									/>
 
 									{/* Phone Field */}
-									<FormField
+									{/* <FormField
 										control={form.control}
 										name="phone"
 										render={({ field }) => (
@@ -137,18 +166,11 @@ export default function RegisterPage()
 														defaultCountry="MY"
 														placeholder="012-345 6789"
 													/>
-													{/* <Input
-												id="phone"
-												placeholder="555-123-4567"
-												type="tel"
-												autoComplete="tel"
-												{...field}
-												/> */}
 												</FormControl>
 												<FormMessage />
 											</FormItem>
 										)}
-									/>
+									/> */}
 
 									{/* Password Field */}
 									<FormField
@@ -197,8 +219,15 @@ export default function RegisterPage()
 										)}
 									/>
 
-									<Button type="submit" className="w-full">
-										Register
+									<Button type="submit" className="w-full" disabled={isLoading}>
+										{isLoading ? (
+											<>
+												Loading
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											"Register"
+										)}
 									</Button>
 								</div>
 							</form>

@@ -11,13 +11,10 @@ import App from "./App.tsx";
 import { RentalMain } from "./pages/dashboard/rental/rental-main.tsx";
 import RegisterPage from "./pages/(auth)/SignupForm.tsx";
 
-import
-{
-	QueryClient,
-	QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import EmailVerifiedPage from "./pages/(auth)/emailVerified.tsx";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
 	{
@@ -48,6 +45,10 @@ const router = createBrowserRouter([
 	{
 		path: "/dashboard-admin/monthly-rent-overview",
 		element: <AdminMain />,
+	},
+	{
+		path: "/email-verified",
+		element: <EmailVerifiedPage />,
 	},
 ]);
 

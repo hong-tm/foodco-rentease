@@ -5,8 +5,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FcGoogle } from "react-icons/fc";
 
-import
-{
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -15,8 +14,7 @@ import
 	FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import
-{
+import {
 	Card,
 	CardContent,
 	CardDescription,
@@ -31,9 +29,10 @@ import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
 import { signinFormSchema } from "@/lib/auth-schema";
 import { FeedbackButton } from "../feedback/feedback-button";
+// import { authClient } from "@/lib/auth-client";
+// import { createAuthClient } from "better-auth/client";
 
-export default function LoginPage()
-{
+export default function LoginPage() {
 	const form = useForm<z.infer<typeof signinFormSchema>>({
 		resolver: zodResolver(signinFormSchema),
 		defaultValues: {
@@ -42,10 +41,8 @@ export default function LoginPage()
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof signinFormSchema>)
-	{
-		try
-		{
+	async function onSubmit(values: z.infer<typeof signinFormSchema>) {
+		try {
 			// Assuming an async login function
 			console.log(values);
 			toast(
@@ -53,8 +50,7 @@ export default function LoginPage()
 					<code className="text-white">{JSON.stringify(values, null, 2)}</code>
 				</pre>
 			);
-		} catch (error)
-		{
+		} catch (error) {
 			console.error("Form submission error", error);
 			toast.error("Failed to submit the form. Please try again.");
 		}
@@ -62,8 +58,20 @@ export default function LoginPage()
 
 	const navigate = useNavigate();
 
+	// const client = createAuthClient();
+
+	// const signIn = async () => {
+	// 	const data = await client.signIn.social({
+	// 		provider: "google",
+	// 		idToken: {
+	// 			token: 1,
+	// 			accessToken: 1,
+	// 		},
+	// 	});
+	// };
+
 	return (
-		<div className="flex h-screen w-full items-center justify-center px-4 ">
+		<div className="flex h-screen w-full items-center justify-center px-4">
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
 				<Card className="mx-auto max-w-lg z-10 lg:min-w-[500px]">
 					<CardHeader className="flex w-full items-center justify-center select-none text-center">
@@ -144,6 +152,7 @@ export default function LoginPage()
 									<Button
 										variant="outline"
 										className="w-full flex items-center justify-center gap-2"
+										// onClick={async () => await signIn.social(provider: "google", callbackURL: "/dashboard" )}
 									>
 										<FcGoogle className="text-xl" />
 										Continue with Google
