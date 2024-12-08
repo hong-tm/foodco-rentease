@@ -26,14 +26,15 @@ import { PasswordInput } from "@/components/ui/passwod-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
-import { formSchema } from "@/lib/auth-schema";
+import { signupformSchema } from "@/lib/auth-schema";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { ErrorContext } from "@better-fetch/fetch";
 
 export default function RegisterPage() {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<typeof signupformSchema>>({
+		resolver: zodResolver(signupformSchema),
 		defaultValues: {
 			name: "",
 			email: "",
@@ -44,51 +45,35 @@ export default function RegisterPage() {
 
 	const navigate = useNavigate();
 
-	const [isLoading, setIsLoading] = useState(false);
+	const [pending, setPending] = useState(false);
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
-			const { name, email, password } = values;
+	async function onSubmit(values: z.infer<typeof signupformSchema>) {
+		const { name, email, password } = values;
 
-			const { data, error } = await authClient.signUp.email(
-				{
-					email,
-					password,
-					name,
-					callbackURL: "/email-verified",
+		await authClient.signUp.email(
+			{
+				email,
+				password,
+				name,
+				callbackURL: "/email-verified",
+			},
+			{
+				onRequest: () => {
+					setPending(true);
 				},
-				{
-					onRequest: () => {
-						setIsLoading(true);
-					},
-					onSuccess: () => {
-						form.reset();
-						toast.success(`Registration successful, ${name}!`);
-						setIsLoading(false); // This works fine for success cases
-						navigate("/");
-					},
-					onError: (ctx) => {
-						toast.error(ctx.error.message);
-						setIsLoading(false); // This works fine for errors returned by `authClient`
-					},
-				}
-			);
-			console.log(form.watch());
-
-			if (error) {
-				console.error("Sign-up failed:", error);
-				// Additional handling for unexpected errors
+				onSuccess: () => {
+					form.reset();
+					toast.success(`Registration successful, ${name}!`);
+					navigate("/");
+				},
+				onError: (ctx: ErrorContext) => {
+					toast.error(ctx.error.message ?? "An error occurred");
+					setPending(false); // This works fine for errors returned by `authClient`
+				},
 			}
+		);
 
-			if (data) {
-				console.log("Sign-up successful:", data);
-			}
-		} catch (err) {
-			console.error("Unexpected error:", err);
-			toast.error("An unexpected error occurred. Please try again.");
-		} finally {
-			setIsLoading(false); // Guarantees the loader stops
-		}
+		setPending(false); // Guarantees the loader stops
 	}
 
 	return (
@@ -219,10 +204,10 @@ export default function RegisterPage() {
 										)}
 									/>
 
-									<Button type="submit" className="w-full" disabled={isLoading}>
-										{isLoading ? (
+									<Button type="submit" className="w-full" disabled={pending}>
+										{pending ? (
 											<>
-												Loading
+												Register
 												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 											</>
 										) : (

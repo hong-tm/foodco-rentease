@@ -1,7 +1,14 @@
 import { createAuthClient } from "better-auth/react";
+// import { oneTapClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
 	baseURL: "http://localhost:3000",
+	// plugins: [
+	// 	oneTapClient({
+	// 		clientId:
+	// 			"959779612318-cigtb331pkhkj7o5qfjmn1dblp2na26c.apps.googleusercontent.com",
+	// 	}),
+	// ],
 });
 
 // const signIn = async () => {

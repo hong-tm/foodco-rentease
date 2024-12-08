@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 import {
 	Form,
@@ -29,8 +30,10 @@ import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
 import { signinFormSchema } from "@/lib/auth-schema";
 import { FeedbackButton } from "../feedback/feedback-button";
-// import { authClient } from "@/lib/auth-client";
-// import { createAuthClient } from "better-auth/client";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Loader2 } from "lucide-react";
+import { ErrorContext } from "@better-fetch/fetch";
 
 export default function LoginPage() {
 	const form = useForm<z.infer<typeof signinFormSchema>>({
@@ -41,34 +44,100 @@ export default function LoginPage() {
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof signinFormSchema>) {
-		try {
-			// Assuming an async login function
-			console.log(values);
-			toast(
-				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-					<code className="text-white">{JSON.stringify(values, null, 2)}</code>
-				</pre>
-			);
-		} catch (error) {
-			console.error("Form submission error", error);
-			toast.error("Failed to submit the form. Please try again.");
-		}
-	}
-
 	const navigate = useNavigate();
 
-	// const client = createAuthClient();
+	const [pending, setPending] = useState(false);
+	const [pendingGoogle, setPendingGoogle] = useState(false);
+	const [pendingGithub, setPendingGithub] = useState(false);
 
-	// const signIn = async () => {
-	// 	const data = await client.signIn.social({
-	// 		provider: "google",
-	// 		idToken: {
-	// 			token: 1,
-	// 			accessToken: 1,
+	async function SignIn(values: z.infer<typeof signinFormSchema>) {
+		const { email, password } = values;
+
+		await authClient.signIn.email(
+			{
+				email,
+				password,
+			},
+			{
+				onRequest: () => {
+					setPending(true);
+				},
+				onSuccess: () => {
+					form.reset();
+					toast.success(`Welcome, ${email}!`);
+					navigate("/dashboard-admin", { replace: true });
+				},
+				onError: (ctx: ErrorContext) => {
+					toast.error(ctx.error.message ?? "An error occurred");
+					setPending(false);
+				},
+			}
+		);
+		setPending(false); // Guarantees the loader stops
+	}
+
+	async function handlerSignInGoogle() {
+		await authClient.signIn.social(
+			{
+				provider: "google",
+				callbackURL: "/dashboard-admin",
+				errorCallbackURL: "/",
+			},
+			{
+				onRequest: () => {
+					setPendingGoogle(true);
+				},
+				onSuccess: async () => {
+					toast.success("Welcome, Google User!");
+					// navigate("/dashboard-admin", { replace: true });
+				},
+				onError: (ctx: ErrorContext) => {
+					toast.error(ctx.error.message);
+					setPendingGoogle(false);
+				},
+			}
+		);
+	}
+
+	async function handlerSignInGithub() {
+		await authClient.signIn.social(
+			{
+				provider: "github",
+				callbackURL: "/dashboard-admin",
+				errorCallbackURL: "/",
+			},
+			{
+				onRequest: () => {
+					setPendingGithub(true);
+				},
+				onSuccess: async () => {
+					toast.success("Welcome, Github User!");
+					// navigate("/dashboard-admin", { replace: true });
+				},
+				onError: (ctx: ErrorContext) => {
+					toast.error(ctx.error.message);
+					setPendingGithub(false);
+				},
+			}
+		);
+	}
+
+	// async function handlerSignInGoogleOneTap() {
+	// 	await authClient.oneTap({
+	// 		fetchOptions: {
+	// 			onRequest: () => {
+	// 				setPendingGoogle(true);
+	// 			},
+	// 			onSuccess: () => {
+	// 				navigate("/dashboard-admin");
+	// 			},
+	// 			onError: (ctx: ErrorContext) => {
+	// 				toast.error(ctx.error.message);
+	// 				setPendingGoogle(false);
+	// 			},
 	// 		},
 	// 	});
-	// };
+	// }
 
 	return (
 		<div className="flex h-screen w-full items-center justify-center px-4">
@@ -87,10 +156,7 @@ export default function LoginPage() {
 					</CardHeader>
 					<CardContent>
 						<Form {...form}>
-							<form
-								onSubmit={form.handleSubmit(onSubmit)}
-								className="space-y-8"
-							>
+							<form onSubmit={form.handleSubmit(SignIn)} className="space-y-8">
 								<div className="grid gap-4">
 									<FormField
 										control={form.control}
@@ -141,26 +207,61 @@ export default function LoginPage() {
 											</FormItem>
 										)}
 									/>
-									<Button
-										type="submit"
-										className="w-full"
-										onClick={() => navigate("dashboard-admin")}
-									>
-										Login
+									<Button type="submit" className="w-full" disabled={pending}>
+										{pending ? (
+											<>
+												Login
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											"Login"
+										)}
 									</Button>
-									<Separator />
-									<Button
-										variant="outline"
-										className="w-full flex items-center justify-center gap-2"
-										// onClick={async () => await signIn.social(provider: "google", callbackURL: "/dashboard" )}
-									>
-										<FcGoogle className="text-xl" />
-										Continue with Google
-									</Button>
-									<FeedbackButton />
 								</div>
 							</form>
 						</Form>
+						<div className="mt-4 text-center text-sm select-none grid gap-4">
+							<Separator />
+							<Button
+								variant="outline"
+								className="w-full flex items-center justify-center gap-3 py-2 px-4"
+								onClick={handlerSignInGoogle}
+								disabled={pendingGoogle}
+							>
+								{pendingGoogle ? (
+									<>
+										<FcGoogle className="text-2xl" />
+										<span>Continue with Google</span>
+										<Loader2 className="h-4 w-4 animate-spin" />
+									</>
+								) : (
+									<>
+										<FcGoogle className="text-2xl" />
+										<span>Continue with Google</span>
+									</>
+								)}
+							</Button>
+							<Button
+								variant="outline"
+								className="w-full flex items-center justify-center gap-3 py-2 px-4"
+								onClick={handlerSignInGithub}
+								disabled={pendingGithub}
+							>
+								{pendingGithub ? (
+									<>
+										<FaGithub className="text-2xl" />
+										<span>Continue with Github</span>
+										<Loader2 className="h-4 w-4 animate-spin" />
+									</>
+								) : (
+									<>
+										<FaGithub className="text-2xl" />
+										<span>Continue with Github</span>
+									</>
+								)}
+							</Button>
+							<FeedbackButton />
+						</div>
 						<div className="mt-4 text-center text-sm select-none">
 							Don&apos;t have an account?{" "}
 							<Link to="signup" className="underline">

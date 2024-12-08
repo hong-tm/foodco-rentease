@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formSchema = z
+export const signupformSchema = z
 	.object({
 		name: z
 			.string()
@@ -9,6 +9,7 @@ export const formSchema = z
 		password: z
 			.string()
 			.min(8, { message: "Password must be at least 8 characters long" })
+			.max(32, { message: "Password must be at most 32 characters long" })
 			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
 		confirmPassword: z.string(),
 	})
@@ -22,5 +23,23 @@ export const signinFormSchema = z.object({
 	password: z
 		.string()
 		.min(8, { message: "Password must be at least 8 characters long" })
+		.max(32, { message: "Password must be at most 32 characters long" })
 		.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
 });
+
+export const forgotPasswordFormSchema = z.object({
+	email: z.string().email({ message: "Invalid email address" }),
+});
+
+export const resetPasswordFormSchema = z
+	.object({
+		password: z
+			.string()
+			.min(6, { message: "Password must be at least 6 characters long" })
+			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		path: ["confirmPassword"],
+		message: "Passwords do not match",
+	});
