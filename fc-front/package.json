@@ -4,6 +4,7 @@
 	"version": "0.0.0",
 	"type": "module",
 	"homepage": "./",
+	"author": "hong-tm",
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
@@ -11,6 +12,7 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@better-fetch/fetch": "^1.1.12",
 		"@hookform/resolvers": "^3.9.0",
 		"@radix-ui/react-alert-dialog": "^1.1.2",
 		"@radix-ui/react-avatar": "^1.1.1",

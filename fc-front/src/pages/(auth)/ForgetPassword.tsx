@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 
 import {
 	Form,
@@ -20,34 +20,45 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
 import { BackgroundLines } from "@/components/ui/background-lines";
-
-// Schema for email validation
-const formSchema = z.object({
-	email: z.string().email({ message: "Invalid email address" }),
-});
+import { forgotPasswordFormSchema } from "@/lib/auth-schema";
+import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ForgetPassword() {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({
+		resolver: zodResolver(forgotPasswordFormSchema),
 		defaultValues: {
 			email: "",
 		},
 	});
 
-	const navigate = useNavigate();
+	const [pending, setPending] = useState(false);
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
-			// Assuming a function to send reset email
-			console.log(values);
-			toast.success("Password reset email sent. Please check your inbox.");
-			navigate("/reset-password", { replace: true });
-		} catch (error) {
-			console.error("Error sending password reset email", error);
-			toast.error("Failed to send password reset email. Please try again.");
-		}
+	async function onSubmit(values: z.infer<typeof forgotPasswordFormSchema>) {
+		const { email } = values;
+
+		await authClient.forgetPassword(
+			{
+				email,
+				redirectTo: "/reset-password",
+			},
+			{
+				onRequest: () => {
+					setPending(true);
+				},
+				onSuccess: async () => {
+					toast.success(
+						"If the email exists, a password reset link has been sent."
+					);
+				},
+				onError: (ctx) => {
+					toast.error(ctx.error.message);
+					setPending(false);
+				},
+			}
+		);
 	}
 
 	return (
@@ -87,7 +98,7 @@ export default function ForgetPassword() {
 											</FormItem>
 										)}
 									/>
-									<Button type="submit" className="w-full">
+									<Button type="submit" className="w-full" disabled={pending}>
 										Send Reset Link
 									</Button>
 								</div>

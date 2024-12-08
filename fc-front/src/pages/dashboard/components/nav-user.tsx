@@ -1,16 +1,15 @@
-import
-{
+import {
 	BadgeCheck,
 	Bell,
 	ChevronsUpDown,
 	CreditCard,
+	Loader2,
 	LogOut,
 	RectangleEllipsis,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import
-{
+import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
@@ -19,13 +18,15 @@ import
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import
-{
+import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { useNavigate } from "react-router-dom";
 
 export function NavUser({
 	user,
@@ -35,9 +36,29 @@ export function NavUser({
 		email: string;
 		avatar: string;
 	};
-})
-{
+}) {
 	const { isMobile } = useSidebar();
+
+	const navigate = useNavigate();
+
+	const [pending, setPending] = useState(false);
+
+	async function handlerSignOut() {
+		try {
+			setPending(true);
+			await authClient.signOut({
+				fetchOptions: {
+					onSuccess: () => {
+						navigate("/", { replace: true });
+					},
+				},
+			});
+		} catch (err) {
+			console.error("Sign-out failed:", err);
+		} finally {
+			setPending(false);
+		}
+	}
 
 	return (
 		<SidebarMenu>
@@ -100,9 +121,16 @@ export function NavUser({
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem disabled={pending} onClick={handlerSignOut}>
 							<LogOut />
-							Log out
+							{pending ? (
+								<>
+									Log Out
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								</>
+							) : (
+								"Log Out"
+							)}
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

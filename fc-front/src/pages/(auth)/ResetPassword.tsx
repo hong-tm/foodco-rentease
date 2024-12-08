@@ -22,24 +22,11 @@ import {
 import { PasswordInput } from "@/components/ui/passwod-input";
 import { useNavigate } from "react-router-dom";
 import { BackgroundLines } from "@/components/ui/background-lines";
+import { resetPasswordFormSchema } from "@/lib/auth-schema";
 
-// Schema for password validation
-const formSchema = z
-	.object({
-		password: z
-			.string()
-			.min(6, { message: "Password must be at least 6 characters long" })
-			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
-		confirmPassword: z.string(),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		path: ["confirmPassword"],
-		message: "Passwords do not match",
-	});
-
-export default function ResetPasswordPreview() {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+export default function ResetPassword() {
+	const form = useForm<z.infer<typeof resetPasswordFormSchema>>({
+		resolver: zodResolver(resetPasswordFormSchema),
 		defaultValues: {
 			password: "",
 			confirmPassword: "",
@@ -48,7 +35,7 @@ export default function ResetPasswordPreview() {
 
 	const navigate = useNavigate();
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
 		try {
 			// Assuming an async reset password function
 			console.log(values);
