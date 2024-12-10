@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-// import { toast } from "sonner";
-
 import {
 	Form,
 	FormControl,
@@ -25,6 +23,7 @@ import { forgotPasswordFormSchema } from "@/lib/auth-schema";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function ForgetPassword() {
 	const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({
@@ -49,9 +48,11 @@ export default function ForgetPassword() {
 					setPending(true);
 				},
 				onSuccess: async () => {
+					form.reset();
 					toast.success(
 						"If the email exists, a password reset link has been sent."
 					);
+					setPending(false);
 				},
 				onError: (ctx) => {
 					toast.error(ctx.error.message);
@@ -99,7 +100,14 @@ export default function ForgetPassword() {
 										)}
 									/>
 									<Button type="submit" className="w-full" disabled={pending}>
-										Send Reset Link
+										{pending ? (
+											<>
+												Send Reset Link
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											"Send Reset Link"
+										)}
 									</Button>
 								</div>
 							</form>

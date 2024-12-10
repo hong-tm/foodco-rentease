@@ -100,7 +100,10 @@ export function NavUser({
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => navigate("/change-password")}
+								disabled={pending}
+							>
 								<RectangleEllipsis />
 								Change Password
 							</DropdownMenuItem>

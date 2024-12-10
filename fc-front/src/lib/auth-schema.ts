@@ -35,7 +35,24 @@ export const resetPasswordFormSchema = z
 	.object({
 		password: z
 			.string()
-			.min(6, { message: "Password must be at least 6 characters long" })
+			.min(8, { message: "Password must be at least 8 characters long" })
+			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
+		confirmPassword: z.string(),
+	})
+	.refine((data) => data.password === data.confirmPassword, {
+		path: ["confirmPassword"],
+		message: "Passwords do not match",
+	});
+
+export const changePasswordFormSchema = z
+	.object({
+		currentPassword: z
+			.string()
+			.min(8, { message: "Password must be at least 8 characters long" })
+			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
+		password: z
+			.string()
+			.min(8, { message: "Password must be at least 8 characters long" })
 			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
 		confirmPassword: z.string(),
 	})

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
+import exp from "constants";
 
 const expensesSchema = z.object({
 	id: z.number().int().positive().min(1),
@@ -30,7 +31,7 @@ const fakeExpenses: Expense[] = [
 	},
 ];
 
-export const expensesRoute = new Hono();
+const expensesRoute = new Hono();
 
 expensesRoute.get("/", (c) => {
 	return c.json({ expenses: fakeExpenses });
@@ -45,11 +46,11 @@ expensesRoute.post("/", zValidator("json", createPostSchema), async (c) => {
 });
 
 expensesRoute.get("/total-spent", async (c) => {
-  const total = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-  return c.json({ total });
+	const total = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
+	return c.json({ total });
 });
 
-expensesRoute.get("/:id{[0-9]+}", (c) => {
+expensesRoute.get("/:id", (c) => {
 	const id = Number.parseInt(c.req.param("id"));
 	const expense = fakeExpenses.find((expense) => expense.id === id);
 
@@ -59,7 +60,7 @@ expensesRoute.get("/:id{[0-9]+}", (c) => {
 	return c.json({ expense });
 });
 
-expensesRoute.delete("/:id{[0-9]+}", (c) => {
+expensesRoute.delete("/:id", (c) => {
 	const id = Number.parseInt(c.req.param("id"));
 	const index = fakeExpenses.findIndex((expense) => expense.id === id);
 
@@ -70,18 +71,16 @@ expensesRoute.delete("/:id{[0-9]+}", (c) => {
 	return c.json({ message: "Expense deleted" });
 });
 
-expensesRoute.put(
-	"/:id{[0-9]+}",
-	zValidator("json", createPostSchema),
-	async (c) => {
-		const id = Number.parseInt(c.req.param("id"));
-		const index = fakeExpenses.findIndex((expense) => expense.id === id);
+expensesRoute.put("/:id", zValidator("json", createPostSchema), async (c) => {
+	const id = Number.parseInt(c.req.param("id"));
+	const index = fakeExpenses.findIndex((expense) => expense.id === id);
 
-		if (index === -1) {
-			return c.notFound();
-		}
-		const expense = await c.req.valid("json");
-		fakeExpenses[index] = { ...expense, id };
-		return c.json({ expense: fakeExpenses[index] });
+	if (index === -1) {
+		return c.notFound();
 	}
-);
+	const expense = await c.req.valid("json");
+	fakeExpenses[index] = { ...expense, id };
+	return c.json({ expense: fakeExpenses[index] });
+});
+
+export default expensesRoute;

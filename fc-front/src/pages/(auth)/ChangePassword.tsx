@@ -21,16 +21,17 @@ import {
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/passwod-input";
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { resetPasswordFormSchema } from "@/lib/auth-schema";
+import { changePasswordFormSchema } from "@/lib/auth-schema";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function ResetPassword() {
-	const form = useForm<z.infer<typeof resetPasswordFormSchema>>({
-		resolver: zodResolver(resetPasswordFormSchema),
+export default function ChangePassword() {
+	const form = useForm<z.infer<typeof changePasswordFormSchema>>({
+		resolver: zodResolver(changePasswordFormSchema),
 		defaultValues: {
+			currentPassword: "",
 			password: "",
 			confirmPassword: "",
 		},
@@ -39,10 +40,11 @@ export default function ResetPassword() {
 	const [pending, setPending] = useState(false);
 	const navigate = useNavigate();
 
-	async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
-		await authClient.resetPassword(
+	async function onSubmit(values: z.infer<typeof changePasswordFormSchema>) {
+		await authClient.changePassword(
 			{
 				newPassword: values.password,
+				currentPassword: values.currentPassword,
 			},
 			{
 				onRequest: () => {
@@ -79,6 +81,28 @@ export default function ResetPassword() {
 								className="space-y-8"
 							>
 								<div className="grid gap-4">
+									{/* Current Password Field */}
+									<FormField
+										control={form.control}
+										name="currentPassword"
+										render={({ field }) => (
+											<FormItem className="grid gap-2">
+												<FormLabel htmlFor="password">
+													Current Password
+												</FormLabel>
+												<FormControl>
+													<PasswordInput
+														id="currentPassword"
+														placeholder="******"
+														autoComplete="current-password"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
 									{/* New Password Field */}
 									<FormField
 										control={form.control}
