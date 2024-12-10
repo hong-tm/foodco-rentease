@@ -1,7 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { expensesRoute } from "./routes/expensesRoute.js";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { prettyJSON } from "hono/pretty-json";
 import { Sequelize } from "@sequelize/core";
@@ -9,6 +8,7 @@ import { SqliteDialect } from "@sequelize/sqlite3";
 import { auth } from "./lib/auth.js";
 import * as dotenv from "dotenv";
 import { cors } from "hono/cors";
+import expensesRoute from "./routes/expensesRoute.js";
 
 const app = new Hono<{
 	Variables: {
@@ -61,10 +61,6 @@ app.use("*", async (c, next) => {
 	return next();
 });
 
-app.on(["POST", "GET"], "/api/auth/*", (c) => {
-	return auth.handler(c.req.raw);
-});
-
 app.get("/session", async (c) => {
 	const session = c.get("session");
 	const user = c.get("user");
@@ -75,6 +71,11 @@ app.get("/session", async (c) => {
 		session,
 		user,
 	});
+});
+
+app.on(["POST", "GET"], "/api/auth/*", (c) => {
+	// const subPath = c.req.param("*");
+	return auth.handler(c.req.raw);
 });
 
 // Server static files

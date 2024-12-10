@@ -1,33 +1,32 @@
 import * as React from "react";
-import
-	{
-		TowerControl,
-		LifeBuoy,
-		Send,
-		ChartArea,
-		Command,
-		Users,
-		BadgeDollarSign,
-		BellElectric,
-		BookDown,
-		Scroll,
-	} from "lucide-react";
+import {
+	TowerControl,
+	LifeBuoy,
+	Send,
+	ChartArea,
+	Command,
+	Users,
+	BadgeDollarSign,
+	BellElectric,
+	BookDown,
+	Scroll,
+} from "lucide-react";
 
 import { NavMain } from "@/pages/dashboard/components/nav-main";
 import { NavSecondary } from "@/pages/dashboard/components/nav-secondary";
 import { NavUser } from "@/pages/dashboard/components/nav-user";
-import
-	{
-		Sidebar,
-		SidebarContent,
-		SidebarFooter,
-		SidebarHeader,
-		SidebarMenu,
-		SidebarMenuButton,
-		SidebarMenuItem,
-	} from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+} from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
 import { Link } from "react-router-dom";
+import { FeedbackForm } from "../../feedback/feedback-from";
 
 const data = {
 	user: {
@@ -130,7 +129,7 @@ const data = {
 		},
 		{
 			title: "Feedback",
-			url: "#",
+			url: "/feedback",
 			icon: Send,
 		},
 	],
@@ -155,8 +154,7 @@ const data = {
 
 export function AdminSidebar({
 	...props
-}: React.ComponentProps<typeof Sidebar>)
-{
+}: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar collapsible="icon" variant="inset" {...props}>
 			<SidebarHeader>

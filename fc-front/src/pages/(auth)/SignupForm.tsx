@@ -55,7 +55,7 @@ export default function RegisterPage() {
 				email,
 				password,
 				name,
-				callbackURL: "/email-verified",
+				// callbackURL: "/email-verified",
 			},
 			{
 				onRequest: () => {
@@ -63,7 +63,7 @@ export default function RegisterPage() {
 				},
 				onSuccess: () => {
 					form.reset();
-					toast.success(`Registration successful, ${name}!`);
+					toast.success(`Check Your Email: ${email}!`);
 					navigate("/");
 				},
 				onError: (ctx: ErrorContext) => {

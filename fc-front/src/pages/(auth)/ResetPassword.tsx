@@ -20,9 +20,12 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/passwod-input";
-import { useNavigate } from "react-router-dom";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { resetPasswordFormSchema } from "@/lib/auth-schema";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function ResetPassword() {
 	const form = useForm<z.infer<typeof resetPasswordFormSchema>>({
@@ -33,20 +36,30 @@ export default function ResetPassword() {
 		},
 	});
 
+	const [pending, setPending] = useState(false);
 	const navigate = useNavigate();
 
 	async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
-		try {
-			// Assuming an async reset password function
-			console.log(values);
-			toast.success(
-				"Password reset successful. You can now log in with your new password."
-			);
-			navigate("/", { replace: true });
-		} catch (error) {
-			console.error("Error resetting password", error);
-			toast.error("Failed to reset the password. Please try again.");
-		}
+		await authClient.resetPassword(
+			{
+				newPassword: values.password,
+			},
+			{
+				onRequest: () => {
+					setPending(true);
+				},
+				onSuccess: async () => {
+					form.reset();
+					toast.success("Your password has been reset. You can now sign in.");
+					setPending(false);
+					navigate("/");
+				},
+				onError: (ctx) => {
+					toast.error(ctx.error.message);
+					setPending(false);
+				},
+			}
+		);
 	}
 
 	return (
@@ -108,8 +121,15 @@ export default function ResetPassword() {
 										)}
 									/>
 
-									<Button type="submit" className="w-full">
-										Reset Password
+									<Button type="submit" className="w-full" disabled={pending}>
+										{pending ? (
+											<>
+												Reset Password
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											"Reset Password"
+										)}
 									</Button>
 								</div>
 							</form>

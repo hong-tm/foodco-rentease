@@ -78,7 +78,9 @@ export function AdminMain() {
 						</CardHeader>
 						{/* <CardContent>{isPending ? "..." : data.total}</CardContent> */}
 					</Card>
-					<Outlet />
+					<main>
+						<Outlet />
+					</main>
 				</div>
 			</SidebarInset>
 		</SidebarProvider>
