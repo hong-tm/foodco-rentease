@@ -56,6 +56,18 @@ export default function LoginPage() {
 	const [pendingGoogle, setPendingGoogle] = useState(false);
 	const [pendingGithub, setPendingGithub] = useState(false);
 
+	async function checkSession() {
+		const session = await authClient.getSession();
+
+		console.log(session);
+
+		if (session.data?.user) {
+			navigate("/dashboard", { replace: true });
+			return;
+		}
+	}
+	checkSession();
+
 	async function SignIn(values: z.infer<typeof signinFormSchema>) {
 		setPending(true);
 
