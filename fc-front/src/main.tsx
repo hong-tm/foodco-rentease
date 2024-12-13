@@ -5,10 +5,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import ForgetPassword from "./pages/(auth)/ForgetPassword.tsx";
 import ResetPassword from "./pages/(auth)/ResetPassword.tsx";
-import { AdminMain } from "./pages/dashboard/admin/admin-main.tsx";
+import { DashboardPage } from "./pages/dashboard/dashboard-layout.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import App from "./App.tsx";
-import { RentalMain } from "./pages/dashboard/rental/rental-main.tsx";
 import RegisterPage from "./pages/(auth)/SignupForm.tsx";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -37,28 +36,26 @@ const router = createBrowserRouter([
 		element: <ResetPassword />,
 	},
 	{
-		path: "/dashboard-admin",
-		element: <AdminMain />,
-	},
-	{
-		path: "/dashboard-rental",
-		element: <RentalMain />,
-	},
-	{
-		path: "/dashboard-admin/monthly-rent-overview",
-		element: <AdminMain />,
-	},
-	{
 		path: "/email-verified",
 		element: <EmailVerifiedPage />,
 	},
 	{
-		path: "/feedback",
-		element: <FeedbackForm />,
-	},
-	{
-		path: "/change-password",
-		element: <ChangePassword />,
+		path: "/dashboard",
+		element: <DashboardPage />,
+		children: [
+			{
+				path: "/dashboard/feedback",
+				element: <FeedbackForm />,
+			},
+			{
+				path: "/dashboard/change-password",
+				element: <ChangePassword />,
+			},
+			{
+				path: "/dashboard/monthly-rent-overview",
+				element: <DashboardPage />,
+			},
+		],
 	},
 ]);
 
@@ -66,7 +63,7 @@ createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-				<RouterProvider router={router} />
+				<RouterProvider router={router} future={{}} />
 			</ThemeProvider>
 		</QueryClientProvider>
 	</StrictMode>

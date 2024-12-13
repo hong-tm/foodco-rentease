@@ -34,6 +34,10 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { ErrorContext } from "@better-fetch/fetch";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
 
 export default function LoginPage() {
 	const form = useForm<z.infer<typeof signinFormSchema>>({
@@ -41,6 +45,8 @@ export default function LoginPage() {
 		defaultValues: {
 			email: "",
 			password: "",
+			rememberMe: false,
+			token: "",
 		},
 	});
 
@@ -51,12 +57,26 @@ export default function LoginPage() {
 	const [pendingGithub, setPendingGithub] = useState(false);
 
 	async function SignIn(values: z.infer<typeof signinFormSchema>) {
-		const { email, password } = values;
+		setPending(true);
+
+		// Verify Turnstile token
+		const { success, data } = await verifyTurnstileToken(values.token);
+
+		if (!success) {
+			console.log("Failed to verify Turnstile");
+			setPending(false);
+			return;
+		}
+
+		console.log("Turnstile verification successful:", data);
+
+		const { email, password, rememberMe } = values;
 
 		await authClient.signIn.email(
 			{
 				email,
 				password,
+				rememberMe,
 			},
 			{
 				onRequest: () => {
@@ -65,7 +85,7 @@ export default function LoginPage() {
 				onSuccess: () => {
 					form.reset();
 					toast.success(`Welcome, ${email}!`);
-					navigate("/dashboard-admin", { replace: true });
+					navigate("/dashboard", { replace: true });
 				},
 				onError: (ctx: ErrorContext) => {
 					toast.error(ctx.error.message ?? "An error occurred");
@@ -80,7 +100,7 @@ export default function LoginPage() {
 		await authClient.signIn.social(
 			{
 				provider: "google",
-				callbackURL: "/dashboard-admin",
+				callbackURL: "/dashboard",
 				errorCallbackURL: "/",
 			},
 			{
@@ -88,8 +108,8 @@ export default function LoginPage() {
 					setPendingGoogle(true);
 				},
 				onSuccess: async () => {
-					toast.success("Welcome, Google User!");
-					// navigate("/dashboard-admin", { replace: true });
+					// toast.success("Welcome, Google User!");
+					// navigate("/dashboard", { replace: true });
 				},
 				onError: (ctx: ErrorContext) => {
 					toast.error(ctx.error.message);
@@ -103,7 +123,7 @@ export default function LoginPage() {
 		await authClient.signIn.social(
 			{
 				provider: "github",
-				callbackURL: "/dashboard-admin",
+				callbackURL: "/dashboard",
 				errorCallbackURL: "/",
 			},
 			{
@@ -111,8 +131,7 @@ export default function LoginPage() {
 					setPendingGithub(true);
 				},
 				onSuccess: async () => {
-					toast.success("Welcome, Github User!");
-					// navigate("/dashboard-admin", { replace: true });
+					// toast.success("Welcome, Github User!");
 				},
 				onError: (ctx: ErrorContext) => {
 					toast.error(ctx.error.message);
@@ -129,7 +148,7 @@ export default function LoginPage() {
 	// 				setPendingGoogle(true);
 	// 			},
 	// 			onSuccess: () => {
-	// 				navigate("/dashboard-admin");
+	// 				navigate("/dashboard");
 	// 			},
 	// 			onError: (ctx: ErrorContext) => {
 	// 				toast.error(ctx.error.message);
@@ -207,6 +226,26 @@ export default function LoginPage() {
 											</FormItem>
 										)}
 									/>
+
+									<div className="flex items-center gap-2">
+										<Checkbox id="remember" />
+										<Label htmlFor="remember">Remember me</Label>
+									</div>
+
+									{/* Turnstile */}
+									<Turnstile
+										className="cf-turnstile"
+										siteKey="0x4AAAAAAA17oVW-tvHSVIXI"
+										onSuccess={(token) => {
+											// Update token field
+											form.setValue("token", token, { shouldValidate: true });
+										}}
+										onError={() => console.log("Turnstile error")}
+									/>
+
+									{/* Hidden input for token */}
+									<input type="hidden" {...form.register("token")} />
+
 									<Button type="submit" className="w-full" disabled={pending}>
 										{pending ? (
 											<>

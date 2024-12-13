@@ -14,6 +14,7 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
 		"@hono/zod-validator": "^0.4.1",
+		"@marsidev/react-turnstile": "^1.1.0",
 		"@sendgrid/mail": "^8.1.4",
 		"@sequelize/core": "^7.0.0-alpha.43",
 		"@sequelize/sqlite3": "^7.0.0-alpha.43",

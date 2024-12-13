@@ -117,6 +117,7 @@ export const FeedbackForm = () => {
 								placeholder="This is awesoooome"
 								className="min-h-32 w-full resize-none rounded-md border bg-transparent p-5 text-sm placeho</div>lder-neutral-400 focus:border-neutral-400 focus:outline-0 dark:border-neutral-800 focus:dark:border-white"
 							/>
+
 							<div className="flex h-fit w-full">
 								<Button
 									onClick={() =>

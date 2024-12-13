@@ -12,6 +12,7 @@ export const signupformSchema = z
 			.max(32, { message: "Password must be at most 32 characters long" })
 			.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
 		confirmPassword: z.string(),
+		token: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		path: ["confirmPassword"],
@@ -25,6 +26,8 @@ export const signinFormSchema = z.object({
 		.min(8, { message: "Password must be at least 8 characters long" })
 		.max(32, { message: "Password must be at most 32 characters long" })
 		.regex(/[a-zA-Z0-9]/, { message: "Password must be alphanumeric" }),
+	rememberMe: z.boolean(),
+	token: z.string(),
 });
 
 export const forgotPasswordFormSchema = z.object({
