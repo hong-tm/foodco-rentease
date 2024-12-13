@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 
 const data = {
 	user: {
@@ -154,6 +157,31 @@ const data = {
 export function UserSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
+	const [userName, setUserName] = useState("");
+	const [userRole, setUserRole] = useState("");
+
+	useEffect(() => {
+		async function checkSessionName() {
+			try {
+				const session = await authClient.getSession();
+
+				if (!session.data) {
+					console.log("You are not logged in");
+					return;
+				}
+
+				const name = session.data?.user?.name;
+				if (name) setUserName(name);
+
+				const role = session.data?.user?.role;
+				if (role) setUserRole(role);
+			} catch (err) {
+				toast.error("An error occurred: " + err);
+			}
+		}
+		checkSessionName();
+	}, []);
+
 	return (
 		<Sidebar collapsible="icon" variant="inset" {...props}>
 			<SidebarHeader>
@@ -165,8 +193,12 @@ export function UserSidebar({
 									<CookingPot className="size-4" />
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">Ming</span>
-									<span className="truncate text-xs">Rental</span>
+									<span className="truncate font-semibold">
+										{userName ? `${userName}` : "Loading user..."}
+									</span>
+									<span className="truncate text-xs">
+										{userRole ? `${userRole}` : "Loading role..."}
+									</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
