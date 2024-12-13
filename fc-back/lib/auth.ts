@@ -1,13 +1,13 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import Database from "better-sqlite3";
 import * as dotenv from "dotenv";
-import { admin, oneTap, openAPI, phoneNumber } from "better-auth/plugins";
+import { admin, oneTap, openAPI } from "better-auth/plugins";
 import { sendEmail } from "../action/email/email.js";
 dotenv.config();
 
 export const auth = betterAuth({
-	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-	secret: process.env.BETTER_AUTH_SECRET || undefined,
+	baseURL: process.env.BETTER_AUTH_URL as string,
+	secret: process.env.BETTER_AUTH_SECRET as string,
 	database: new Database("./database.sqlite"),
 
 	user: {

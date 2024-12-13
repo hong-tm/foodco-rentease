@@ -9,6 +9,7 @@ import { auth } from "./lib/auth.js";
 import * as dotenv from "dotenv";
 import { cors } from "hono/cors";
 import expensesRoute from "./routes/expensesRoute.js";
+import type { TurnstileServerValidationResponse } from "@marsidev/react-turnstile";
 
 const app = new Hono<{
 	Variables: {
@@ -18,6 +19,9 @@ const app = new Hono<{
 }>();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+const verifyEndpoint =
+	"https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const secret = process.env.TURNSTILE_SECRET_KEY as string;
 
 app.get("*", prettyJSON());
 
@@ -71,6 +75,52 @@ app.get("/session", async (c) => {
 		session,
 		user,
 	});
+});
+
+app.post("/api/auth/verify", async (c) => {
+	try {
+		// Parse the request body (as JSON)
+		const { token } = await c.req.json();
+
+		console.log("Token from form:", token);
+
+		if (!token) {
+			return c.json({ success: false, error: "Token is required" }, 400);
+		}
+
+		// Perform the Turnstile validation
+		const response = await fetch(verifyEndpoint, {
+			method: "POST",
+			body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(
+				token
+			)}`,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+			},
+		});
+
+		const data = (await response.json()) as TurnstileServerValidationResponse;
+
+		// Check if the validation was successful
+		if (!data.success) {
+			const errorResponse = {
+				success: false,
+				message: "Verification failed.",
+			};
+			return c.json(errorResponse, 400);
+		}
+
+		// Return the successful validation response
+		const successResponse = {
+			success: true,
+			message: "Verification successful!",
+			data,
+		};
+		return c.json(successResponse, 200);
+	} catch (error) {
+		console.error("Verification error:", error);
+		return c.json({ success: false, error: "Internal server error" }, 500);
+	}
 });
 
 app.on(["POST", "GET"], "/api/auth/*", (c) => {

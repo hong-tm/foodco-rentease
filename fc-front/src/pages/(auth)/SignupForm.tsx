@@ -31,6 +31,8 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ErrorContext } from "@better-fetch/fetch";
+import { Turnstile } from "@marsidev/react-turnstile";
+import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
 
 export default function RegisterPage() {
 	const form = useForm<z.infer<typeof signupformSchema>>({
@@ -40,6 +42,7 @@ export default function RegisterPage() {
 			email: "",
 			password: "",
 			confirmPassword: "",
+			token: "",
 		},
 	});
 
@@ -48,6 +51,19 @@ export default function RegisterPage() {
 	const [pending, setPending] = useState(false);
 
 	async function onSubmit(values: z.infer<typeof signupformSchema>) {
+		// Verify Turnstile token
+		setPending(true);
+
+		const { success, data } = await verifyTurnstileToken(values.token);
+
+		if (!success) {
+			console.log("Failed to verify Turnstile");
+			setPending(false);
+			return;
+		}
+
+		console.log("Turnstile verification successful:", data);
+
 		const { name, email, password } = values;
 
 		await authClient.signUp.email(
@@ -55,7 +71,6 @@ export default function RegisterPage() {
 				email,
 				password,
 				name,
-				// callbackURL: "/email-verified",
 			},
 			{
 				onRequest: () => {
@@ -203,6 +218,20 @@ export default function RegisterPage() {
 											</FormItem>
 										)}
 									/>
+
+									{/* Turnstile */}
+									<Turnstile
+										className="cf-turnstile"
+										siteKey="0x4AAAAAAA17oVW-tvHSVIXI"
+										onSuccess={(token) => {
+											// Update token field
+											form.setValue("token", token, { shouldValidate: true });
+										}}
+										onError={() => console.log("Turnstile error")}
+									/>
+
+									{/* Hidden input for token */}
+									<input type="hidden" {...form.register("token")} />
 
 									<Button type="submit" className="w-full" disabled={pending}>
 										{pending ? (

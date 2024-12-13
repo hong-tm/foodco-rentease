@@ -1,9 +1,10 @@
 import { createAuthClient } from "better-auth/react";
 // import { oneTapClient } from "better-auth/client/plugins";
 import { adminClient } from "better-auth/client/plugins";
+import config from "@/config/config";
 
 export const authClient = createAuthClient({
-	baseURL: "http://localhost:3000",
+	baseURL: config.apiUrl,
 	plugins: [
 		adminClient(),
 		// oneTapClient({

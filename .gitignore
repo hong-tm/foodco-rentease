@@ -73,3 +73,4 @@ fc-back/data
 fc-back/database.sqlite
 fc-back/better-auth_migrations/*
 fc-back/webpage
+fc-back/webpage/*
