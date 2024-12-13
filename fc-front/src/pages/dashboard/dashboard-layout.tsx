@@ -1,30 +1,14 @@
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-
 import { Separator } from "@/components/ui/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AdminSidebar } from "./admin-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
-import {
-	Card,
-	// CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-
 // import { useQuery } from "@tanstack/react-query";
 import { Outlet } from "react-router-dom";
+import { AdminSidebar } from "./components/admin-sidebar";
+import Breadcrumbs from "./components/breadcrumbs";
 // import { api } from "@/lib/api";
 
 // async function getTotalSpent() {
@@ -36,7 +20,7 @@ import { Outlet } from "react-router-dom";
 // 	return data;
 // }
 
-export function AdminMain() {
+export function DashboardPage() {
 	// const { isPending, error, data } = useQuery({
 	// 	queryKey: ["get-total-spend"],
 	// 	queryFn: getTotalSpent,
@@ -52,36 +36,15 @@ export function AdminMain() {
 					<div className="flex items-center gap-2 px-4">
 						<SidebarTrigger className="-ml-1" />
 						<Separator orientation="vertical" className="mr-2 h-4" />
-						<Breadcrumb>
-							<BreadcrumbList>
-								<BreadcrumbItem className="hidden md:block">
-									<BreadcrumbLink>Dashboard</BreadcrumbLink>
-								</BreadcrumbItem>
-								<BreadcrumbSeparator className="hidden md:block" />
-								<BreadcrumbItem>
-									<BreadcrumbPage>Data Fetching</BreadcrumbPage>
-								</BreadcrumbItem>
-							</BreadcrumbList>
-						</Breadcrumb>
+						<Breadcrumbs />
 					</div>
 					<div className="px-4">
 						<ModeToggle />
 					</div>
 				</header>
-				<div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-					<Card className="w-[350px]">
-						<CardHeader>
-							<CardTitle>Create project</CardTitle>
-							<CardDescription>
-								Deploy your new project in one-click.
-							</CardDescription>
-						</CardHeader>
-						{/* <CardContent>{isPending ? "..." : data.total}</CardContent> */}
-					</Card>
-					<main>
-						<Outlet />
-					</main>
-				</div>
+				<main className="w-full h-full">
+					<Outlet />
+				</main>
 			</SidebarInset>
 		</SidebarProvider>
 	);

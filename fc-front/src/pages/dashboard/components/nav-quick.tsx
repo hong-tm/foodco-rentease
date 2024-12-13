@@ -1,24 +1,22 @@
 import { ChevronRight, type LucideIcon } from "lucide-react";
 
-import
-	{
-		Collapsible,
-		CollapsibleContent,
-		CollapsibleTrigger,
-	} from "@/components/ui/collapsible";
-import
-	{
-		SidebarGroup,
-		SidebarGroupLabel,
-		SidebarMenu,
-		SidebarMenuAction,
-		SidebarMenuButton,
-		SidebarMenuItem,
-		SidebarMenuSub,
-		SidebarMenuSubButton,
-		SidebarMenuSubItem,
-	} from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+	SidebarGroup,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuAction,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	SidebarMenuSub,
+	SidebarMenuSubButton,
+	SidebarMenuSubItem,
+} from "@/components/ui/sidebar";
+import { NavLink } from "react-router-dom";
 
 export function NavQuick({
 	items,
@@ -33,8 +31,7 @@ export function NavQuick({
 			url: string;
 		}[];
 	}[];
-})
-{
+}) {
 	return (
 		<SidebarGroup>
 			<SidebarGroupLabel>Quick Access</SidebarGroupLabel>
@@ -43,10 +40,10 @@ export function NavQuick({
 					<Collapsible key={item.title} asChild defaultOpen={item.isActive}>
 						<SidebarMenuItem>
 							<SidebarMenuButton asChild tooltip={item.title}>
-								<Link to={item.url}>
+								<NavLink to={item.url}>
 									<item.icon />
 									<span>{item.title}</span>
-								</Link>
+								</NavLink>
 							</SidebarMenuButton>
 							{item.items?.length ? (
 								<>
@@ -61,9 +58,9 @@ export function NavQuick({
 											{item.items?.map((subItem) => (
 												<SidebarMenuSubItem key={subItem.title}>
 													<SidebarMenuSubButton asChild>
-														<Link to={subItem.url}>
+														<NavLink to={subItem.url}>
 															<span>{subItem.title}</span>
-														</Link>
+														</NavLink>
 													</SidebarMenuSubButton>
 												</SidebarMenuSubItem>
 											))}

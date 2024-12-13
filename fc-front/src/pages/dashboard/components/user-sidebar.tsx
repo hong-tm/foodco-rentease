@@ -1,6 +1,5 @@
 import * as React from "react";
 import {
-	TowerControl,
 	LifeBuoy,
 	Send,
 	ChartArea,
@@ -10,6 +9,7 @@ import {
 	BellElectric,
 	BookDown,
 	Scroll,
+	CookingPot,
 } from "lucide-react";
 
 import { NavMain } from "@/pages/dashboard/components/nav-main";
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
 import { Link } from "react-router-dom";
-import { FeedbackForm } from "../../feedback/feedback-from";
 
 const data = {
 	user: {
@@ -129,7 +128,7 @@ const data = {
 		},
 		{
 			title: "Feedback",
-			url: "/feedback",
+			url: "#",
 			icon: Send,
 		},
 	],
@@ -152,7 +151,7 @@ const data = {
 	],
 };
 
-export function AdminSidebar({
+export function UserSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
 	return (
@@ -163,13 +162,11 @@ export function AdminSidebar({
 						<SidebarMenuButton size="lg" asChild>
 							<Link to="#">
 								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-									<TowerControl className="size-4" />
+									<CookingPot className="size-4" />
 								</div>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">
-										FoodCo-RentEase
-									</span>
-									<span className="truncate text-xs">Enterprise</span>
+									<span className="truncate font-semibold">Ming</span>
+									<span className="truncate text-xs">Rental</span>
 								</div>
 							</Link>
 						</SidebarMenuButton>
