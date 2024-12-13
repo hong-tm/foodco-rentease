@@ -1,6 +1,5 @@
 import * as React from "react";
-import
-{
+import {
 	LifeBuoy,
 	Send,
 	ChartArea,
@@ -16,8 +15,7 @@ import
 import { NavMain } from "@/pages/dashboard/components/nav-main";
 import { NavSecondary } from "@/pages/dashboard/components/nav-secondary";
 import { NavUser } from "@/pages/dashboard/components/nav-user";
-import
-{
+import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
@@ -27,7 +25,7 @@ import
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const data = {
 	user: {
@@ -155,15 +153,14 @@ const data = {
 
 export function RentalSidebar({
 	...props
-}: React.ComponentProps<typeof Sidebar>)
-{
+}: React.ComponentProps<typeof Sidebar>) {
 	return (
 		<Sidebar collapsible="icon" variant="inset" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton size="lg" asChild>
-							<Link to="#">
+							<NavLink to="#">
 								<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
 									<CookingPot className="size-4" />
 								</div>
@@ -171,7 +168,7 @@ export function RentalSidebar({
 									<span className="truncate font-semibold">Ming</span>
 									<span className="truncate text-xs">Rental</span>
 								</div>
-							</Link>
+							</NavLink>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
