@@ -223,6 +223,9 @@ export default function RegisterPage() {
 									<Turnstile
 										className="cf-turnstile"
 										siteKey="0x4AAAAAAA17oVW-tvHSVIXI"
+										options={{
+											theme: "auto",
+										}}
 										onSuccess={(token) => {
 											// Update token field
 											form.setValue("token", token, { shouldValidate: true });

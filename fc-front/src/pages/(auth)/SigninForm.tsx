@@ -59,8 +59,6 @@ export default function LoginPage() {
 	async function checkSession() {
 		const session = await authClient.getSession();
 
-		console.log(session);
-
 		if (session.data?.user) {
 			navigate("/dashboard", { replace: true });
 			return;
@@ -248,6 +246,9 @@ export default function LoginPage() {
 									<Turnstile
 										className="cf-turnstile"
 										siteKey="0x4AAAAAAA17oVW-tvHSVIXI"
+										options={{
+											theme: "auto",
+										}}
 										onSuccess={(token) => {
 											// Update token field
 											form.setValue("token", token, { shouldValidate: true });
