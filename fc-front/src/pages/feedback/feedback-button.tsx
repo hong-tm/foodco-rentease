@@ -7,9 +7,42 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
 import { FeedbackForm } from "./feedback-from";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function FeedbackButton() {
+	const isMobile = useIsMobile();
+
+	if (isMobile) {
+		return (
+			<Drawer>
+				<DrawerTrigger asChild>
+					<Button
+						variant="outline"
+						className="w-full flex items-center justify-center gap-2"
+					>
+						Feedback without Account
+					</Button>
+				</DrawerTrigger>
+				<DrawerContent>
+					<DrawerHeader>
+						<DrawerTitle>Feedback</DrawerTitle>
+						<DrawerDescription>Like our service?</DrawerDescription>
+					</DrawerHeader>
+					<FeedbackForm />
+				</DrawerContent>
+			</Drawer>
+		);
+	}
+
 	return (
 		<Dialog>
 			<DialogTrigger asChild>

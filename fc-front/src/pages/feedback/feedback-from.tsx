@@ -105,7 +105,7 @@ export const FeedbackForm = () => {
 			<motion.div
 				aria-hidden={happiness ? false : true}
 				initial={{ height: 0, translateY: 15 }}
-				className=""
+				className="px-4 w-full md:px-0"
 				transition={{ ease: "easeInOut", duration: 0.3 }}
 				animate={happiness ? { height: "220px", width: "100%" } : { height: 0 }}
 			>
