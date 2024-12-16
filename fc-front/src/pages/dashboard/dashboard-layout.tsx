@@ -12,6 +12,8 @@ import { authClient } from "@/lib/auth-client";
 import { Suspense, useEffect } from "react";
 import { toast } from "sonner";
 import UserDashboardSidebar from "./components/user-dashboard-sidebar";
+import { DashboardSkeleton } from "./components/dashboard-skelecton";
+import { ErrorBoundary } from "react-error-boundary";
 // import { api } from "@/lib/api";
 
 // async function getTotalSpent() {
@@ -61,9 +63,11 @@ export function DashboardPage() {
 					</div>
 				</header>
 				<main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
-					<Suspense fallback={<h1>Loading...</h1>}>
-						<Outlet />
-					</Suspense>
+					<ErrorBoundary fallback={<div>Something went wrong ...</div>}>
+						<Suspense fallback={<DashboardSkeleton />}>
+							<Outlet />
+						</Suspense>
+					</ErrorBoundary>
 				</main>
 			</SidebarInset>
 		</SidebarProvider>
