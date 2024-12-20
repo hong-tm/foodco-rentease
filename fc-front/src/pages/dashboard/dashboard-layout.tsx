@@ -39,7 +39,7 @@ export function DashboardPage() {
 		async function checkSession() {
 			const session = await authClient.getSession();
 
-			// console.log("session", session);
+			console.log("session", session);
 
 			if (!session.data) {
 				navigate("/");
@@ -63,7 +63,13 @@ export function DashboardPage() {
 					</div>
 				</header>
 				<main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
-					<ErrorBoundary fallback={<div>Something went wrong ...</div>}>
+					<ErrorBoundary
+						fallback={
+							<div className="p-2">
+								Something went wrong, please refresh the page ...
+							</div>
+						}
+					>
 						<Suspense fallback={<DashboardSkeleton />}>
 							<Outlet />
 						</Suspense>

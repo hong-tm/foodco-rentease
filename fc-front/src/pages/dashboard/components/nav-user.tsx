@@ -2,7 +2,6 @@ import {
 	BadgeCheck,
 	Bell,
 	ChevronsUpDown,
-	CreditCard,
 	Loader2,
 	LogOut,
 	RectangleEllipsis,
@@ -145,13 +144,11 @@ export function NavUser({
 
 							<DropdownMenuSeparator />
 							<DropdownMenuGroup>
-								<DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => navigate("/dashboard/account")}
+								>
 									<BadgeCheck />
 									Account
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<CreditCard />
-									Billing
 								</DropdownMenuItem>
 								<DropdownMenuItem>
 									<Bell />

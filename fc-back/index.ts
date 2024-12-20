@@ -4,12 +4,24 @@ import { logger } from "hono/logger";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { prettyJSON } from "hono/pretty-json";
 import { Sequelize } from "@sequelize/core";
-import { SqliteDialect } from "@sequelize/sqlite3";
 import { auth } from "./lib/auth.js";
 import * as dotenv from "dotenv";
 import { cors } from "hono/cors";
 import expensesRoute from "./routes/expensesRoute.js";
 import type { TurnstileServerValidationResponse } from "@marsidev/react-turnstile";
+// import { SqliteDialect } from "@sequelize/sqlite3";
+import { PostgresDialect } from "@sequelize/postgres";
+import {
+	user,
+	account,
+	Feedback,
+	Notification,
+	Payment,
+	session,
+	Stall,
+	verification,
+	UtilitiesWater,
+} from "./db/userModel.js";
 
 const app = new Hono<{
 	Variables: {
@@ -139,10 +151,37 @@ app.get("/", (c) => {
 
 //sequalize
 const sequelize = new Sequelize({
-	dialect: SqliteDialect,
-	storage: "./database.sqlite",
+	// dialect: SqliteDialect,
+	// storage: "./database.sqlite",
+	dialect: PostgresDialect,
+	database: process.env.PG_DATABASE,
+	user: process.env.PG_USER,
+	password: process.env.PG_PASSWORD,
+	host: "localhost",
+	port: process.env.PG_PORT as number | undefined,
+	clientMinMessages: "notice",
 	logging: false,
+	models: [
+		user,
+		account,
+		session,
+		verification,
+		Stall,
+		Feedback,
+		Payment,
+		UtilitiesWater,
+		Notification,
+	],
 });
+
+async function syncModels(log = true) {
+	await sequelize.sync({});
+	if (log) {
+		console.log("All models were synchronized successfully.");
+	}
+}
+
+syncModels();
 
 try {
 	await sequelize.authenticate();
@@ -155,8 +194,6 @@ try {
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
 dotenv.config({ path: "./.env" });
-// console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-// console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
 
 export const apiRoutes = app.basePath("/api").route("/expenses", expensesRoute);
 

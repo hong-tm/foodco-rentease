@@ -64,95 +64,102 @@ export default function ChangePassword() {
 	}
 
 	return (
-		<div className="flex flex-col h-full w-full items-center justify-center px-4">
-			<Card className="mx-auto max-w-sm items-center justify-center">
-				<CardHeader>
-					<CardTitle className="text-2xl">Change Password</CardTitle>
-					<CardDescription>
-						Enter your new password to change your password.
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-							<div className="grid gap-4">
-								{/* Current Password Field */}
-								<FormField
-									control={form.control}
-									name="currentPassword"
-									render={({ field }) => (
-										<FormItem className="grid gap-2">
-											<FormLabel htmlFor="password">Current Password</FormLabel>
-											<FormControl>
-												<PasswordInput
-													id="currentPassword"
-													placeholder="******"
-													autoComplete="current-password"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+		<div className="flex flex-col h-full w-full items-center justify-center px-4 rounded-xl relative">
+			<div className="w-full md:w-3/4 lg:w-2/3 xl:w-1/2">
+				<Card className="mx-auto items-center justify-center border-none shadow-none">
+					<CardHeader>
+						<CardTitle className="text-2xl">Change Account Password</CardTitle>
+						<CardDescription>
+							Enter your new password to change your password.
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<Form {...form}>
+							<form
+								onSubmit={form.handleSubmit(onSubmit)}
+								className="space-y-8"
+							>
+								<div className="grid gap-4">
+									{/* Current Password Field */}
+									<FormField
+										control={form.control}
+										name="currentPassword"
+										render={({ field }) => (
+											<FormItem className="grid gap-2">
+												<FormLabel htmlFor="password">
+													Current Password
+												</FormLabel>
+												<FormControl>
+													<PasswordInput
+														id="currentPassword"
+														placeholder="******"
+														autoComplete="current-password"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
-								{/* New Password Field */}
-								<FormField
-									control={form.control}
-									name="password"
-									render={({ field }) => (
-										<FormItem className="grid gap-2">
-											<FormLabel htmlFor="password">New Password</FormLabel>
-											<FormControl>
-												<PasswordInput
-													id="password"
-													placeholder="******"
-													autoComplete="new-password"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+									{/* New Password Field */}
+									<FormField
+										control={form.control}
+										name="password"
+										render={({ field }) => (
+											<FormItem className="grid gap-2">
+												<FormLabel htmlFor="password">New Password</FormLabel>
+												<FormControl>
+													<PasswordInput
+														id="password"
+														placeholder="******"
+														autoComplete="new-password"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
-								{/* Confirm Password Field */}
-								<FormField
-									control={form.control}
-									name="confirmPassword"
-									render={({ field }) => (
-										<FormItem className="grid gap-2">
-											<FormLabel htmlFor="confirmPassword">
-												Confirm Password
-											</FormLabel>
-											<FormControl>
-												<PasswordInput
-													id="confirmPassword"
-													placeholder="******"
-													autoComplete="new-password"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
+									{/* Confirm Password Field */}
+									<FormField
+										control={form.control}
+										name="confirmPassword"
+										render={({ field }) => (
+											<FormItem className="grid gap-2">
+												<FormLabel htmlFor="confirmPassword">
+													Confirm Password
+												</FormLabel>
+												<FormControl>
+													<PasswordInput
+														id="confirmPassword"
+														placeholder="******"
+														autoComplete="new-password"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 
-								<Button type="submit" className="w-full" disabled={pending}>
-									{pending ? (
-										<>
-											Reset Password
-											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-										</>
-									) : (
-										"Reset Password"
-									)}
-								</Button>
-							</div>
-						</form>
-					</Form>
-				</CardContent>
-			</Card>
+									<Button type="submit" className="w-full" disabled={pending}>
+										{pending ? (
+											<>
+												Reset Password
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											"Reset Password"
+										)}
+									</Button>
+								</div>
+							</form>
+						</Form>
+					</CardContent>
+				</Card>
+			</div>
 		</div>
 	);
 }

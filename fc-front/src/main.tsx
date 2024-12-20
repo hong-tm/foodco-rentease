@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -12,8 +12,19 @@ import RegisterPage from "./pages/(auth)/SignupForm.tsx";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import EmailVerifiedPage from "./pages/(auth)/emailVerified.tsx";
-import { FeedbackForm } from "./pages/feedback/feedback-from.tsx";
-import ChangePassword from "./pages/(auth)/ChangePassword.tsx";
+import UserProfilePage from "./pages/(auth)/UserProfilePage.tsx";
+
+const FeedbackPage = lazy(() =>
+	import("./pages/feedback/feedbackpage.tsx").then((module) => ({
+		default: module.FeedbackPage,
+	}))
+);
+
+const ChangePassword = lazy(() =>
+	import("./pages/(auth)/ChangePassword.tsx").then((module) => ({
+		default: module.default,
+	}))
+);
 
 const queryClient = new QueryClient();
 
@@ -46,7 +57,7 @@ const router = createBrowserRouter(
 			children: [
 				{
 					path: "/dashboard/feedback",
-					element: <FeedbackForm />,
+					element: <FeedbackPage />,
 				},
 				{
 					path: "/dashboard/change-password",
@@ -55,6 +66,10 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/monthly-rent-overview",
 					element: <DashboardPage />,
+				},
+				{
+					path: "/dashboard/account",
+					element: <UserProfilePage />,
 				},
 			],
 		},

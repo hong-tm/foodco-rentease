@@ -29,7 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
 import { signinFormSchema } from "@/lib/auth-schema";
-import { FeedbackButton } from "../feedback/feedback-button";
+import { FeedbackButton } from "../feedback/components/feedback-button";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
