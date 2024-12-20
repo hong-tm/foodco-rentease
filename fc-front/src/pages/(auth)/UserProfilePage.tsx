@@ -10,6 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import UpdateProfileButton from "../dashboard/components/update-profile-button";
 
 export default function UserProfilePage() {
 	const [userName, setUserName] = useState("");
@@ -83,6 +84,10 @@ export default function UserProfilePage() {
 			.join(""); // Combine them
 		return initials.slice(0, 2); // Take the first two letters
 	};
+
+	const handleNameUpdate = (newName: string) => {
+		setUserName(newName); // Dynamically update the UI without reloading
+	};
 	return (
 		<div className="flex justify-center items-center h-full">
 			<Card className="p-6 space-y-6 md:w-3/4 lg:w-2/3 xl:w-1/2 border-none shadow-none">
@@ -117,8 +122,11 @@ export default function UserProfilePage() {
 					</ul>
 				</CardContent>
 
-				<CardFooter className="w-full text-center items-center justify-center">
-					<p className="text-sm text-neutral-400">End of Profile</p>
+				<CardFooter className="flex flex-col w-full text-center items-center justify-center gap-2">
+					<div className="flex gap-8">
+						<UpdateProfileButton onUpdate={handleNameUpdate} />
+					</div>
+					<p className="text-sm text-neutral-400 mt-3">End of Profile</p>
 				</CardFooter>
 			</Card>
 		</div>
