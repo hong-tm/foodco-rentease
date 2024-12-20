@@ -63,3 +63,10 @@ export const changePasswordFormSchema = z
 		path: ["confirmPassword"],
 		message: "Passwords do not match",
 	});
+
+export const updateUsernameFormSchema = z.object({
+	name: z
+		.string()
+		.min(2, { message: "Name must be at least 2 characters long" })
+		.max(32, { message: "Name must be at most 32 characters long" }),
+});

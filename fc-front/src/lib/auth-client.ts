@@ -11,6 +11,7 @@ export const authClient = createAuthClient({
 			user: {
 				phone: {
 					type: "string",
+					required: false,
 				},
 			},
 		}),
