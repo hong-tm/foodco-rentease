@@ -1,20 +1,31 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
-import Database from "better-sqlite3";
 import * as dotenv from "dotenv";
 import { admin, oneTap, openAPI } from "better-auth/plugins";
 import { sendEmail } from "../action/email/email.js";
+import pg from "pg";
+
 dotenv.config();
+const { Pool } = pg;
 
 export const auth = betterAuth({
 	baseURL: process.env.BETTER_AUTH_URL as string,
 	secret: process.env.BETTER_AUTH_SECRET as string,
-	database: new Database("./database.sqlite"),
+	// database: new Database("./database.sqlite"),
+	database: new Pool({
+		database: process.env.PG_DATABASE as string,
+		host: "localhost",
+		user: process.env.PG_USER as string,
+		password: process.env.PG_PASSWORD as string,
+		port: process.env.PG_PORT as number | undefined,
+		max: 10,
+	}),
 
 	user: {
 		additionalFields: {
 			phone: {
 				type: "string",
 				required: false,
+				defaultValue: "null",
 			},
 		},
 	},

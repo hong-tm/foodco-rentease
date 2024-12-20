@@ -17,6 +17,7 @@ export default function Breadcrumbs() {
 		dashboard: "Dashboard",
 		"change-password": "Change Password",
 		feedback: "Feedback",
+		account: "Account",
 	};
 
 	let currentLink = "";

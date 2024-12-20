@@ -15,8 +15,8 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { FeedbackForm } from "./feedback-from";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { FeedbackForm } from "./feedback-from";
 
 export function FeedbackButton() {
 	const isMobile = useIsMobile();
