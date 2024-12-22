@@ -20,7 +20,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/passwod-input";
-import { changePasswordFormSchema } from "@/lib/auth-schema";
+import { changePasswordFormSchema } from "@/lib/zod";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";

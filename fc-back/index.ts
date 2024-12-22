@@ -22,6 +22,7 @@ import {
 	verification,
 	UtilitiesWater,
 } from "./db/userModel.js";
+import feedbackRoute from "./routes/feedbackRoutes.js";
 
 const app = new Hono<{
 	Variables: {
@@ -140,6 +141,11 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => {
 	return auth.handler(c.req.raw);
 });
 
+export const apiRoutes = app
+	.basePath("/api")
+	.route("/expenses", expensesRoute)
+	.route("/feedbacks", feedbackRoute);
+
 // Server static files
 app.get("*", serveStatic({ root: "./webpage" }));
 
@@ -195,11 +201,9 @@ const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
 dotenv.config({ path: "./.env" });
 
-export const apiRoutes = app.basePath("/api").route("/expenses", expensesRoute);
-
-export type ApiRoutes = typeof apiRoutes;
-
 serve({
 	fetch: app.fetch,
 	port,
 });
+
+export type ApiRoutes = typeof apiRoutes;

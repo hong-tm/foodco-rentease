@@ -271,13 +271,7 @@ export default function UserDashboardSidebar({
 					],
 				},
 			],
-			navSecondary: [
-				{
-					title: "Feedback",
-					url: "/dashboard/feedback",
-					icon: Send,
-				},
-			],
+			navSecondary: [],
 			navQuick: [
 				{
 					title: "Payments",
@@ -335,13 +329,7 @@ export default function UserDashboardSidebar({
 					],
 				},
 			],
-			navSecondary: [
-				{
-					title: "Feedback",
-					url: "/dashboard/feedback",
-					icon: Send,
-				},
-			],
+			navSecondary: [],
 			navQuick: [
 				{
 					title: "Apply Stall",

@@ -37,6 +37,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export function NavUser({
 	user,
@@ -52,6 +53,7 @@ export function NavUser({
 	const navigate = useNavigate();
 
 	const [pending, setPending] = useState(false);
+	const [dialogOpen, setDialogOpen] = useState(false);
 
 	async function handlerSignOut() {
 		try {
@@ -79,11 +81,13 @@ export function NavUser({
 		return initials.slice(0, 2); // Take the first two letters
 	};
 
+	const isMobileSidebar = useIsMobile();
+
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
-				<AlertDialog>
-					<DropdownMenu modal={false}>
+				<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+					<DropdownMenu {...(!isMobileSidebar ? { modal: false } : {})}>
 						<DropdownMenuTrigger asChild>
 							<SidebarMenuButton
 								size="lg"
@@ -180,7 +184,10 @@ export function NavUser({
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel onClick={() => setDialogOpen(false)}>
+								Cancel
+							</AlertDialogCancel>
+
 							<AlertDialogAction onClick={handlerSignOut} disabled={pending}>
 								{pending ? (
 									<>
