@@ -51,7 +51,7 @@ export function FeedbackButton() {
 	}
 
 	return (
-		<Dialog open={isOpen} onOpenChange={setIsOpen} modal={false}>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
 				<Button
 					variant="outline"

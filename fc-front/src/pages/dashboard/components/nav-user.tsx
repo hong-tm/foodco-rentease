@@ -37,7 +37,6 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export function NavUser({
 	user,
@@ -81,13 +80,11 @@ export function NavUser({
 		return initials.slice(0, 2); // Take the first two letters
 	};
 
-	const isMobileSidebar = useIsMobile();
-
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
 				<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
-					<DropdownMenu {...(!isMobileSidebar ? { modal: false } : {})}>
+					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<SidebarMenuButton
 								size="lg"

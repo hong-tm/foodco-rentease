@@ -1,6 +1,6 @@
 import { hc } from "hono/client";
 import type { ApiRoutes } from "@server/index";
 
-const client = hc("/") as unknown as ApiRoutes;
+const client = hc<ApiRoutes>("/");
 
 export const api = client;

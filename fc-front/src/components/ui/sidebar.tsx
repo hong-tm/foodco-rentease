@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import {
 	Sheet,
 	SheetContent,
-	SheetDescription,
+	SheetHeader,
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,6 +21,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -198,8 +199,6 @@ const Sidebar = React.forwardRef<
 		if (isMobile) {
 			return (
 				<Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-					<SheetTitle></SheetTitle>
-					<SheetDescription></SheetDescription>
 					<SheetContent
 						data-sidebar="sidebar"
 						data-mobile="true"
@@ -211,6 +210,12 @@ const Sidebar = React.forwardRef<
 						}
 						side={side}
 					>
+						<VisuallyHidden>
+							<SheetHeader>
+								<SheetTitle></SheetTitle>
+							</SheetHeader>
+						</VisuallyHidden>
+
 						<div className="flex h-full w-full flex-col">{children}</div>
 					</SheetContent>
 				</Sheet>
