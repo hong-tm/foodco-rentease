@@ -26,7 +26,7 @@ import { PasswordInput } from "@/components/ui/passwod-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
-import { signupformSchema } from "@/lib/auth-schema";
+import { signupformSchema } from "@/lib/zod";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";

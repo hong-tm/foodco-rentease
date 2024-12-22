@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { forgotPasswordFormSchema } from "@/lib/auth-schema";
+import { forgotPasswordFormSchema } from "@/lib/zod";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";

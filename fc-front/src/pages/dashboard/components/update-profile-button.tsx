@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { updateUsernameFormSchema } from "@/lib/auth-schema";
+import { updateUsernameFormSchema } from "@/lib/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

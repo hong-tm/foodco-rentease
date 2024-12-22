@@ -70,3 +70,22 @@ export const updateUsernameFormSchema = z.object({
 		.min(2, { message: "Name must be at least 2 characters long" })
 		.max(32, { message: "Name must be at most 32 characters long" }),
 });
+
+export const feedbackFormSchema = z.object({
+	happiness: z
+		.number({ message: "Must choose a happiness" })
+		.int()
+		.positive({ message: "Must choose a happiness" })
+		.min(1)
+		.max(4, { message: "This is not a valid happiness" }),
+	stall: z
+		.number()
+		.int()
+		.positive({ message: "Must choose a stall number" })
+		.min(1, { message: "Must choose a stall number" })
+		.max(20),
+	feedbackContent: z
+		.string()
+		.min(3, { message: "Must contain at least 3 character(s)" })
+		.max(255),
+});
