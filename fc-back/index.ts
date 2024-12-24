@@ -7,7 +7,7 @@ import { Sequelize } from "@sequelize/core";
 import { auth } from "./lib/auth.js";
 import * as dotenv from "dotenv";
 import { cors } from "hono/cors";
-import expensesRoute from "./routes/expensesRoute.js";
+import { expensesRoute } from "./routes/expensesRoute.js";
 import type { TurnstileServerValidationResponse } from "@marsidev/react-turnstile";
 // import { SqliteDialect } from "@sequelize/sqlite3";
 import { PostgresDialect } from "@sequelize/postgres";
@@ -21,8 +21,10 @@ import {
 	Stall,
 	verification,
 	UtilitiesWater,
+	StallTier,
 } from "./db/userModel.js";
-import feedbackRoute from "./routes/feedbackRoutes.js";
+import { feedbacksRoute } from "./routes/feedbacksRoute.js";
+import { usersRoute } from "./routes/usersRoute.js";
 
 const app = new Hono<{
 	Variables: {
@@ -36,6 +38,20 @@ const verifyEndpoint =
 	"https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const secret = process.env.TURNSTILE_SECRET_KEY as string;
 
+app.use("*", async (c, next) => {
+	const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+	if (!session) {
+		c.set("user", null);
+		c.set("session", null);
+		return next();
+	}
+
+	c.set("user", session.user);
+	c.set("session", session.session);
+	return next();
+});
+
 app.get("*", prettyJSON());
 
 app.use(logger());
@@ -43,6 +59,12 @@ app.use(logger());
 app.get("/api", (c) => {
 	return c.text("API is running!");
 });
+
+export const apiRoutes = app
+	.basePath("/api")
+	.route("/expenses", expensesRoute)
+	.route("/feedbacks", feedbacksRoute)
+	.route("/users", usersRoute);
 
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
@@ -63,20 +85,6 @@ app.use(
 		credentials: true,
 	})
 );
-
-app.use("*", async (c, next) => {
-	const session = await auth.api.getSession({ headers: c.req.raw.headers });
-
-	if (!session) {
-		c.set("user", null);
-		c.set("session", null);
-		return next();
-	}
-
-	c.set("user", session.user);
-	c.set("session", session.session);
-	return next();
-});
 
 app.get("/session", async (c) => {
 	const session = c.get("session");
@@ -141,11 +149,6 @@ app.on(["POST", "GET"], "/api/auth/*", (c) => {
 	return auth.handler(c.req.raw);
 });
 
-export const apiRoutes = app
-	.basePath("/api")
-	.route("/expenses", expensesRoute)
-	.route("/feedbacks", feedbackRoute);
-
 // Server static files
 app.get("*", serveStatic({ root: "./webpage" }));
 
@@ -177,6 +180,7 @@ const sequelize = new Sequelize({
 		Payment,
 		UtilitiesWater,
 		Notification,
+		StallTier,
 	],
 });
 

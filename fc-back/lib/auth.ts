@@ -71,6 +71,12 @@ export const auth = betterAuth({
 		github: {
 			clientId: process.env.GITHUB_CLIENT_ID as string,
 			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			mapProfileToUser: (profile) => {
+				return {
+					firstName: profile.name.split(" ")[0],
+					lastName: profile.name.split(" ")[1],
+				};
+			},
 		},
 	},
 	trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",") || [],
@@ -83,6 +89,7 @@ export const auth = betterAuth({
 		// },
 	},
 	rateLimit: {
+		enabled: true,
 		window: 60, // time window in seconds
 		max: 100, // max requests in the window
 		customRules: {

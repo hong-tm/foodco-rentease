@@ -19,11 +19,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { forgotPasswordFormSchema } from "@/lib/zod";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { forgotPasswordFormSchema } from "@server/lib/sharedType";
 
 export default function ForgetPassword() {
 	const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({

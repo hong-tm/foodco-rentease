@@ -21,11 +21,11 @@ import {
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/passwod-input";
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { resetPasswordFormSchema } from "@/lib/zod";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { resetPasswordFormSchema } from "@server/lib/sharedType";
 
 export default function ResetPassword() {
 	const form = useForm<z.infer<typeof resetPasswordFormSchema>>({

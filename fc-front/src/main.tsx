@@ -9,10 +9,10 @@ import { DashboardPage } from "./pages/dashboard/dashboard-layout.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import App from "./App.tsx";
 import RegisterPage from "./pages/(auth)/SignupForm.tsx";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import EmailVerifiedPage from "./pages/(auth)/emailVerified.tsx";
 import UserProfilePage from "./pages/(auth)/UserProfilePage.tsx";
+import { AdminManage } from "./pages/dashboard/functionPage/admin/AdminManage.tsx";
 
 const FeedbackPage = lazy(() =>
 	import("./pages/feedback/feedbackpage.tsx").then((module) => ({
@@ -70,6 +70,10 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/account",
 					element: <UserProfilePage />,
+				},
+				{
+					path: "/dashboard/admin",
+					element: <AdminManage />,
 				},
 			],
 		},

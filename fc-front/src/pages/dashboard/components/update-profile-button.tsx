@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { updateUsernameFormSchema } from "@/lib/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -26,6 +25,7 @@ import {
 import { ErrorContext } from "@better-fetch/fetch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { updateUsernameFormSchema } from "@server/lib/sharedType";
 
 export default function UpdateProfileButton({
 	onUpdate,

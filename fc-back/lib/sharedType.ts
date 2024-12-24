@@ -71,7 +71,8 @@ export const updateUsernameFormSchema = z.object({
 		.max(32, { message: "Name must be at most 32 characters long" }),
 });
 
-export const feedbackFormSchema = z.object({
+export const feedbackSchema = z.object({
+	id: z.number().int().positive().min(1),
 	happiness: z
 		.number({ message: "Must choose a happiness" })
 		.int()
@@ -89,3 +90,5 @@ export const feedbackFormSchema = z.object({
 		.min(3, { message: "Must contain at least 3 character(s)" })
 		.max(255),
 });
+
+export const createFeedbackSchema = feedbackSchema.omit({ id: true });
