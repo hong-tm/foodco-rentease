@@ -26,13 +26,13 @@ import { PasswordInput } from "@/components/ui/passwod-input";
 import { ModeToggle } from "@/components/mode-toggle";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
-import { signupformSchema } from "@/lib/zod";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { ErrorContext } from "@better-fetch/fetch";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
+import { signupformSchema } from "@server/lib/sharedType";
 
 export default function RegisterPage() {
 	const form = useForm<z.infer<typeof signupformSchema>>({

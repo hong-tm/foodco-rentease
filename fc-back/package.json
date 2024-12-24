@@ -19,7 +19,7 @@
 		"@sequelize/core": "^7.0.0-alpha.43",
 		"@sequelize/postgres": "^7.0.0-alpha.43",
 		"@sequelize/sqlite3": "^7.0.0-alpha.43",
-		"better-auth": "^1.0.8",
+		"better-auth": "^1.1.1",
 		"better-sqlite3": "^11.5.0",
 		"dotenv": "^16.4.7",
 		"hono": "^4.6.14",
@@ -27,7 +27,7 @@
 		"pg": "^8.13.1",
 		"resend": "^4.0.1",
 		"vite": "^5.4.11",
-		"zod": "^3.23.8"
+		"zod": "^3.24.1"
 	},
 	"devDependencies": {
 		"@types/better-sqlite3": "^7.6.12",

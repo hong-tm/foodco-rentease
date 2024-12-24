@@ -20,11 +20,11 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { PasswordInput } from "@/components/ui/passwod-input";
-import { changePasswordFormSchema } from "@/lib/zod";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { changePasswordFormSchema } from "@server/lib/sharedType";
 
 export default function ChangePassword() {
 	const form = useForm<z.infer<typeof changePasswordFormSchema>>({

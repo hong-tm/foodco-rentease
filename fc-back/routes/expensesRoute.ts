@@ -30,56 +30,57 @@ const fakeExpenses: Expense[] = [
 	},
 ];
 
-const expensesRoute = new Hono();
+export const expensesRoute = new Hono()
 
-expensesRoute.get("/", (c) => {
-	return c.json({ expenses: fakeExpenses });
-});
+	.get("/", (c) => {
+		return c.json({ expenses: fakeExpenses });
+	})
 
-expensesRoute.post("/", zValidator("json", createPostSchema), async (c) => {
-	const expense = await c.req.valid("json");
-	fakeExpenses.push({ ...expense, id: fakeExpenses.length + 1 });
+	.post("/", zValidator("json", createPostSchema), async (c) => {
+		const expense = await c.req.valid("json");
+		fakeExpenses.push({ ...expense, id: fakeExpenses.length + 1 });
 
-	c.status(201);
-	return c.json({ expense });
-});
+		c.status(201);
+		return c.json({ expense });
+	})
 
-expensesRoute.get("/total-spent", async (c) => {
-	const total = fakeExpenses.reduce((acc, expense) => acc + expense.amount, 0);
-	return c.json({ total });
-});
+	.get("/total-spent", async (c) => {
+		const total = fakeExpenses.reduce(
+			(acc, expense) => acc + expense.amount,
+			0
+		);
+		return c.json({ total });
+	})
 
-expensesRoute.get("/:id", (c) => {
-	const id = Number.parseInt(c.req.param("id"));
-	const expense = fakeExpenses.find((expense) => expense.id === id);
+	.get("/:id", (c) => {
+		const id = Number.parseInt(c.req.param("id"));
+		const expense = fakeExpenses.find((expense) => expense.id === id);
 
-	if (!expense) {
-		return c.notFound();
-	}
-	return c.json({ expense });
-});
+		if (!expense) {
+			return c.notFound();
+		}
+		return c.json({ expense });
+	})
 
-expensesRoute.delete("/:id", (c) => {
-	const id = Number.parseInt(c.req.param("id"));
-	const index = fakeExpenses.findIndex((expense) => expense.id === id);
+	.delete("/:id", (c) => {
+		const id = Number.parseInt(c.req.param("id"));
+		const index = fakeExpenses.findIndex((expense) => expense.id === id);
 
-	if (index === -1) {
-		return c.notFound();
-	}
-	fakeExpenses.splice(index, 1);
-	return c.json({ message: "Expense deleted" });
-});
+		if (index === -1) {
+			return c.notFound();
+		}
+		fakeExpenses.splice(index, 1);
+		return c.json({ message: "Expense deleted" });
+	})
 
-expensesRoute.put("/:id", zValidator("json", createPostSchema), async (c) => {
-	const id = Number.parseInt(c.req.param("id"));
-	const index = fakeExpenses.findIndex((expense) => expense.id === id);
+	.put("/:id", zValidator("json", createPostSchema), async (c) => {
+		const id = Number.parseInt(c.req.param("id"));
+		const index = fakeExpenses.findIndex((expense) => expense.id === id);
 
-	if (index === -1) {
-		return c.notFound();
-	}
-	const expense = await c.req.valid("json");
-	fakeExpenses[index] = { ...expense, id };
-	return c.json({ expense: fakeExpenses[index] });
-});
-
-export default expensesRoute;
+		if (index === -1) {
+			return c.notFound();
+		}
+		const expense = await c.req.valid("json");
+		fakeExpenses[index] = { ...expense, id };
+		return c.json({ expense: fakeExpenses[index] });
+	});

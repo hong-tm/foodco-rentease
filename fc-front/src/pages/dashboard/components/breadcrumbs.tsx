@@ -18,6 +18,7 @@ export default function Breadcrumbs() {
 		"change-password": "Change Password",
 		feedback: "Feedback",
 		account: "Account",
+		admin: "Admin",
 	};
 
 	let currentLink = "";

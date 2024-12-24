@@ -28,7 +28,6 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
-import { signinFormSchema } from "@/lib/zod";
 import { FeedbackButton } from "../feedback/components/feedback-button";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -38,6 +37,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
+import { signinFormSchema } from "@server/lib/sharedType";
 
 export default function LoginPage() {
 	const form = useForm<z.infer<typeof signinFormSchema>>({
@@ -56,15 +56,15 @@ export default function LoginPage() {
 	const [pendingGoogle, setPendingGoogle] = useState(false);
 	const [pendingGithub, setPendingGithub] = useState(false);
 
-	async function checkSession() {
-		const session = await authClient.getSession();
+	// async function checkSession() {
+	// 	const session = await authClient.getSession();
 
-		if (session.data?.user) {
-			navigate("/dashboard", { replace: true });
-			return;
-		}
-	}
-	checkSession();
+	// 	if (session.data?.user) {
+	// 		navigate("/dashboard", { replace: true });
+	// 		return;
+	// 	}
+	// }
+	// checkSession();
 
 	async function SignIn(values: z.infer<typeof signinFormSchema>) {
 		setPending(true);

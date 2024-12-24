@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { feedbackFormSchema } from "@/lib/zod";
 import {
 	Form,
 	FormControl,
@@ -17,6 +16,9 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { useMutation } from "@tanstack/react-query";
+import { createFeedback } from "@/api/feedbackApi";
+import { createFeedbackSchema } from "@server/lib/sharedType";
 
 const feedback = [
 	{ happiness: 4, emoji: <Laugh size={16} className="stroke-inherit" /> },
@@ -26,8 +28,8 @@ const feedback = [
 ];
 
 export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
-	const form = useForm<z.infer<typeof feedbackFormSchema>>({
-		resolver: zodResolver(feedbackFormSchema),
+	const form = useForm<z.infer<typeof createFeedbackSchema>>({
+		resolver: zodResolver(createFeedbackSchema),
 		defaultValues: {
 			happiness: 0,
 			stall: 0,
@@ -38,17 +40,19 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
 	const [pending, setPending] = useState(false);
 	const [happiness, setHappiness] = useState<null | number>(null);
 
-	async function onSubmit(values: z.infer<typeof feedbackFormSchema>) {
-		// const { happiness, stall, feedbackContent } = values;
+	const mutation = useMutation({
+		mutationFn: createFeedback,
+	});
 
+	async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
 		setPending(true);
 		try {
-			// Perform submission logic (e.g., API call)
+			mutation.mutate(values);
 			console.log("Form submitted:", values);
 			toast.success("Feedback submitted successfully");
 			onClose(); // Close the dialog only after successful submission
-		} catch (error) {
-			toast.error("Failed to submit feedback");
+		} catch (error: any) {
+			toast.error("Failed to submit feedback:" + error.message);
 			console.error(error);
 		} finally {
 			setPending(false);
@@ -72,7 +76,7 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
 									></FormLabel>
 									<FormControl>
 										<span className="flex gap-3 h-12 items-center justify-center">
-											<div className="flex items-center text-neutral-400">
+											<div className="flex items-center text-neutral-400 gap-4">
 												{feedback.map((e) => (
 													<Button
 														type="button"
@@ -86,14 +90,23 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
 														className={twMerge(
 															happiness === e.happiness
 																? e.happiness === 4
-																	? "bg-green-100 stroke-green-500 dark:bg-green-900 dark:stroke-green-400 hover:scale-125 hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400"
+																	? "bg-green-100 stroke-green-500 dark:bg-green-900 dark:stroke-green-400 hover:scale-125"
 																	: e.happiness === 3
-																	? "bg-blue-100 stroke-blue-500 dark:bg-blue-900 dark:stroke-blue-400 hover:scale-125 hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400"
+																	? "bg-blue-100 stroke-blue-500 dark:bg-blue-900 dark:stroke-blue-400 hover:scale-125"
 																	: e.happiness === 2
-																	? "bg-yellow-100 stroke-yellow-500 dark:bg-yellow-900 dark:stroke-yellow-400 hover:scale-125 hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400"
-																	: "bg-red-100 stroke-red-500 dark:bg-red-900 dark:stroke-red-400 hover:scale-125 hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400"
+																	? "bg-yellow-100 stroke-yellow-500 dark:bg-yellow-900 dark:stroke-yellow-400 hover:scale-125"
+																	: "bg-red-100 stroke-red-500 dark:bg-red-900 dark:stroke-red-400 hover:scale-125"
 																: "stroke-neutral-500 dark:stroke-neutral-400",
-															"flex h-8 w-8 items-center justify-center rounded-full transition-all"
+															"flex h-8 w-8 items-center justify-center rounded-full transition-all",
+															happiness === e.happiness
+																? ""
+																: e.happiness === 4
+																? "hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400 hover:scale-125"
+																: e.happiness === 3
+																? "hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400 hover:scale-125"
+																: e.happiness === 2
+																? "hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400 hover:scale-125"
+																: "hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400 hover:scale-125"
 														)}
 														key={e.happiness}
 													>

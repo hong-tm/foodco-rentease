@@ -1,239 +1,193 @@
-import { Angry, Check, Frown, Laugh, Loader2, Smile } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { twMerge } from "tailwind-merge";
-import { cn } from "@/lib/utils";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Angry, Frown, Laugh, Smile } from "lucide-react";
+import { twMerge } from "tailwind-merge";
+import {
+	Feedback,
+	getAllFeedbackQueryOptions,
+	removeFeedbackById,
+} from "@/api/feedbackApi";
+import { Trash2 } from "lucide-react";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteFeedback } from "@/api/feedbackApi";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const feedback = [
-	{ happiness: 4, emoji: <Laugh size={16} className="stroke-inherit" /> },
-	{ happiness: 3, emoji: <Smile size={16} className="stroke-inherit" /> },
-	{ happiness: 2, emoji: <Frown size={16} className="stroke-inherit" /> },
-	{ happiness: 1, emoji: <Angry size={16} className="stroke-inherit" /> },
-];
+// Happiness levels mapped to emojis
+const emojiMap: Record<Feedback["happiness"], JSX.Element> = {
+	4: <Laugh size={16} />,
+	3: <Smile size={16} />,
+	2: <Frown size={16} />,
+	1: <Angry size={16} />,
+};
 
-export const FeedbackPage = () => {
-	const textRef = useRef<HTMLTextAreaElement>(null);
-	const [happiness, setHappiness] = useState<null | number>(null);
+export function FeedbackPage() {
+	const { data, error, isPending } = useQuery(getAllFeedbackQueryOptions);
 
-	const [isSubmitted, setSubmissionState] = useState(false);
-	const { submitFeedback, isLoading, isSent } = useSubmitFeedback();
-
-	useEffect(() => {
-		if (!happiness) {
-			//cleaning up textarea
-			if (textRef.current) textRef.current!.value = "";
-		}
-	}, [happiness]);
-
-	useEffect(() => {
-		let timeout = null;
-		let submissionStateTimeout = null;
-
-		if (isSent) {
-			setSubmissionState(true);
-
-			//cleaning up textarea and customer happiness state
-			timeout = setTimeout(() => {
-				setHappiness(null);
-				if (textRef.current) textRef.current!.value = "";
-			}, 2000);
-
-			//cleaning up successful submission text 100ms later
-			submissionStateTimeout = setTimeout(() => {
-				setSubmissionState(false);
-			}, 2200);
-		}
-
-		return () => {
-			if (timeout) {
-				clearTimeout(timeout);
-			}
-			if (submissionStateTimeout) {
-				clearTimeout(submissionStateTimeout);
-			}
-		};
-	}, [isSent]);
+	// Loading and error states
+	if (isPending) {
+		return (
+			<div className="flex flex-wrap gap-4 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+				{Array.from({ length: 8 }).map((_, index) => (
+					<Skeleton
+						key={index}
+						className="flex flex-col max-sm:min-w-min w-full h-[200px] rounded-lg"
+					/>
+				))}
+			</div>
+		);
+	}
+	if (error)
+		return <div className="justify-center p-4">Error: {error.message}</div>;
+	if (!data)
+		return <div className="justify-center p-4">No feedback available</div>;
 
 	return (
-		<div className="flex flex-col h-full w-full items-center justify-center gap-4">
-			<motion.div
-				layout
-				initial={{ borderRadius: "2rem" }}
-				animate={
-					happiness ? { borderRadius: "0.5rem" } : { borderRadius: "2rem" }
-				}
-				className={twMerge(
-					"flex flex-col w-full overflow-hidden gap-2 items-center justify-center md:w-3/4 lg:w-2/3 xl:w-1/2"
-				)}
-			>
-				<h1 className="scroll-m-20 text-xl font-extrabold tracking-tight lg:text-2xl mt-2">
-					Feedback
-				</h1>
-				<span className="flex gap-3 h-12 ">
-					<div className="flex items-center text-neutral-400 gap-5 justify-center">
-						{feedback.map((e) => (
-							<Button
-								onClick={() =>
-									setHappiness((prev) =>
-										e.happiness === prev ? null : e.happiness
-									)
-								}
-								variant="ghost"
-								className={twMerge(
-									happiness === e.happiness
-										? e.happiness === 4
-											? "bg-green-100 stroke-green-500 dark:bg-green-900 dark:stroke-green-400 hover:scale-125"
-											: e.happiness === 3
-											? "bg-blue-100 stroke-blue-500 dark:bg-blue-900 dark:stroke-blue-400 hover:scale-125"
-											: e.happiness === 2
-											? "bg-yellow-100 stroke-yellow-500 dark:bg-yellow-900 dark:stroke-yellow-400 hover:scale-125"
-											: "bg-red-100 stroke-red-500 dark:bg-red-900 dark:stroke-red-400 hover:scale-125"
-										: "stroke-neutral-500 dark:stroke-neutral-400",
-									"flex h-8 w-8 items-center justify-center rounded-full transition-all",
-									happiness === e.happiness
-										? ""
-										: e.happiness === 4
-										? "hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400 hover:scale-125"
-										: e.happiness === 3
-										? "hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400 hover:scale-125"
-										: e.happiness === 2
-										? "hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400 hover:scale-125"
-										: "hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400 hover:scale-125"
-								)}
-								key={e.happiness}
-							>
-								{e.emoji}
-							</Button>
-						))}
-					</div>
-				</span>
-				<motion.div
-					aria-hidden={happiness ? false : true}
-					initial={{ height: 0, translateY: 15 }}
-					className="px-4 w-full md:px-0"
-					transition={{ ease: "easeInOut", duration: 0.3 }}
-					animate={
-						happiness ? { height: "220px", width: "100%" } : { height: 0 }
-					}
-				>
-					<AnimatePresence>
-						{!isSubmitted ? (
-							<motion.span exit={{ opacity: 0 }} initial={{ opacity: 1 }}>
-								<textarea
-									ref={textRef}
-									placeholder="This is good"
-									className="min-h-32 w-full resize-none rounded-md border bg-transparent p-5 text-sm placeho</div>lder-neutral-400 focus:border-neutral-400 focus:outline-0 dark:border-neutral-800 focus:dark:border-white"
-								/>
-
-								<div className="flex h-fit w-full">
-									<Button
-										onClick={() =>
-											submitFeedback(happiness!, textRef.current!.value || "")
-										}
-										variant="default"
-										disabled={isLoading}
-										className={cn(
-											"w-full flex items-center justify-center mt-3",
-											{
-												"bg-neutral-500 dark:bg-white dark:text-neutral-500":
-													isLoading,
-											}
-										)}
-									>
-										{isLoading ? (
-											<>
-												Loading
-												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-											</>
-										) : (
-											"Submit"
-										)}
-									</Button>
-								</div>
-							</motion.span>
-						) : (
-							<motion.div
-								variants={container}
-								initial="hidden"
-								animate="show"
-								className="flex h-full w-full flex-col items-center justify-start gap-2 pt-9 text-sm font-normal"
-							>
-								<motion.div
-									variants={item}
-									className="flex h-8 min-h-8 w-8 min-w-8 items-center justify-center rounded-full bg-blue-500 dark:bg-blue-900"
-								>
-									<Check strokeWidth={2.5} size={16} className="stroke-white" />
-								</motion.div>
-								<motion.div variants={item} className="text-sm tracking-tight">
-									Your feedback has been received!
-								</motion.div>
-								<motion.div variants={item} className="text-sm tracking-tight">
-									Thank you for your help.
-								</motion.div>
-							</motion.div>
-						)}
-					</AnimatePresence>
-				</motion.div>
-			</motion.div>
+		<div className="flex flex-wrap gap-4 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+			{data.map((feedback) => (
+				<FeedbackCard key={feedback.id} feedback={feedback} />
+			))}
 		</div>
 	);
-};
+}
 
-const container = {
-	hidden: { opacity: 0, y: 20 },
-	show: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.2,
-			staggerChildren: 0.04,
+function FeedbackCard({ feedback }: { feedback: Feedback }) {
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+	return (
+		<Card className="bg-muted/10 flex flex-col max-sm:min-w-min w-full">
+			<div className="flex justify-between items-start">
+				<CardHeader>
+					<CardTitle>Feedback #{feedback.id}</CardTitle>
+					<CardDescription>
+						{new Date(feedback.createdAt).toLocaleDateString()}
+					</CardDescription>
+				</CardHeader>
+
+				<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+					<AlertDialogTrigger asChild className="relative top-4 right-2">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="hover:text-red-400 dark:hover:text-red-500"
+						>
+							<Trash2 className="h-4 w-4" />
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+							<AlertDialogDescription>
+								This action cannot be undone. This will permanently delete the
+								feedback.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction asChild>
+								<FeedbackDeleteButton
+									id={feedback.id}
+									onSuccess={() => setIsDialogOpen(false)}
+								/>
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+			</div>
+
+			<CardContent className="flex-grow">
+				<p className="break-words">{feedback.feedbackContent}</p>
+			</CardContent>
+			<CardFooter className="flex gap-3">
+				<Badge variant="default" className="h-6">
+					Stall {feedback.stall}
+				</Badge>
+				<Button
+					variant="ghost"
+					size="icon"
+					className={twMerge(
+						feedback.happiness === 4
+							? "bg-green-100 stroke-green-500 dark:bg-green-900 dark:stroke-green-400 hover:scale-125"
+							: feedback.happiness === 3
+							? "bg-blue-100 stroke-blue-500 dark:bg-blue-900 dark:stroke-blue-400 hover:scale-125"
+							: feedback.happiness === 2
+							? "bg-yellow-100 stroke-yellow-500 dark:bg-yellow-900 dark:stroke-yellow-400 hover:scale-125"
+							: "bg-red-100 stroke-red-500 dark:bg-red-900 dark:stroke-red-400 hover:scale-125",
+						"flex h-8 w-8 items-center justify-center rounded-full transition-all",
+						feedback.happiness === 4
+							? "hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400 hover:scale-125"
+							: feedback.happiness === 3
+							? "hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400 hover:scale-125"
+							: feedback.happiness === 2
+							? "hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400 hover:scale-125"
+							: "hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400 hover:scale-125"
+					)}
+				>
+					{emojiMap[feedback.happiness]}
+				</Button>
+			</CardFooter>
+		</Card>
+	);
+}
+
+function FeedbackDeleteButton({
+	id,
+	onSuccess,
+}: {
+	id: number;
+	onSuccess: () => void;
+}) {
+	const queryClient = useQueryClient();
+
+	const mutation = useMutation({
+		mutationFn: deleteFeedback,
+		onError: () => {
+			toast.error(`Failed to delete feedback ${id}`);
 		},
-	},
-};
+		onSuccess: () => {
+			queryClient.setQueryData<Feedback[]>(["get-feedbacks"], (oldData) =>
+				removeFeedbackById(oldData, id)
+			);
 
-const item = {
-	hidden: { y: 10 },
-	show: { y: 0 },
-};
-
-const useSubmitFeedback = () => {
-	const [feedback, setFeedback] = useState<{
-		happiness: number;
-		feedback: string;
-	} | null>(null);
-	const [isLoading, setLoadingState] = useState(false);
-	//error never happens in case of this mockup btw
-	const [error, setError] = useState<{ error: any } | null>(null);
-	const [isSent, setRequestState] = useState(false);
-
-	//fake api call
-	const submitFeedback = (feedback: { happiness: number; feedback: string }) =>
-		new Promise((res) => setTimeout(() => res(feedback), 1000));
-
-	useEffect(() => {
-		if (feedback) {
-			setLoadingState(true);
-			setRequestState(false);
-
-			submitFeedback(feedback)
-				.then(() => {
-					setRequestState(true);
-					setError(null);
-				})
-				.catch(() => {
-					setRequestState(false);
-					setError({ error: "some error" });
-				})
-				.finally(() => setLoadingState(false));
-		}
-	}, [feedback]);
-
-	return {
-		submitFeedback: (happiness: number, feedback: string) =>
-			setFeedback({ happiness, feedback }),
-		isLoading,
-		error,
-		isSent,
-	};
-};
+			toast.success(`Feedback ${id} deleted`);
+			onSuccess();
+		},
+	});
+	return (
+		<Button
+			onClick={() => mutation.mutate({ id })}
+			disabled={mutation.isPending}
+			className="bg-red-500 hover:bg-red-400 dark:text-foreground dark:hover:bg-red-600"
+		>
+			{mutation.isPending ? (
+				<>
+					Delete <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+				</>
+			) : (
+				"Delete"
+			)}
+		</Button>
+	);
+}
