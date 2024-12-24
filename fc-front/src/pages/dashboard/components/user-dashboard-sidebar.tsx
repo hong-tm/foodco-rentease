@@ -15,6 +15,7 @@ import {
 	ListOrdered,
 	History,
 	FileUser,
+	ShieldCheck,
 } from "lucide-react";
 
 import { NavMain } from "@/pages/dashboard/components/nav-main";
@@ -178,6 +179,11 @@ export default function UserDashboardSidebar({
 				},
 			],
 			navSecondary: [
+				{
+					title: "Admin",
+					url: "/dashboard/admin",
+					icon: ShieldCheck,
+				},
 				{
 					title: "Feedback",
 					url: "/dashboard/feedback",

@@ -14,7 +14,10 @@ import {
 	BelongsTo,
 	Unique,
 	Table,
+	AutoIncrement,
 } from "@sequelize/core/decorators-legacy";
+
+export type UserAttributes = InferAttributes<user>;
 
 @Table({
 	freezeTableName: true,
@@ -60,7 +63,8 @@ export class user extends Model<
 	declare role: CreationOptional<string>;
 
 	@Attribute(DataTypes.BOOLEAN)
-	declare banned: boolean;
+	@Default(false)
+	declare banned: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.STRING)
 	declare banReason: string;
@@ -215,10 +219,10 @@ export class Stall extends Model<
 	InferAttributes<Stall>,
 	InferCreationAttributes<Stall>
 > {
-	@Attribute(DataTypes.TEXT)
+	@Attribute(DataTypes.INTEGER)
 	@PrimaryKey
 	@NotNull
-	declare stallId: CreationOptional<string>;
+	declare stallId: CreationOptional<number>;
 
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
@@ -234,55 +238,63 @@ export class Stall extends Model<
 	@Attribute(DataTypes.STRING)
 	declare stallImage: string;
 
-	@Attribute(DataTypes.STRING)
+	@Attribute(DataTypes.DECIMAL(12, 2))
+	declare stallSize: number;
+
+	@BelongsTo(() => StallTier, "stallTierNo")
+	declare stallTierNumber?: NonAttribute<StallTier>;
+	@Attribute(DataTypes.INTEGER)
+	declare stallTierNo: number;
+
+	@Attribute(DataTypes.BOOLEAN)
 	@NotNull
-	declare rentStatus: string;
+	@Default(false)
+	declare rentStatus: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.DATE)
 	declare startAt: Date;
 
 	@Attribute(DataTypes.DATE)
 	declare endAt: Date;
+}
 
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
+export class StallTier extends Model<
+	InferAttributes<StallTier>,
+	InferCreationAttributes<StallTier>
+> {
+	@Attribute(DataTypes.INTEGER)
+	@PrimaryKey
 	@NotNull
-	declare createdAt: CreationOptional<Date>;
+	declare tierId: CreationOptional<number>;
 
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
+	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare updatedAt: CreationOptional<Date>;
+	declare tierName: string;
+
+	@Attribute(DataTypes.DECIMAL(12, 2))
+	@NotNull
+	declare tierPrice: number;
 }
 
 export class Feedback extends Model<
 	InferAttributes<Feedback>,
 	InferCreationAttributes<Feedback>
 > {
-	@Attribute(DataTypes.TEXT)
+	@Attribute(DataTypes.INTEGER)
 	@PrimaryKey
-	declare feedbackId: CreationOptional<string>;
-
-	@Attribute(DataTypes.STRING)
-	declare feedbackType: string;
-
-	@BelongsTo(() => user, "userId")
-	declare feedbackUser?: NonAttribute<user>;
-	@Attribute(DataTypes.STRING)
-	declare userId: string;
+	@AutoIncrement
+	declare id: CreationOptional<number>;
 
 	@Attribute(DataTypes.STRING)
 	declare feedbackContent: string;
 
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
+	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare createdAt: CreationOptional<Date>;
+	declare happiness: number;
 
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
+	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare updatedAt: CreationOptional<Date>;
+	declare stall: number;
 }
 
 export class Payment extends Model<
@@ -312,24 +324,14 @@ export class Payment extends Model<
 
 	@BelongsTo(() => Stall, "stallId")
 	declare paymentStall?: NonAttribute<Stall>;
-	@Attribute(DataTypes.STRING)
+	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare stallId?: string;
+	declare stallId?: number;
 
 	@BelongsTo(() => UtilitiesWater, "utilitiesId")
 	declare paymentUtilitiesWater?: NonAttribute<UtilitiesWater>;
 	@Attribute(DataTypes.STRING)
 	declare utilitiesId?: string;
-
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
-	@NotNull
-	declare createdAt: CreationOptional<Date>;
-
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
-	@NotNull
-	declare updatedAt: CreationOptional<Date>;
 }
 
 export class UtilitiesWater extends Model<
@@ -354,16 +356,6 @@ export class UtilitiesWater extends Model<
 	@Attribute(DataTypes.STRING)
 	@NotNull
 	declare utilityPayment: string;
-
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
-	@NotNull
-	declare createdAt: CreationOptional<Date>;
-
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
-	@NotNull
-	declare updatedAt: CreationOptional<Date>;
 }
 
 export class Notification extends Model<
@@ -388,14 +380,35 @@ export class Notification extends Model<
 	@Default(false)
 	@NotNull
 	declare notificationRead: CreationOptional<boolean>;
+}
+
+export class Appointment extends Model<
+	InferAttributes<Appointment>,
+	InferCreationAttributes<Appointment>
+> {
+	@Attribute(DataTypes.TEXT)
+	@PrimaryKey
+	@NotNull
+	declare appointmentId: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
 	@NotNull
-	declare createdAt: CreationOptional<Date>;
+	declare appointmentDate: Date;
 
-	@Attribute(DataTypes.DATE)
-	@Default(DataTypes.NOW)
+	@BelongsTo(() => user, "userId")
+	declare appointmentUser?: NonAttribute<user>;
+	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare updatedAt: CreationOptional<Date>;
+	declare userId: string;
+
+	@BelongsTo(() => Stall, "stallId")
+	declare appointmentStall?: NonAttribute<Stall>;
+	@Attribute(DataTypes.INTEGER)
+	@NotNull
+	declare stallId: number;
+
+	@Attribute(DataTypes.BOOLEAN)
+	@Default(false)
+	@NotNull
+	declare appointmentStatus: CreationOptional<boolean>;
 }
