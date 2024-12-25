@@ -65,7 +65,7 @@ export async function deleteFeedback({ id }: { id: number }) {
 export const getAllFeedbackQueryOptions = queryOptions<Feedback[]>({
 	queryKey: ["get-feedbacks"],
 	queryFn: getAllFeedback,
-	staleTime: 1000 * 60 * 5, // 5 minutes
+	staleTime: 1000 * 60 * 1, // 1 minutes
 	// refetchInterval: 5000, // Refetch every 5 seconds
 });
 

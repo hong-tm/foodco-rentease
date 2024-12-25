@@ -26,7 +26,7 @@ import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { changePasswordFormSchema } from "@server/lib/sharedType";
 
-export default function ChangePassword() {
+export default function ChangePasswordPage() {
 	const form = useForm<z.infer<typeof changePasswordFormSchema>>({
 		resolver: zodResolver(changePasswordFormSchema),
 		defaultValues: {

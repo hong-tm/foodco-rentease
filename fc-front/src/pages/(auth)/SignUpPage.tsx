@@ -34,7 +34,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
 import { signupformSchema } from "@server/lib/sharedType";
 
-export default function RegisterPage() {
+export default function SignUpPage() {
 	const form = useForm<z.infer<typeof signupformSchema>>({
 		resolver: zodResolver(signupformSchema),
 		defaultValues: {

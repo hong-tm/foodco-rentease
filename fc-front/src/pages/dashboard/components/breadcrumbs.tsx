@@ -19,6 +19,7 @@ export default function Breadcrumbs() {
 		feedback: "Feedback",
 		account: "Account",
 		admin: "Admin",
+		"tenant-information": "Tenant Information",
 	};
 
 	let currentLink = "";

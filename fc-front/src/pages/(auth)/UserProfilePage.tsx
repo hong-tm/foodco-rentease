@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import UpdateProfileButton from "../dashboard/components/update-profile-button";
+import UpdateProfileButton from "../dashboard/components/UpdateProfileButton";
 
 export default function UserProfilePage() {
 	const [userName, setUserName] = useState("");
@@ -89,8 +89,8 @@ export default function UserProfilePage() {
 		setUserName(newName); // Dynamically update the UI without reloading
 	};
 	return (
-		<div className="flex justify-center items-center h-full">
-			<Card className="p-6 space-y-6 md:w-3/4 lg:w-2/3 xl:w-1/2 border-none shadow-none">
+		<div className="flex items-center justify-center h-full">
+			<Card className="space-y-6 md:w-3/4 lg:w-2/3 xl:w-1/2 border-none shadow-none">
 				<CardHeader className="flex flex-col items-center">
 					<Avatar className="w-16 h-16 rounded-full mb-3">
 						<AvatarImage

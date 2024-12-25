@@ -3,27 +3,67 @@ import { createRoot } from "react-dom/client";
 import "./index.scss";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
-import ForgetPassword from "./pages/(auth)/ForgetPassword.tsx";
-import ResetPassword from "./pages/(auth)/ResetPassword.tsx";
-import { DashboardPage } from "./pages/dashboard/dashboard-layout.tsx";
-import NotFoundPage from "./pages/NotFoundPage.tsx";
+import { DashboardLayoutPage } from "./pages/dashboard/DashboardLayoutPage.tsx";
 import App from "./App.tsx";
-import RegisterPage from "./pages/(auth)/SignupForm.tsx";
+import SignUpPage from "./pages/(auth)/SignUpPage.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import EmailVerifiedPage from "./pages/(auth)/emailVerified.tsx";
-import UserProfilePage from "./pages/(auth)/UserProfilePage.tsx";
-import { AdminManage } from "./pages/dashboard/functionPage/admin/AdminManage.tsx";
 
-const FeedbackPage = lazy(() =>
-	import("./pages/feedback/feedbackpage.tsx").then((module) => ({
-		default: module.FeedbackPage,
+const FeedbackDisplayPage = lazy(() =>
+	import("./pages/feedback/FeedbackDisplayPage.tsx").then((module) => ({
+		default: module.FeedbackDisplayPage,
 	}))
 );
 
-const ChangePassword = lazy(() =>
-	import("./pages/(auth)/ChangePassword.tsx").then((module) => ({
+const ChangePasswordPage = lazy(() =>
+	import("./pages/(auth)/ChangePasswordPage.tsx").then((module) => ({
 		default: module.default,
 	}))
+);
+
+const TenantInformationPage = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/TenantInformationPage.tsx").then(
+		(module) => ({
+			default: module.TenantInformationPage,
+		})
+	)
+);
+
+const EmailVerifiedPage = lazy(() =>
+	import("./pages/(auth)/EmailVerifiedPage.tsx").then((module) => ({
+		default: module.EmailVerifiedPage,
+	}))
+);
+
+const ForgetPasswordPage = lazy(() =>
+	import("./pages/(auth)/ForgetPasswordPage.tsx").then((module) => ({
+		default: module.default,
+	}))
+);
+
+const ResetPasswordPage = lazy(() =>
+	import("./pages/(auth)/ResetPasswordPage.tsx").then((module) => ({
+		default: module.default,
+	}))
+);
+
+const UserProfilePage = lazy(() =>
+	import("./pages/(auth)/UserProfilePage.tsx").then((module) => ({
+		default: module.default,
+	}))
+);
+
+const NotFoundPage = lazy(() =>
+	import("./pages/NotFoundPage.tsx").then((module) => ({
+		default: module.default,
+	}))
+);
+
+const AdminManage = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/AdminManage.tsx").then(
+		(module) => ({
+			default: module.AdminManage,
+		})
+	)
 );
 
 const queryClient = new QueryClient();
@@ -37,15 +77,15 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/signup",
-			element: <RegisterPage />,
+			element: <SignUpPage />,
 		},
 		{
 			path: "/forget-password",
-			element: <ForgetPassword />,
+			element: <ForgetPasswordPage />,
 		},
 		{
 			path: "/reset-password",
-			element: <ResetPassword />,
+			element: <ResetPasswordPage />,
 		},
 		{
 			path: "/email-verified",
@@ -53,19 +93,19 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/dashboard",
-			element: <DashboardPage />,
+			element: <DashboardLayoutPage />,
 			children: [
 				{
 					path: "/dashboard/feedback",
-					element: <FeedbackPage />,
+					element: <FeedbackDisplayPage />,
 				},
 				{
 					path: "/dashboard/change-password",
-					element: <ChangePassword />,
+					element: <ChangePasswordPage />,
 				},
 				{
 					path: "/dashboard/monthly-rent-overview",
-					element: <DashboardPage />,
+					element: <DashboardLayoutPage />,
 				},
 				{
 					path: "/dashboard/account",
@@ -74,6 +114,10 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/admin",
 					element: <AdminManage />,
+				},
+				{
+					path: "/dashboard/tenant-information",
+					element: <TenantInformationPage />,
 				},
 			],
 		},

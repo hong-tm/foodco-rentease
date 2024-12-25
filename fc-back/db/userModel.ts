@@ -15,9 +15,11 @@ import {
 	Unique,
 	Table,
 	AutoIncrement,
+	HasMany,
 } from "@sequelize/core/decorators-legacy";
 
 export type UserAttributes = InferAttributes<user>;
+export type SessionAttributes = InferAttributes<session>;
 
 @Table({
 	freezeTableName: true,
@@ -74,6 +76,10 @@ export class user extends Model<
 
 	@Attribute(DataTypes.STRING)
 	declare phone: string;
+
+	// 'stallOwner' in Stall references UserTable.id
+	@HasMany(() => Stall, "stallOwner")
+	declare stalls?: NonAttribute<Stall[]>;
 }
 
 @Table({
@@ -222,11 +228,7 @@ export class Stall extends Model<
 	@Attribute(DataTypes.INTEGER)
 	@PrimaryKey
 	@NotNull
-	declare stallId: CreationOptional<number>;
-
-	@Attribute(DataTypes.INTEGER)
-	@NotNull
-	declare stallNumber: number;
+	declare stallNumber: CreationOptional<number>;
 
 	@Attribute(DataTypes.STRING)
 	@Default("Still Empty...")
@@ -245,6 +247,11 @@ export class Stall extends Model<
 	declare stallTierNumber?: NonAttribute<StallTier>;
 	@Attribute(DataTypes.INTEGER)
 	declare stallTierNo: number;
+
+	@BelongsTo(() => user, "stallOwner")
+	declare stallOwnerId?: NonAttribute<user>;
+	@Attribute(DataTypes.STRING)
+	declare stallOwner: string;
 
 	@Attribute(DataTypes.BOOLEAN)
 	@NotNull
@@ -292,6 +299,8 @@ export class Feedback extends Model<
 	@NotNull
 	declare happiness: number;
 
+	// @BelongsTo(() => Stall, "stall")
+	// declare feedbackStall?: NonAttribute<Stall>;
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
 	declare stall: number;

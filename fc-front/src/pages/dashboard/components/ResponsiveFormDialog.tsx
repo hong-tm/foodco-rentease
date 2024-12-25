@@ -12,13 +12,14 @@ import {
 	Drawer,
 	DrawerClose,
 	DrawerContent,
+	DrawerDescription,
 	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
 } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export function ResponsiveDialog({
+export function ResponsiveFormDialog({
 	children,
 	isOpen,
 	setIsOpen,
@@ -35,34 +36,34 @@ export function ResponsiveDialog({
 
 	if (isMobile) {
 		return (
-			<Dialog open={isOpen} onOpenChange={setIsOpen}>
-				<DialogContent className="sm:max-w-[425px]">
-					<DialogHeader>
-						<DialogTitle>{title}</DialogTitle>
+			<Drawer open={isOpen} onOpenChange={setIsOpen}>
+				<DrawerContent>
+					<DrawerHeader className="text-left">
+						<DrawerTitle>{title}</DrawerTitle>
 						{description && (
-							<DialogDescription>{description}</DialogDescription>
+							<DrawerDescription>{description}</DrawerDescription>
 						)}
-					</DialogHeader>
+					</DrawerHeader>
 					{children}
-				</DialogContent>
-			</Dialog>
+					<DrawerFooter className="pt-2">
+						<DrawerClose asChild>
+							<Button variant="ghost">Cancel</Button>
+						</DrawerClose>
+					</DrawerFooter>
+				</DrawerContent>
+			</Drawer>
 		);
 	}
 
 	return (
-		<Drawer open={isOpen} onOpenChange={setIsOpen}>
-			<DrawerContent>
-				<DrawerHeader className="text-left">
-					<DrawerTitle>{title}</DrawerTitle>
+		<Dialog open={isOpen} onOpenChange={setIsOpen}>
+			<DialogContent className="sm:max-w-[425px]">
+				<DialogHeader>
+					<DialogTitle>{title}</DialogTitle>
 					{description && <DialogDescription>{description}</DialogDescription>}
-				</DrawerHeader>
+				</DialogHeader>
 				{children}
-				<DrawerFooter className="pt-2">
-					<DrawerClose asChild>
-						<Button variant="outline">Cancel</Button>
-					</DrawerClose>
-				</DrawerFooter>
-			</DrawerContent>
-		</Drawer>
+			</DialogContent>
+		</Dialog>
 	);
 }
