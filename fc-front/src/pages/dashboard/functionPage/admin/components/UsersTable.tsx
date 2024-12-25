@@ -1,5 +1,5 @@
+import { fetchUsersQueryOptions } from "@/api/authApi";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -10,39 +10,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { authClient } from "@/lib/auth-client";
-import { UserAttributes } from "@server/db/userModel";
-import { EllipsisVertical } from "lucide-react";
-import { useEffect, useState } from "react";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { AdminActionButton } from "./AdminActionButton";
 
 export default function UsersTable() {
-	const [users, setUsers] = useState<UserAttributes[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState<Error | null>(null);
-
-	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				setIsLoading(true);
-				const response = await authClient.admin.listUsers({
-					query: {
-						sortBy: "name",
-					},
-				});
-
-				if (response.data) {
-					setUsers(response.data.users as UserAttributes[]);
-				}
-			} catch {
-				setError(
-					error instanceof Error ? error : new Error("Failed to fetch users")
-				);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchUsers();
-	}, []);
+	const { data, error, isLoading } = useQuery(fetchUsersQueryOptions);
 
 	if (isLoading) {
 		return <div className="justify-center p-4">Loading...</div>;
@@ -52,6 +26,8 @@ export default function UsersTable() {
 		return <div className="justify-center p-4">Error: {error.message}</div>;
 	}
 
+	const users = data?.users || [];
+
 	return (
 		<div className="grid grid-cols-1 gap-4">
 			<div className="overflow-x-auto">
@@ -60,7 +36,7 @@ export default function UsersTable() {
 						A list of all your users.
 					</TableCaption>
 					<TableHeader>
-						<TableRow className="bg-gray-100 dark:bg-gray-700">
+						<TableRow>
 							<TableHead className="px-4 py-2 text-left">Name</TableHead>
 							<TableHead className="px-4 py-2 text-left">Email</TableHead>
 							<TableHead className="px-4 py-2 text-center">Role</TableHead>
@@ -109,9 +85,15 @@ export default function UsersTable() {
 									{new Date(user.createdAt).toLocaleDateString()}
 								</TableCell>
 								<TableCell className="px-4 py-2 text-center">
-									<Button variant="secondary" size="icon">
-										<EllipsisVertical />
-									</Button>
+									{user.role === "admin" ? (
+										""
+									) : (
+										<AdminActionButton
+											userId={user.id}
+											userRole={user.role}
+											userBanned={user.banned}
+										/>
+									)}
 								</TableCell>
 							</TableRow>
 						))}

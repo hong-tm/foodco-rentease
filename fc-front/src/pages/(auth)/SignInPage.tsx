@@ -28,7 +28,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { BackgroundLines } from "@/components/ui/background-lines";
 import { FishSymbolIcon } from "@/components/fish-symbol";
-import { FeedbackButton } from "../feedback/components/feedback-button";
+import { FeedbackButton } from "../feedback/components/FeedbackButton";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
@@ -39,7 +39,7 @@ import { Label } from "@/components/ui/label";
 import { verifyTurnstileToken } from "@/lib/verifyTurnstileToken";
 import { signinFormSchema } from "@server/lib/sharedType";
 
-export default function LoginPage() {
+export default function SignInPage() {
 	const form = useForm<z.infer<typeof signinFormSchema>>({
 		resolver: zodResolver(signinFormSchema),
 		defaultValues: {

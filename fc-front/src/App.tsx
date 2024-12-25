@@ -1,12 +1,12 @@
 import "./App.scss";
 import "./index.scss";
-import LoginPage from "./pages/(auth)/SigninForm";
+import SignInPage from "./pages/(auth)/SignInPage";
 
 export default function App() {
 	return (
 		<>
 			<div>
-				<LoginPage />
+				<SignInPage />
 			</div>
 		</>
 	);

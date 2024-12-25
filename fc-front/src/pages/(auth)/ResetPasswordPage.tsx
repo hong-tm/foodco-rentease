@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
 import {
 	Form,
 	FormControl,
@@ -17,31 +19,30 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/passwod-input";
 import { BackgroundLines } from "@/components/ui/background-lines";
-import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
-import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
-import { forgotPasswordFormSchema } from "@server/lib/sharedType";
+import { useNavigate } from "react-router-dom";
+import { resetPasswordFormSchema } from "@server/lib/sharedType";
 
-export default function ForgetPassword() {
-	const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({
-		resolver: zodResolver(forgotPasswordFormSchema),
+export default function ResetPasswordPage() {
+	const form = useForm<z.infer<typeof resetPasswordFormSchema>>({
+		resolver: zodResolver(resetPasswordFormSchema),
 		defaultValues: {
-			email: "",
+			password: "",
+			confirmPassword: "",
 		},
 	});
 
 	const [pending, setPending] = useState(false);
+	const navigate = useNavigate();
 
-	async function onSubmit(values: z.infer<typeof forgotPasswordFormSchema>) {
-		const { email } = values;
-
-		await authClient.forgetPassword(
+	async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
+		await authClient.resetPassword(
 			{
-				email,
-				redirectTo: "/reset-password",
+				newPassword: values.password,
 			},
 			{
 				onRequest: () => {
@@ -49,10 +50,9 @@ export default function ForgetPassword() {
 				},
 				onSuccess: async () => {
 					form.reset();
-					toast.success(
-						"If the email exists, a password reset link has been sent."
-					);
+					toast.success("Your password has been reset. You can now sign in.");
 					setPending(false);
+					navigate("/");
 				},
 				onError: (ctx) => {
 					toast.error(ctx.error.message);
@@ -67,9 +67,9 @@ export default function ForgetPassword() {
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
 				<Card className="mx-auto max-w-sm z-10">
 					<CardHeader>
-						<CardTitle className="text-2xl">Forgot Password</CardTitle>
+						<CardTitle className="text-2xl">Reset Password</CardTitle>
 						<CardDescription>
-							Enter your email address to receive a password reset link.
+							Enter your new password to reset your password.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
@@ -79,19 +79,18 @@ export default function ForgetPassword() {
 								className="space-y-8"
 							>
 								<div className="grid gap-4">
-									{/* Email Field */}
+									{/* New Password Field */}
 									<FormField
 										control={form.control}
-										name="email"
+										name="password"
 										render={({ field }) => (
 											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="email">Email</FormLabel>
+												<FormLabel htmlFor="password">New Password</FormLabel>
 												<FormControl>
-													<Input
-														id="email"
-														placeholder="johndoe@mail.com"
-														type="email"
-														autoComplete="email"
+													<PasswordInput
+														id="password"
+														placeholder="******"
+														autoComplete="new-password"
 														{...field}
 													/>
 												</FormControl>
@@ -99,14 +98,37 @@ export default function ForgetPassword() {
 											</FormItem>
 										)}
 									/>
+
+									{/* Confirm Password Field */}
+									<FormField
+										control={form.control}
+										name="confirmPassword"
+										render={({ field }) => (
+											<FormItem className="grid gap-2">
+												<FormLabel htmlFor="confirmPassword">
+													Confirm Password
+												</FormLabel>
+												<FormControl>
+													<PasswordInput
+														id="confirmPassword"
+														placeholder="******"
+														autoComplete="new-password"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
 									<Button type="submit" className="w-full" disabled={pending}>
 										{pending ? (
 											<>
-												Send Reset Link
+												Reset Password
 												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 											</>
 										) : (
-											"Send Reset Link"
+											"Reset Password"
 										)}
 									</Button>
 								</div>

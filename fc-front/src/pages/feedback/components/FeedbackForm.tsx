@@ -2,7 +2,7 @@ import { Angry, Frown, Laugh, Loader2, Smile } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "@/components/ui/button";
-import { StallCombobox } from "./stall-combobox";
+import { StallCombobox } from "../../dashboard/components/StallCombobox";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

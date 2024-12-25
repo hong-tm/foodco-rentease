@@ -32,53 +32,70 @@ import {
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
 import { NavLink } from "react-router-dom";
-import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+import { useSession } from "@/api/authApi";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
 type Role = "admin" | "user" | "rental";
 
 export default function UserDashboardSidebar({
+	authClient,
 	...props
-}: React.ComponentProps<typeof Sidebar>) {
-	const [userName, setUserName] = useState("");
-	const [userRole, setUserRole] = useState("");
-	const [userAvatar, setUserAvatar] = useState("");
-	const [userEmail, setUserEmail] = useState("");
+}: React.ComponentProps<typeof Sidebar> & { authClient?: any }) {
+	// const [userName, setUserName] = useState("");
+	// const [userRole, setUserRole] = useState("");
+	// const [userAvatar, setUserAvatar] = useState("");
+	// const [userEmail, setUserEmail] = useState("");
 
-	async function checkSession() {
-		try {
-			const session = await authClient.getSession();
+	// async function checkSession() {
+	// 	try {
+	// 		const session = await authClient.getSession();
 
-			if (!session.data) {
-				console.log("You are not logged in");
-				return;
-			}
+	// 		if (!session.data) {
+	// 			console.log("You are not logged in");
+	// 			return;
+	// 		}
 
-			const name = session.data?.user?.name;
-			if (name) setUserName(name);
+	// 		const name = session.data?.user?.name;
+	// 		if (name) setUserName(name);
 
-			const role = session.data?.user?.role;
-			if (role) setUserRole(role);
+	// 		const role = session.data?.user?.role;
+	// 		if (role) setUserRole(role);
 
-			const avatar = session.data?.user.image;
-			if (avatar) {
-				setUserAvatar(avatar);
-				preloadImage(avatar);
-			}
+	// 		const avatar = session.data?.user.image;
+	// 		if (avatar) {
+	// 			setUserAvatar(avatar);
+	// 			preloadImage(avatar);
+	// 		}
 
-			const email = session.data?.user.email;
-			if (email) setUserEmail(email);
-		} catch (err) {
-			toast.error("An error occurred: " + err);
-		}
-	}
-	checkSession();
+	// 		const email = session.data?.user.email;
+	// 		if (email) setUserEmail(email);
+	// 	} catch (err) {
+	// 		toast.error("An error occurred: " + err);
+	// 	}
+	// }
+	// checkSession();
 
-	function preloadImage(url: string) {
-		const img = new Image();
-		img.src = url;
-	}
+	// function preloadImage(url: string) {
+	// 	const img = new Image();
+	// 	img.src = url;
+	// }
+
+	const { data: session, isLoading, error } = useSession(authClient);
+
+	if (isLoading)
+		return (
+			<Sidebar collapsible="icon" variant="inset" {...props}>
+				<Skeleton className="h-full w-full rounded-xl" />
+			</Sidebar>
+		);
+	if (error) return toast.error("An error occurred: " + error), null;
+
+	const user = session?.user;
+	const userName = user?.name || "Unknown User";
+	const userRole = user?.role || "Unknown Role";
+	const userAvatar = user?.image || "/default-avatar.png";
+	const userEmail = user?.email || "No Email";
 
 	const data = {
 		admin: {
@@ -146,7 +163,7 @@ export default function UserDashboardSidebar({
 					items: [
 						{
 							title: "Tenant Information",
-							url: "#",
+							url: "/dashboard/tenant-information",
 						},
 						{
 							title: "Tenant Contracts",

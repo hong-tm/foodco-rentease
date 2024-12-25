@@ -1,13 +1,4 @@
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
@@ -26,12 +17,16 @@ import { ErrorContext } from "@better-fetch/fetch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { updateUsernameFormSchema } from "@server/lib/sharedType";
+import { useSession } from "@/api/authApi";
+import { ResponsiveFormDialog } from "./ResponsiveFormDialog";
+
+type UpdateProfileButtonProps = {
+	onUpdate: (newName: string) => void;
+};
 
 export default function UpdateProfileButton({
 	onUpdate,
-}: {
-	onUpdate: (newName: string) => void;
-}) {
+}: UpdateProfileButtonProps) {
 	const form = useForm<z.infer<typeof updateUsernameFormSchema>>({
 		resolver: zodResolver(updateUsernameFormSchema),
 		defaultValues: {
@@ -43,13 +38,21 @@ export default function UpdateProfileButton({
 	const [pending, setPending] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
-	async function checkSession() {
-		const session = await authClient.getSession();
+	const { data: session, isLoading, error } = useSession(authClient);
 
+	if (session && !userName) {
 		const name = session.data?.user?.name;
 		if (name) setUserName(name);
 	}
-	checkSession();
+
+	if (isLoading) {
+		return <div>Loading...</div>; // Add a loading state
+	}
+
+	if (error) {
+		toast.error("Error loading session");
+		return <div>Error loading session</div>;
+	}
 
 	async function onSubmit(values: z.infer<typeof updateUsernameFormSchema>) {
 		const { name } = values;
@@ -74,20 +77,18 @@ export default function UpdateProfileButton({
 	}
 
 	return (
-		<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-			<DialogTrigger asChild>
-				<Button>Edit Name</Button>
-			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
-				<DialogHeader>
-					<DialogTitle>Edit Name</DialogTitle>
-					<DialogDescription className="gap-1">
-						Edit your name to be displayed on the platform. It may require a
-						refresh to see the changes.
-					</DialogDescription>
-				</DialogHeader>
+		<>
+			<ResponsiveFormDialog
+				isOpen={dialogOpen}
+				setIsOpen={setDialogOpen}
+				title="Edit Name"
+				description="Edit your name to be displayed on the platform. It may require a refresh to see the changes."
+			>
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+					<form
+						onSubmit={form.handleSubmit(onSubmit)}
+						className="space-y-8 mx-4"
+					>
 						<div className="grid gap-4">
 							{/* Name Field */}
 							<FormField
@@ -99,7 +100,11 @@ export default function UpdateProfileButton({
 											Name
 										</FormLabel>
 										<FormControl>
-											<Input id="name" placeholder={userName} {...field} />
+											<Input
+												id="name"
+												placeholder={userName || "Enter your name"}
+												{...field}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -118,8 +123,9 @@ export default function UpdateProfileButton({
 						</div>
 					</form>
 				</Form>
-				<DialogFooter></DialogFooter>
-			</DialogContent>
-		</Dialog>
+			</ResponsiveFormDialog>
+
+			<Button onClick={() => setDialogOpen(true)}>Edit Name</Button>
+		</>
 	);
 }

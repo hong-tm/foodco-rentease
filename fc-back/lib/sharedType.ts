@@ -92,3 +92,33 @@ export const feedbackSchema = z.object({
 });
 
 export const createFeedbackSchema = feedbackSchema.omit({ id: true });
+
+export const userSchema = z.object({
+	id: z.string(),
+	email: z.string(),
+	emailVerified: z.boolean(),
+	name: z.string(),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+	image: z.string().optional(),
+	phone: z.string().optional(),
+	banned: z.boolean().optional(),
+	role: z.string().optional(),
+	banReason: z.string().optional(),
+	banExpires: z.date().optional(),
+});
+
+export const sessionSchema = z.object({
+	id: z.string(),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+	userId: z.string(),
+	expiresAt: z.date(),
+	token: z.string(),
+	ipAddress: z.string().optional(),
+	userAgent: z.string().optional(),
+	impersonatedBy: z.string().optional(),
+	user: userSchema,
+});
+
+export const rentalsSchema = z.object({});

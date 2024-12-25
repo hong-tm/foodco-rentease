@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export default function EmailVerifiedPage() {
+export function EmailVerifiedPage() {
 	const navigate = useNavigate();
 
 	return (

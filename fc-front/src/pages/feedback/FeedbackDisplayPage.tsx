@@ -15,6 +15,7 @@ import {
 	Feedback,
 	getAllFeedbackQueryOptions,
 	removeFeedbackById,
+	deleteFeedback,
 } from "@/api/feedbackApi";
 import { Trash2 } from "lucide-react";
 import {
@@ -28,7 +29,6 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteFeedback } from "@/api/feedbackApi";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ const emojiMap: Record<Feedback["happiness"], JSX.Element> = {
 	1: <Angry size={16} />,
 };
 
-export function FeedbackPage() {
+export function FeedbackDisplayPage() {
 	const { data, error, isPending } = useQuery(getAllFeedbackQueryOptions);
 
 	// Loading and error states
@@ -61,8 +61,7 @@ export function FeedbackPage() {
 	}
 	if (error)
 		return <div className="justify-center p-4">Error: {error.message}</div>;
-	if (!data)
-		return <div className="justify-center p-4">No feedback available</div>;
+	if (!data) return toast.error("Failed to fetch feedbacks. No data returned.");
 
 	return (
 		<div className="flex flex-wrap gap-4 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
@@ -101,7 +100,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
 							<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
 							<AlertDialogDescription>
 								This action cannot be undone. This will permanently delete the
-								feedback.
+								feedback {feedback.id}.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>

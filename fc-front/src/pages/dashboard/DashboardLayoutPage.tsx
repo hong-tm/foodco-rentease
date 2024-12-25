@@ -6,40 +6,45 @@ import {
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Outlet, useNavigate } from "react-router-dom";
-import Breadcrumbs from "./components/breadcrumbs";
 import { authClient } from "@/lib/auth-client";
-import { Suspense, useEffect, useState } from "react";
-import { toast } from "sonner";
-import UserDashboardSidebar from "./components/user-dashboard-sidebar";
-import { DashboardSkeleton } from "./components/dashboard-skelecton";
+import { Suspense } from "react";
+import UserDashboardSidebar from "./components/UserDashboardSidebar";
+import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { ErrorBoundary } from "react-error-boundary";
+import { useSession } from "@/api/authApi";
+import { toast } from "sonner";
+import Breadcrumbs from "./components/breadcrumbs";
 
-export function DashboardPage() {
+export function DashboardLayoutPage() {
 	const navigate = useNavigate();
-	const [isSessionChecked, setSessionChecked] = useState(false);
+	// const [isSessionChecked, setSessionChecked] = useState(false);
 
-	useEffect(() => {
-		if (!isSessionChecked) {
-			async function checkSession() {
-				const session = await authClient.getSession();
-				if (!session.data) {
-					toast.error("You are not logged in");
-					setTimeout(() => {
-						navigate("/");
-						toast.info("Redirecting to login page ...");
-					}, 3000);
-				} else {
-					setSessionChecked(true);
-				}
-			}
-			checkSession();
-		}
-	}, [navigate, isSessionChecked]);
+	// useEffect(() => {
+	// 	if (!isSessionChecked) {
+	// 		async function checkSession() {
+	// 			const session = await authClient.getSession();
 
-	if (!isSessionChecked) {
+	// 			// console.log(session);
+	// 			if (!session.data) {
+	// 				toast.error("You are not logged in");
+	// 				setTimeout(() => {
+	// 					navigate("/");
+	// 					toast.info("Redirecting to login page ...");
+	// 				}, 3000);
+	// 			} else {
+	// 				setSessionChecked(true);
+	// 			}
+	// 		}
+	// 		checkSession();
+	// 	}
+	// }, [navigate, isSessionChecked]);
+
+	const { data: session, isLoading, error } = useSession(authClient);
+
+	if (isLoading) {
 		return (
 			<SidebarProvider>
-				<UserDashboardSidebar />
+				<UserDashboardSidebar authClient={authClient} />
 				<SidebarInset>
 					<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
 						<div className="flex items-center gap-2 px-4">
@@ -54,12 +59,19 @@ export function DashboardPage() {
 					</main>
 				</SidebarInset>
 			</SidebarProvider>
-		); // skeleton loader
+		);
+	}
+
+	if (error || !session) {
+		setTimeout(() => {
+			navigate("/");
+		}, 1000);
+		return toast.error("You are not logged in");
 	}
 
 	return (
 		<SidebarProvider>
-			<UserDashboardSidebar />
+			<UserDashboardSidebar authClient={authClient} />
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
 					<div className="flex items-center gap-2 px-4">
