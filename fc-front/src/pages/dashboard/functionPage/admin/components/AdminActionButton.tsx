@@ -1,3 +1,4 @@
+import { useSession } from "@/api/authApi";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -18,6 +19,7 @@ import {
 	UserX,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 type UserAction = {
@@ -35,6 +37,8 @@ export function AdminActionButton({
 	const [openChangeRole, setOpenChangeRole] = useState(false);
 	const [openImpersonate, setOpenImpersonate] = useState(false);
 	const [openBanUser, setOpenBanUser] = useState(false);
+
+	const { refetch } = useSession(authClient);
 
 	const handleChangeRole = async () => {
 		try {
@@ -55,10 +59,24 @@ export function AdminActionButton({
 		}
 	};
 
+	const navigate = useNavigate();
+
 	const handleImpersonateUser = async () => {
-		await authClient.admin.impersonateUser({
-			userId,
-		});
+		await authClient.admin.impersonateUser(
+			{
+				userId,
+			},
+			{
+				onSuccess: () => {
+					navigate("/dashboard", { replace: true });
+					toast.success("Impersonating user successfully");
+				},
+				onError: (error) => {
+					toast.error("Failed to impersonate user: " + error);
+				},
+			}
+		);
+		await refetch();
 	};
 
 	const handleBanUser = async () => {

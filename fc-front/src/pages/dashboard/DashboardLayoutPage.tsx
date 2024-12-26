@@ -17,27 +17,6 @@ import Breadcrumbs from "./components/breadcrumbs";
 
 export function DashboardLayoutPage() {
 	const navigate = useNavigate();
-	// const [isSessionChecked, setSessionChecked] = useState(false);
-
-	// useEffect(() => {
-	// 	if (!isSessionChecked) {
-	// 		async function checkSession() {
-	// 			const session = await authClient.getSession();
-
-	// 			// console.log(session);
-	// 			if (!session.data) {
-	// 				toast.error("You are not logged in");
-	// 				setTimeout(() => {
-	// 					navigate("/");
-	// 					toast.info("Redirecting to login page ...");
-	// 				}, 3000);
-	// 			} else {
-	// 				setSessionChecked(true);
-	// 			}
-	// 		}
-	// 		checkSession();
-	// 	}
-	// }, [navigate, isSessionChecked]);
 
 	const { data: session, isLoading, error } = useSession(authClient);
 
