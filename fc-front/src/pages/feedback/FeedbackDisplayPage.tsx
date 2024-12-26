@@ -64,7 +64,7 @@ export function FeedbackDisplayPage() {
 	if (!data) return toast.error("Failed to fetch feedbacks. No data returned.");
 
 	return (
-		<div className="flex flex-wrap gap-4 p-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+		<div className="flex flex-wrap gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3">
 			{data.map((feedback) => (
 				<FeedbackCard key={feedback.id} feedback={feedback} />
 			))}

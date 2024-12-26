@@ -35,8 +35,8 @@ export const useSession = (authClient: any) => {
 			return session.data;
 		},
 		staleTime: 1000 * 60 * 1, // Cache for 1 minutes
-		refetchOnWindowFocus: true,
-		refetchInterval: 1000 * 10, // Refetch every 10 seconds
+		// refetchOnWindowFocus: true,
+		// refetchInterval: 1000 * 10, // Refetch every 10 seconds
 		retry: false, // No retries for session fetching
 	});
 };
