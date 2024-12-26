@@ -31,57 +31,83 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useSession } from "@/api/authApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Role = "admin" | "user" | "rental";
+
+export interface User {
+	id: string;
+	name: string;
+	email: string;
+	role: Role;
+	image?: string;
+}
+
+interface UserSession {
+	impersonatedBy?: boolean;
+}
+
+interface SessionData {
+	user: User;
+	session: UserSession;
+}
 
 export default function UserDashboardSidebar({
 	authClient,
 	...props
 }: React.ComponentProps<typeof Sidebar> & { authClient?: any }) {
-	// const [userName, setUserName] = useState("");
-	// const [userRole, setUserRole] = useState("");
-	// const [userAvatar, setUserAvatar] = useState("");
-	// const [userEmail, setUserEmail] = useState("");
+	const queryClient = useQueryClient();
+	const { data: session, isLoading, error, refetch } = useSession(authClient);
+	const [currentSession, setCurrentSession] = useState<SessionData | null>(
+		null
+	);
 
-	// async function checkSession() {
-	// 	try {
-	// 		const session = await authClient.getSession();
+	const navigate = useNavigate();
 
-	// 		if (!session.data) {
-	// 			console.log("You are not logged in");
-	// 			return;
-	// 		}
+	useEffect(() => {
+		if (session) {
+			setCurrentSession(session);
+		}
+	}, [session]);
 
-	// 		const name = session.data?.user?.name;
-	// 		if (name) setUserName(name);
+	// Handle showing toast for errors or unavailable user data
+	useEffect(() => {
+		if (error) {
+			toast.error("An error occurred: " + error);
+		} else if (!isLoading && !session) {
+			toast.error("User data is unavailable.");
+		}
+	}, [error, session, isLoading]);
 
-	// 		const role = session.data?.user?.role;
-	// 		if (role) setUserRole(role);
+	const stopImpersonUser = async () => {
+		try {
+			await authClient.admin.stopImpersonating();
+			// Optimistically update the session data
+			queryClient.setQueryData(["user-session"], (oldData: any) => {
+				if (oldData) {
+					return {
+						...oldData,
+						session: { ...oldData.session, impersonatedBy: false },
+					};
+				}
+				return oldData;
+			});
 
-	// 		const avatar = session.data?.user.image;
-	// 		if (avatar) {
-	// 			setUserAvatar(avatar);
-	// 			preloadImage(avatar);
-	// 		}
+			// Optionally, refetch session if necessary
+			await refetch();
 
-	// 		const email = session.data?.user.email;
-	// 		if (email) setUserEmail(email);
-	// 	} catch (err) {
-	// 		toast.error("An error occurred: " + err);
-	// 	}
-	// }
-	// checkSession();
-
-	// function preloadImage(url: string) {
-	// 	const img = new Image();
-	// 	img.src = url;
-	// }
-
-	const { data: session, isLoading, error } = useSession(authClient);
+			toast.success("Impersonation stopped successfully.");
+			navigate("/dashboard", { replace: true });
+		} catch (error) {
+			toast.error("Failed to stop impersonating user: " + error);
+		}
+	};
 
 	if (isLoading)
 		return (
@@ -91,11 +117,37 @@ export default function UserDashboardSidebar({
 		);
 	if (error) return toast.error("An error occurred: " + error), null;
 
-	const user = session?.user;
-	const userName = user?.name || "Unknown User";
-	const userRole = user?.role || "Unknown Role";
-	const userAvatar = user?.image || "/default-avatar.png";
-	const userEmail = user?.email || "No Email";
+	if (!currentSession || !currentSession.user) {
+		return null; // Already handle the toast in the effect hook
+	}
+
+	const currentSessionData = currentSession || {};
+	const user = currentSessionData.user;
+	const userSession = currentSessionData.session;
+
+	const userName = user.name || "Unknown User";
+	const userRole = user.role || "Unknown Role";
+	const userAvatar = user.image || "/default-avatar.png";
+	const userEmail = user.email || "No Email";
+	const userImpernate = userSession.impersonatedBy || false;
+
+	// Preload user avatar image
+	preloadImage(userAvatar);
+
+	function preloadImage(url: string) {
+		const img = new Image();
+		img.src = url;
+	}
+
+	const impersonateButton = userImpernate ? (
+		<Button
+			onClick={stopImpersonUser}
+			variant="destructive"
+			className="w-full my-2 hover:bg-red-600 hover:text-white"
+		>
+			Stop Impersonating
+		</Button>
+	) : null;
 
 	const data = {
 		admin: {
@@ -390,6 +442,7 @@ export default function UserDashboardSidebar({
 								</div>
 							</NavLink>
 						</SidebarMenuButton>
+						<SidebarMenuButton asChild>{impersonateButton}</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>

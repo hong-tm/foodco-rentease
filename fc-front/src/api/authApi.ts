@@ -34,7 +34,9 @@ export const useSession = (authClient: any) => {
 			if (!session.data) throw new Error("No session data found");
 			return session.data;
 		},
-		staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+		staleTime: 1000 * 60 * 1, // Cache for 1 minutes
+		refetchOnWindowFocus: true,
+		refetchInterval: 1000 * 10, // Refetch every 10 seconds
 		retry: false, // No retries for session fetching
 	});
 };

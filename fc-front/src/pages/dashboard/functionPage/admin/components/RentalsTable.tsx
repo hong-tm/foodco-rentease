@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
 	Table,
 	TableBody,
@@ -9,12 +8,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useQuery } from "@tanstack/react-query";
-import { EllipsisVertical } from "lucide-react";
+import { TenantActionButton } from "./TenantActionButton";
 
 export default function RentalsTable() {
-	// const { data, error, isLoading } = useQuery();
-
 	return (
 		<div className="grid grid-cols-1 gap-4">
 			<div className="overflow-x-auto">
@@ -38,9 +34,7 @@ export default function RentalsTable() {
 							<TableCell>Paid</TableCell>
 							<TableCell>Credit Card</TableCell>
 							<TableCell className="text-right">
-								<Button variant="ghost" size="icon">
-									<EllipsisVertical />
-								</Button>
+								<TenantActionButton />
 							</TableCell>
 						</TableRow>
 					</TableBody>
