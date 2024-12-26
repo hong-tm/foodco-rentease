@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { authClient } from "@/lib/auth-client";
-import { useState } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import {
 	Card,
@@ -11,69 +10,49 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import UpdateProfileButton from "../dashboard/components/UpdateProfileButton";
+import { useSession } from "@/api/authApi";
+import { useUser } from "@/context/UserContext"; // Import UserData type
 
-export default function UserProfilePage() {
-	const [userName, setUserName] = useState("");
-	const [userRole, setUserRole] = useState("");
-	const [userAvatar, setUserAvatar] = useState("");
-	const [userEmail, setUserEmail] = useState("");
-	const [userId, setUserId] = useState("");
-	const [userVerified, setUserVerified] = useState(false);
-	const [userPhone, setUserPhone] = useState("");
+export default function UserProfilePage({ authClient }: { authClient: any }) {
+	const { data: session, error, isLoading } = useSession(authClient);
+	const { user, setUser } = useUser(); // Use the context here
 
-	async function checkSession() {
-		try {
-			const session = await authClient.getSession();
+	useEffect(() => {
+		if (session) {
+			// Extracting the user data from the session and setting it in the context
+			const { user: sessionUser } = session;
 
-			if (!session.data) {
-				console.log("You are not logged in");
-				return;
+			if (sessionUser) {
+				setUser({
+					name: sessionUser.name || "",
+					role: sessionUser.role || "",
+					email: sessionUser.email || "",
+					id: sessionUser.id || "",
+					verified: sessionUser.verified ?? false,
+					phone: sessionUser.phone || "",
+					avatar: sessionUser.image || "",
+				});
 			}
-
-			const name = session.data?.user?.name;
-			if (name) setUserName(name);
-
-			const role = session.data?.user?.role;
-			if (role) setUserRole(role);
-
-			const avatar = session.data?.user.image;
-			if (avatar) {
-				setUserAvatar(avatar);
-				preloadImage(avatar);
-			}
-
-			const email = session.data?.user.email;
-			if (email) setUserEmail(email);
-
-			const id = session.data?.user.id;
-			if (id) setUserId(id);
-
-			const verified = session.data?.user.emailVerified;
-			if (verified) setUserVerified(verified);
-
-			const phone = session.data?.user.phone;
-			if (phone) setUserPhone(phone);
-		} catch (err) {
-			toast.error("An error occurred: " + err);
 		}
-	}
-	checkSession();
+	}, [session, setUser]);
 
-	function preloadImage(url: string) {
-		const img = new Image();
-		img.src = url;
+	if (error) {
+		toast.error("An error occurred: " + error);
 	}
 
+	if (isLoading) return <div>Loading...</div>;
+
+	// Now, user data is retrieved from the context
 	const userData = [
-		{ label: "Name", value: userName },
-		{ label: "Role", value: userRole },
-		{ label: "Email", value: userEmail },
-		{ label: "User ID", value: userId },
+		{ label: "Name", value: user?.name || "" },
+		{ label: "Role", value: user?.role || "" },
+		{ label: "Email", value: user?.email || "" },
+		{ label: "User ID", value: user?.id || "" },
 		{
 			label: "Verified",
-			value: userVerified ? "Yes" : "No",
+			value: user?.verified ? "Yes" : "No",
 		},
-		{ label: "Phone", value: userPhone || "Not available" },
+		{ label: "Phone", value: user?.phone || "Not available" },
 	];
 
 	const getFallback = (name: string) => {
@@ -86,8 +65,18 @@ export default function UserProfilePage() {
 	};
 
 	const handleNameUpdate = (newName: string) => {
-		setUserName(newName); // Dynamically update the UI without reloading
+		setUser({
+			...user,
+			name: newName,
+			role: user?.role || "", // Ensure role is always a string
+			email: user?.email || "", // Ensure email is always a string
+			id: user?.id || "", // Ensure id is always a string
+			verified: user?.verified ?? false, // Ensure verified is a boolean
+			phone: user?.phone || "", // Ensure phone is always a string
+			avatar: user?.avatar || "", // Ensure avatar is always a string
+		});
 	};
+
 	return (
 		<div className="flex items-center justify-center h-full">
 			<Card className="space-y-6 md:w-3/4 lg:w-2/3 xl:w-1/2 border-none shadow-none">
@@ -95,15 +84,15 @@ export default function UserProfilePage() {
 					<Avatar className="w-16 h-16 rounded-full mb-3">
 						<AvatarImage
 							rel="preload"
-							src={userAvatar}
-							alt={`${userName}'s avatar`}
+							src={user?.avatar}
+							alt={`${user?.name}'s avatar`}
 						/>
 						<AvatarFallback className="rounded-lg">
-							{getFallback(userName)}
+							{getFallback(user?.name || "")}
 						</AvatarFallback>
 					</Avatar>
 					<CardTitle className="text-2xl font-bold text-center mt-4">
-						{`${userName}'s Profile`}
+						{`${user?.name}'s Profile`}
 						<CardDescription></CardDescription>
 					</CardTitle>
 				</CardHeader>

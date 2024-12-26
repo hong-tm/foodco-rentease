@@ -7,6 +7,7 @@ import { DashboardLayoutPage } from "./pages/dashboard/DashboardLayoutPage.tsx";
 import App from "./App.tsx";
 import SignUpPage from "./pages/(auth)/SignUpPage.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { authClient } from "./lib/auth-client.ts";
 
 const FeedbackDisplayPage = lazy(() =>
 	import("./pages/feedback/FeedbackDisplayPage.tsx").then((module) => ({
@@ -93,7 +94,7 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/dashboard",
-			element: <DashboardLayoutPage />,
+			element: <DashboardLayoutPage authClient={authClient} />,
 			children: [
 				{
 					path: "/dashboard/feedback",
@@ -105,11 +106,11 @@ const router = createBrowserRouter(
 				},
 				{
 					path: "/dashboard/monthly-rent-overview",
-					element: <DashboardLayoutPage />,
+					element: <DashboardLayoutPage authClient={authClient} />,
 				},
 				{
 					path: "/dashboard/account",
-					element: <UserProfilePage />,
+					element: <UserProfilePage authClient={authClient} />,
 				},
 				{
 					path: "/dashboard/admin",
