@@ -1,9 +1,19 @@
+import { api } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { UserAttributes } from "@server/db/userModel";
+import {
+	StallAttributes,
+	UserAttributes,
+	UserStallAttributes,
+} from "@server/db/userModel";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 export interface GetUsersResponse {
 	users: UserAttributes[];
+}
+
+export interface GetRentalsResponse {
+	user: UserStallAttributes[];
+	stalls: StallAttributes[];
 }
 
 export async function fetchUsers(): Promise<GetUsersResponse> {
@@ -24,7 +34,15 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
 	}
 }
 
-export async function fetchRentals() {}
+export async function fetchRentals(): Promise<GetRentalsResponse> {
+	const res = await api.users["rentals"].$get();
+	if (!res.ok) throw new Error("Failed to fetch rentals");
+	const data = await res.json();
+	const { user, stalls } = data as GetRentalsResponse;
+	if (!Array.isArray(user)) throw new Error("Invalid user data format");
+
+	return { user, stalls };
+}
 
 export const useSession = (authClient: any) => {
 	return useQuery({
@@ -45,5 +63,11 @@ export const useSession = (authClient: any) => {
 export const fetchUsersQueryOptions: UseQueryOptions<GetUsersResponse> = {
 	queryKey: ["fetch-users"],
 	queryFn: fetchUsers,
+	staleTime: 1000 * 60 * 1, // 1 minute
+};
+
+export const fetchRentalsQueryOptions: UseQueryOptions<GetRentalsResponse> = {
+	queryKey: ["fetch-rentals"],
+	queryFn: fetchRentals,
 	staleTime: 1000 * 60 * 1, // 1 minute
 };

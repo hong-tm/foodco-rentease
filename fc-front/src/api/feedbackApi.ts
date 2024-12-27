@@ -31,7 +31,7 @@ export async function getAllFeedback(): Promise<Feedback[]> {
 	});
 
 	if (!res.ok) {
-		throw new Error("Failed to fetch feedbacks, " + res.statusText);
+		throw new Error("Failed to fetch feedbacks");
 	}
 
 	// Cast the response to FeedbackResponse using `as`
