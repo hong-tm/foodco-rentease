@@ -67,6 +67,22 @@ const AdminManage = lazy(() =>
 	)
 );
 
+const StallAvailabilityPage = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/StallAvailabilityPage.tsx").then(
+		(module) => ({
+			default: module.StallAvailabilityPage,
+		})
+	)
+);
+
+const AdminDashboard = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/AdminDashboard.tsx").then(
+		(module) => ({
+			default: module.AdminDashboard,
+		})
+	)
+);
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
@@ -119,6 +135,14 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/tenant-information",
 					element: <TenantInformationPage />,
+				},
+				{
+					path: "/dashboard/stall-availability",
+					element: <StallAvailabilityPage />,
+				},
+				{
+					path: "/dashboard/admin-dashboard",
+					element: <AdminDashboard />,
 				},
 			],
 		},

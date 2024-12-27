@@ -10,7 +10,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import UpdateProfileButton from "../dashboard/components/UpdateProfileButton";
-import { useSession } from "@/api/authApi";
+import { useSession } from "@/api/adminApi";
 import { useUser } from "@/context/UserContext"; // Import UserData type
 
 export default function UserProfilePage({ authClient }: { authClient: any }) {

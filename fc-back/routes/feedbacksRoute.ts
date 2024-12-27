@@ -19,7 +19,12 @@ export const feedbacksRoute = new Hono()
 
 	.post("/", zValidator("json", createFeedbackSchema), async (c) => {
 		try {
+			console.log(c.req.valid("json"));
 			const feedback = await FeedbackTable.create(c.req.valid("json"));
+
+			if (!feedback) {
+				return c.notFound();
+			}
 
 			c.status(201);
 			return c.json({ feedback: feedback });

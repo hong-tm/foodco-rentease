@@ -25,7 +25,7 @@ export function TenantActionButton() {
 				<DropdownMenuContent align="end">
 					<DropdownMenuLabel>Tenant Action</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>Change Role</DropdownMenuItem>
+					<DropdownMenuItem>Send Reminder Email</DropdownMenuItem>
 					<DropdownMenuItem>Impersonate User</DropdownMenuItem>
 					<DropdownMenuSeparator />
 				</DropdownMenuContent>

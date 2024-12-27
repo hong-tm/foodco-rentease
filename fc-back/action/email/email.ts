@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import * as dotenv from "dotenv";
+import env from "../../env.js";
 dotenv.config();
 
 export async function sendEmail({
@@ -11,9 +12,9 @@ export async function sendEmail({
 	subject: string;
 	text: string;
 }) {
-	const resend: any = new Resend(process.env.RESEND_API);
+	const resend: any = new Resend(env.RESEND_API);
 
-	if (!process.env.RESEND_API) {
+	if (!env.RESEND_API) {
 		throw new Error("RESEND_API is not set");
 	}
 

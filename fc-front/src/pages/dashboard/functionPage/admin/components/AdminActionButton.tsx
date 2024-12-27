@@ -1,4 +1,4 @@
-import { useSession } from "@/api/authApi";
+import { useSession } from "@/api/adminApi";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -119,7 +119,7 @@ export function AdminActionButton({
 				/>
 				<ResponsiveAlertDialog
 					title="Are you sure you want to impersonate this user?"
-					description="Impersonating this user will log you out and log in as this user. You may need to refrens the page to see the changes."
+					description="Impersonating this user will log you out and log in as this user. You may need to refresh the page to see the changes."
 					onClick={handleImpersonateUser}
 					open={openImpersonate}
 					setOpen={setOpenImpersonate}

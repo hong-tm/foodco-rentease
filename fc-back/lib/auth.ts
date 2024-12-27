@@ -3,20 +3,21 @@ import * as dotenv from "dotenv";
 import { admin, oneTap, openAPI } from "better-auth/plugins";
 import { sendEmail } from "../action/email/email.js";
 import pg from "pg";
+import env from "../env.js";
 
 dotenv.config();
 const { Pool } = pg;
 
 export const auth = betterAuth({
-	baseURL: process.env.BETTER_AUTH_URL as string,
-	secret: process.env.BETTER_AUTH_SECRET as string,
+	baseURL: env.BETTER_AUTH_URL,
+	secret: env.BETTER_AUTH_SECRET,
 	// database: new Database("./database.sqlite"),
 	database: new Pool({
-		database: process.env.PG_DATABASE as string,
+		database: env.PG_DATABASE,
 		host: "localhost",
-		user: process.env.PG_USER as string,
-		password: process.env.PG_PASSWORD as string,
-		port: process.env.PG_PORT as number | undefined,
+		user: env.PG_USER,
+		password: env.PG_PASSWORD,
+		port: env.PG_PORT,
 		max: 10,
 	}),
 
@@ -47,7 +48,7 @@ export const auth = betterAuth({
 		sendOnSignUp: true,
 		autoSignInAfterVerification: true,
 		sendVerificationEmail: async ({ user, token }) => {
-			const verificationUrl = `${process.env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${process.env.EMAIL_VERIFICATION_CALLBACK_URL}`;
+			const verificationUrl = `${env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${env.EMAIL_VERIFICATION_CALLBACK_URL}`;
 
 			await sendEmail({
 				to: user.email,
@@ -59,8 +60,8 @@ export const auth = betterAuth({
 	},
 	socialProviders: {
 		google: {
-			clientId: process.env.GOOGLE_CLIENT_ID as string,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+			clientId: env.GOOGLE_CLIENT_ID,
+			clientSecret: env.GOOGLE_CLIENT_SECRET,
 			mapProfileToUser: (profile) => {
 				return {
 					firstName: profile.given_name,
@@ -69,8 +70,8 @@ export const auth = betterAuth({
 			},
 		},
 		github: {
-			clientId: process.env.GITHUB_CLIENT_ID as string,
-			clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+			clientId: env.GITHUB_CLIENT_ID,
+			clientSecret: env.GITHUB_CLIENT_SECRET,
 			mapProfileToUser: (profile) => {
 				return {
 					firstName: profile.name.split(" ")[0],
@@ -79,7 +80,7 @@ export const auth = betterAuth({
 			},
 		},
 	},
-	trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",") || [],
+	trustedOrigins: env.ALLOWED_ORIGINS?.split(",") || [],
 	session: {
 		expiresIn: 60 * 60 * 24 * 3, // 3 days
 		updateAge: 60 * 60 * 6, // 6 hours (every 6 hours the session expiration is updated)

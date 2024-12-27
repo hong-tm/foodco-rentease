@@ -1,11 +1,9 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { logger } from "hono/logger";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { prettyJSON } from "hono/pretty-json";
 import { Sequelize } from "@sequelize/core";
 import { auth } from "./lib/auth.js";
-import * as dotenv from "dotenv";
 import { cors } from "hono/cors";
 import { expensesRoute } from "./routes/expensesRoute.js";
 import type { TurnstileServerValidationResponse } from "@marsidev/react-turnstile";
@@ -22,9 +20,16 @@ import {
 	verification,
 	UtilitiesWater,
 	StallTier,
+	UtilitiesElectric,
 } from "./db/userModel.js";
 import { feedbacksRoute } from "./routes/feedbacksRoute.js";
 import { usersRoute } from "./routes/usersRoute.js";
+import { pinoLogger } from "hono-pino";
+import pretty from "pino-pretty";
+import { pino } from "pino";
+import env from "./env.js";
+import initDB from "./db/initDB.js";
+import { stallsRoute } from "./routes/stallsRoute.js";
 
 const app = new Hono<{
 	Variables: {
@@ -33,10 +38,9 @@ const app = new Hono<{
 	};
 }>();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
-const verifyEndpoint =
-	"https://challenges.cloudflare.com/turnstile/v0/siteverify";
-const secret = process.env.TURNSTILE_SECRET_KEY as string;
+const allowedOrigins = env.ALLOWED_ORIGINS?.split(",") || [];
+const verifyEndpoint = env.TURNSTILE_VERIFY_URL;
+const secret = env.TURNSTILE_SECRET_KEY;
 
 app.use("*", async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -54,7 +58,14 @@ app.use("*", async (c, next) => {
 
 app.get("*", prettyJSON());
 
-app.use(logger());
+app.use(
+	pinoLogger({
+		pino: pino(env.NODE_ENV === "production" ? undefined : pretty()),
+		http: {
+			reqId: () => crypto.randomUUID(),
+		},
+	})
+);
 
 app.get("/api", (c) => {
 	return c.text("API is running!");
@@ -64,7 +75,8 @@ export const apiRoutes = app
 	.basePath("/api")
 	.route("/expenses", expensesRoute)
 	.route("/feedbacks", feedbacksRoute)
-	.route("/users", usersRoute);
+	.route("/users", usersRoute)
+	.route("/stalls", stallsRoute);
 
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
@@ -163,11 +175,17 @@ const sequelize = new Sequelize({
 	// dialect: SqliteDialect,
 	// storage: "./database.sqlite",
 	dialect: PostgresDialect,
-	database: process.env.PG_DATABASE,
-	user: process.env.PG_USER,
-	password: process.env.PG_PASSWORD,
+	database: env.PG_DATABASE,
+	user: env.PG_USER,
+	password: env.PG_PASSWORD,
 	host: "localhost",
-	port: process.env.PG_PORT as number | undefined,
+	port: env.PG_PORT,
+	pool: {
+		max: 10,
+		min: 0,
+		acquire: 30000,
+		idle: 10000,
+	},
 	clientMinMessages: "notice",
 	logging: false,
 	models: [
@@ -181,6 +199,7 @@ const sequelize = new Sequelize({
 		UtilitiesWater,
 		Notification,
 		StallTier,
+		UtilitiesElectric,
 	],
 });
 
@@ -192,6 +211,7 @@ async function syncModels(log = true) {
 }
 
 syncModels();
+initDB();
 
 try {
 	await sequelize.authenticate();
@@ -203,7 +223,6 @@ try {
 //do route up there
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
-dotenv.config({ path: "./.env" });
 
 serve({
 	fetch: app.fetch,

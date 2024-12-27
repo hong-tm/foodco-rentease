@@ -1,9 +1,10 @@
 import { Hono } from "hono";
-import { adminVerify } from "../lib/verifyuser.js";
 import { user as UserTable } from "../db/userModel.js";
+import { Op } from "@sequelize/core";
+import { adminVerify } from "../lib/verifyuser.js";
 
 export const usersRoute = new Hono()
-	.get("/", async (c) => {
+	.get("/", adminVerify, async (c) => {
 		const users = await UserTable.findAll({
 			order: ["name"],
 		});
@@ -15,18 +16,29 @@ export const usersRoute = new Hono()
 		return c.json({ user: users });
 	})
 
-	.get("/rentals", async (c) => {
+	.get("/rentals", adminVerify(), async (c) => {
 		const users = await UserTable.findAll({
 			where: {
-				role: "rental",
+				role: {
+					[Op.ne]: "user",
+				},
 			},
 			order: ["name"],
-			include: ["stall"],
+			include: [
+				{
+					association: "stalls",
+					where: {
+						rentStatus: true,
+					},
+				},
+			],
 		});
 
 		if (!users) {
 			return c.notFound();
 		}
+
+		c.status(200);
 
 		return c.json({ user: users });
 	});

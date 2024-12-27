@@ -31,8 +31,8 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useSession } from "@/api/authApi";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useSession } from "@/api/adminApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -112,7 +112,7 @@ export default function UserDashboardSidebar({
 	if (isLoading)
 		return (
 			<Sidebar collapsible="icon" variant="inset" {...props}>
-				<Skeleton className="h-full w-full rounded-xl" />
+				<Skeleton className="h-full w-full rounded-xl my-3" />
 			</Sidebar>
 		);
 	if (error) return toast.error("An error occurred: " + error), null;
@@ -159,13 +159,13 @@ export default function UserDashboardSidebar({
 			navMain: [
 				{
 					title: "Dashboard",
-					url: "#",
+					url: "/dashboard/admin-dashboard",
 					icon: ChartArea,
 					isActive: true,
 					items: [
 						{
 							title: "Overview",
-							url: "#",
+							url: "/dashboard/admin-dashboard",
 						},
 						{
 							title: "Monthly Rent Overview",
@@ -191,16 +191,12 @@ export default function UserDashboardSidebar({
 				},
 				{
 					title: "Stall",
-					url: "#",
+					url: "/dashboard/stall-availability",
 					icon: Command,
 					items: [
 						{
 							title: "Stall Availability",
-							url: "#",
-						},
-						{
-							title: "Stall Details",
-							url: "#",
+							url: "/dashboard/stall-availability",
 						},
 						{
 							title: "Rental History",
@@ -210,7 +206,7 @@ export default function UserDashboardSidebar({
 				},
 				{
 					title: "Tenant",
-					url: "#",
+					url: "/dashboard/tenant-information",
 					icon: Users,
 					items: [
 						{
@@ -421,6 +417,12 @@ export default function UserDashboardSidebar({
 	};
 
 	const currentRole = (userRole as Role) || "user";
+
+	const location = useLocation();
+
+	const isActive = (url: string) => {
+		return location.pathname.startsWith(url); // Check if the current path starts with the given URL
+	};
 
 	return (
 		<Sidebar collapsible="icon" variant="inset" {...props}>
