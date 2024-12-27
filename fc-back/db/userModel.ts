@@ -20,6 +20,13 @@ import {
 
 export type UserAttributes = InferAttributes<user>;
 export type SessionAttributes = InferAttributes<session>;
+export type StallAttributes = InferAttributes<Stall>;
+export type UserStallAttributes = InferAttributes<user> & {
+	stalls: StallAttributes[];
+};
+export type StallUserAttributes = InferAttributes<Stall> & {
+	user: UserAttributes;
+};
 
 @Table({
 	freezeTableName: true,
@@ -35,12 +42,12 @@ export class user extends Model<
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare name: string;
+	declare name: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
 	@Unique
-	declare email: string;
+	declare email: CreationOptional<string>;
 
 	@Attribute(DataTypes.BOOLEAN)
 	@NotNull
@@ -48,7 +55,7 @@ export class user extends Model<
 	declare emailVerified: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.STRING)
-	declare image: string;
+	declare image: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
 	@Default(DataTypes.NOW)
@@ -69,13 +76,13 @@ export class user extends Model<
 	declare banned: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.STRING)
-	declare banReason: string;
+	declare banReason: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
-	declare banExpires: Date;
+	declare banExpires: CreationOptional<Date>;
 
 	@Attribute(DataTypes.STRING)
-	declare phone: string;
+	declare phone: CreationOptional<string>;
 
 	// 'stallOwner' in Stall references UserTable.id
 	@HasMany(() => Stall, "stallOwner")
@@ -96,38 +103,38 @@ export class account extends Model<
 
 	@Attribute(DataTypes.TEXT)
 	@NotNull
-	declare accountId: string;
+	declare accountId: CreationOptional<string>;
 
 	@BelongsTo(() => user, "userId")
 	declare accountUser?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare userId: string;
+	declare userId: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare providerId: string;
+	declare providerId: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare accessToken: string;
+	declare accessToken: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare refreshToken: string;
+	declare refreshToken: CreationOptional<string>;
 
 	@Attribute(DataTypes.TEXT)
-	declare idToken: string;
+	declare idToken: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
-	declare accessTokenExpiresAt: Date;
+	declare accessTokenExpiresAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.DATE)
-	declare refreshTokenExpiresAt: Date;
+	declare refreshTokenExpiresAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.STRING)
-	declare scope: string;
+	declare scope: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare password: string;
+	declare password: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
 	@Default(DataTypes.NOW)
@@ -154,12 +161,12 @@ export class session extends Model<
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare expiresAt: Date;
+	declare expiresAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
 	@Unique
-	declare token: string;
+	declare token: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
 	@Default(DataTypes.NOW)
@@ -172,18 +179,18 @@ export class session extends Model<
 	declare updatedAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.STRING)
-	declare ipAddress: string;
+	declare ipAddress: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare userAgent: string;
+	declare userAgent: CreationOptional<string>;
 
 	@BelongsTo(() => user, "userId")
 	declare sessionUser?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
-	declare userId: string;
+	declare userId: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare impersonatedBy: string;
+	declare impersonatedBy: CreationOptional<string>;
 }
 
 @Table({
@@ -200,15 +207,15 @@ export class verification extends Model<
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare identifier: string;
+	declare identifier: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare value: string;
+	declare value: CreationOptional<string>;
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare expiresAt: Date;
+	declare expiresAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.DATE)
 	@Default(DataTypes.NOW)
@@ -235,23 +242,23 @@ export class Stall extends Model<
 	declare stallName: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare description: string;
+	declare description: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare stallImage: string;
+	declare stallImage: CreationOptional<string>;
 
 	@Attribute(DataTypes.DECIMAL(12, 2))
-	declare stallSize: number;
+	declare stallSize: CreationOptional<number>;
 
 	@BelongsTo(() => StallTier, "stallTierNo")
 	declare stallTierNumber?: NonAttribute<StallTier>;
 	@Attribute(DataTypes.INTEGER)
-	declare stallTierNo: number;
+	declare stallTierNo: CreationOptional<number>;
 
 	@BelongsTo(() => user, "stallOwner")
 	declare stallOwnerId?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
-	declare stallOwner: string;
+	declare stallOwner: CreationOptional<string>;
 
 	@Attribute(DataTypes.BOOLEAN)
 	@NotNull
@@ -259,10 +266,10 @@ export class Stall extends Model<
 	declare rentStatus: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.DATE)
-	declare startAt: Date;
+	declare startAt: CreationOptional<Date>;
 
 	@Attribute(DataTypes.DATE)
-	declare endAt: Date;
+	declare endAt: CreationOptional<Date>;
 }
 
 export class StallTier extends Model<
@@ -276,11 +283,14 @@ export class StallTier extends Model<
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare tierName: string;
+	declare tierName: CreationOptional<string>;
 
 	@Attribute(DataTypes.DECIMAL(12, 2))
 	@NotNull
-	declare tierPrice: number;
+	declare tierPrice: CreationOptional<number>;
+
+	@HasMany(() => Stall, "stallTierNo")
+	declare stallsTier?: NonAttribute<Stall[]>;
 }
 
 export class Feedback extends Model<
@@ -293,17 +303,17 @@ export class Feedback extends Model<
 	declare id: CreationOptional<number>;
 
 	@Attribute(DataTypes.STRING)
-	declare feedbackContent: string;
+	declare feedbackContent: CreationOptional<string>;
 
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare happiness: number;
+	declare happiness: CreationOptional<number>;
 
-	// @BelongsTo(() => Stall, "stall")
-	// declare feedbackStall?: NonAttribute<Stall>;
+	@BelongsTo(() => Stall, "stall")
+	declare feedbackStall?: NonAttribute<Stall>;
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare stall: number;
+	declare stall: CreationOptional<number>;
 }
 
 export class Payment extends Model<
@@ -317,10 +327,10 @@ export class Payment extends Model<
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare paymentType: string;
+	declare paymentType: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
-	declare paymentAmount: string;
+	declare paymentAmount: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@Default("Pending")
@@ -329,18 +339,18 @@ export class Payment extends Model<
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare paymentDate: Date;
+	declare paymentDate: CreationOptional<Date>;
 
 	@BelongsTo(() => Stall, "stallId")
 	declare paymentStall?: NonAttribute<Stall>;
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare stallId?: number;
+	declare stallId?: CreationOptional<number>;
 
 	@BelongsTo(() => UtilitiesWater, "utilitiesId")
 	declare paymentUtilitiesWater?: NonAttribute<UtilitiesWater>;
 	@Attribute(DataTypes.STRING)
-	declare utilitiesId?: string;
+	declare utilitiesId?: CreationOptional<string>;
 }
 
 export class UtilitiesWater extends Model<
@@ -356,15 +366,39 @@ export class UtilitiesWater extends Model<
 	declare utilitiesUser?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare userId: string;
+	declare userId: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare utilityType: string;
+	declare utilityType: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare utilityPayment: string;
+	declare utilityPayment: CreationOptional<string>;
+}
+
+export class UtilitiesElectric extends Model<
+	InferAttributes<UtilitiesElectric>,
+	InferCreationAttributes<UtilitiesElectric>
+> {
+	@Attribute(DataTypes.TEXT)
+	@PrimaryKey
+	@NotNull
+	declare id: CreationOptional<string>;
+
+	@BelongsTo(() => user, "userId")
+	declare utilitiesElectricUser?: NonAttribute<user>;
+	@Attribute(DataTypes.STRING)
+	@NotNull
+	declare userId: CreationOptional<string>;
+
+	@Attribute(DataTypes.STRING)
+	@NotNull
+	declare utilityType: CreationOptional<string>;
+
+	@Attribute(DataTypes.STRING)
+	@NotNull
+	declare utilityPayment: CreationOptional<string>;
 }
 
 export class Notification extends Model<
@@ -379,11 +413,11 @@ export class Notification extends Model<
 	@BelongsTo(() => user, "userId")
 	declare notificationUser?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
-	declare userId: string;
+	declare userId: CreationOptional<string>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare notificationMessage: string;
+	declare notificationMessage: CreationOptional<string>;
 
 	@Attribute(DataTypes.BOOLEAN)
 	@Default(false)
@@ -402,19 +436,19 @@ export class Appointment extends Model<
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare appointmentDate: Date;
+	declare appointmentDate: CreationOptional<Date>;
 
 	@BelongsTo(() => user, "userId")
 	declare appointmentUser?: NonAttribute<user>;
 	@Attribute(DataTypes.STRING)
 	@NotNull
-	declare userId: string;
+	declare userId: CreationOptional<string>;
 
 	@BelongsTo(() => Stall, "stallId")
 	declare appointmentStall?: NonAttribute<Stall>;
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare stallId: number;
+	declare stallId: CreationOptional<number>;
 
 	@Attribute(DataTypes.BOOLEAN)
 	@Default(false)
