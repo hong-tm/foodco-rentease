@@ -1,4 +1,3 @@
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
 	Card,
 	CardContent,
@@ -8,6 +7,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import StallsTable from "./components/StallsTable";
+import { Badge } from "@/components/ui/badge";
 
 export function StallAvailabilityPage() {
 	return (
@@ -21,9 +21,10 @@ export function StallAvailabilityPage() {
 			<CardContent>
 				<StallsTable />
 			</CardContent>
-			<VisuallyHidden>
-				<CardFooter></CardFooter>
-			</VisuallyHidden>
+			<CardFooter className="items-center justify-center gap-4">
+				<Badge variant="secondary">Rented</Badge>
+				<Badge variant="destructive">Not Rent Yet</Badge>
+			</CardFooter>
 		</Card>
 	);
 }

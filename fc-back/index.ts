@@ -204,14 +204,35 @@ const sequelize = new Sequelize({
 });
 
 async function syncModels(log = true) {
-	await sequelize.sync({});
-	if (log) {
-		console.log("All models were synchronized successfully.");
+	try {
+		await sequelize.sync({});
+		if (log) {
+			console.log("All models were synchronized successfully.");
+		}
+		return true;
+	} catch (error) {
+		console.error("Failed to synchronize models:", error);
+		return false;
 	}
 }
 
-syncModels();
-initDB();
+// Sequential initialization with error handling
+async function initializeDatabase() {
+	const modelsSynced = await syncModels();
+	if (!modelsSynced) {
+		console.error("Database initialization aborted: Model sync failed");
+		return;
+	}
+
+	try {
+		await initDB();
+		console.log("Database initialized successfully");
+	} catch (error) {
+		console.error("Failed to initialize database:", error);
+	}
+}
+
+initializeDatabase();
 
 try {
 	await sequelize.authenticate();

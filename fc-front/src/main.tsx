@@ -83,6 +83,22 @@ const AdminDashboard = lazy(() =>
 	)
 );
 
+const RentalDashboard = lazy(() =>
+	import("./pages/dashboard/functionPage/rental/RentalDashboard.tsx").then(
+		(module) => ({
+			default: module.RentalDashboard,
+		})
+	)
+);
+
+const UserDashboard = lazy(() =>
+	import("./pages/dashboard/functionPage/user/UserDashboard.tsx").then(
+		(module) => ({
+			default: module.UserDashboard,
+		})
+	)
+);
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
@@ -143,6 +159,14 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/admin-dashboard",
 					element: <AdminDashboard />,
+				},
+				{
+					path: "/dashboard/rental-dashboard",
+					element: <RentalDashboard />,
+				},
+				{
+					path: "/dashboard/user-dashboard",
+					element: <UserDashboard />,
 				},
 			],
 		},

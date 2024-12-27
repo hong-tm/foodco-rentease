@@ -83,7 +83,7 @@ export const auth = betterAuth({
 	trustedOrigins: env.ALLOWED_ORIGINS?.split(",") || [],
 	session: {
 		expiresIn: 60 * 60 * 24 * 3, // 3 days
-		updateAge: 60 * 60 * 6, // 6 hours (every 6 hours the session expiration is updated)
+		updateAge: 60 * 60 * 12, // 1 days (every 1 days the session expiration is updated)
 		// cookieCache: {
 		// 	enabled: true,
 		// 	maxAge: 6 * 60, // 6 hours

@@ -21,10 +21,16 @@ import {
 export type UserAttributes = InferAttributes<user>;
 export type SessionAttributes = InferAttributes<session>;
 export type StallAttributes = InferAttributes<Stall>;
+export type StallTierAttributes = InferAttributes<StallTier>;
 export type UserStallAttributes = InferAttributes<user> & {
 	stalls: StallAttributes[];
 };
 export type StallUserAttributes = InferAttributes<Stall> & {
+	user: UserAttributes;
+};
+export type StallStallTierUserAttributes = InferAttributes<Stall> & {
+	stallTier: number;
+	stalls: StallAttributes[];
 	user: UserAttributes;
 };
 
