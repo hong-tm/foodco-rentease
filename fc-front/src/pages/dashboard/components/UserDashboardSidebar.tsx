@@ -29,11 +29,11 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
 import { NavQuick } from "@/pages/dashboard/components/nav-quick";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useSession } from "@/api/adminApi";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
@@ -103,7 +103,7 @@ export default function UserDashboardSidebar({
 			await refetch();
 
 			toast.success("Impersonation stopped successfully.");
-			navigate("/dashboard", { replace: true });
+			navigate("/dashboard/admin", { replace: true });
 		} catch (error) {
 			toast.error("Failed to stop impersonating user: " + error);
 		}
@@ -112,7 +112,22 @@ export default function UserDashboardSidebar({
 	if (isLoading)
 		return (
 			<Sidebar collapsible="icon" variant="inset" {...props}>
-				<Skeleton className="h-full w-full rounded-xl my-3" />
+				<SidebarHeader>
+					<SidebarMenu>
+						<SidebarMenuItem>
+							<SidebarMenuSkeleton />
+						</SidebarMenuItem>
+					</SidebarMenu>
+				</SidebarHeader>
+				<SidebarContent>
+					<SidebarMenu>
+						{Array.from({ length: 5 }).map((_, index) => (
+							<SidebarMenuItem key={index}>
+								<SidebarMenuSkeleton showIcon />
+							</SidebarMenuItem>
+						))}
+					</SidebarMenu>
+				</SidebarContent>
 			</Sidebar>
 		);
 	if (error) return toast.error("An error occurred: " + error), null;
@@ -199,7 +214,7 @@ export default function UserDashboardSidebar({
 							url: "/dashboard/stall-availability",
 						},
 						{
-							title: "Rental History",
+							title: "Stall Appointments",
 							url: "#",
 						},
 					],
@@ -267,7 +282,7 @@ export default function UserDashboardSidebar({
 					icon: BookDown,
 				},
 				{
-					title: "Tenant Contracts",
+					title: "Stall Appointments",
 					url: "#",
 					icon: Scroll,
 				},
@@ -318,7 +333,7 @@ export default function UserDashboardSidebar({
 						},
 						{
 							title: "Apply New Stall",
-							url: "#",
+							url: "/dashboard/stall-availability",
 						},
 					],
 				},
@@ -376,7 +391,7 @@ export default function UserDashboardSidebar({
 					items: [
 						{
 							title: "Apply Stall",
-							url: "#",
+							url: "/dashboard/stall-availability",
 						},
 						{
 							title: "Make Payment",
@@ -417,12 +432,6 @@ export default function UserDashboardSidebar({
 	};
 
 	const currentRole = (userRole as Role) || "user";
-
-	const location = useLocation();
-
-	const isActive = (url: string) => {
-		return location.pathname.startsWith(url); // Check if the current path starts with the given URL
-	};
 
 	return (
 		<Sidebar collapsible="icon" variant="inset" {...props}>

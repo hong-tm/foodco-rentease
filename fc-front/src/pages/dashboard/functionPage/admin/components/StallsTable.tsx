@@ -1,22 +1,15 @@
-"use client";
-
 import { fetchStallsQueryOptions, GetStallsResponse } from "@/api/stallApi";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useQuery } from "@tanstack/react-query";
-import { FishSymbol } from "lucide-react";
 import { StallsTableSkeleton } from "./StallTableSkeleton";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useState } from "react";
+import { StallButton } from "./StallButton";
 
 export default function StallsTable() {
 	const isMobile = useIsMobile();
+	const [openStallId, setOpenStallId] = useState<string | null>(null);
 	const { data, isLoading, error } = useQuery<GetStallsResponse>(
 		fetchStallsQueryOptions
 	);
@@ -38,69 +31,70 @@ export default function StallsTable() {
 		);
 	}
 
-	// Button renderer
-	const renderStallButton = (stall: any) => (
-		<TooltipProvider>
-			<Tooltip>
-				<TooltipTrigger>
-					<Button
-						key={stall.stallNumber}
-						variant={stall.rentStatus ? "outline" : "destructive"}
-						size="lg"
-						className="w-16 h-16 p-0 flex flex-col items-center justify-center"
-					>
-						<FishSymbol className="h-6 w-6 mb-1" />
-						<span className="text-xs">{stall.stallNumber}</span>
-					</Button>
-				</TooltipTrigger>
-				<TooltipContent>
-					<p>{stall.stallName || "Not available"}</p>
-				</TooltipContent>
-			</Tooltip>
-		</TooltipProvider>
-	);
-
-	// Row renderer
 	const renderRow = (stalls: any[], isMiddleRow: boolean, rowIndex: number) => (
 		<div
-			key={rowIndex}
+			key={`row-${rowIndex}`}
 			className={`flex ${
 				isMiddleRow ? "justify-between" : "justify-center gap-4"
 			} items-center py-2`}
 		>
 			{isMiddleRow ? (
 				<>
-					{stalls[0] && renderStallButton(stalls[0])}
+					{stalls[0] && (
+						<StallButton
+							stall={stalls[0]}
+							onOpen={setOpenStallId}
+							isOpen={openStallId === `stall-${stalls[0].stallNumber}`}
+						/>
+					)}
 					<div className="flex-grow border-t border-dashed border-gray-300 mx-4"></div>
-					{stalls[1] && renderStallButton(stalls[1])}
+					{stalls[1] && (
+						<StallButton
+							stall={stalls[1]}
+							onOpen={setOpenStallId}
+							isOpen={openStallId === `stall-${stalls[1].stallNumber}`}
+						/>
+					)}
 				</>
 			) : (
-				stalls.map(renderStallButton)
+				stalls.map((stall) => (
+					<StallButton
+						key={`stall-${stall.stallNumber}`}
+						stall={stall}
+						onOpen={setOpenStallId}
+						isOpen={openStallId === `stall-${stall.stallNumber}`}
+					/>
+				))
 			)}
 		</div>
 	);
 
-	// Prepare rows
 	const stalls = data?.stall || [];
-	const firstRowStalls = stalls.slice(0, 7); // First row
-	const lastRowStalls = stalls.slice(stalls.length - 7); // Last row
+	const firstRowStalls = stalls.slice(0, 7);
+	const lastRowStalls = stalls.slice(stalls.length - 7);
 	const middleRows = Array.from({ length: 3 }, (_, index) => {
-		const startIndex = 7 + index * 2; // Middle rows
-		return [
-			stalls[startIndex], // Left stall
-			stalls[startIndex + 1], // Right stall
-		].filter(Boolean); // Filter out undefined values
+		const startIndex = 7 + index * 2;
+		return [stalls[startIndex], stalls[startIndex + 1]].filter(Boolean);
 	});
 
 	if (isMobile) {
 		return (
 			<Card className="w-full border-none shadow-none">
 				<CardHeader>
-					<CardTitle className="text-destructive">Stalls</CardTitle>
+					<VisuallyHidden>
+						<CardTitle></CardTitle>
+					</VisuallyHidden>
 				</CardHeader>
 				<CardContent className="overflow-x-auto">
 					<div className="flex flex-wrap gap-4 justify-center">
-						{stalls.map(renderStallButton)}
+						{stalls.map((stall) => (
+							<StallButton
+								key={`stall-${stall.stallNumber}`}
+								stall={stall}
+								onOpen={setOpenStallId}
+								isOpen={openStallId === `stall-${stall.stallNumber}`}
+							/>
+						))}
 					</div>
 				</CardContent>
 			</Card>
@@ -116,13 +110,10 @@ export default function StallsTable() {
 			</CardHeader>
 			<CardContent className="overflow-x-auto">
 				<div className="flex flex-col gap-6 min-w-[500px]">
-					{/* First row */}
 					{renderRow(firstRowStalls, false, 0)}
-					{/* Middle rows */}
 					{middleRows.map((rowStalls, index) =>
 						renderRow(rowStalls, true, index + 1)
 					)}
-					{/* Last row */}
 					{renderRow(lastRowStalls, false, middleRows.length + 1)}
 				</div>
 			</CardContent>

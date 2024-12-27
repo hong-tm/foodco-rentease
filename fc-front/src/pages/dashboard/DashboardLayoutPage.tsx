@@ -5,8 +5,8 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Outlet, useNavigate } from "react-router-dom";
-import { Suspense } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Suspense, useEffect } from "react";
 import UserDashboardSidebar from "./components/UserDashboardSidebar";
 import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { ErrorBoundary } from "react-error-boundary";
@@ -17,8 +17,30 @@ import { UserProvider } from "@/context/UserContext";
 
 export function DashboardLayoutPage({ authClient }: { authClient: any }) {
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const { data: session, isLoading, error } = useSession(authClient);
+
+	useEffect(() => {
+		if (!isLoading && session && location.pathname === "/dashboard") {
+			// Redirect based on user role only if on "/dashboard"
+			const userRole = session?.user?.role;
+			switch (userRole) {
+				case "admin":
+					navigate("/dashboard/admin-dashboard", { replace: true });
+					break;
+				case "rental":
+					navigate("/dashboard/rental-dashboard", { replace: true });
+					break;
+				case "user":
+					navigate("/dashboard/user-dashboard", { replace: true });
+					break;
+				default:
+					toast.error("Unknown role");
+					break;
+			}
+		}
+	}, [isLoading, session, location.pathname, navigate]);
 
 	if (isLoading) {
 		return (

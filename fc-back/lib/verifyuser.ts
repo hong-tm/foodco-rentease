@@ -18,7 +18,7 @@ export function adminVerify() {
 
 export function userVerify() {
 	return async (c: Context, next: Next) => {
-		const session = c.get("session");
+		// const session = c.get("session");
 		const user = c.get("user");
 
 		if (!user) return c.body(null, 401);

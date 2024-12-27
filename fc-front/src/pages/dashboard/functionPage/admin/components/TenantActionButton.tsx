@@ -7,11 +7,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ResponsiveAlertDialog } from "@/pages/dashboard/components/ResponsiveAlertDialog";
-import { useQueryClient } from "@tanstack/react-query";
+// import { ResponsiveAlertDialog } from "@/pages/dashboard/components/ResponsiveAlertDialog";
+// import { useQueryClient } from "@tanstack/react-query";
 import { EllipsisVertical } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+// import { useState } from "react";
+// import { toast } from "sonner";
 
 export function TenantActionButton() {
 	return (

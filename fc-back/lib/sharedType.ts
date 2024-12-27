@@ -122,3 +122,20 @@ export const sessionSchema = z.object({
 });
 
 export const rentalsSchema = z.object({});
+
+export const updateStallSchema = z
+	.object({
+		stallName: z.string().min(1, "Stall name is required"),
+		description: z.string().optional(),
+		stallImage: z.string().url("Must be a valid URL").optional(),
+		stallSize: z.number().min(0, "Size must be positive"),
+		stallOwner: z.string().min(1, "Owner name is required"),
+		rentStatus: z.boolean(),
+		startAt: z.date(),
+		endAt: z.date(),
+		stallTier: z.number().min(1, "Tier must be at least 1"),
+	})
+	.refine((data) => data.endAt > data.startAt, {
+		message: "End date must be after start date",
+		path: ["endAt"],
+	});
