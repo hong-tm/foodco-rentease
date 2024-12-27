@@ -17,7 +17,7 @@ import { ErrorContext } from "@better-fetch/fetch";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { updateUsernameFormSchema } from "@server/lib/sharedType";
-import { useSession } from "@/api/authApi";
+import { useSession } from "@/api/adminApi";
 import { ResponsiveFormDialog } from "./ResponsiveFormDialog";
 
 type UpdateProfileButtonProps = {

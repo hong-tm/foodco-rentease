@@ -90,7 +90,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
 						<Button
 							variant="ghost"
 							size="icon"
-							className="hover:text-red-400 dark:hover:text-red-500"
+							className="hover:text-destructive"
 						>
 							<Trash2 className="h-4 w-4" />
 						</Button>

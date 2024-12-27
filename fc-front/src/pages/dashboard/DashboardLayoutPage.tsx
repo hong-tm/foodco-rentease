@@ -10,7 +10,7 @@ import { Suspense } from "react";
 import UserDashboardSidebar from "./components/UserDashboardSidebar";
 import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { ErrorBoundary } from "react-error-boundary";
-import { useSession } from "@/api/authApi";
+import { useSession } from "@/api/adminApi";
 import { toast } from "sonner";
 import Breadcrumbs from "./components/Breadcrumbs";
 import { UserProvider } from "@/context/UserContext";
