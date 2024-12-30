@@ -94,7 +94,14 @@ export default function RentalsTable() {
 										)}
 									</TableCell>
 									<TableCell className="text-center">
-										{user.role === "admin" ? "" : <TenantActionButton />}
+										{user.role === "admin" ? (
+											""
+										) : (
+											<TenantActionButton
+												userName={user.name}
+												userEmail={user.email}
+											/>
+										)}
 									</TableCell>
 								</TableRow>
 							))

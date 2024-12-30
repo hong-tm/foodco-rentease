@@ -22,15 +22,24 @@ export type UserAttributes = InferAttributes<user>;
 export type SessionAttributes = InferAttributes<session>;
 export type StallAttributes = InferAttributes<Stall>;
 export type StallTierAttributes = InferAttributes<StallTier>;
+
 export type UserStallAttributes = InferAttributes<user> & {
+	user: UserAttributes[];
 	stalls: StallAttributes[];
 };
+
 export type StallUserAttributes = InferAttributes<Stall> & {
+	stallTierNumber: StallTierAttributes;
+	stallOwnerId: UserAttributes;
 	user: UserAttributes;
-};
-export type StallStallTierUserAttributes = InferAttributes<Stall> & {
-	stallTier: number;
 	stalls: StallAttributes[];
+	stall: StallAttributes; // Add this to resolve the error
+};
+
+export type StallStallTierUserAttributes = InferAttributes<Stall> & {
+	stallNumber: StallTierAttributes; // Correct StallTierAttributes structure
+	stallOwner: UserAttributes; // Corrected user reference
+	stall: StallAttributes;
 	user: UserAttributes;
 };
 
@@ -276,6 +285,10 @@ export class Stall extends Model<
 
 	@Attribute(DataTypes.DATE)
 	declare endAt: CreationOptional<Date>;
+
+	// 'userId' in User references PaymentTable.id
+	@HasMany(() => Utilities, "stallId")
+	declare utilities?: NonAttribute<Utilities[]>;
 }
 
 export class StallTier extends Model<
@@ -338,10 +351,9 @@ export class Payment extends Model<
 	@Attribute(DataTypes.STRING)
 	declare paymentAmount: CreationOptional<string>;
 
-	@Attribute(DataTypes.STRING)
-	@Default("Pending")
-	@NotNull
-	declare paymentStatus: CreationOptional<string>;
+	@Attribute(DataTypes.BOOLEAN)
+	@Default(false)
+	declare paymentStatus: CreationOptional<boolean>;
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
@@ -352,59 +364,35 @@ export class Payment extends Model<
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
 	declare stallId?: CreationOptional<number>;
-
-	@BelongsTo(() => UtilitiesWater, "utilitiesId")
-	declare paymentUtilitiesWater?: NonAttribute<UtilitiesWater>;
-	@Attribute(DataTypes.STRING)
-	declare utilitiesId?: CreationOptional<string>;
 }
 
-export class UtilitiesWater extends Model<
-	InferAttributes<UtilitiesWater>,
-	InferCreationAttributes<UtilitiesWater>
+export class Utilities extends Model<
+	InferAttributes<Utilities>,
+	InferCreationAttributes<Utilities>
 > {
 	@Attribute(DataTypes.TEXT)
 	@PrimaryKey
 	@NotNull
 	declare id: CreationOptional<string>;
 
-	@BelongsTo(() => user, "userId")
-	declare utilitiesUser?: NonAttribute<user>;
-	@Attribute(DataTypes.STRING)
+	@BelongsTo(() => Stall, "stallId")
+	declare utilitiesStall?: NonAttribute<Stall>;
+	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare userId: CreationOptional<string>;
+	declare stallId: CreationOptional<number>;
 
 	@Attribute(DataTypes.STRING)
 	@NotNull
 	declare utilityType: CreationOptional<string>;
 
-	@Attribute(DataTypes.STRING)
+	@Attribute(DataTypes.BOOLEAN)
 	@NotNull
-	declare utilityPayment: CreationOptional<string>;
-}
+	@Default(false)
+	declare utilityPayment: CreationOptional<boolean>;
 
-export class UtilitiesElectric extends Model<
-	InferAttributes<UtilitiesElectric>,
-	InferCreationAttributes<UtilitiesElectric>
-> {
-	@Attribute(DataTypes.TEXT)
-	@PrimaryKey
+	@Attribute(DataTypes.DECIMAL(12, 2))
 	@NotNull
-	declare id: CreationOptional<string>;
-
-	@BelongsTo(() => user, "userId")
-	declare utilitiesElectricUser?: NonAttribute<user>;
-	@Attribute(DataTypes.STRING)
-	@NotNull
-	declare userId: CreationOptional<string>;
-
-	@Attribute(DataTypes.STRING)
-	@NotNull
-	declare utilityType: CreationOptional<string>;
-
-	@Attribute(DataTypes.STRING)
-	@NotNull
-	declare utilityPayment: CreationOptional<string>;
+	declare utilityAmount: number;
 }
 
 export class Notification extends Model<

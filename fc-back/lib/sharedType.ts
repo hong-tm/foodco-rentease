@@ -125,17 +125,26 @@ export const rentalsSchema = z.object({});
 
 export const updateStallSchema = z
 	.object({
+		stallNumber: z.number().int().positive().min(1),
 		stallName: z.string().min(1, "Stall name is required"),
 		description: z.string().optional(),
 		stallImage: z.string().url("Must be a valid URL").optional(),
-		stallSize: z.number().min(0, "Size must be positive"),
-		stallOwner: z.string().min(1, "Owner name is required"),
-		rentStatus: z.boolean(),
-		startAt: z.date(),
-		endAt: z.date(),
-		stallTier: z.number().min(1, "Tier must be at least 1"),
+		stallSize: z.coerce.number().min(0, "Size must be positive"),
+		stallOwner: z.string().min(1, "Owner email is required").email().optional(),
+		rentStatus: z.boolean({ message: "Rent status is required" }),
+		startAt: z.coerce.date(),
+		endAt: z.coerce.date(),
+		stallTierNumber: z.object({
+			tierId: z.coerce.number({ message: "Tier ID must be a number" }),
+		}),
 	})
 	.refine((data) => data.endAt > data.startAt, {
 		message: "End date must be after start date",
 		path: ["endAt"],
 	});
+
+export const emailSchema = z.object({
+	to: z.string().email(),
+	subject: z.string(),
+	text: z.string(),
+});

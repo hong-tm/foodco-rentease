@@ -33,7 +33,7 @@ export function DashboardLayoutPage({ authClient }: { authClient: any }) {
 					navigate("/dashboard/rental-dashboard", { replace: true });
 					break;
 				case "user":
-					navigate("/dashboard/user-dashboard", { replace: true });
+					navigate("/dashboard/stall-availability", { replace: true });
 					break;
 				default:
 					toast.error("Unknown role");
