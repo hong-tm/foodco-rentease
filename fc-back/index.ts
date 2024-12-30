@@ -18,9 +18,8 @@ import {
 	session,
 	Stall,
 	verification,
-	UtilitiesWater,
+	Utilities,
 	StallTier,
-	UtilitiesElectric,
 } from "./db/userModel.js";
 import { feedbacksRoute } from "./routes/feedbacksRoute.js";
 import { usersRoute } from "./routes/usersRoute.js";
@@ -196,10 +195,9 @@ const sequelize = new Sequelize({
 		Stall,
 		Feedback,
 		Payment,
-		UtilitiesWater,
+		Utilities,
 		Notification,
 		StallTier,
-		UtilitiesElectric,
 	],
 });
 
@@ -215,6 +213,17 @@ async function syncModels(log = true) {
 		return false;
 	}
 }
+
+// async function dropTables() {
+// 	try {
+// 		await sequelize.drop();
+// 		console.log("All tables dropped!");
+// 	} catch (err) {
+// 		console.error("Failed to drop tables:", err);
+// 	}
+// }
+
+// dropTables();
 
 // Sequential initialization with error handling
 async function initializeDatabase() {

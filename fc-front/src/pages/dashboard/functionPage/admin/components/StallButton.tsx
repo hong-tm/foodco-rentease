@@ -8,19 +8,30 @@ import {
 import { ResponsiveSheetDialog } from "@/pages/dashboard/components/ResponsiveSheetDialog";
 import { FishSymbol } from "lucide-react";
 import UpdateStallForm from "./UpdateStallForm";
-
-interface StallButtonProps {
-	stall: any;
-	onOpen: (id: string | null) => void;
-	isOpen: boolean;
-}
+import { StallButtonProps } from "@/api/stallApi";
+import { useQueryClient } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
+import { useSession } from "@/api/adminApi";
+import { toast } from "sonner";
+import StallDetailForm from "../../user/StallDetailForm";
 
 export const StallButton: React.FC<StallButtonProps> = ({
 	stall,
 	onOpen,
 	isOpen,
 }) => {
+	const queryClient = useQueryClient();
 	const stallId = `stall-${stall.stallNumber}`;
+
+	const handleUpdateSuccess = async () => {
+		await queryClient.invalidateQueries({ queryKey: ["fetch-stalls"] });
+		onOpen(null);
+	};
+
+	const { data: session, isLoading, error } = useSession(authClient);
+
+	if (isLoading) return <div>Loading...</div>;
+	if (error) return toast.error("An error occurred: " + error);
 
 	return (
 		<div>
@@ -31,7 +42,11 @@ export const StallButton: React.FC<StallButtonProps> = ({
 				description={`Details of the stall ${stall.stallNumber}`}
 			>
 				<div className="">
-					<UpdateStallForm stall={stall} />
+					{session?.user.role === "admin" ? (
+						<UpdateStallForm stall={stall} onSubmit={handleUpdateSuccess} />
+					) : (
+						<StallDetailForm stall={stall} />
+					)}
 				</div>
 			</ResponsiveSheetDialog>
 
@@ -50,6 +65,11 @@ export const StallButton: React.FC<StallButtonProps> = ({
 					</TooltipTrigger>
 					<TooltipContent>
 						<p>{stall.stallName || "Not available"}</p>
+						<p>{stall.description || "No description"}</p>
+						<p>{stall.stallSize ? `${stall.stallSize} m²` : "No size"}</p>
+						<p>
+							{stall.stallOwner ? `${stall.stallOwnerId.name}` : "Not rent yet"}
+						</p>
 					</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>

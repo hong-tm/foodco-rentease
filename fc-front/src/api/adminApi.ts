@@ -16,6 +16,12 @@ export interface GetRentalsResponse {
 	stalls: StallAttributes[];
 }
 
+export interface SendReminderEmailResponse {
+	to: string;
+	subject: string;
+	text: string;
+}
+
 export async function fetchUsers(): Promise<GetUsersResponse> {
 	try {
 		const response = await authClient.admin.listUsers({
@@ -58,6 +64,18 @@ export const useSession = (authClient: any) => {
 		retry: false, // No retries for session fetching
 	});
 };
+
+export async function sendReminderEmail({
+	to,
+	subject,
+	text,
+}: SendReminderEmailResponse) {
+	const res = await api.users["send-reminder-email"].$post({
+		json: { to, subject, text },
+	});
+
+	if (!res.ok) throw new Error("Failed to send email");
+}
 
 // QueryOptions
 export const fetchUsersQueryOptions: UseQueryOptions<GetUsersResponse> = {

@@ -24,55 +24,116 @@ import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateStallSchema } from "@server/lib/sharedType";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { StallFormProps, updateStall } from "@/api/stallApi";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { fetchRentalsQueryOptions } from "@/api/adminApi";
 
-type StallFormProps = {
-	stall: {
-		stallName: string;
-		description: string;
-		stallImage: string;
-		stallSize: number;
-		stallOwner: string;
-		rentStatus: boolean;
-		startAt: string | Date;
-		endAt: string | Date;
-		stallTier: number;
-	};
-	onSubmit?: (values: z.infer<typeof updateStallSchema>) => Promise<void>;
-};
+// Define tier data
+const TIER_DATA = [
+	{ id: 1, name: "Tier 1", price: 50 },
+	{ id: 2, name: "Tier 2", price: 80 },
+	{ id: 3, name: "Tier 3", price: 100 },
+];
 
-export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
+export default function UpdateStallForm({
+	stall,
+	onSubmit,
+	setOpenDialog,
+}: StallFormProps) {
 	const form = useForm<z.infer<typeof updateStallSchema>>({
 		resolver: zodResolver(updateStallSchema),
 		defaultValues: {
-			stallName: stall.stallName,
-			description: stall.description,
-			stallImage: stall.stallImage,
-			stallSize: stall.stallSize,
-			stallOwner: stall.stallOwner,
+			stallNumber: stall.stallNumber || 0,
+			stallName: stall.stallName || "",
+			description: stall.description || "",
+			stallImage: stall.stallImage || "",
+			stallSize: stall.stallSize || 0,
+			stallOwner: stall.stallOwnerId?.email || "",
 			rentStatus: Boolean(stall.rentStatus),
-			startAt: new Date(stall.startAt),
-			endAt: new Date(stall.endAt),
-			stallTier: Number(stall.stallTier),
+			startAt: new Date(stall.startAt || Date.now()),
+			endAt: new Date(stall.endAt || Date.now()),
+			stallTierNumber: {
+				tierId: stall.stallTierNumber?.tierId || 1,
+			},
 		},
 	});
 
-	const [startDate, setStartDate] = useState<Date>(new Date(stall.startAt));
-	const [endDate, setEndDate] = useState<Date>(new Date(stall.endAt));
+	const [startDate, setStartDate] = useState<Date>(
+		stall.startAt ? new Date(stall.startAt) : new Date()
+	);
+	const [endDate, setEndDate] = useState<Date>(
+		stall.endAt ? new Date(stall.endAt) : new Date()
+	);
+
+	// Handle tier selection with proper type updates
+	const handleTierSelect = (value: string, field: any) => {
+		const selectedTier = TIER_DATA.find((tier) => tier.id === Number(value));
+		if (selectedTier) {
+			field.onChange({
+				tierId: selectedTier.id,
+				tierName: selectedTier.name,
+				tierPrice: selectedTier.price,
+			});
+		}
+	};
+
+	const calculateTotalPrice = (tierPrice: number, stallSize: number) => {
+		return (tierPrice * stallSize).toFixed(2);
+	};
+
+	const price = stall.stallTierNumber?.tierPrice;
+	const totalPrice = price
+		? calculateTotalPrice(price, form.getValues("stallSize"))
+		: 0;
+
+	const mutation = useMutation({
+		mutationFn: updateStall,
+		onError: (error: Error) => {
+			console.error("Error updating stall:", error);
+			toast.error(`${error}`);
+		},
+		onSuccess: (data) => {
+			// console.log("Stall updated successfully:", data);
+			toast.success("Stall updated successfully");
+			form.reset(); // Reset form after successful submission
+			if (onSubmit) onSubmit(data);
+			if (setOpenDialog) setOpenDialog(false);
+		},
+	});
 
 	async function handleSubmit(values: z.infer<typeof updateStallSchema>) {
-		try {
-			if (onSubmit) {
-				await onSubmit(values);
-			}
-		} catch (error) {
-			console.error("Error submitting form:", error);
-		}
+		// Ensure `startAt` and `endAt` are in Date format
+		values.startAt = new Date(values.startAt);
+		values.endAt = new Date(values.endAt);
+
+		await mutation.mutateAsync(values);
+	}
+
+	const { data, error, isLoading } = useQuery(fetchRentalsQueryOptions);
+
+	if (isLoading) {
+		return <div className="justify-center p-4">Loading...</div>;
+	}
+
+	if (error || !data) {
+		return <div className="justify-center p-4">Error: {error?.message}</div>;
 	}
 
 	return (
 		<div className="flex flex-col px-12 w-full md:px-0">
 			<Form {...form}>
-				<form onSubmit={form.handleSubmit(handleSubmit)}>
+				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 					<div className="grid gap-4">
 						<ScrollArea className="h-full overflow-y-auto gap-4 rounded-md">
 							<div className="grid gap-4">
@@ -123,7 +184,6 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 									)}
 								/>
 
-								{/* Stall Size Field */}
 								<FormField
 									control={form.control}
 									name="stallSize"
@@ -133,10 +193,13 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 											<FormControl>
 												<Input
 													type="number"
+													step="0.01"
 													placeholder="Stall Size"
 													{...field}
 													onChange={(e) =>
-														field.onChange(Number(e.target.value))
+														field.onChange(
+															Number(parseFloat(e.target.value).toFixed(2))
+														)
 													}
 												/>
 											</FormControl>
@@ -151,9 +214,28 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 									name="stallOwner"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel className="select-none">Stall Owner</FormLabel>
+											<FormLabel className="select-none">
+												Stall Owner Email
+											</FormLabel>
 											<FormControl>
-												<Input placeholder="Stall Owner" {...field} />
+												<Select
+													defaultValue={stall.stallOwnerId?.email}
+													onValueChange={field.onChange}
+												>
+													<SelectTrigger className="w-full">
+														<SelectValue placeholder="Select owner email" />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectGroup>
+															<SelectLabel>Owner Emails</SelectLabel>
+															{data?.user.map((user) => (
+																<SelectItem key={user.id} value={user.email}>
+																	{user.email}
+																</SelectItem>
+															))}
+														</SelectGroup>
+													</SelectContent>
+												</Select>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -208,12 +290,15 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 													<PopoverContent className="w-auto p-0" align="start">
 														<Calendar
 															mode="single"
-															selected={field.value || startDate} // Default to startDate if undefined
+															selected={
+																field.value ? new Date(field.value) : startDate
+															} // Ensure this is a Date object
 															onSelect={(date) => {
 																field.onChange(date);
-																setStartDate(date || new Date());
+																setStartDate(date || new Date()); // Default to current date if no date selected
 															}}
 															initialFocus
+															className="rounded-md border shadow"
 														/>
 													</PopoverContent>
 												</Popover>
@@ -251,12 +336,15 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 													<PopoverContent className="w-auto p-0" align="start">
 														<Calendar
 															mode="single"
-															selected={field.value || endDate} // Default to startDate if undefined
+															selected={
+																field.value ? new Date(field.value) : endDate
+															} // Ensure this is a Date object
 															onSelect={(date) => {
 																field.onChange(date);
-																setEndDate(date || new Date());
+																setEndDate(date || new Date()); // Default to current date if no date selected
 															}}
 															initialFocus
+															className="rounded-md border shadow"
 														/>
 													</PopoverContent>
 												</Popover>
@@ -266,22 +354,42 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 									)}
 								/>
 
-								{/* Stall Tier Field */}
+								{/* Updated Stall Tier Field */}
 								<FormField
 									control={form.control}
-									name="stallTier"
+									name="stallTierNumber"
 									render={({ field }) => (
 										<FormItem>
 											<FormLabel className="select-none">Stall Tier</FormLabel>
 											<FormControl>
-												<Input
-													type="number"
-													placeholder="Stall Tier"
-													{...field}
-													onChange={(e) =>
-														field.onChange(Number(e.target.value))
-													}
-												/>
+												<div className="space-y-2">
+													<Select
+														value={field.value.tierId.toString()}
+														onValueChange={(value) =>
+															handleTierSelect(value, field)
+														}
+													>
+														<SelectTrigger className="w-full">
+															<SelectValue placeholder="Select tier" />
+														</SelectTrigger>
+														<SelectContent>
+															{TIER_DATA.map((tier) => (
+																<SelectItem
+																	key={tier.id}
+																	value={tier.id.toString()}
+																>
+																	{tier.name}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+													<Label
+														htmlFor="stallPrice"
+														className="text-xs text-muted-foreground"
+													>
+														Price: RM {totalPrice}
+													</Label>
+												</div>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -289,7 +397,11 @@ export default function UpdateStallForm({ stall, onSubmit }: StallFormProps) {
 								/>
 							</div>
 						</ScrollArea>
-						<Button type="submit" className="w-full">
+						<Button
+							type="submit"
+							className="w-full"
+							disabled={mutation.isPending}
+						>
 							Update Stall
 						</Button>
 					</div>

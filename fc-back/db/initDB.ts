@@ -14,9 +14,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "1" },
 		defaults: {
-			stallName: "Stall 1",
+			stallName: "Salad Chicken Rice",
 			description: "This is stall 1",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-09-13.png",
 			stallSize: 10.0,
 			stallTierNo: 1,
 			stallOwner: "fN5GPoCR3JbqzJQqIFcOjnlPBdE0F3HA",
@@ -29,9 +30,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "2" },
 		defaults: {
-			stallName: "Stall 2",
+			stallName: "Nosak",
 			description: "This is stall 2",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-09-01.png",
 			stallSize: 13.5,
 			stallTierNo: 2,
 			stallOwner: "Kj7Z8IHo5UlgZYHexjSlxC2XYOEyqGa7",
@@ -44,9 +46,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "3" },
 		defaults: {
-			stallName: "Stall 3",
+			stallName: "Clatpot Mee/Tom Yam Mee",
 			description: "This is stall 3",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-08-03.png",
 			stallSize: 15.5,
 			stallTierNo: 3,
 			rentStatus: false,
@@ -56,9 +59,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "4" },
 		defaults: {
-			stallName: "Stall 4",
+			stallName: "Pao",
 			description: "This is stall 4",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-07-49.png",
 			stallSize: 12.0,
 			stallTierNo: 1,
 			stallOwner: "xTSdZUUynTHmq8G_bmV-L",
@@ -71,9 +75,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "5" },
 		defaults: {
-			stallName: "Stall 5",
+			stallName: "Kao San Garden Seafood",
 			description: "This is stall 5",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-07-30.png",
 			stallSize: 11.0,
 			stallTierNo: 2,
 			rentStatus: false,
@@ -83,9 +88,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "6" },
 		defaults: {
-			stallName: "Stall 6",
+			stallName: "Ming Ming Seafood",
 			description: "This is stall 6",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-07-24.png",
 			stallSize: 14.0,
 			stallTierNo: 3,
 			stallOwner: "fN5GPoCR3JbqzJQqIFcOjnlPBdE0F3HA",
@@ -98,9 +104,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "7" },
 		defaults: {
-			stallName: "Stall 7",
+			stallName: "Little Feul Up Western",
 			description: "This is stall 7",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-07-15.png",
 			stallSize: 13.0,
 			stallTierNo: 1,
 			rentStatus: false,
@@ -110,9 +117,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "8" },
 		defaults: {
-			stallName: "Stall 8",
+			stallName: "Japanease Food",
 			description: "This is stall 8",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-06-05.png",
 			stallSize: 12.5,
 			stallTierNo: 2,
 			stallOwner: "Kj7Z8IHo5UlgZYHexjSlxC2XYOEyqGa7",
@@ -125,9 +133,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "9" },
 		defaults: {
-			stallName: "Stall 9",
+			stallName: "AhChoo Laksa",
 			description: "This is stall 9",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-05-53.png",
 			stallSize: 11.5,
 			stallTierNo: 3,
 			rentStatus: false,
@@ -137,9 +146,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "10" },
 		defaults: {
-			stallName: "Stall 10",
+			stallName: "Dish Rice",
 			description: "This is stall 10",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-05-25.png",
 			stallSize: 14.5,
 			stallTierNo: 1,
 			stallOwner: "xTSdZUUynTHmq8G_bmV-L",
@@ -152,9 +162,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "11" },
 		defaults: {
-			stallName: "Stall 11",
+			stallName: "Rice Stall",
 			description: "This is stall 11",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-05-17.png",
 			stallSize: 10.5,
 			stallTierNo: 2,
 			rentStatus: false,
@@ -164,9 +175,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "12" },
 		defaults: {
-			stallName: "Stall 12",
+			stallName: "Kueh Chap",
 			description: "This is stall 12",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-05-03.png",
 			stallSize: 13.0,
 			stallTierNo: 3,
 			stallOwner: "fN5GPoCR3JbqzJQqIFcOjnlPBdE0F3HA",
@@ -179,10 +191,11 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "13" },
 		defaults: {
-			stallName: "Stall 13",
+			stallName: "Ai Ling Cakoi",
 			description: "This is stall 13",
-			stallImage: "https://via.placeholder.com/150",
-			stallSize: 12.0,
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-04-31.png",
+			stallSize: 10.0,
 			stallTierNo: 1,
 			rentStatus: false,
 		},
@@ -191,9 +204,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "14" },
 		defaults: {
-			stallName: "Stall 14",
+			stallName: "Chicken Rice",
 			description: "This is stall 14",
-			stallImage: "https://via.placeholder.com/150",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-04-19.png",
 			stallSize: 11.0,
 			stallTierNo: 2,
 			stallOwner: "Kj7Z8IHo5UlgZYHexjSlxC2XYOEyqGa7",
@@ -206,9 +220,10 @@ function initStall() {
 	Stall.findOrCreate({
 		where: { stallNumber: "15" },
 		defaults: {
-			stallName: "Stall 15",
-			description: "This is stall 15",
-			stallImage: "https://via.placeholder.com/150",
+			stallName: "Vegetarian Food",
+			description: "This is stall 15, Provide vegetarian food",
+			stallImage:
+				"https://raw.githubusercontent.com/hong-tm/blog-image/main/Snipaste_2024-12-30_03-03-56.png",
 			stallSize: 15.0,
 			stallTierNo: 3,
 			rentStatus: false,
@@ -420,7 +435,7 @@ function initStallTier() {
 		where: {
 			tierId: 1,
 			tierName: "Low",
-			tierPrice: 120.0,
+			tierPrice: 50.0,
 		},
 	});
 
@@ -428,7 +443,7 @@ function initStallTier() {
 		where: {
 			tierId: 2,
 			tierName: "Medium",
-			tierPrice: 150.0,
+			tierPrice: 80.0,
 		},
 	});
 
@@ -436,7 +451,7 @@ function initStallTier() {
 		where: {
 			tierId: 3,
 			tierName: "High",
-			tierPrice: 180.0,
+			tierPrice: 100.0,
 		},
 	});
 }
