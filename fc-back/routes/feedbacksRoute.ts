@@ -19,7 +19,7 @@ export const feedbacksRoute = new Hono()
 
 	.post("/", zValidator("json", createFeedbackSchema), async (c) => {
 		try {
-			console.log(c.req.valid("json"));
+			// console.log(c.req.valid("json"));
 			const feedback = await FeedbackTable.create(c.req.valid("json"));
 
 			if (!feedback) {
@@ -46,6 +46,43 @@ export const feedbacksRoute = new Hono()
 			return c.notFound();
 		}
 		return c.json({ feedback: feedback });
+	})
+
+	.get("/get-feedbackHappiness", adminVerify(), async (c) => {
+		const feedbacks = await FeedbackTable.findAll({
+			attributes: [
+				"stall",
+				[
+					FeedbackTable.sequelize!.fn(
+						"SUM",
+						FeedbackTable.sequelize!.col("happiness")
+					),
+					"totalHappiness",
+				],
+				[
+					FeedbackTable.sequelize!.fn(
+						"COUNT",
+						FeedbackTable.sequelize!.col("id")
+					),
+					"totalFeedbacks",
+				],
+			],
+			group: ["stall"],
+			raw: true,
+			order: [["stall", "ASC"]],
+		});
+
+		if (!feedbacks.length) {
+			return c.json({ stallHappiness: [] });
+		}
+
+		return c.json({
+			stallHappiness: feedbacks.map((feedback: any) => ({
+				stallId: feedback.stall,
+				totalHappiness: Number(feedback.totalHappiness),
+				totalFeedbacks: feedback.totalFeedbacks,
+			})),
+		});
 	});
 
 // .get("/:id", (c) =>

@@ -182,26 +182,6 @@ export default function UserDashboardSidebar({
 							title: "Overview",
 							url: "/dashboard/admin-dashboard",
 						},
-						{
-							title: "Monthly Rent Overview",
-							url: "#",
-						},
-						{
-							title: "Stall Vacancy Rate",
-							url: "#",
-						},
-						{
-							title: "Income & Expenses",
-							url: "#",
-						},
-						{
-							title: "Stall Rate",
-							url: "#",
-						},
-						{
-							title: "New Tenant",
-							url: "#",
-						},
 					],
 				},
 				{
@@ -215,7 +195,7 @@ export default function UserDashboardSidebar({
 						},
 						{
 							title: "Stall Appointments",
-							url: "#",
+							url: "/dashboard/admin-appointment",
 						},
 					],
 				},
@@ -227,14 +207,6 @@ export default function UserDashboardSidebar({
 						{
 							title: "Tenant Information",
 							url: "/dashboard/tenant-information",
-						},
-						{
-							title: "Tenant Contracts",
-							url: "#",
-						},
-						{
-							title: "Tenant Reminders",
-							url: "#",
 						},
 					],
 				},
@@ -253,7 +225,7 @@ export default function UserDashboardSidebar({
 						},
 						{
 							title: "Export Financial Report",
-							url: "#",
+							url: "/dashboard/admin-report",
 						},
 					],
 				},
@@ -272,18 +244,18 @@ export default function UserDashboardSidebar({
 			],
 			navQuick: [
 				{
-					title: "Tenant Reminders",
-					url: "#",
+					title: "Tenant Information",
+					url: "/dashboard/tenant-information",
 					icon: BellElectric,
 				},
 				{
 					title: "Export Report",
-					url: "#",
+					url: "/dashboard/admin-report",
 					icon: BookDown,
 				},
 				{
 					title: "Stall Appointments",
-					url: "#",
+					url: "/dashboard/admin-appointment",
 					icon: Scroll,
 				},
 			],
@@ -296,44 +268,29 @@ export default function UserDashboardSidebar({
 			},
 			navMain: [
 				{
-					title: "Dashboard",
-					url: "#",
-					icon: ChartArea,
+					title: "Stall",
+					url: "/dashboard/rental-dashboard",
+					icon: Command,
 					isActive: true,
 					items: [
 						{
-							title: "Overview",
-							url: "#",
-						},
-					],
-				},
-				{
-					title: "Stall",
-					url: "#",
-					icon: Command,
-					items: [
-						{
 							title: "Stall Information",
-							url: "#",
-						},
-						{
-							title: "Stall Repair & Maintenance",
-							url: "#",
+							url: "/dashboard/rental-dashboard",
 						},
 					],
 				},
 				{
-					title: "Contract",
+					title: "New Stall",
 					url: "#",
 					icon: Signature,
 					items: [
 						{
-							title: "Contract Management",
-							url: "#",
-						},
-						{
 							title: "Apply New Stall",
 							url: "/dashboard/stall-availability",
+						},
+						{
+							title: "Appointment",
+							url: "/dashboard/user-appointment",
 						},
 					],
 				},
@@ -365,13 +322,8 @@ export default function UserDashboardSidebar({
 					icon: CreditCard,
 				},
 				{
-					title: "Export Report",
-					url: "#",
-					icon: BookDown,
-				},
-				{
 					title: "Apply New Stall",
-					url: "#",
+					url: "/dashboard/stall-availability",
 					icon: HousePlus,
 				},
 			],
@@ -394,8 +346,8 @@ export default function UserDashboardSidebar({
 							url: "/dashboard/stall-availability",
 						},
 						{
-							title: "Make Payment",
-							url: "#",
+							title: "Appointment",
+							url: "/dashboard/user-appointment",
 						},
 					],
 				},

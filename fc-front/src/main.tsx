@@ -91,12 +91,34 @@ const RentalDashboard = lazy(() =>
 	)
 );
 
-const UserDashboard = lazy(() =>
-	import("./pages/dashboard/functionPage/user/UserDashboard.tsx").then(
+const UserAppointmentPage = lazy(() =>
+	import("./pages/dashboard/functionPage/user/UserAppointmentPage.tsx").then(
 		(module) => ({
-			default: module.UserDashboard,
+			default: module.UserAppointmentPage,
 		})
 	)
+);
+
+const AdminAppointmentPage = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/AdminAppointmentPage.tsx").then(
+		(module) => ({
+			default: module.AdminAppointmentPage,
+		})
+	)
+);
+
+const AdminReportPage = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/AdminReportPage.tsx").then(
+		(module) => ({
+			default: module.AdminReportPage,
+		})
+	)
+);
+
+export const PaymentSuccessPage = lazy(() =>
+	import("./pages/dashboard/payment-success.tsx").then((module) => ({
+		default: module.PaymentSuccessPage,
+	}))
 );
 
 const queryClient = new QueryClient();
@@ -165,8 +187,20 @@ const router = createBrowserRouter(
 					element: <RentalDashboard />,
 				},
 				{
-					path: "/dashboard/user-dashboard",
-					element: <UserDashboard />,
+					path: "/dashboard/user-appointment",
+					element: <UserAppointmentPage />,
+				},
+				{
+					path: "/dashboard/admin-appointment",
+					element: <AdminAppointmentPage />,
+				},
+				{
+					path: "/dashboard/payment-success",
+					element: <PaymentSuccessPage />,
+				},
+				{
+					path: "/dashboard/admin-report",
+					element: <AdminReportPage />,
 				},
 			],
 		},

@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth-client";
 import { useSession } from "@/api/adminApi";
 import { toast } from "sonner";
-import StallDetailForm from "../../user/StallDetailForm";
+import StallDetailForm from "../../user/components/StallDetailForm";
 
 export const StallButton: React.FC<StallButtonProps> = ({
 	stall,
@@ -41,13 +41,11 @@ export const StallButton: React.FC<StallButtonProps> = ({
 				title="Stall Details"
 				description={`Details of the stall ${stall.stallNumber}`}
 			>
-				<div className="">
-					{session?.user.role === "admin" ? (
-						<UpdateStallForm stall={stall} onSubmit={handleUpdateSuccess} />
-					) : (
-						<StallDetailForm stall={stall} />
-					)}
-				</div>
+				{session?.user.role === "admin" ? (
+					<UpdateStallForm stall={stall} onSubmit={handleUpdateSuccess} />
+				) : (
+					<StallDetailForm stall={stall} onSubmit={handleUpdateSuccess} />
+				)}
 			</ResponsiveSheetDialog>
 
 			<TooltipProvider>

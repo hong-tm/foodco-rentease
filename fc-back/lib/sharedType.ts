@@ -148,3 +148,21 @@ export const emailSchema = z.object({
 	subject: z.string(),
 	text: z.string(),
 });
+
+export const appointmentSchema = z.object({
+	notificationId: z.number().int().positive().min(1),
+	userId: z.string(),
+	notificationMessage: z.string(),
+	notificationRead: z.boolean(),
+	appointmentDate: z.coerce.date(),
+});
+
+export const createAppointmentSchema = appointmentSchema.omit({
+	notificationId: true,
+	notificationRead: true,
+});
+
+export const updateAppointmentStatusSchema = z.object({
+	notificationId: z.number().int().positive().min(1),
+	notificationRead: z.boolean(),
+});

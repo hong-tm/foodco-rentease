@@ -15,7 +15,7 @@ export function TenantInformationPage() {
 			<CardHeader>
 				<CardTitle>Tenant Information</CardTitle>
 				<CardDescription>
-					Manage rental and view system statistics
+					Manage rental and send email to tenants
 				</CardDescription>
 			</CardHeader>
 			<CardContent>

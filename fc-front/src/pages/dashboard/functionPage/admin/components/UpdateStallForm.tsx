@@ -51,6 +51,9 @@ export default function UpdateStallForm({
 	onSubmit,
 	setOpenDialog,
 }: StallFormProps) {
+	const parsedStartAt = stall.startAt ? new Date(stall.startAt) : new Date();
+	const parsedEndAt = stall.endAt ? new Date(stall.endAt) : new Date();
+
 	const form = useForm<z.infer<typeof updateStallSchema>>({
 		resolver: zodResolver(updateStallSchema),
 		defaultValues: {
@@ -61,20 +64,16 @@ export default function UpdateStallForm({
 			stallSize: stall.stallSize || 0,
 			stallOwner: stall.stallOwnerId?.email || "",
 			rentStatus: Boolean(stall.rentStatus),
-			startAt: new Date(stall.startAt || Date.now()),
-			endAt: new Date(stall.endAt || Date.now()),
+			startAt: parsedStartAt,
+			endAt: parsedEndAt,
 			stallTierNumber: {
 				tierId: stall.stallTierNumber?.tierId || 1,
 			},
 		},
 	});
 
-	const [startDate, setStartDate] = useState<Date>(
-		stall.startAt ? new Date(stall.startAt) : new Date()
-	);
-	const [endDate, setEndDate] = useState<Date>(
-		stall.endAt ? new Date(stall.endAt) : new Date()
-	);
+	const [startDate, setStartDate] = useState<Date>(parsedStartAt);
+	const [endDate, setEndDate] = useState<Date>(parsedEndAt);
 
 	// Handle tier selection with proper type updates
 	const handleTierSelect = (value: string, field: any) => {
