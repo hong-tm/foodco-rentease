@@ -8,7 +8,13 @@ import {
 import { StripeElementsOptions } from "@stripe/stripe-js";
 import { stripePromise } from "@/api/paymentApi";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "./ui/dialog";
 import { toast } from "sonner";
 
 interface CheckoutFormProps {
@@ -103,6 +109,7 @@ export default function PaymentModal({
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Payment Details</DialogTitle>
+					<DialogDescription></DialogDescription>
 				</DialogHeader>
 				<Elements stripe={stripePromise} options={options}>
 					<CheckoutForm amount={amount} />

@@ -35,6 +35,7 @@ const EnvSchema = z.object({
 	NODE_ENV: z.string().default("development"),
 
 	STRIPE_SECRET_KEY: z.string(),
+	STRIPE_DOMAIN: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;
