@@ -61,7 +61,7 @@ export const useSession = (authClient: any) => {
 		staleTime: 1000 * 60 * 1, // Cache for 1 minutes
 		// refetchOnWindowFocus: true,
 		// refetchInterval: 1000 * 10, // Refetch every 10 seconds
-		retry: false, // No retries for session fetching
+		// retry: false, // No retries for session fetching
 	});
 };
 
@@ -70,11 +70,21 @@ export async function sendReminderEmail({
 	subject,
 	text,
 }: SendReminderEmailResponse) {
-	const res = await api.users["send-reminder-email"].$post({
-		json: { to, subject, text },
-	});
+	try {
+		const res = await api.users["send-reminder-email"].$post({
+			json: { to, subject, text },
+		});
 
-	if (!res.ok) throw new Error("Failed to send email");
+		if (!res.ok) {
+			const errorBody = await res.json();
+			console.error("Send email error:", errorBody);
+			throw new Error("Failed to send email");
+		}
+		return res;
+	} catch (error) {
+		console.error("Error in sendReminderEmail:", error);
+		throw error;
+	}
 }
 
 // QueryOptions

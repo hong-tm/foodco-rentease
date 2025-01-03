@@ -17,9 +17,18 @@ import { toast } from "sonner";
 type UserAction = {
 	userName: string;
 	userEmail: string;
+	userStallId: number;
+	userStallName: string;
+	stallEndAt: Date;
 };
 
-export function TenantActionButton({ userName, userEmail }: UserAction) {
+export function TenantActionButton({
+	userName,
+	userEmail,
+	userStallId,
+	userStallName,
+	stallEndAt,
+}: UserAction) {
 	const [openSendReminder, setOpenSendReminder] = useState(false);
 
 	const mutation = useMutation({
@@ -37,9 +46,11 @@ export function TenantActionButton({ userName, userEmail }: UserAction) {
 			const payload = {
 				to: userEmail,
 				subject: `Payment Reminder for ${userName}`,
-				text: `Dear ${userName},\n\nThis is a reminder that your payment is due soon. Please make the payment as soon as possible.\n\nThank you!`,
+				text: `Dear ${userName},\n\nThis is a reminder that your payment is due soon for:\n\nStall Number: ${userStallId}\nStall Name: ${userStallName}\n\nYour stall will end on ${new Date(
+					stallEndAt
+				).toLocaleDateString()}. \n\nPlease make the payment as soon as possible.\n\nThank you!`,
 			};
-			console.log("Payload being sent:", payload);
+			// console.log("Payload being sent:", payload);
 
 			mutation.mutate(payload);
 		} catch (error: any) {

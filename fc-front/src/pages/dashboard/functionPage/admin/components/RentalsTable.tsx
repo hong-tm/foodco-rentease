@@ -100,6 +100,9 @@ export default function RentalsTable() {
 											<TenantActionButton
 												userName={user.name}
 												userEmail={user.email}
+												userStallId={stall.stallNumber}
+												userStallName={stall.stallName}
+												stallEndAt={stall.endAt}
 											/>
 										)}
 									</TableCell>

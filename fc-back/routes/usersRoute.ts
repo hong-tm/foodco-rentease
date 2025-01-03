@@ -26,7 +26,6 @@ export const usersRoute = new Hono()
 					[Op.ne]: "user",
 				},
 			},
-			order: ["name"],
 			include: [
 				{
 					association: "stalls",
@@ -34,6 +33,13 @@ export const usersRoute = new Hono()
 						rentStatus: true,
 					},
 				},
+			],
+			order: [
+				[
+					{ model: UserTable.associations.stalls.target, as: "stalls" },
+					"endAt",
+					"ASC",
+				],
 			],
 		});
 
@@ -48,17 +54,23 @@ export const usersRoute = new Hono()
 
 	.post(
 		"/send-reminder-email",
-		adminVerify,
+		adminVerify(),
 		zValidator("json", emailSchema),
 		async (c) => {
 			try {
 				const { to, subject, text } = await c.req.valid("json");
 
+				// Debug the extracted fields
+				console.log("Request payload:", { to, subject, text });
+
 				if (!to || !subject || !text) {
 					return c.json({ error: "Missing required fields" }, 400);
 				}
 
-				await sendEmail({ to, subject, text });
+				// Debug sendEmail response
+				const emailResponse = await sendEmail({ to, subject, text });
+				console.log("Email response:", emailResponse);
+
 				return c.json({ message: "Reminder email sent successfully!" });
 			} catch (err: any) {
 				console.error("Error in /send-reminder-email:", err.message || err);
