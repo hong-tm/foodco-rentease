@@ -46,18 +46,23 @@ export const usersRoute = new Hono()
 		return c.json({ user: users });
 	})
 
-	.post("/send-reminder-email", zValidator("json", emailSchema), async (c) => {
-		try {
-			const { to, subject, text } = await c.req.valid("json");
+	.post(
+		"/send-reminder-email",
+		adminVerify,
+		zValidator("json", emailSchema),
+		async (c) => {
+			try {
+				const { to, subject, text } = await c.req.valid("json");
 
-			if (!to || !subject || !text) {
-				return c.json({ error: "Missing required fields" }, 400);
+				if (!to || !subject || !text) {
+					return c.json({ error: "Missing required fields" }, 400);
+				}
+
+				await sendEmail({ to, subject, text });
+				return c.json({ message: "Reminder email sent successfully!" });
+			} catch (err: any) {
+				console.error("Error in /send-reminder-email:", err.message || err);
+				return c.json({ error: "Send reminder email failed!" }, 500);
 			}
-
-			await sendEmail({ to, subject, text });
-			return c.json({ message: "Reminder email sent successfully!" });
-		} catch (err: any) {
-			console.error("Error in /send-reminder-email:", err.message || err);
-			return c.json({ error: "Send reminder email failed!" }, 500);
 		}
-	});
+	);

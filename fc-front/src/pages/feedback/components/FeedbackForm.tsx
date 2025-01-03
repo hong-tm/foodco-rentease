@@ -48,7 +48,7 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
 		setPending(true);
 		try {
 			mutation.mutate(values);
-			console.log("Form submitted:", values);
+			// console.log("Form submitted:", values);
 			toast.success("Feedback submitted successfully");
 			onClose(); // Close the dialog only after successful submission
 		} catch (error: any) {

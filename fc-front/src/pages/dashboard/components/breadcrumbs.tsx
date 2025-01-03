@@ -22,6 +22,12 @@ export default function Breadcrumbs() {
 		"tenant-information": "Tenant Information",
 		"stall-availability": "Stall Availability",
 		"admin-dashboard": "Admin Dashboard",
+		"user-appointment": "User Appointment",
+		"user-dashboard": "User Dashboard",
+		"rental-dashboard": "Rental Dashboard",
+		"admin-appointment": "Admin Appointment",
+		"payment-success": "Payment Success",
+		"admin-report": "Admin Report",
 	};
 
 	let currentLink = "";

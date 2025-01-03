@@ -9,6 +9,16 @@ export interface GetStallsResponse {
 	users: UserAttributes[];
 }
 
+export interface GetCurrentVacancyResponse {
+	totalStalls: number;
+	stalls: StallUserAttributes[];
+}
+
+export interface GetStallCurrentResponse {
+	stalls: StallUserAttributes[];
+	user: UserAttributes;
+}
+
 export type StallFormProps = {
 	stall: StallUserAttributes;
 	onSubmit?: (data: any) => void;
@@ -31,6 +41,35 @@ export async function fetchStalls(): Promise<GetStallsResponse> {
 	const data = await Response.json();
 	const { stall } = data as GetStallsResponse;
 	return { stall, users: [] };
+}
+
+export async function fetchStallCurrent(
+	stallId: string
+): Promise<GetStallCurrentResponse> {
+	const Response = await api.stalls[":stallOwner"].$get({
+		param: { stallOwner: stallId },
+	});
+
+	if (!Response.ok) throw new Error("Failed to fetch stall");
+	const data = await Response.json();
+	return data as GetStallCurrentResponse;
+}
+
+export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
+	const Response = await api.stalls.$get();
+
+	if (!Response.ok) throw new Error("Failed to fetch stalls");
+
+	const data = await Response.json();
+	const { stall } = data;
+
+	// Calculate total stalls
+	const totalStalls = stall.length;
+
+	return {
+		totalStalls,
+		stalls: stall,
+	} as GetCurrentVacancyResponse;
 }
 
 export async function updateStall(values: z.infer<typeof updateStallSchema>) {
@@ -70,3 +109,18 @@ export const fetchStallsQueryOptions: UseQueryOptions<GetStallsResponse> = {
 	queryFn: fetchStalls,
 	staleTime: 1000 * 60 * 1, // Cache for 1 minute
 };
+
+export const fetchCurrentVacancyQueryOptions: UseQueryOptions<GetCurrentVacancyResponse> =
+	{
+		queryKey: ["fetch-current-vacancy"],
+		queryFn: fetchCurrentVacancy,
+		staleTime: 1000 * 60 * 1, // Cache for 1 minute
+	};
+
+export const fetchStallCurrentQueryOptions = (
+	stallId: string
+): UseQueryOptions<GetStallCurrentResponse> => ({
+	queryKey: ["fetch-stall-current", stallId],
+	queryFn: () => fetchStallCurrent(stallId),
+	staleTime: 1000 * 60 * 1, // Cache for 1 minute
+});

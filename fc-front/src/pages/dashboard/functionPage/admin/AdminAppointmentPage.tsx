@@ -7,19 +7,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import RentalsTable from "./components/RentalsTable";
+import AdminAppointmentTable from "./components/AdminAppointmentTable";
 
-export function TenantInformationPage() {
+export function AdminAppointmentPage() {
 	return (
 		<Card className="mx-auto w-full bg-muted/10 p-4 md:p-6 lg:p-8 rounded-lg shadow-md">
 			<CardHeader>
-				<CardTitle>Tenant Information</CardTitle>
+				<CardTitle>User Appointment</CardTitle>
 				<CardDescription>
-					Manage rental and send email to tenants
+					View your appointment history and status
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<RentalsTable />
+				<AdminAppointmentTable />
 			</CardContent>
 			<VisuallyHidden>
 				<CardFooter></CardFooter>

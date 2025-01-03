@@ -28,6 +28,8 @@ const BlurhashComponent = ({
 		// and pass it as a prop, rather than using a static placeholder
 	}, [imageUrl]);
 
+	setBlurhash(imageUrl);
+
 	return (
 		<div style={{ position: "relative", width, height }}>
 			{!imageLoaded && (

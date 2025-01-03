@@ -1,4 +1,11 @@
-import { account, Feedback, Stall, StallTier, user } from "./userModel.js";
+import {
+	account,
+	Feedback,
+	Notification,
+	Stall,
+	StallTier,
+	user,
+} from "./userModel.js";
 
 export default function initDB() {
 	{
@@ -7,6 +14,7 @@ export default function initDB() {
 		initStallTier();
 		initStall();
 		initFeeedback();
+		initNotification();
 	}
 }
 
@@ -574,6 +582,35 @@ function initFeeedback() {
 			happiness: 4,
 			feedbackContent: "Excellent service and tasty food",
 			stall: 11,
+		},
+	});
+}
+
+function initNotification() {
+	Notification.findOrCreate({
+		where: {
+			userId: "fN5GPoCR3JbqzJQqIFcOjnlPBdE0F3HA",
+			notificationMessage: "I want to make appointment for Stall 20",
+			notificationRead: false,
+			appointmentDate: new Date("2024-12-25 11:03:34.683+08"),
+		},
+	});
+
+	Notification.findOrCreate({
+		where: {
+			userId: "xTSdZUUynTHmq8G_bmV-L",
+			notificationMessage: "I want to make appointment for Stall 15",
+			notificationRead: true,
+			appointmentDate: new Date("2024-12-26 11:03:34.683+08"),
+		},
+	});
+
+	Notification.findOrCreate({
+		where: {
+			userId: "uf1Ct1N6fYtj1g231BPsoHodHZCLlxoF",
+			notificationMessage: "I want to make appointment for Stall 10",
+			notificationRead: false,
+			appointmentDate: new Date("2025-01-25 11:03:34.683+08"),
 		},
 	});
 }

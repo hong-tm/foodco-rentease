@@ -12,6 +12,7 @@ import {
 import {
 	Drawer,
 	DrawerContent,
+	DrawerDescription,
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
@@ -42,7 +43,7 @@ export function StallCombobox({
 
 	if (!isMobile) {
 		return (
-			<Popover open={open} onOpenChange={setOpen}>
+			<Popover open={open} onOpenChange={setOpen} modal={true}>
 				<PopoverTrigger asChild>
 					<Button
 						variant="outline"
@@ -82,6 +83,7 @@ export function StallCombobox({
 			<VisuallyHidden>
 				<DrawerHeader>
 					<DrawerTitle></DrawerTitle>
+					<DrawerDescription></DrawerDescription>
 				</DrawerHeader>
 			</VisuallyHidden>
 			<DrawerContent>

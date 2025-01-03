@@ -26,6 +26,10 @@ export async function sendEmail({
 			text: text,
 		});
 
+		if (error) {
+			throw new Error(error.message);
+		}
+
 		return data;
 	} catch (err) {
 		console.log(err);

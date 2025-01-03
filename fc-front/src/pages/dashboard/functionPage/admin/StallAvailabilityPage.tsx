@@ -28,3 +28,5 @@ export function StallAvailabilityPage() {
 		</Card>
 	);
 }
+
+export default StallAvailabilityPage;

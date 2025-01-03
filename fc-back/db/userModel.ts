@@ -22,6 +22,7 @@ export type UserAttributes = InferAttributes<user>;
 export type SessionAttributes = InferAttributes<session>;
 export type StallAttributes = InferAttributes<Stall>;
 export type StallTierAttributes = InferAttributes<StallTier>;
+export type NotificationAttributes = InferAttributes<Notification>;
 
 export type UserStallAttributes = InferAttributes<user> & {
 	user: UserAttributes[];
@@ -399,10 +400,11 @@ export class Notification extends Model<
 	InferAttributes<Notification>,
 	InferCreationAttributes<Notification>
 > {
-	@Attribute(DataTypes.TEXT)
+	@Attribute(DataTypes.INTEGER)
 	@PrimaryKey
 	@NotNull
-	declare notificationId: CreationOptional<string>;
+	@AutoIncrement
+	declare notificationId: CreationOptional<number>;
 
 	@BelongsTo(() => user, "userId")
 	declare notificationUser?: NonAttribute<user>;
@@ -414,38 +416,16 @@ export class Notification extends Model<
 	declare notificationMessage: CreationOptional<string>;
 
 	@Attribute(DataTypes.BOOLEAN)
-	@Default(false)
-	@NotNull
 	declare notificationRead: CreationOptional<boolean>;
-}
 
-export class Appointment extends Model<
-	InferAttributes<Appointment>,
-	InferCreationAttributes<Appointment>
-> {
-	@Attribute(DataTypes.TEXT)
-	@PrimaryKey
-	@NotNull
-	declare appointmentId: CreationOptional<string>;
+	@Attribute(DataTypes.DATE)
+	declare appointmentDate: CreationOptional<Date>;
 
 	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare appointmentDate: CreationOptional<Date>;
+	declare createdAt: CreationOptional<Date>;
 
-	@BelongsTo(() => user, "userId")
-	declare appointmentUser?: NonAttribute<user>;
-	@Attribute(DataTypes.STRING)
+	@Attribute(DataTypes.DATE)
 	@NotNull
-	declare userId: CreationOptional<string>;
-
-	@BelongsTo(() => Stall, "stallId")
-	declare appointmentStall?: NonAttribute<Stall>;
-	@Attribute(DataTypes.INTEGER)
-	@NotNull
-	declare stallId: CreationOptional<number>;
-
-	@Attribute(DataTypes.BOOLEAN)
-	@Default(false)
-	@NotNull
-	declare appointmentStatus: CreationOptional<boolean>;
+	declare updatedAt: CreationOptional<Date>;
 }

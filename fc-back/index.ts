@@ -29,6 +29,8 @@ import { pino } from "pino";
 import env from "./env.js";
 import initDB from "./db/initDB.js";
 import { stallsRoute } from "./routes/stallsRoute.js";
+import { notificationsRoutes } from "./routes/notificationsRoutes.js";
+import payment from "./routes/paymentRoutes.js";
 
 const app = new Hono<{
 	Variables: {
@@ -40,6 +42,24 @@ const app = new Hono<{
 const allowedOrigins = env.ALLOWED_ORIGINS?.split(",") || [];
 const verifyEndpoint = env.TURNSTILE_VERIFY_URL;
 const secret = env.TURNSTILE_SECRET_KEY;
+
+// Add CORS middleware for all routes
+app.use(
+	"*",
+	cors({
+		origin: (origin) => {
+			if (allowedOrigins.includes(origin)) {
+				return origin;
+			}
+			return allowedOrigins[0]; // Default to first allowed origin
+		},
+		allowHeaders: ["Content-Type", "Authorization"],
+		allowMethods: ["POST", "GET", "OPTIONS"],
+		exposeHeaders: ["Content-Length"],
+		maxAge: 600,
+		credentials: true,
+	})
+);
 
 app.use("*", async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
@@ -75,7 +95,9 @@ export const apiRoutes = app
 	.route("/expenses", expensesRoute)
 	.route("/feedbacks", feedbacksRoute)
 	.route("/users", usersRoute)
-	.route("/stalls", stallsRoute);
+	.route("/stalls", stallsRoute)
+	.route("/notifications", notificationsRoutes)
+	.route("/payment", payment);
 
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));

@@ -33,6 +33,8 @@ const EnvSchema = z.object({
 	PG_PORT: z.coerce.number().default(5432),
 
 	NODE_ENV: z.string().default("development"),
+
+	STRIPE_SECRET_KEY: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;

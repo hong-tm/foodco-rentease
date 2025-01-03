@@ -16,6 +16,14 @@ export interface FeedbackResponse {
 	feedback: Feedback[]; // Assuming your feedback array is of type 'Feedback'
 }
 
+export interface FeedbackHappinessResponse {
+	stallHappiness: {
+		stallId: number;
+		totalHappiness: number;
+		totalFeedbacks: number;
+	}[];
+}
+
 export async function getAllFeedback(): Promise<Feedback[]> {
 	const session = await authClient.getSession();
 
@@ -45,6 +53,16 @@ export async function getAllFeedback(): Promise<Feedback[]> {
 	return feedback;
 }
 
+export async function getFeedbackHappiness(): Promise<
+	FeedbackHappinessResponse["stallHappiness"]
+> {
+	const res = await api.feedbacks["get-feedbackHappiness"].$get();
+	if (!res.ok) throw new Error("Failed to fetch feedbacks");
+	const data = await res.json();
+	const { stallHappiness } = data as FeedbackHappinessResponse;
+	return stallHappiness;
+}
+
 export async function createFeedback(
 	values: z.infer<typeof createFeedbackSchema>
 ) {
@@ -69,10 +87,17 @@ export const getAllFeedbackQueryOptions = queryOptions<Feedback[]>({
 	// refetchInterval: 5000, // Refetch every 5 seconds
 });
 
-// QueryClient
 export function removeFeedbackById(
 	feedbacks: Feedback[] | undefined,
 	id: number
 ): Feedback[] {
 	return feedbacks ? feedbacks.filter((feedback) => feedback.id !== id) : [];
 }
+
+export const getFeedbackHappinessQueryOptions = queryOptions<
+	FeedbackHappinessResponse["stallHappiness"]
+>({
+	queryKey: ["get-feedback-happiness"],
+	queryFn: getFeedbackHappiness,
+	staleTime: 1000 * 60 * 1, // 1 minutes
+});
