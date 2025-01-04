@@ -409,6 +409,7 @@ export class Notification extends Model<
 
 	@BelongsTo(() => user, "userId")
 	declare notificationUser?: NonAttribute<user>;
+
 	@Attribute(DataTypes.STRING)
 	declare userId: CreationOptional<string>;
 
@@ -421,6 +422,10 @@ export class Notification extends Model<
 
 	@Attribute(DataTypes.DATE)
 	declare appointmentDate: CreationOptional<Date>;
+
+	@Attribute(DataTypes.INTEGER)
+	@NotNull
+	declare stallNumber: CreationOptional<number>;
 
 	@Attribute(DataTypes.DATE)
 	@NotNull

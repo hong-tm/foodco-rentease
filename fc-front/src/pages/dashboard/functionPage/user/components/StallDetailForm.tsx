@@ -84,6 +84,7 @@ export default function StallDetailForm({
 				userId: data.user.id,
 				notificationMessage: `I want to make appointment for Stall ${stall.stallNumber}`,
 				appointmentDate: appointmentDate,
+				stallNumber: stall.stallNumber,
 			};
 
 			await mutation.mutateAsync(values);

@@ -155,6 +155,7 @@ export const appointmentSchema = z.object({
 	notificationMessage: z.string(),
 	notificationRead: z.boolean(),
 	appointmentDate: z.coerce.date(),
+	stallNumber: z.number().int().positive().min(1),
 });
 
 export const createAppointmentSchema = appointmentSchema.omit({
@@ -165,4 +166,5 @@ export const createAppointmentSchema = appointmentSchema.omit({
 export const updateAppointmentStatusSchema = z.object({
 	notificationId: z.number().int().positive().min(1),
 	notificationRead: z.boolean(),
+	stallNumber: z.number().int().positive().min(1),
 });
