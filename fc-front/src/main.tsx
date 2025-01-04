@@ -121,6 +121,22 @@ export const PaymentSuccessPage = lazy(() =>
 	}))
 );
 
+const RentalReportPage = lazy(() =>
+	import("./pages/dashboard/functionPage/rental/RentalReportPage.tsx").then(
+		(module) => ({
+			default: module.RentalReportPage,
+		})
+	)
+);
+
+const UserReportPage = lazy(() =>
+	import("./pages/dashboard/functionPage/user/UserReportPage.tsx").then(
+		(module) => ({
+			default: module.UserReportPage,
+		})
+	)
+);
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
@@ -201,6 +217,14 @@ const router = createBrowserRouter(
 				{
 					path: "/dashboard/admin-report",
 					element: <AdminReportPage />,
+				},
+				{
+					path: "/dashboard/rental-report",
+					element: <RentalReportPage />,
+				},
+				{
+					path: "/dashboard/user-report",
+					element: <UserReportPage />,
 				},
 			],
 		},

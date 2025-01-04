@@ -216,14 +216,6 @@ export default function UserDashboardSidebar({
 					icon: BadgeDollarSign,
 					items: [
 						{
-							title: "Revenue & Payments",
-							url: "#",
-						},
-						{
-							title: "Invoices & Billing",
-							url: "#",
-						},
-						{
 							title: "Export Financial Report",
 							url: "/dashboard/admin-report",
 						},
@@ -300,16 +292,8 @@ export default function UserDashboardSidebar({
 					icon: BadgeDollarSign,
 					items: [
 						{
-							title: "Payments",
-							url: "#",
-						},
-						{
-							title: "Invoices & Billing",
-							url: "#",
-						},
-						{
 							title: "Export Financial Report",
-							url: "#",
+							url: "/dashboard/rental-report",
 						},
 					],
 				},
@@ -318,7 +302,7 @@ export default function UserDashboardSidebar({
 			navQuick: [
 				{
 					title: "Payments",
-					url: "#",
+					url: "/dashboard/rental-report",
 					icon: CreditCard,
 				},
 				{
@@ -337,7 +321,7 @@ export default function UserDashboardSidebar({
 			navMain: [
 				{
 					title: "Main Features",
-					url: "#",
+					url: "/dashboard/stall-availability",
 					icon: ListOrdered,
 					isActive: true,
 					items: [
@@ -358,11 +342,7 @@ export default function UserDashboardSidebar({
 					items: [
 						{
 							title: "Payments",
-							url: "#",
-						},
-						{
-							title: "Invoices & Billing",
-							url: "#",
+							url: "/dashboard/user-report",
 						},
 					],
 				},
@@ -376,7 +356,7 @@ export default function UserDashboardSidebar({
 				},
 				{
 					title: "Payment History",
-					url: "#",
+					url: "/dashboard/user-report",
 					icon: History,
 				},
 			],

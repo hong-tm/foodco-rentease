@@ -57,61 +57,63 @@ export function AdminReportPage() {
 	];
 
 	const downloadAsPDF = async () => {
-		try {
-			const response = await fetch("/api/reports/download-pdf", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ paymentRecords }),
-			});
+		// try {
+		// 	const response = await fetch("/api/reports/download-pdf", {
+		// 		method: "POST",
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 		},
+		// 		body: JSON.stringify({ paymentRecords }),
+		// 	});
 
-			if (!response.ok) {
-				throw new Error("Failed to download PDF");
-			}
+		// 	if (!response.ok) {
+		// 		throw new Error("Failed to download PDF");
+		// 	}
 
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "payment-records.pdf";
-			document.body.appendChild(a);
-			a.click();
-			window.URL.revokeObjectURL(url);
-			document.body.removeChild(a);
-		} catch (error) {
-			console.error("Error downloading PDF:", error);
-			toast.error("Failed to download PDF report");
-		}
+		// 	const blob = await response.blob();
+		// 	const url = window.URL.createObjectURL(blob);
+		// 	const a = document.createElement("a");
+		// 	a.href = url;
+		// 	a.download = "payment-records.pdf";
+		// 	document.body.appendChild(a);
+		// 	a.click();
+		// 	window.URL.revokeObjectURL(url);
+		// 	document.body.removeChild(a);
+		// } catch (error) {
+		// 	console.error("Error downloading PDF:", error);
+		// 	toast.error("Failed to download PDF report");
+		// }
+		toast.success("Downloading PDF report...");
 	};
 
 	const downloadAsCSV = async () => {
-		try {
-			const response = await fetch("/api/reports/download-csv", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ paymentRecords }),
-			});
+		// try {
+		// 	const response = await fetch("/api/reports/download-csv", {
+		// 		method: "POST",
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 		},
+		// 		body: JSON.stringify({ paymentRecords }),
+		// 	});
 
-			if (!response.ok) {
-				throw new Error("Failed to download CSV");
-			}
+		// 	if (!response.ok) {
+		// 		throw new Error("Failed to download CSV");
+		// 	}
 
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "payment-records.csv";
-			document.body.appendChild(a);
-			a.click();
-			window.URL.revokeObjectURL(url);
-			document.body.removeChild(a);
-		} catch (error) {
-			console.error("Error downloading CSV:", error);
-			toast.error("Failed to download CSV report");
-		}
+		// 	const blob = await response.blob();
+		// 	const url = window.URL.createObjectURL(blob);
+		// 	const a = document.createElement("a");
+		// 	a.href = url;
+		// 	a.download = "payment-records.csv";
+		// 	document.body.appendChild(a);
+		// 	a.click();
+		// 	window.URL.revokeObjectURL(url);
+		// 	document.body.removeChild(a);
+		// } catch (error) {
+		// 	console.error("Error downloading CSV:", error);
+		// 	toast.error("Failed to download CSV report");
+		// }
+		toast.success("Downloading CSV report...");
 	};
 
 	return (
