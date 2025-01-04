@@ -29,9 +29,9 @@ export const usersRoute = new Hono()
 			include: [
 				{
 					association: "stalls",
-					where: {
-						rentStatus: true,
-					},
+					// where: {
+					// 	rentStatus: true,
+					// },
 				},
 			],
 			order: [

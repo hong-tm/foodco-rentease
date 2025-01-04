@@ -17,16 +17,18 @@ import { toast } from "sonner";
 export default function AdminAppointmentActionButton({
 	appointmentId,
 	appointmentStatus,
+	stallNumber,
 }: {
 	appointmentId: number;
 	appointmentStatus: boolean | null;
+	stallNumber: number;
 }) {
 	const [openApproveAppointment, setOpenApproveAppointment] = useState(false);
 	const [openRejectAppointment, setOpenRejectAppointment] = useState(false);
 	const queryClient = useQueryClient();
 
 	const { mutate: approveAppointment, isPending: isApproving } = useMutation({
-		mutationFn: () => updateAppointmentStatus(appointmentId, true),
+		mutationFn: () => updateAppointmentStatus(appointmentId, true, stallNumber),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
 			toast.success("Appointment approved successfully");
@@ -39,7 +41,8 @@ export default function AdminAppointmentActionButton({
 	});
 
 	const { mutate: rejectAppointment, isPending: isRejecting } = useMutation({
-		mutationFn: () => updateAppointmentStatus(appointmentId, false),
+		mutationFn: () =>
+			updateAppointmentStatus(appointmentId, false, stallNumber),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["get-notifications"] });
 			toast.success("Appointment rejected successfully");

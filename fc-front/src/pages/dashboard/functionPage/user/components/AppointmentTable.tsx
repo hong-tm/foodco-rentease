@@ -18,14 +18,15 @@ import { useState } from "react";
 import PaymentModal from "@/components/PaymentModal";
 import { createPaymentIntent } from "@/api/paymentApi";
 import { toast } from "sonner";
+import { GetStallsResponse } from "@/api/stallApi";
+import { fetchStallsQueryOptions } from "@/api/stallApi";
 
 interface Notification {
 	notificationId: number;
 	notificationMessage: string;
 	notificationRead: boolean | null;
 	appointmentDate: Date;
-	stallTierPrice?: number;
-	stallSize?: number;
+	stallNumber?: number;
 }
 
 export default function AppointmentTable() {
@@ -34,6 +35,7 @@ export default function AppointmentTable() {
 	const [clientSecret, setClientSecret] = useState("");
 	const [selectedNotification, setSelectedNotification] =
 		useState<Notification | null>(null);
+	const { data: stalls } = useQuery<GetStallsResponse>(fetchStallsQueryOptions);
 
 	const {
 		data: notifications,
@@ -45,19 +47,50 @@ export default function AppointmentTable() {
 	});
 
 	const calculateAmount = (notification: Notification) => {
-		if (!notification.stallTierPrice || !notification.stallSize) {
-			return 100; // Default amount if no price info available
+		console.log("Debug - notification:", notification);
+		console.log("Debug - stalls:", stalls);
+
+		if (!stalls) {
+			console.log("Debug - No stalls data available");
+			return 0;
 		}
-		return notification.stallTierPrice * notification.stallSize;
+
+		const stall = stalls.stall.find(
+			(stall) => stall.stallNumber === notification.stallNumber
+		);
+
+		console.log("Debug - found stall:", stall);
+
+		if (!stall) {
+			console.log(
+				"Debug - No matching stall found for stallNumber:",
+				notification.stallNumber
+			);
+			return 0;
+		}
+
+		// Ensure type safety for `tierPrice` and `stallSize`
+		const tierPrice =
+			typeof stall.stallTierNumber.tierPrice === "number"
+				? stall.stallTierNumber.tierPrice
+				: parseFloat(stall.stallTierNumber.tierPrice);
+		const stallSize =
+			typeof stall.stallSize === "number"
+				? stall.stallSize
+				: parseFloat(stall.stallSize);
+
+		// console.log("Debug - tierPrice:", tierPrice, "stallSize:", stallSize);
+
+		const total = tierPrice * stallSize;
+		// console.log("Debug - calculated total:", total);
+
+		return total;
 	};
 
 	const handlePaymentClick = async (notification: Notification) => {
 		try {
 			const amount = calculateAmount(notification);
-			console.log("Calculated amount:", amount, {
-				tierPrice: notification.stallTierPrice,
-				size: notification.stallSize,
-			});
+			console.log("Calculated amount:", amount);
 
 			const { clientSecret } = await createPaymentIntent(amount);
 			setClientSecret(clientSecret);

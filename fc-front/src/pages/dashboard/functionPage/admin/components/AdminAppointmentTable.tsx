@@ -111,6 +111,7 @@ export default function AdminAppointmentTable() {
 										<AdminAppointmentActionButton
 											appointmentId={notification.notificationId}
 											appointmentStatus={notification.notificationRead}
+											stallNumber={notification.stallNumber}
 										/>
 									</TableCell>
 								</TableRow>

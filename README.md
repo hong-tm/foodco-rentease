@@ -1,66 +1,111 @@
 # 🏢 FoodCo RentEase
 
-A streamlined rental management platform for food courts, designed to manage stalls, tenants, finances, and feedback efficiently.
+A streamlined rental management platform for food courts, designed to efficiently manage stalls, tenants, finances, and feedback.
 
 ---
 
-## 🖥️ Page Layout
+## 🖥️ System Overview
 
-- **🔐 Auth System**: Role-based access for **Owners**, **Rentals**, and **Guests**.
-- **📂 Navigation**: Main modules (Dashboard, Stall, Tenant, Finance, Data Analysis) accessible via a left sidebar.
-- **📋 Main Action Area**: Dedicated for managing each module’s operations.
-- **📱 Responsive Design**: Bento-style layout for mobile-friendly access.
-- **👤 User Profiles**: Separate profiles for logged-in users.
+### **Core Features**
 
-## ⚙️ Tech Stack
+- **Role-Based Access Control**: Differentiated access for **Owners**, **Rentals**, and **Guests** (Potential Tenants).
+- **Responsive Design**: Mobile-friendly, bento-style layout for seamless navigation.
+- **Comprehensive Modules**: Dashboard, Stall, Tenant, Finance, Feedback, and Analytics.
 
-**Frontend**:
+### **Tech Stack**
 
-- 🖌️ shadcn/ui, Framer Motion, Aceternity UI, Hyper UI, Tailwind CSS
-- 🧩 Magic UI (React)
-- 🔔 Sonner (toast notifications)
+#### Frontend:
 
-**Backend**:
+- **UI Components**: shadcn/ui, Framer Motion, Aceternity UI, Hyper UI
+- **Styling**: Tailwind CSS
+- **Notifications**: Sonner toast system
+- **State Management**: React Query
+- **Responsive Magic UI**: Designed for optimal user experience.
 
-- 🚀 Hono.js, Sequelize ORM
-- 💳 Stripe (for payments), aaPanel, Nginx
+#### Backend:
+
+- **Framework**: Hono.js with TypeScript
+- **Database**: PostgreSQL with Sequelize ORM
+- **Authentication**: Custom role-based system, Google OAuth, and email verification.
+- **Payment Processing**: Stripe for secure payments.
+- **Security**: Cloudflare Turnstile.
+- **Deployment**: Nginx with aaPanel for server management.
+- **Email Services**: Resend API for notifications and alerts.
 
 ---
 
-## 🌟 Key Features
+## 🌟 Detailed Features
 
 ### 📊 Owner Dashboard
 
-- **Overview** of key metrics: rent reports, income & expenses, vacancy rates, tenant analysis.
-- **🔔 Notifications** and reminders for lease renewals and rent due.
-- **📈 Data Analysis**: tenant occupancy trends, payment history, rental seasonality.
+- **Key Metrics Overview**: Rent reports, income/expenses, vacancy rates, tenant performance.
+- **Real-Time Notifications**: Lease renewals and rent due reminders.
+- **Data Insights**: Occupancy trends, rental seasonality, payment history.
 
 ### 🏠 Stall Management
 
-- **Visual Grid** of stall status (vacant/rented).
-- Edit stall details, view rent history, and upload stall images.
+- **Interactive Visual Grid**: Real-time status of stalls (vacant/rented).
+- **Management Tools**: Edit stall details, upload images, view rent history.
+- **Pricing Tiers**: Low, Medium, High.
 
-### 👥 Tenant Management
+### 👥 Tenant System
 
-- **Manage tenants**, send reminders, renew leases.
-- **🔍 Filter** by lease status and tenant rating.
+- **Comprehensive Profiles**: Track lease agreements and contact details.
+- **Ban Management**: Handle tenant violations.
+- **Tenant Insights**: Analyze performance metrics.
 
 ### 💸 Financial Management
 
-- **Revenue tracking**, invoice management, data export options.
-- **💳 Stripe integration** for payments, late fee calculations.
+- **Integrated Stripe Payments**: Secure payment processing and late fee handling.
+- **Automated Invoicing**: Generate and track payment history.
+- **Detailed Reports**: Revenue tracking and exportable financial data.
 
 ### 📝 Feedback System
 
-- Track and review **tenant feedback** and complaints.
+- **Happiness Ratings**: 1-4 scale for tenant feedback.
+- **Detailed Reviews**: Stall-specific feedback and responses.
+- **Accessible Submission**: Even non-logged-in users can submit feedback.
 
-### 📄 Reporting
+### 🔔 Notification Center
 
-- Downloadable **reports** (financials, maintenance logs, tenant history).
+- **Appointment Scheduling**: Manage tenant interactions.
+- **Alerts**: Email and real-time notifications for key updates.
+- **Read/Unread Status**: Track communication effectively.
+
+### 📄 Reporting & Analytics
+
+- **Custom Reports**: Financials, maintenance logs, and tenant history.
+- **Performance Metrics**: Stall occupancy and tenant reviews.
 
 ---
 
-## 👥 For Tenants and Potential Tenants
+## 👥 User Roles
 
-- **Tenants**: View stall details, manage rent payments, view/download contracts.
-- **Potential Tenants**: Browse available stalls, apply for leases, and submit feedback.
+### **Tenants**
+
+- **Features**: Manage rent payments, view/download contracts, and update profiles.
+- **Convenience**: Real-time access to stall details and notifications.
+
+### **Potential Tenants (Guests)**
+
+- **Access**: Browse available stalls and apply for leases.
+- **Feedback**: Submit feedback without account requirements.
+
+---
+
+## ⚙️ Development Setup
+
+### Prerequisites:
+
+- Node.js
+- PostgreSQL
+- Environment variables configuration
+
+### Installation:
+
+1. Clone the repository.
+2. Install dependencies using `npm install`.
+3. Configure `.env` file with required environment variables.
+4. Start the development server using `npm run dev`.
+
+---

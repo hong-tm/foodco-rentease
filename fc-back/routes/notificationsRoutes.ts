@@ -89,9 +89,13 @@ export const notificationsRoutes = new Hono()
 		async (c) => {
 			const data = c.req.valid("json");
 
-			const notification = await NotificationTable.update(data, {
-				where: { notificationId: data.notificationId },
-			});
+			const notification = await NotificationTable.update(
+				{
+					notificationRead: data.notificationRead,
+					stallNumber: data.stallNumber,
+				},
+				{ where: { notificationId: data.notificationId } }
+			);
 
 			if (!notification) {
 				return c.notFound();

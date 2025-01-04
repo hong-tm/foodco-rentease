@@ -18,10 +18,11 @@ export async function createAppointment(
 
 export async function updateAppointmentStatus(
 	notificationId: number,
-	notificationRead: boolean
+	notificationRead: boolean,
+	stallNumber: number
 ) {
 	const res = await api.notifications["update-appoitmentStatus"].$post({
-		json: { notificationId, notificationRead },
+		json: { notificationId, notificationRead, stallNumber },
 	});
 	if (!res.ok) throw new Error("Failed to update appointment status");
 	return res.json();
