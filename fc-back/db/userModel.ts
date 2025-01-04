@@ -23,6 +23,7 @@ export type SessionAttributes = InferAttributes<session>;
 export type StallAttributes = InferAttributes<Stall>;
 export type StallTierAttributes = InferAttributes<StallTier>;
 export type NotificationAttributes = InferAttributes<Notification>;
+export type AccountAttributes = InferAttributes<account>;
 
 export type UserStallAttributes = InferAttributes<user> & {
 	user: UserAttributes[];
