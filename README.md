@@ -1,4 +1,4 @@
-# 🏢 FoodCo RentEase
+# 🏢 Ming Ming Food Court RentEase
 
 A streamlined rental management platform for food courts, designed to efficiently manage stalls, tenants, finances, and feedback.
 
@@ -8,7 +8,7 @@ A streamlined rental management platform for food courts, designed to efficientl
 
 ### **Core Features**
 
-- **Role-Based Access Control**: Differentiated access for **Owners**, **Rentals**, and **Guests** (Potential Tenants).
+- **Role-Based Access Control**: Differentiated access for **admin**, **renral**, and **user** (Potential Tenants).
 - **Responsive Design**: Mobile-friendly, bento-style layout for seamless navigation.
 - **Comprehensive Modules**: Dashboard, Stall, Tenant, Finance, Feedback, and Analytics.
 
@@ -19,14 +19,14 @@ A streamlined rental management platform for food courts, designed to efficientl
 - **UI Components**: shadcn/ui, Framer Motion, Aceternity UI, Hyper UI
 - **Styling**: Tailwind CSS
 - **Notifications**: Sonner toast system
-- **State Management**: React Query
+- **State Management**: Tanstack Query
 - **Responsive Magic UI**: Designed for optimal user experience.
 
 #### Backend:
 
 - **Framework**: Hono.js with TypeScript
 - **Database**: PostgreSQL with Sequelize ORM
-- **Authentication**: Custom role-based system, Google OAuth, and email verification.
+- **Authentication**: Better-auth with Custom role-based system, Google OAuth, and email verification.
 - **Payment Processing**: Stripe for secure payments.
 - **Security**: Cloudflare Turnstile.
 - **Deployment**: Nginx with aaPanel for server management.
@@ -81,12 +81,12 @@ A streamlined rental management platform for food courts, designed to efficientl
 
 ## 👥 User Roles
 
-### **Tenants**
+### **Rentals**
 
 - **Features**: Manage rent payments, view/download contracts, and update profiles.
 - **Convenience**: Real-time access to stall details and notifications.
 
-### **Potential Tenants (Guests)**
+### **Users (Customers)**
 
 - **Access**: Browse available stalls and apply for leases.
 - **Feedback**: Submit feedback without account requirements.
@@ -106,6 +106,7 @@ A streamlined rental management platform for food courts, designed to efficientl
 1. Clone the repository.
 2. Install dependencies using `npm install`.
 3. Configure `.env` file with required environment variables.
-4. Start the development server using `npm run dev`.
+4. .env.example file is provided for reference.
+5. Start the development server using `npm run dev`.
 
 ---
