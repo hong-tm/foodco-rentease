@@ -367,6 +367,34 @@ function initUser() {
 			role: "user",
 		},
 	});
+
+	user.findOrCreate({
+		where: { id: "iZe3sLxAa9W5dxy29bD1MKQ2uupFbrdd" },
+		defaults: {
+			name: "rental",
+			email: "rental@gmail.com",
+			emailVerified: true,
+			createdAt: new Date("2024-12-26 22:39:18.885+00"),
+			updatedAt: new Date("2024-12-26 22:39:18.885+00"),
+			role: "rental",
+			banned: false,
+			phone: "012345678",
+		},
+	});
+
+	user.findOrCreate({
+		where: { id: "Z5cQ2RFDFWW57X4ihlGZkBhu8G9ckaka" },
+		defaults: {
+			name: "admin",
+			email: "admin@gmail.com",
+			emailVerified: true,
+			createdAt: new Date("2024-12-26 22:39:18.885+00"),
+			updatedAt: new Date("2024-12-26 22:39:18.885+00"),
+			role: "admin",
+			banned: false,
+			phone: "012345699",
+		},
+	});
 }
 
 function initAccount() {
@@ -432,6 +460,32 @@ function initAccount() {
 			providerId: "credential",
 			password:
 				"0975692c5a3d342e6a14e3ce30603a06:546abb82b7e4a911f2636d6b360d8abaaacbfd35d03e20b925c3810a6fa09f0777e1432dbe037153ff5942f474c9645afc6c108283ee36fadb90293a8d30bebf",
+			createdAt: new Date("2024-12-26 22:39:19.233+00"),
+			updatedAt: new Date("2024-12-26 22:39:19.233+00"),
+		},
+	});
+
+	account.findOrCreate({
+		where: { id: "KDhC5bqlV23Zzq1gelJiRiCCLiGZgl0Q" },
+		defaults: {
+			accountId: "iZe3sLxAa9W5dxy29bD1MKQ2uupFbrdd",
+			userId: "iZe3sLxAa9W5dxy29bD1MKQ2uupFbrdd",
+			providerId: "credential",
+			password:
+				"a26da2060335e8c5e87dbca6a37c0376:9d030a6f77410552019825aceaa36331e42657f46553c1f2f232a086c4c761a154b34aa2d8fb4a94c9dee069c010b432a9671effa1a37e20391df69fbedf3a91",
+			createdAt: new Date("2024-12-26 22:39:19.233+00"),
+			updatedAt: new Date("2024-12-26 22:39:19.233+00"),
+		},
+	});
+
+	account.findOrCreate({
+		where: { id: "Tja9i6NF5AgG3INaQJOcpeYN9HZoLPHu" },
+		defaults: {
+			accountId: "Z5cQ2RFDFWW57X4ihlGZkBhu8G9ckaka",
+			userId: "Z5cQ2RFDFWW57X4ihlGZkBhu8G9ckaka",
+			providerId: "credential",
+			password:
+				"ddb8e71c1a4eb30ad6befbb851c4093c:3168b137a5ec379b2c3e7a198ec1f62d0afaecf37a5cd09704322ee77aa04ee60fd11494d58c38e772051a970fc98dc4dda60d5b2a8557cf9f0c8d842378a75c",
 			createdAt: new Date("2024-12-26 22:39:19.233+00"),
 			updatedAt: new Date("2024-12-26 22:39:19.233+00"),
 		},
