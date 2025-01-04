@@ -64,7 +64,7 @@ A streamlined rental management platform for food courts, designed to efficientl
 
 - **Happiness Ratings**: 1-4 scale for tenant feedback.
 - **Detailed Reviews**: Stall-specific feedback and responses.
-- **Accessible Submission**: Even non-logged-in users can submit feedback.
+- **Accessible Submission**: Only non-logged-in users can submit feedback.
 
 ### 🔔 Notification Center
 
@@ -86,9 +86,13 @@ A streamlined rental management platform for food courts, designed to efficientl
 - **Features**: Manage rent payments, view/download contracts, and update profiles.
 - **Convenience**: Real-time access to stall details and notifications.
 
-### **Users (Customers)**
+### **Users**
 
 - **Access**: Browse available stalls and apply for leases.
+- **Make Payments**: Process payments to apply new leases.
+
+### **Customer**
+
 - **Feedback**: Submit feedback without account requirements.
 
 ---
