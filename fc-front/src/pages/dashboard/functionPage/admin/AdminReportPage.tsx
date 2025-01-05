@@ -18,142 +18,239 @@ import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import config from "@/config/config";
+import { Badge } from "@/components/ui/badge";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+
+interface PaymentRecord {
+	paymentId: string;
+	stallId: number;
+	userId: string;
+	paymentType: string;
+	paymentAmount: string;
+	paymentStatus: boolean;
+	paymentDate: Date | string;
+	user?: {
+		name: string | null;
+		image: string | null;
+	} | null;
+}
 
 export function AdminReportPage() {
-	const paymentRecords = [
-		{
-			id: 1,
-			user: "John Doe",
-			avatar: "/avatars/john-doe.png",
-			stallNumber: "A01",
-			rentalFee: 800,
-			waterBill: 120,
-			electricityBill: 250,
-			date: "2024-01-15",
-			total: 1170,
-		},
-		{
-			id: 2,
-			user: "Jane Smith",
-			avatar: "/avatars/jane-smith.png",
-			stallNumber: "B03",
-			rentalFee: 900,
-			waterBill: 150,
-			electricityBill: 280,
-			date: "2024-01-16",
-			total: 1330,
-		},
-		{
-			id: 3,
-			user: "Mike Johnson",
-			avatar: "/avatars/mike-johnson.png",
-			stallNumber: "C02",
-			rentalFee: 850,
-			waterBill: 135,
-			electricityBill: 265,
-			date: "2024-01-17",
-			total: 1250,
-		},
-	];
+	const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [selectedMonth, setSelectedMonth] = useState<string>("all");
+	const [filteredRecords, setFilteredRecords] = useState<PaymentRecord[]>([]);
+
+	useEffect(() => {
+		const fetchPaymentRecords = async () => {
+			try {
+				const response = await axios.get(
+					`${config.apiUrl}/api/payment/records`,
+					{
+						withCredentials: true,
+					}
+				);
+
+				// Ensure we have an array of records and transform dates
+				const records = Array.isArray(response.data)
+					? response.data.map((record: PaymentRecord) => ({
+							...record,
+							paymentDate: new Date(record.paymentDate),
+					  }))
+					: [];
+
+				console.log("Fetched payment records:", records);
+				setPaymentRecords(records);
+				setFilteredRecords(records);
+			} catch (error) {
+				console.error("Error fetching payment records:", error);
+				toast.error("Failed to load payment records");
+				setPaymentRecords([]); // Set empty array on error
+				setFilteredRecords([]);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchPaymentRecords();
+	}, []);
+
+	useEffect(() => {
+		if (selectedMonth === "all") {
+			setFilteredRecords(paymentRecords);
+		} else {
+			const filtered = paymentRecords.filter((record) => {
+				const date = new Date(record.paymentDate);
+				return date.getMonth() === parseInt(selectedMonth);
+			});
+			setFilteredRecords(filtered);
+		}
+	}, [selectedMonth, paymentRecords]);
 
 	const downloadAsPDF = async () => {
-		// try {
-		// 	const response = await fetch("/api/reports/download-pdf", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify({ paymentRecords }),
-		// 	});
+		try {
+			const response = await axios.get(
+				`${config.apiUrl}/api/payment/download-pdf`,
+				{
+					responseType: "blob",
+					withCredentials: true,
+				}
+			);
 
-		// 	if (!response.ok) {
-		// 		throw new Error("Failed to download PDF");
-		// 	}
-
-		// 	const blob = await response.blob();
-		// 	const url = window.URL.createObjectURL(blob);
-		// 	const a = document.createElement("a");
-		// 	a.href = url;
-		// 	a.download = "payment-records.pdf";
-		// 	document.body.appendChild(a);
-		// 	a.click();
-		// 	window.URL.revokeObjectURL(url);
-		// 	document.body.removeChild(a);
-		// } catch (error) {
-		// 	console.error("Error downloading PDF:", error);
-		// 	toast.error("Failed to download PDF report");
-		// }
-		toast.success("Downloading PDF report...");
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "payment-records.pdf");
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+			toast.success("PDF downloaded successfully");
+		} catch (error) {
+			console.error("Error downloading PDF:", error);
+			toast.error("Failed to download PDF report");
+		}
 	};
 
 	const downloadAsCSV = async () => {
-		// try {
-		// 	const response = await fetch("/api/reports/download-csv", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify({ paymentRecords }),
-		// 	});
+		try {
+			const response = await axios.get(
+				`${config.apiUrl}/api/payment/download-csv`,
+				{
+					responseType: "blob",
+					withCredentials: true,
+				}
+			);
 
-		// 	if (!response.ok) {
-		// 		throw new Error("Failed to download CSV");
-		// 	}
-
-		// 	const blob = await response.blob();
-		// 	const url = window.URL.createObjectURL(blob);
-		// 	const a = document.createElement("a");
-		// 	a.href = url;
-		// 	a.download = "payment-records.csv";
-		// 	document.body.appendChild(a);
-		// 	a.click();
-		// 	window.URL.revokeObjectURL(url);
-		// 	document.body.removeChild(a);
-		// } catch (error) {
-		// 	console.error("Error downloading CSV:", error);
-		// 	toast.error("Failed to download CSV report");
-		// }
-		toast.success("Downloading CSV report...");
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "payment-records.csv");
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+			toast.success("CSV downloaded successfully");
+		} catch (error) {
+			console.error("Error downloading CSV:", error);
+			toast.error("Failed to download CSV report");
+		}
 	};
+
+	if (loading) {
+		return <div>Loading payment records...</div>;
+	}
+
+	if (!paymentRecords || paymentRecords.length === 0) {
+		return (
+			<Card className="w-full">
+				<CardHeader>
+					<CardTitle>Payment Records</CardTitle>
+					<CardDescription>No payment records found</CardDescription>
+				</CardHeader>
+			</Card>
+		);
+	}
 
 	return (
 		<Card className="w-full">
-			<CardHeader>
-				<CardTitle>Payment Records</CardTitle>
-				<CardDescription>
-					Monthly payment records for all stalls
-				</CardDescription>
+			<CardHeader className="flex flex-row items-center justify-between">
+				<div>
+					<CardTitle>Payment Records</CardTitle>
+					<CardDescription>
+						Monthly payment records for all stalls
+					</CardDescription>
+				</div>
+				<Select value={selectedMonth} onValueChange={setSelectedMonth}>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue placeholder="Filter by month" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectGroup>
+							<SelectLabel>Months</SelectLabel>
+							<SelectItem value="all">All Months</SelectItem>
+							<SelectItem value="0">January</SelectItem>
+							<SelectItem value="1">February</SelectItem>
+							<SelectItem value="2">March</SelectItem>
+							<SelectItem value="3">April</SelectItem>
+							<SelectItem value="4">May</SelectItem>
+							<SelectItem value="5">June</SelectItem>
+							<SelectItem value="6">July</SelectItem>
+							<SelectItem value="7">August</SelectItem>
+							<SelectItem value="8">September</SelectItem>
+							<SelectItem value="9">October</SelectItem>
+							<SelectItem value="10">November</SelectItem>
+							<SelectItem value="11">December</SelectItem>
+						</SelectGroup>
+					</SelectContent>
+				</Select>
 			</CardHeader>
 			<CardContent>
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead></TableHead>
-							<TableHead>Name</TableHead>
-							<TableHead>Stall No.</TableHead>
-							<TableHead>Rental Fee (RM)</TableHead>
-							<TableHead>Water Bill (RM)</TableHead>
-							<TableHead>Electricity Bill (RM)</TableHead>
-							<TableHead>Date</TableHead>
-							<TableHead>Total (RM)</TableHead>
+							<TableHead className="text-left">User</TableHead>
+							<TableHead className="text-left">Payment ID</TableHead>
+							<TableHead className="text-center">Stall No.</TableHead>
+							<TableHead className="text-center">Type</TableHead>
+							<TableHead className="text-right">Amount (RM)</TableHead>
+							<TableHead className="text-center">Status</TableHead>
+							<TableHead className="text-left">Date</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{paymentRecords.map((record) => (
-							<TableRow key={record.id}>
+						{filteredRecords.map((record) => (
+							<TableRow key={record.paymentId}>
 								<TableCell>
-									<Avatar className="h-8 w-8">
-										<AvatarImage src={record.avatar} alt={record.user} />
-										<AvatarFallback>{record.user[0]}</AvatarFallback>
-									</Avatar>
+									<div className="flex items-center gap-2">
+										<Avatar className="h-8 w-8">
+											<AvatarImage
+												src={record.user?.image || undefined}
+												alt={record.user?.name || "User"}
+											/>
+											<AvatarFallback>
+												{record.user?.name?.[0] || "U"}
+											</AvatarFallback>
+										</Avatar>
+										<span>{record.user?.name || "Unknown User"}</span>
+									</div>
 								</TableCell>
-								<TableCell>{record.user}</TableCell>
-								<TableCell>{record.stallNumber}</TableCell>
-								<TableCell>{record.rentalFee}</TableCell>
-								<TableCell>{record.waterBill}</TableCell>
-								<TableCell>{record.electricityBill}</TableCell>
-								<TableCell>{record.date}</TableCell>
-								<TableCell>{record.total}</TableCell>
+								<TableCell className="text-left">{record.paymentId}</TableCell>
+								<TableCell className="text-center">{record.stallId}</TableCell>
+								<TableCell className="text-center">
+									{record.paymentType}
+								</TableCell>
+								<TableCell className="text-right">
+									{record.paymentAmount}
+								</TableCell>
+								<TableCell className="text-center">
+									<Badge
+										variant="secondary"
+										className={`${
+											record.paymentStatus
+												? "bg-green-100 text-green-800"
+												: "bg-red-100 text-red-800"
+										}`}
+									>
+										{record.paymentStatus ? "Paid" : "Pending"}
+									</Badge>
+								</TableCell>
+								<TableCell className="text-left">
+									{typeof record.paymentDate === "object"
+										? record.paymentDate.toLocaleDateString()
+										: new Date(record.paymentDate).toLocaleDateString()}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

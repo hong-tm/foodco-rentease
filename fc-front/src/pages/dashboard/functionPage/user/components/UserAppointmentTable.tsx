@@ -14,12 +14,14 @@ import { getUserNotificationQueryOptions } from "@/api/notificationApi";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/api/adminApi";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PaymentModal from "@/components/PaymentModal";
 import { createPaymentIntent } from "@/api/paymentApi";
 import { toast } from "sonner";
 import { GetStallsResponse } from "@/api/stallApi";
 import { fetchStallsQueryOptions } from "@/api/stallApi";
+import axios from "axios";
+import config from "@/config/config";
 
 interface Notification {
 	notificationId: number;
@@ -37,6 +39,9 @@ export default function UserAppointmentTable() {
 	const [selectedNotification, setSelectedNotification] =
 		useState<Notification | null>(null);
 	const { data: stalls } = useQuery<GetStallsResponse>(fetchStallsQueryOptions);
+	const [paymentStatuses, setPaymentStatuses] = useState<
+		Record<number, boolean>
+	>({});
 
 	const {
 		data: notifications,
@@ -46,6 +51,29 @@ export default function UserAppointmentTable() {
 		...getUserNotificationQueryOptions,
 		queryKey: ["get-user-notifications", session?.user?.id],
 	});
+
+	useEffect(() => {
+		// Fetch payment statuses for all notifications
+		const fetchPaymentStatuses = async () => {
+			try {
+				const response = await axios.get(
+					`${config.apiUrl}/api/payment/records`
+				);
+				const payments = response.data;
+				const statuses: Record<number, boolean> = {};
+
+				payments.forEach((payment: any) => {
+					statuses[payment.stallId] = payment.paymentStatus;
+				});
+
+				setPaymentStatuses(statuses);
+			} catch (error) {
+				console.error("Error fetching payment statuses:", error);
+			}
+		};
+
+		fetchPaymentStatuses();
+	}, []);
 
 	const calculateAmount = (notification: Notification) => {
 		console.log("Debug - notification:", notification);
@@ -187,14 +215,29 @@ export default function UserAppointmentTable() {
 									</Badge>
 								</TableCell>
 								<TableCell className="text-center">
-									{notification.notificationRead ? (
-										<Button
-											variant="outline"
-											size="sm"
-											onClick={() => handlePaymentClick(notification)}
-										>
-											Make Payment (RM{calculateAmount(notification)})
-										</Button>
+									{notification.notificationRead && notification.stallNumber ? (
+										paymentStatuses[notification.stallNumber] ? (
+											<Button
+												variant="outline"
+												size="sm"
+												className="bg-green-100 text-green-800"
+												onClick={() =>
+													toast.info(
+														"You have already made the payment for this stall."
+													)
+												}
+											>
+												Payment Completed
+											</Button>
+										) : (
+											<Button
+												variant="outline"
+												size="sm"
+												onClick={() => handlePaymentClick(notification)}
+											>
+												Make Payment (RM{calculateAmount(notification)})
+											</Button>
+										)
 									) : (
 										""
 									)}
