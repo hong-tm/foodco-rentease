@@ -224,22 +224,30 @@ export function PaymentRecordsTable({
 				</Table>
 			</CardContent>
 			<CardFooter className="flex justify-end gap-4">
-				<Button
-					variant="outline"
-					onClick={() => downloadPdfMutation.mutate()}
-					disabled={downloadPdfMutation.isPending}
-				>
-					<FileDown className="mr-2 h-4 w-4" />
-					{downloadPdfMutation.isPending ? "Downloading..." : "Download PDF"}
-				</Button>
-				<Button
-					variant="outline"
-					onClick={() => downloadCsvMutation.mutate()}
-					disabled={downloadCsvMutation.isPending}
-				>
-					<FileDown className="mr-2 h-4 w-4" />
-					{downloadCsvMutation.isPending ? "Downloading..." : "Download CSV"}
-				</Button>
+				{session?.user?.role !== "user" && (
+					<>
+						<Button
+							variant="outline"
+							onClick={() => downloadPdfMutation.mutate()}
+							disabled={downloadPdfMutation.isPending}
+						>
+							<FileDown className="mr-2 h-4 w-4" />
+							{downloadPdfMutation.isPending
+								? "Downloading..."
+								: "Download PDF"}
+						</Button>
+						<Button
+							variant="outline"
+							onClick={() => downloadCsvMutation.mutate()}
+							disabled={downloadCsvMutation.isPending}
+						>
+							<FileDown className="mr-2 h-4 w-4" />
+							{downloadCsvMutation.isPending
+								? "Downloading..."
+								: "Download CSV"}
+						</Button>
+					</>
+				)}
 			</CardFooter>
 		</Card>
 	);

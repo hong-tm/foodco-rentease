@@ -28,6 +28,8 @@ export default function Breadcrumbs() {
 		"admin-appointment": "Admin Appointment",
 		"payment-success": "Payment Success",
 		"admin-report": "Admin Report",
+		"rental-report": "Rental Report",
+		"user-report": "User Report",
 	};
 
 	let currentLink = "";

@@ -134,7 +134,7 @@ export default function UpdateStallForm({
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 					<div className="grid gap-4">
-						<ScrollArea className="h-full overflow-y-auto gap-4 rounded-md">
+						<ScrollArea className="h-[600px] overflow-y-auto gap-4 rounded-md">
 							<div className="grid gap-4">
 								{/* Stall Name Field */}
 								<FormField

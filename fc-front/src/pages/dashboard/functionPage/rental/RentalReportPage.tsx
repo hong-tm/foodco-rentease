@@ -17,7 +17,7 @@ export function RentalReportPage() {
 			title="Rental Records"
 			description="Monthly rental records for your stalls"
 			records={userRecords}
-			showMonthFilter={false}
+			showMonthFilter={true}
 			isLoading={isLoading}
 		/>
 	);
