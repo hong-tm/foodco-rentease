@@ -64,9 +64,7 @@ export function DashboardLayoutPage({ authClient }: { authClient: any }) {
 	}
 
 	if (error || (!isLoading && !session)) {
-		setTimeout(() => {
-			navigate("/");
-		}, 1000);
+		navigate("/");
 		return toast.error("You are not logged in");
 	}
 

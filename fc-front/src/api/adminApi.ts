@@ -54,14 +54,24 @@ export const useSession = (authClient: any) => {
 	return useQuery({
 		queryKey: ["user-session"],
 		queryFn: async () => {
-			const session = await authClient.getSession();
-			if (!session.data) throw new Error("No session data found");
-			return session.data;
+			try {
+				const session = await authClient.getSession();
+				// Check for admin session if regular session is not found
+				if (!session.data) {
+					const adminSession = await authClient.admin.getSession();
+					if (adminSession.data) {
+						return adminSession.data;
+					}
+					throw new Error("No session data found");
+				}
+				return session.data;
+			} catch (error) {
+				console.error("Session error:", error);
+				throw error;
+			}
 		},
-		staleTime: 1000 * 60 * 1, // Cache for 1 minutes
-		// refetchOnWindowFocus: true,
-		// refetchInterval: 1000 * 10, // Refetch every 10 seconds
-		// retry: false, // No retries for session fetching
+		staleTime: 1000 * 60 * 3, // Cache for 3 minutes
+		retry: 1, // Only retry once for session fetching
 	});
 };
 
