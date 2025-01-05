@@ -9,12 +9,16 @@ import { paymentSchema } from "../lib/sharedType.js";
 interface RawPaymentRecord {
 	paymentId: string;
 	stallId: number;
+	userId: string;
 	paymentType: string;
 	paymentAmount: string;
 	paymentStatus: boolean;
 	paymentDate: Date;
-	"Stall.user.name": string | null;
-	"Stall.user.image": string | null;
+	paymentUser?: {
+		id: string;
+		name: string | null;
+		image: string | null;
+	} | null;
 }
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -37,38 +41,37 @@ const payment = new Hono();
 // Get all payment records
 payment.get("/records", async (c) => {
 	try {
-		const payments = (await Payment.findAll({
+		const payments = await Payment.findAll({
 			include: [
 				{
-					model: Stall,
-					include: [
-						{
-							model: user,
-							attributes: ["name", "image"],
-						},
-					],
+					model: user,
+					as: "paymentUser",
+					attributes: ["id", "name", "image"],
 				},
 			],
 			order: [["paymentDate", "DESC"]],
 			raw: true,
 			nest: true,
-		})) as unknown as RawPaymentRecord[];
+		});
 
-		const transformedPayments: PaymentRecord[] = payments.map((data) => ({
-			paymentId: data.paymentId,
-			stallId: data.stallId,
-			paymentType: data.paymentType,
-			paymentAmount: data.paymentAmount,
-			paymentStatus: data.paymentStatus,
-			paymentDate: new Date(data.paymentDate),
-			user: data["Stall.user.name"]
+		const transformedPayments = payments.map((payment: RawPaymentRecord) => ({
+			paymentId: payment.paymentId,
+			stallId: payment.stallId,
+			userId: payment.userId,
+			paymentType: payment.paymentType,
+			paymentAmount: payment.paymentAmount,
+			paymentStatus: payment.paymentStatus,
+			paymentDate: new Date(payment.paymentDate),
+			user: payment.paymentUser
 				? {
-						name: data["Stall.user.name"],
-						image: data["Stall.user.image"],
+						id: payment.paymentUser.id,
+						name: payment.paymentUser.name,
+						image: payment.paymentUser.image,
 				  }
 				: null,
 		}));
 
+		console.log("Transformed payments:", transformedPayments);
 		return c.json(transformedPayments);
 	} catch (error) {
 		console.error("Error fetching payment records:", error);
@@ -82,15 +85,37 @@ payment.get("/records", async (c) => {
 // Download payment records as PDF
 payment.get("/download-pdf", async (c) => {
 	try {
-		const payments = await Payment.findAll({
+		const payments = (await Payment.findAll({
+			include: [
+				{
+					model: user,
+					as: "paymentUser",
+					attributes: ["name"],
+				},
+			],
 			order: [["paymentDate", "DESC"]],
-		});
+			raw: true,
+			nest: true,
+		})) as unknown as RawPaymentRecord[];
 
-		// TODO: Implement PDF generation
-		// For now, return a simple text file
-		c.header("Content-Type", "application/pdf");
-		c.header("Content-Disposition", "attachment; filename=payment-records.pdf");
-		return c.text("Payment Records PDF - Implementation pending");
+		// TODO: Implement proper PDF generation with a library like pdfkit
+		const pdfContent = payments
+			.map(
+				(payment) =>
+					`Payment ID: ${payment.paymentId}\n` +
+					`User: ${payment.paymentUser?.name || "Unknown"}\n` +
+					`Stall ID: ${payment.stallId}\n` +
+					`Type: ${payment.paymentType}\n` +
+					`Amount: RM${payment.paymentAmount}\n` +
+					`Status: ${payment.paymentStatus ? "Paid" : "Pending"}\n` +
+					`Date: ${new Date(payment.paymentDate).toLocaleDateString()}\n` +
+					"----------------------------------------\n"
+			)
+			.join("\n");
+
+		c.header("Content-Type", "text/plain");
+		c.header("Content-Disposition", "attachment; filename=payment-records.txt");
+		return c.text(pdfContent);
 	} catch (error) {
 		console.error("Error generating PDF:", error);
 		return c.json({ error: "Failed to generate PDF" }, { status: 500 });
@@ -100,15 +125,27 @@ payment.get("/download-pdf", async (c) => {
 // Download payment records as CSV
 payment.get("/download-csv", async (c) => {
 	try {
-		const payments = await Payment.findAll({
+		const payments = (await Payment.findAll({
+			include: [
+				{
+					model: user,
+					as: "paymentUser",
+					attributes: ["name"],
+				},
+			],
 			order: [["paymentDate", "DESC"]],
-		});
+			raw: true,
+			nest: true,
+		})) as unknown as RawPaymentRecord[];
 
-		// Create CSV content
-		const csvHeader = "Payment ID,Stall ID,Type,Amount,Status,Date\n";
+		// Create CSV content with headers
+		const csvHeader = "Payment ID,User,Stall ID,Type,Amount (RM),Status,Date\n";
 		const csvRows = payments
 			.map((payment) => {
-				return `${payment.paymentId},${payment.stallId},"${payment.paymentType}",${payment.paymentAmount},${payment.paymentStatus},${payment.paymentDate}`;
+				const date = new Date(payment.paymentDate).toLocaleDateString();
+				const status = payment.paymentStatus ? "Paid" : "Pending";
+				const userName = payment.paymentUser?.name || "Unknown User";
+				return `"${payment.paymentId}","${userName}",${payment.stallId},"${payment.paymentType}",${payment.paymentAmount},"${status}","${date}"`;
 			})
 			.join("\n");
 
@@ -278,6 +315,7 @@ payment.post("/webhook", async (c) => {
 					paymentStatus: true,
 					paymentDate: new Date(paymentIntent.created * 1000),
 					stallId: stallId,
+					userId: userId,
 				});
 
 				// Calculate dates for stall update
@@ -400,6 +438,7 @@ payment.post("/create-record", async (c) => {
 				paymentStatus: body.paymentStatus,
 				paymentDate: new Date(body.paymentDate),
 				stallId: body.stallId,
+				userId: body.userId,
 			});
 
 			// Calculate dates

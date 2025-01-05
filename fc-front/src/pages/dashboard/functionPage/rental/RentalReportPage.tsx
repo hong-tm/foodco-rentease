@@ -21,23 +21,27 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import axios from "axios";
 import config from "@/config/config";
+import { Badge } from "@/components/ui/badge";
+import { useSession } from "@/api/adminApi";
 
 interface PaymentRecord {
 	paymentId: string;
 	stallId: number;
+	userId: string;
 	paymentType: string;
 	paymentAmount: string;
 	paymentStatus: boolean;
-	paymentDate: string;
+	paymentDate: Date | string;
 	user?: {
-		name: string;
-		image: string;
-	};
+		name: string | null;
+		image: string | null;
+	} | null;
 }
 
 export function RentalReportPage() {
 	const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
 	const [loading, setLoading] = useState(true);
+	const { data: session } = useSession({});
 
 	useEffect(() => {
 		const fetchPaymentRecords = async () => {
@@ -49,9 +53,19 @@ export function RentalReportPage() {
 					}
 				);
 
-				// Ensure we have an array of records
-				const records = Array.isArray(response.data) ? response.data : [];
-				console.log("Payment records:", records); // Debug log
+				// Ensure we have an array of records and transform dates
+				const records = Array.isArray(response.data)
+					? response.data
+							.filter(
+								(record: PaymentRecord) => record.userId === session?.user?.id
+							)
+							.map((record: PaymentRecord) => ({
+								...record,
+								paymentDate: new Date(record.paymentDate),
+							}))
+					: [];
+
+				console.log("Fetched payment records:", records);
 				setPaymentRecords(records);
 			} catch (error) {
 				console.error("Error fetching payment records:", error);
@@ -62,8 +76,10 @@ export function RentalReportPage() {
 			}
 		};
 
-		fetchPaymentRecords();
-	}, []);
+		if (session?.user?.id) {
+			fetchPaymentRecords();
+		}
+	}, [session?.user?.id]);
 
 	const downloadAsPDF = async () => {
 		try {
@@ -119,7 +135,7 @@ export function RentalReportPage() {
 		return <div>Loading payment records...</div>;
 	}
 
-	if (paymentRecords.length === 0) {
+	if (!paymentRecords || paymentRecords.length === 0) {
 		return (
 			<Card className="w-full">
 				<CardHeader>
@@ -140,44 +156,56 @@ export function RentalReportPage() {
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead></TableHead>
-							<TableHead>Payment ID</TableHead>
-							<TableHead>Stall No.</TableHead>
-							<TableHead>Type</TableHead>
-							<TableHead>Amount (RM)</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead>Date</TableHead>
+							<TableHead className="text-left">User</TableHead>
+							<TableHead className="text-left">Payment ID</TableHead>
+							<TableHead className="text-center">Stall No.</TableHead>
+							<TableHead className="text-center">Type</TableHead>
+							<TableHead className="text-right">Amount (RM)</TableHead>
+							<TableHead className="text-center">Status</TableHead>
+							<TableHead className="text-left">Date</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{paymentRecords.map((record) => (
 							<TableRow key={record.paymentId}>
 								<TableCell>
-									<Avatar className="h-8 w-8">
-										<AvatarImage
-											src={record.user?.image}
-											alt={record.user?.name || "User"}
-										/>
-										<AvatarFallback>
-											{record.user?.name?.[0] || "U"}
-										</AvatarFallback>
-									</Avatar>
+									<div className="flex items-center gap-2">
+										<Avatar className="h-8 w-8">
+											<AvatarImage
+												src={record.user?.image || undefined}
+												alt={record.user?.name || "User"}
+											/>
+											<AvatarFallback>
+												{record.user?.name?.[0] || "U"}
+											</AvatarFallback>
+										</Avatar>
+										<span>{record.user?.name || "Unknown User"}</span>
+									</div>
 								</TableCell>
-								<TableCell>{record.paymentId}</TableCell>
-								<TableCell>{record.stallId}</TableCell>
-								<TableCell>{record.paymentType}</TableCell>
-								<TableCell>{record.paymentAmount}</TableCell>
-								<TableCell>
-									<span
-										className={
-											record.paymentStatus ? "text-green-600" : "text-red-600"
-										}
+								<TableCell className="text-left">{record.paymentId}</TableCell>
+								<TableCell className="text-center">{record.stallId}</TableCell>
+								<TableCell className="text-center">
+									{record.paymentType}
+								</TableCell>
+								<TableCell className="text-right">
+									{record.paymentAmount}
+								</TableCell>
+								<TableCell className="text-center">
+									<Badge
+										variant="secondary"
+										className={`${
+											record.paymentStatus
+												? "bg-green-100 text-green-800"
+												: "bg-red-100 text-red-800"
+										}`}
 									>
 										{record.paymentStatus ? "Paid" : "Pending"}
-									</span>
+									</Badge>
 								</TableCell>
-								<TableCell>
-									{new Date(record.paymentDate).toLocaleDateString()}
+								<TableCell className="text-left">
+									{typeof record.paymentDate === "object"
+										? record.paymentDate.toLocaleDateString()
+										: new Date(record.paymentDate).toLocaleDateString()}
 								</TableCell>
 							</TableRow>
 						))}

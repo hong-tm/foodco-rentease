@@ -367,6 +367,13 @@ export class Payment extends Model<
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
 	declare stallId: CreationOptional<number>;
+
+	@BelongsTo(() => user, "userId")
+	declare paymentUser?: NonAttribute<user>;
+
+	@Attribute(DataTypes.STRING)
+	@NotNull
+	declare userId: CreationOptional<string>;
 }
 
 export class Utilities extends Model<
