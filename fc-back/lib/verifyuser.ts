@@ -40,14 +40,27 @@ export function adminVerify() {
 	};
 }
 
-export function userVerify() {
+export function notUserVerify() {
 	return async (c: Context, next: Next) => {
-		// const session = c.get("session");
 		const user = c.get("user");
 
-		if (!user) return c.body(null, 401);
+		if (!user) {
+			console.error("AdminVerify - No user found in context.");
+			return c.json({ error: "User not authenticated!" }, 401);
+		}
 
-		return next();
+		if (user.role !== "admin" && user.role !== "rental") {
+			console.error(
+				`AdminVerify - User ${user.id} is not an admin or rental (role: ${user.role})`
+			);
+			return c.json({ error: "You are not an Admin or Rental!" }, 403);
+		}
+
+		console.log(
+			"AnotUserVerify - Admin or Rental verification successful for user:",
+			user.id
+		);
+		await next();
 	};
 }
 

@@ -36,6 +36,8 @@ const EnvSchema = z.object({
 
 	STRIPE_SECRET_KEY: z.string(),
 	STRIPE_DOMAIN: z.string(),
+	STRIPE_WEBHOOK_SECRET: z.string(),
+	STRIPE_WEBHOOK_ENDPOINT_SECRET: z.string(),
 });
 
 export type env = z.infer<typeof EnvSchema>;

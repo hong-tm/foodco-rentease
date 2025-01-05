@@ -185,3 +185,69 @@ export const paymentSchema = z.object({
 });
 
 export type PaymentRecord = z.infer<typeof paymentSchema>;
+
+export interface RawPaymentRecord {
+	paymentId: string;
+	stallId: number;
+	userId: string;
+	paymentType: string;
+	paymentAmount: string;
+	paymentStatus: boolean;
+	paymentDate: Date;
+	paymentUser?: {
+		id: string;
+		name: string | null;
+		image: string | null;
+	} | null;
+}
+
+export const createPaymentIntentSchema = z.object({
+	amount: z.number().positive(),
+	stallId: z.number(),
+	userId: z.string(),
+});
+
+export type CreatePaymentIntentRequest = z.infer<
+	typeof createPaymentIntentSchema
+>;
+
+export const paymentIntentSchema = z.object({
+	amount: z.number(),
+	stallId: z.number(),
+	userId: z.string(),
+});
+
+export type PaymentIntentRequest = z.infer<typeof paymentIntentSchema>;
+
+export interface PaymentIntentResponse {
+	clientSecret: string;
+}
+
+export interface PaymentNotification {
+	notificationId: number;
+	notificationMessage: string;
+	notificationRead: boolean | null;
+	appointmentDate: Date;
+	stallNumber?: number;
+	userId?: string | number;
+}
+
+export interface PaymentIntentParams {
+	amount: number;
+	stallId: number;
+	userId: string;
+}
+
+export const createPaymentRecordSchema = z.object({
+	paymentId: z.string(),
+	stallId: z.number(),
+	userId: z.string(),
+	paymentAmount: z.string(),
+	paymentType: z.string(),
+	paymentStatus: z.boolean(),
+	paymentDate: z.string(),
+});
+
+export type CreatePaymentRecordRequest = z.infer<
+	typeof createPaymentRecordSchema
+>;

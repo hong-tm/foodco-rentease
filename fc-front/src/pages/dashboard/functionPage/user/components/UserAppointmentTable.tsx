@@ -9,27 +9,26 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUserNotificationQueryOptions } from "@/api/notificationApi";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/api/adminApi";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PaymentModal from "@/components/PaymentModal";
 import { createPaymentIntent } from "@/api/paymentApi";
 import { toast } from "sonner";
-import { GetStallsResponse } from "@/api/stallApi";
-import { fetchStallsQueryOptions } from "@/api/stallApi";
-import axios from "axios";
-import config from "@/config/config";
+import { GetStallsResponse, fetchStallsQueryOptions } from "@/api/stallApi";
+import { getAllPaymentRecordsQueryOptions } from "@/api/paymentApi";
+import type {
+	PaymentNotification,
+	PaymentIntentResponse,
+} from "@/lib/sharedType";
 
-interface Notification {
-	notificationId: number;
-	notificationMessage: string;
-	notificationRead: boolean | null;
-	appointmentDate: Date;
-	stallNumber?: number;
-	userId?: string | number;
+interface PaymentIntentParams {
+	amount: number;
+	stallId: number;
+	userId: string;
 }
 
 export default function UserAppointmentTable() {
@@ -37,12 +36,11 @@ export default function UserAppointmentTable() {
 	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 	const [clientSecret, setClientSecret] = useState("");
 	const [selectedNotification, setSelectedNotification] =
-		useState<Notification | null>(null);
-	const { data: stalls } = useQuery<GetStallsResponse>(fetchStallsQueryOptions);
-	const [paymentStatuses, setPaymentStatuses] = useState<
-		Record<number, boolean>
-	>({});
+		useState<PaymentNotification | null>(null);
+	const queryClient = useQueryClient();
 
+	const { data: stalls } = useQuery<GetStallsResponse>(fetchStallsQueryOptions);
+	const { data: payments } = useQuery(getAllPaymentRecordsQueryOptions);
 	const {
 		data: notifications,
 		error,
@@ -52,53 +50,33 @@ export default function UserAppointmentTable() {
 		queryKey: ["get-user-notifications", session?.user?.id],
 	});
 
-	useEffect(() => {
-		// Fetch payment statuses for all notifications
-		const fetchPaymentStatuses = async () => {
-			try {
-				const response = await axios.get(
-					`${config.apiUrl}/api/payment/records`
-				);
-				const payments = response.data;
-				const statuses: Record<number, boolean> = {};
+	const paymentMutation = useMutation<
+		PaymentIntentResponse,
+		Error,
+		PaymentIntentParams
+	>({
+		mutationFn: ({ amount, stallId, userId }) =>
+			createPaymentIntent(amount, stallId, userId),
+		onSuccess: (data) => {
+			setClientSecret(data.clientSecret);
+			setIsPaymentModalOpen(true);
+			queryClient.invalidateQueries({ queryKey: ["get-payment-records"] });
+		},
+		onError: (error: Error) => {
+			console.error("Error creating payment:", error);
+			toast.error("Failed to initiate payment");
+		},
+	});
 
-				payments.forEach((payment: any) => {
-					statuses[payment.stallId] = payment.paymentStatus;
-				});
-
-				setPaymentStatuses(statuses);
-			} catch (error) {
-				console.error("Error fetching payment statuses:", error);
-			}
-		};
-
-		fetchPaymentStatuses();
-	}, []);
-
-	const calculateAmount = (notification: Notification) => {
-		console.log("Debug - notification:", notification);
-		console.log("Debug - stalls:", stalls);
-
-		if (!stalls) {
-			console.log("Debug - No stalls data available");
-			return 0;
-		}
+	const calculateAmount = (notification: PaymentNotification) => {
+		if (!stalls) return 0;
 
 		const stall = stalls.stall.find(
 			(stall) => stall.stallNumber === notification.stallNumber
 		);
 
-		console.log("Debug - found stall:", stall);
+		if (!stall) return 0;
 
-		if (!stall) {
-			console.log(
-				"Debug - No matching stall found for stallNumber:",
-				notification.stallNumber
-			);
-			return 0;
-		}
-
-		// Ensure type safety for `tierPrice` and `stallSize`
 		const tierPrice =
 			typeof stall.stallTierNumber.tierPrice === "number"
 				? stall.stallTierNumber.tierPrice
@@ -108,46 +86,31 @@ export default function UserAppointmentTable() {
 				? stall.stallSize
 				: parseFloat(stall.stallSize);
 
-		// console.log("Debug - tierPrice:", tierPrice, "stallSize:", stallSize);
-
-		const total = tierPrice * stallSize;
-		// console.log("Debug - calculated total:", total);
-
-		return total;
+		return tierPrice * stallSize;
 	};
 
-	const handlePaymentClick = async (notification: Notification) => {
-		try {
-			if (!notification.stallNumber) {
-				throw new Error("No stall number provided");
-			}
-
-			if (!session?.user?.id) {
-				throw new Error("User not logged in");
-			}
-
-			const amount = calculateAmount(notification);
-			console.log("Payment details:", {
-				amount,
-				stallId: notification.stallNumber,
-				userId: session.user.id,
-			});
-
-			const { clientSecret } = await createPaymentIntent(
-				amount,
-				notification.stallNumber,
-				session.user.id
-			);
-			setClientSecret(clientSecret);
-			setSelectedNotification({
-				...notification,
-				userId: session.user.id,
-			});
-			setIsPaymentModalOpen(true);
-		} catch (error) {
-			console.error("Error creating payment:", error);
-			toast.error("Failed to initiate payment");
+	const handlePaymentClick = async (notification: PaymentNotification) => {
+		if (!notification.stallNumber) {
+			toast.error("No stall number provided");
+			return;
 		}
+
+		if (!session?.user?.id) {
+			toast.error("User not logged in");
+			return;
+		}
+
+		const amount = calculateAmount(notification);
+		setSelectedNotification({
+			...notification,
+			userId: session.user.id,
+		});
+
+		paymentMutation.mutate({
+			amount,
+			stallId: notification.stallNumber,
+			userId: session.user.id,
+		});
 	};
 
 	if (isLoading) {
@@ -161,6 +124,12 @@ export default function UserAppointmentTable() {
 	if (!notifications || notifications.length === 0) {
 		return <div className="justify-center p-4">No notifications found</div>;
 	}
+
+	const getPaymentStatus = (stallId: number) => {
+		return payments?.some(
+			(payment) => payment.stallId === stallId && payment.paymentStatus
+		);
+	};
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
@@ -216,7 +185,7 @@ export default function UserAppointmentTable() {
 								</TableCell>
 								<TableCell className="text-center">
 									{notification.notificationRead && notification.stallNumber ? (
-										paymentStatuses[notification.stallNumber] ? (
+										getPaymentStatus(notification.stallNumber) ? (
 											<Button
 												variant="outline"
 												size="sm"
@@ -234,8 +203,11 @@ export default function UserAppointmentTable() {
 												variant="outline"
 												size="sm"
 												onClick={() => handlePaymentClick(notification)}
+												disabled={paymentMutation.isPending}
 											>
-												Make Payment (RM{calculateAmount(notification)})
+												{paymentMutation.isPending
+													? "Processing..."
+													: `Make Payment (RM${calculateAmount(notification)})`}
 											</Button>
 										)
 									) : (
