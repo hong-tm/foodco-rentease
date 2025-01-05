@@ -27,9 +27,10 @@ interface Notification {
 	notificationRead: boolean | null;
 	appointmentDate: Date;
 	stallNumber?: number;
+	userId?: string | number;
 }
 
-export default function AppointmentTable() {
+export default function UserAppointmentTable() {
 	const { data: session } = useSession({});
 	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 	const [clientSecret, setClientSecret] = useState("");
@@ -89,12 +90,31 @@ export default function AppointmentTable() {
 
 	const handlePaymentClick = async (notification: Notification) => {
 		try {
-			const amount = calculateAmount(notification);
-			console.log("Calculated amount:", amount);
+			if (!notification.stallNumber) {
+				throw new Error("No stall number provided");
+			}
 
-			const { clientSecret } = await createPaymentIntent(amount);
+			if (!session?.user?.id) {
+				throw new Error("User not logged in");
+			}
+
+			const amount = calculateAmount(notification);
+			console.log("Payment details:", {
+				amount,
+				stallId: notification.stallNumber,
+				userId: session.user.id,
+			});
+
+			const { clientSecret } = await createPaymentIntent(
+				amount,
+				notification.stallNumber,
+				session.user.id
+			);
 			setClientSecret(clientSecret);
-			setSelectedNotification(notification);
+			setSelectedNotification({
+				...notification,
+				userId: session.user.id,
+			});
 			setIsPaymentModalOpen(true);
 		} catch (error) {
 			console.error("Error creating payment:", error);
@@ -192,10 +212,11 @@ export default function AppointmentTable() {
 					onClose={() => {
 						setIsPaymentModalOpen(false);
 						setClientSecret("");
-						setSelectedNotification(null);
 					}}
 					clientSecret={clientSecret}
 					amount={calculateAmount(selectedNotification)}
+					stallId={selectedNotification.stallNumber || 0}
+					userId={selectedNotification.userId?.toString() || ""}
 				/>
 			)}
 		</div>
