@@ -18,6 +18,16 @@ import {
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerDescription,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+} from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CheckoutFormProps {
 	amount: number;
@@ -124,20 +134,20 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 			{errorMessage && (
 				<div className="text-sm text-red-500 mt-2">{errorMessage}</div>
 			)}
-			<div className="mt-4 flex justify-end">
+			<div className="mt-4">
 				<Button
 					type="submit"
+					className={`w-full ${
+						paymentStatus === "success"
+							? "bg-green-500 hover:bg-green-600 text-white"
+							: ""
+					}`}
 					disabled={
 						!stripe ||
 						paymentStatus === "processing" ||
 						paymentStatus === "success"
 					}
 					variant={paymentStatus === "success" ? "secondary" : "default"}
-					className={
-						paymentStatus === "success"
-							? "bg-green-500 hover:bg-green-600 text-white"
-							: ""
-					}
 				>
 					{getButtonText()}
 				</Button>
@@ -181,7 +191,32 @@ export default function PaymentModal({
 		},
 	};
 
+	const isMobile = useIsMobile();
+
 	if (!ready) return null;
+
+	if (isMobile) {
+		return (
+			<Drawer open={isOpen} onOpenChange={onClose}>
+				<DrawerContent>
+					<DrawerHeader>
+						<DrawerTitle>Payment Details</DrawerTitle>
+						<DrawerDescription>Payment for Stall #{stallId}</DrawerDescription>
+					</DrawerHeader>
+					<div className="flex flex-col gap-4 mx-6 mb-2">
+						<Elements stripe={stripePromise} options={options}>
+							<CheckoutForm amount={amount} stallId={stallId} userId={userId} />
+						</Elements>
+					</div>
+					<DrawerFooter className="pt-0">
+						<DrawerClose asChild>
+							<Button variant="ghost">Cancel</Button>
+						</DrawerClose>
+					</DrawerFooter>
+				</DrawerContent>
+			</Drawer>
+		);
+	}
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
