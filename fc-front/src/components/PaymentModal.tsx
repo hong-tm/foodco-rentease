@@ -6,7 +6,7 @@ import {
 	useElements,
 } from "@stripe/react-stripe-js";
 import { StripeElementsOptions } from "@stripe/stripe-js";
-import { stripePromise } from "@/api/paymentApi";
+import { stripePromise, createPaymentRecord } from "@/api/paymentApi";
 import { Button } from "./ui/button";
 import {
 	Dialog,
@@ -17,6 +17,7 @@ import {
 } from "./ui/dialog";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface CheckoutFormProps {
 	amount: number;
@@ -27,12 +28,31 @@ interface CheckoutFormProps {
 const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 	const stripe = useStripe();
 	const elements = useElements();
-	const [isLoading, setIsLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [paymentStatus, setPaymentStatus] = useState<
 		"pending" | "processing" | "success" | "failed"
 	>("pending");
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
+
+	const paymentMutation = useMutation({
+		mutationFn: createPaymentRecord,
+		onSuccess: () => {
+			toast.success("Payment successful and record saved!");
+			queryClient.invalidateQueries({ queryKey: ["get-payment-records"] });
+			setTimeout(() => {
+				navigate(
+					`/dashboard/payment-success?payment_id=${paymentMutation.data?.paymentId}&stall_id=${stallId}`
+				);
+			}, 2000);
+		},
+		onError: (error: Error) => {
+			console.error("Error saving payment record:", error);
+			toast.error(
+				"Payment successful but failed to save record. Please contact support."
+			);
+		},
+	});
 
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -42,7 +62,6 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 			return;
 		}
 
-		setIsLoading(true);
 		setPaymentStatus("processing");
 		setErrorMessage(null);
 
@@ -65,53 +84,21 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 			) {
 				setPaymentStatus("success");
 
-				// Create payment record directly
-				try {
-					const response = await fetch("/api/payment/create-record", {
-						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify({
-							paymentId: result.paymentIntent.id,
-							stallId: stallId,
-							userId: userId,
-							paymentAmount: amount.toString(),
-							paymentType: "rental",
-							paymentStatus: true,
-							paymentDate: new Date().toISOString(),
-						}),
-					});
-
-					if (response.ok) {
-						toast.success("Payment successful and record saved!");
-						// Wait for 2 seconds to show success message before navigating
-						setTimeout(() => {
-							navigate(
-								`/dashboard/payment-success?payment_id=${result.paymentIntent.id}&stall_id=${stallId}`
-							);
-						}, 2000);
-					} else {
-						const errorData = await response.json();
-						console.error("Failed to save payment record:", errorData);
-						toast.error(
-							"Payment successful but failed to save record. Please contact support."
-						);
-					}
-				} catch (error) {
-					console.error("Error saving payment record:", error);
-					toast.error(
-						"Payment successful but failed to save record. Please contact support."
-					);
-				}
+				paymentMutation.mutate({
+					paymentId: result.paymentIntent.id,
+					stallId: stallId,
+					userId: userId,
+					paymentAmount: amount.toString(),
+					paymentType: "rental",
+					paymentStatus: true,
+					paymentDate: new Date().toISOString(),
+				});
 			}
 		} catch (error) {
 			console.error("Payment error:", error);
 			setErrorMessage("An unexpected error occurred");
 			setPaymentStatus("failed");
 			toast.error("Payment failed");
-		} finally {
-			setIsLoading(false);
 		}
 	};
 
@@ -140,7 +127,11 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 			<div className="mt-4 flex justify-end">
 				<Button
 					type="submit"
-					disabled={!stripe || isLoading || paymentStatus === "success"}
+					disabled={
+						!stripe ||
+						paymentStatus === "processing" ||
+						paymentStatus === "success"
+					}
 					variant={paymentStatus === "success" ? "secondary" : "default"}
 					className={
 						paymentStatus === "success"

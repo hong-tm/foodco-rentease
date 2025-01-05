@@ -1,9 +1,15 @@
-import axios from "axios";
+import { api } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
+import { queryOptions } from "@tanstack/react-query";
 import { loadStripe } from "@stripe/stripe-js";
-import config from "@/config/config";
+import type {
+	PaymentRecord,
+	PaymentIntentResponse,
+	PaymentIntentRequest,
+	CreatePaymentRecordRequest,
+} from "@/lib/sharedType";
 
-// Make sure to call `loadStripe` outside of a component's render to avoid
-// recreating the `Stripe` object on every render.
+// Stripe initialization
 export const stripePromise = loadStripe(
 	"pk_test_51Q0PgoRs6oUNWmV9hY185GXM1BsHqXDjJyvzQVfXtBtc5AFsIyGt4Fm5tDO27Y81CfA0WjfA2jUesfYy6rvvncyi00dzTzDXSX",
 	{
@@ -11,46 +17,84 @@ export const stripePromise = loadStripe(
 	}
 );
 
-// Create an axios instance with default config
-const api = axios.create({
-	baseURL: config.apiUrl + "/api",
-	withCredentials: true,
-	headers: {
-		"Content-Type": "application/json",
-	},
-});
+// API Functions
+export async function getAllPaymentRecords(): Promise<PaymentRecord[]> {
+	const session = await authClient.getSession();
+	const token = session?.data?.session?.token;
 
-interface PaymentIntentResponse {
-	clientSecret: string;
+	if (!token) throw new Error("No token found");
+
+	const res = await api.payments.records.$get();
+
+	if (!res.ok) {
+		throw new Error("Failed to fetch payment records");
+	}
+
+	const data = (await res.json()) as PaymentRecord[];
+	return data;
 }
 
-export const createPaymentIntent = async (
+export async function createPaymentIntent(
 	amount: number,
 	stallId: number,
 	userId: string
-): Promise<PaymentIntentResponse> => {
-	try {
-		console.log("Creating payment intent:", { amount, stallId, userId });
-		const response = await api.post<PaymentIntentResponse>(
-			"/payment/create-payment-intent",
-			{
-				amount: Number(amount),
-				stallId: Number(stallId),
-				userId: userId,
-			}
-		);
-		console.log("Payment intent response:", response.data);
+): Promise<PaymentIntentResponse> {
+	const session = await authClient.getSession();
+	const token = session?.data?.session?.token;
 
-		if (!response.data.clientSecret) {
-			throw new Error("No client secret received");
-		}
+	if (!token) throw new Error("No token found");
 
-		return response.data;
-	} catch (error) {
-		console.error("Payment intent creation error:", error);
-		if (axios.isAxiosError(error) && error.response) {
-			throw new Error(error.response.data.error || "Failed to create payment");
-		}
-		throw error;
+	const payload: PaymentIntentRequest = {
+		amount: Number(amount),
+		stallId: Number(stallId),
+		userId: userId,
+	};
+
+	const res = await api.payments["create-payment-intent"].$post({
+		json: payload,
+	});
+
+	if (!res.ok) {
+		const error = (await res.json()) as { error: string };
+		throw new Error(error.error || "Failed to create payment intent");
 	}
-};
+
+	const data = (await res.json()) as PaymentIntentResponse;
+	return data;
+}
+
+export async function createPaymentRecord(
+	data: CreatePaymentRecordRequest
+): Promise<PaymentRecord> {
+	const session = await authClient.getSession();
+	const token = session?.data?.session?.token;
+
+	if (!token) throw new Error("No token found");
+
+	const res = await api.payments["create-record"].$post({
+		json: data,
+	});
+
+	if (!res.ok) {
+		const error = (await res.json()) as { error: string };
+		throw new Error(error.error || "Failed to create payment record");
+	}
+
+	const responseData = (await res.json()) as PaymentRecord;
+	return responseData;
+}
+
+// Query Options
+export const getAllPaymentRecordsQueryOptions = queryOptions<PaymentRecord[]>({
+	queryKey: ["get-payment-records"],
+	queryFn: getAllPaymentRecords,
+	staleTime: 1000 * 60 * 1, // 1 minute
+});
+
+// Helper Functions
+export function removePaymentRecordById(
+	records: PaymentRecord[] | undefined,
+	id: string
+): PaymentRecord[] {
+	return records ? records.filter((record) => record.paymentId !== id) : [];
+}

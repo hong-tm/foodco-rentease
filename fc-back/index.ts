@@ -30,7 +30,7 @@ import env from "./env.js";
 import initDB from "./db/initDB.js";
 import { stallsRoute } from "./routes/stallsRoute.js";
 import { notificationsRoutes } from "./routes/notificationsRoutes.js";
-import payment from "./routes/paymentRoutes.js";
+import { paymentRoutes } from "./routes/paymentRoutes.js";
 
 const app = new Hono<{
 	Variables: {
@@ -97,7 +97,7 @@ export const apiRoutes = app
 	.route("/users", usersRoute)
 	.route("/stalls", stallsRoute)
 	.route("/notifications", notificationsRoutes)
-	.route("/payment", payment);
+	.route("/payments", paymentRoutes);
 
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
