@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import AppointmentTable from "./components/AppointmentTable";
+import UserAppointmentTable from "./components/UserAppointmentTable";
 
 export function UserAppointmentPage() {
 	return (
@@ -19,7 +19,7 @@ export function UserAppointmentPage() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<AppointmentTable />
+				<UserAppointmentTable />
 			</CardContent>
 			<VisuallyHidden>
 				<CardFooter></CardFooter>

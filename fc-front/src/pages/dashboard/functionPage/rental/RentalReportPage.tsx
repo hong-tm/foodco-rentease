@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
 	Card,
 	CardContent,
@@ -18,104 +19,116 @@ import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import axios from "axios";
+import config from "@/config/config";
+
+interface PaymentRecord {
+	paymentId: string;
+	stallId: number;
+	paymentType: string;
+	paymentAmount: string;
+	paymentStatus: boolean;
+	paymentDate: string;
+	user?: {
+		name: string;
+		image: string;
+	};
+}
 
 export function RentalReportPage() {
-	const paymentRecords = [
-		{
-			id: 1,
-			user: "John Doe",
-			avatar: "/avatars/john-doe.png",
-			stallNumber: "A01",
-			rentalFee: 800,
-			waterBill: 120,
-			electricityBill: 250,
-			date: "2025-01-15",
-			total: 1170,
-		},
-		{
-			id: 2,
-			user: "John Doe",
-			avatar: "/avatars/john-doe.png",
-			stallNumber: "A01",
-			rentalFee: 800,
-			waterBill: 135,
-			electricityBill: 265,
-			date: "2024-12-15",
-			total: 1200,
-		},
-		{
-			id: 3,
-			user: "John Doe",
-			avatar: "/avatars/john-doe.png",
-			stallNumber: "A01",
-			rentalFee: 800,
-			waterBill: 110,
-			electricityBill: 240,
-			date: "2024-11-15",
-			total: 1150,
-		},
-	];
+	const [paymentRecords, setPaymentRecords] = useState<PaymentRecord[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchPaymentRecords = async () => {
+			try {
+				const response = await axios.get(
+					`${config.apiUrl}/api/payment/records`,
+					{
+						withCredentials: true,
+					}
+				);
+
+				// Ensure we have an array of records
+				const records = Array.isArray(response.data) ? response.data : [];
+				console.log("Payment records:", records); // Debug log
+				setPaymentRecords(records);
+			} catch (error) {
+				console.error("Error fetching payment records:", error);
+				toast.error("Failed to load payment records");
+				setPaymentRecords([]); // Set empty array on error
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchPaymentRecords();
+	}, []);
 
 	const downloadAsPDF = async () => {
-		// try {
-		// 	const response = await fetch("/api/reports/download-pdf", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify({ paymentRecords }),
-		// 	});
+		try {
+			const response = await axios.get(
+				`${config.apiUrl}/api/payment/download-pdf`,
+				{
+					responseType: "blob",
+					withCredentials: true,
+				}
+			);
 
-		// 	if (!response.ok) {
-		// 		throw new Error("Failed to download PDF");
-		// 	}
-
-		// 	const blob = await response.blob();
-		// 	const url = window.URL.createObjectURL(blob);
-		// 	const a = document.createElement("a");
-		// 	a.href = url;
-		// 	a.download = "rental-records.pdf";
-		// 	document.body.appendChild(a);
-		// 	a.click();
-		// 	window.URL.revokeObjectURL(url);
-		// 	document.body.removeChild(a);
-		// } catch (error) {
-		// 	console.error("Error downloading PDF:", error);
-		// 	toast.error("Failed to download PDF report");
-		// }
-
-		toast.success("Downloading PDF report...");
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "rental-records.pdf");
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+			toast.success("PDF downloaded successfully");
+		} catch (error) {
+			console.error("Error downloading PDF:", error);
+			toast.error("Failed to download PDF report");
+		}
 	};
 
 	const downloadAsCSV = async () => {
-		// try {
-		// 	const response = await fetch("/api/reports/download-csv", {
-		// 		method: "POST",
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 		},
-		// 		body: JSON.stringify({ paymentRecords }),
-		// 	});
+		try {
+			const response = await axios.get(
+				`${config.apiUrl}/api/payment/download-csv`,
+				{
+					responseType: "blob",
+					withCredentials: true,
+				}
+			);
 
-		// 	if (!response.ok) {
-		// 		throw new Error("Failed to download CSV");
-		// 	}
-
-		// 	const blob = await response.blob();
-		// 	const url = window.URL.createObjectURL(blob);
-		// 	const a = document.createElement("a");
-		// 	a.href = url;
-		// 	a.download = "rental-records.csv";
-		// 	document.body.appendChild(a);
-		// 	a.click();
-		// 	window.URL.revokeObjectURL(url);
-		// 	document.body.removeChild(a);
-		// } catch (error) {
-		// 	console.error("Error downloading CSV:", error);
-		// 	toast.error("Failed to download CSV report");
-		// }
-		toast.success("Downloading CSV report...");
+			const url = window.URL.createObjectURL(new Blob([response.data]));
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "rental-records.csv");
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			window.URL.revokeObjectURL(url);
+			toast.success("CSV downloaded successfully");
+		} catch (error) {
+			console.error("Error downloading CSV:", error);
+			toast.error("Failed to download CSV report");
+		}
 	};
+
+	if (loading) {
+		return <div>Loading payment records...</div>;
+	}
+
+	if (paymentRecords.length === 0) {
+		return (
+			<Card className="w-full">
+				<CardHeader>
+					<CardTitle>Rental Records</CardTitle>
+					<CardDescription>No payment records found</CardDescription>
+				</CardHeader>
+			</Card>
+		);
+	}
 
 	return (
 		<Card className="w-full">
@@ -128,31 +141,44 @@ export function RentalReportPage() {
 					<TableHeader>
 						<TableRow>
 							<TableHead></TableHead>
-							<TableHead>Name</TableHead>
+							<TableHead>Payment ID</TableHead>
 							<TableHead>Stall No.</TableHead>
-							<TableHead>Rental Fee (RM)</TableHead>
-							<TableHead>Water Bill (RM)</TableHead>
-							<TableHead>Electricity Bill (RM)</TableHead>
+							<TableHead>Type</TableHead>
+							<TableHead>Amount (RM)</TableHead>
+							<TableHead>Status</TableHead>
 							<TableHead>Date</TableHead>
-							<TableHead>Total (RM)</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{paymentRecords.map((record) => (
-							<TableRow key={record.id}>
+							<TableRow key={record.paymentId}>
 								<TableCell>
 									<Avatar className="h-8 w-8">
-										<AvatarImage src={record.avatar} alt={record.user} />
-										<AvatarFallback>{record.user[0]}</AvatarFallback>
+										<AvatarImage
+											src={record.user?.image}
+											alt={record.user?.name || "User"}
+										/>
+										<AvatarFallback>
+											{record.user?.name?.[0] || "U"}
+										</AvatarFallback>
 									</Avatar>
 								</TableCell>
-								<TableCell>{record.user}</TableCell>
-								<TableCell>{record.stallNumber}</TableCell>
-								<TableCell>{record.rentalFee}</TableCell>
-								<TableCell>{record.waterBill}</TableCell>
-								<TableCell>{record.electricityBill}</TableCell>
-								<TableCell>{record.date}</TableCell>
-								<TableCell>{record.total}</TableCell>
+								<TableCell>{record.paymentId}</TableCell>
+								<TableCell>{record.stallId}</TableCell>
+								<TableCell>{record.paymentType}</TableCell>
+								<TableCell>{record.paymentAmount}</TableCell>
+								<TableCell>
+									<span
+										className={
+											record.paymentStatus ? "text-green-600" : "text-red-600"
+										}
+									>
+										{record.paymentStatus ? "Paid" : "Pending"}
+									</span>
+								</TableCell>
+								<TableCell>
+									{new Date(record.paymentDate).toLocaleDateString()}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

@@ -362,10 +362,11 @@ export class Payment extends Model<
 	declare paymentDate: CreationOptional<Date>;
 
 	@BelongsTo(() => Stall, "stallId")
-	declare paymentStall?: NonAttribute<Stall>;
+	declare stall?: NonAttribute<Stall>;
+
 	@Attribute(DataTypes.INTEGER)
 	@NotNull
-	declare stallId?: CreationOptional<number>;
+	declare stallId: CreationOptional<number>;
 }
 
 export class Utilities extends Model<

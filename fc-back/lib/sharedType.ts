@@ -168,3 +168,20 @@ export const updateAppointmentStatusSchema = z.object({
 	notificationRead: z.boolean(),
 	stallNumber: z.number().int().positive().min(1),
 });
+
+export const paymentSchema = z.object({
+	paymentId: z.string(),
+	stallId: z.number().int().positive(),
+	paymentType: z.string(),
+	paymentAmount: z.string(),
+	paymentStatus: z.boolean(),
+	paymentDate: z.date(),
+	user: z
+		.object({
+			name: z.string(),
+			image: z.string().nullable(),
+		})
+		.nullable(),
+});
+
+export type PaymentRecord = z.infer<typeof paymentSchema>;
