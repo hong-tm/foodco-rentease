@@ -3,6 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import {
 	Payment as PaymentTable,
 	Stall as StallTable,
+	user as UserTable,
 } from "../db/userModel.js";
 import {
 	paymentIntentSchema,
@@ -102,6 +103,15 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 						where: {
 							stallNumber: data.stallId,
 						},
+					}
+				);
+
+				await UserTable.update(
+					{
+						role: "rental",
+					},
+					{
+						where: { id: data.userId },
 					}
 				);
 
