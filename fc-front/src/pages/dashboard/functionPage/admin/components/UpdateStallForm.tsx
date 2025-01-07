@@ -19,7 +19,6 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { useState } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -38,6 +37,7 @@ import { StallFormProps, updateStall } from "@/api/stallApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchRentalsQueryOptions } from "@/api/adminApi";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 // Define tier data
 const TIER_DATA = [
@@ -46,11 +46,268 @@ const TIER_DATA = [
 	{ id: 3, name: "Tier 3", price: 100 },
 ];
 
+function StallFormFields({
+	form,
+	data,
+	stall,
+	totalPrice,
+	handleTierSelect,
+}: {
+	form: any;
+	data: any;
+	stall: any;
+	totalPrice: any;
+	handleTierSelect: (value: string, field: any) => void;
+}) {
+	return (
+		<div className="grid gap-4">
+			{/* Stall Name Field */}
+			<FormField
+				control={form.control}
+				name="stallName"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Stall Name</FormLabel>
+						<FormControl>
+							<Input placeholder="Stall Name" {...field} />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Description Field */}
+			<FormField
+				control={form.control}
+				name="description"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Description</FormLabel>
+						<FormControl>
+							<Input placeholder="Description" {...field} />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Stall Image Field */}
+			<FormField
+				control={form.control}
+				name="stallImage"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Stall Image URL</FormLabel>
+						<FormControl>
+							<Input placeholder="Stall Image URL" {...field} />
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name="stallSize"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Stall Size</FormLabel>
+						<FormControl>
+							<Input
+								type="number"
+								step="0.01"
+								placeholder="Stall Size"
+								{...field}
+								onChange={(e) =>
+									field.onChange(Number(parseFloat(e.target.value).toFixed(2)))
+								}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Stall Owner Field */}
+			<FormField
+				control={form.control}
+				name="stallOwner"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Stall Owner Email</FormLabel>
+						<FormControl>
+							<Select
+								defaultValue={stall.stallOwnerId?.email}
+								onValueChange={field.onChange}
+							>
+								<SelectTrigger className="w-full">
+									<SelectValue placeholder="Select owner email" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectLabel>Owner Emails</SelectLabel>
+										{data?.user.map((user: any) => (
+											<SelectItem key={user.id} value={user.email}>
+												{user.email}
+											</SelectItem>
+										))}
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Rent Status Field */}
+			<FormField
+				control={form.control}
+				name="rentStatus"
+				render={({ field }) => (
+					<FormItem className="flex flex-row items-start space-x-3 space-y-0">
+						<FormControl>
+							<Checkbox
+								checked={field.value}
+								onCheckedChange={field.onChange}
+							/>
+						</FormControl>
+						<FormLabel className="select-none font-normal">
+							Rent Status
+						</FormLabel>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Start Date Field */}
+			<FormField
+				control={form.control}
+				name="startAt"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Start Date</FormLabel>
+						<FormControl>
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button
+										variant="outline"
+										className={cn(
+											"w-full justify-start text-left font-normal",
+											!field.value && "text-muted-foreground"
+										)}
+									>
+										<CalendarIcon className="mr-2 h-4 w-4" />
+										{field.value ? (
+											format(field.value, "PPP")
+										) : (
+											<span>Pick a date</span>
+										)}
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent className="w-auto p-0" align="start">
+									<Calendar
+										mode="single"
+										selected={field.value ? new Date(field.value) : new Date()}
+										onSelect={field.onChange}
+										initialFocus
+										className="rounded-md border shadow"
+									/>
+								</PopoverContent>
+							</Popover>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* End Date Field */}
+			<FormField
+				control={form.control}
+				name="endAt"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">End Date</FormLabel>
+						<FormControl>
+							<Popover>
+								<PopoverTrigger asChild>
+									<Button
+										variant="outline"
+										className={cn(
+											"w-full justify-start text-left font-normal",
+											!field.value && "text-muted-foreground"
+										)}
+									>
+										<CalendarIcon className="mr-2 h-4 w-4" />
+										{field.value ? (
+											format(field.value, "PPP")
+										) : (
+											<span>Pick a date</span>
+										)}
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent className="w-auto p-0" align="start">
+									<Calendar
+										mode="single"
+										selected={field.value ? new Date(field.value) : new Date()}
+										onSelect={field.onChange}
+										initialFocus
+										className="rounded-md border shadow"
+									/>
+								</PopoverContent>
+							</Popover>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			{/* Updated Stall Tier Field */}
+			<FormField
+				control={form.control}
+				name="stallTierNumber"
+				render={({ field }) => (
+					<FormItem>
+						<FormLabel className="select-none">Stall Tier</FormLabel>
+						<FormControl>
+							<div className="space-y-2">
+								<Select
+									value={field.value.tierId.toString()}
+									onValueChange={(value) => handleTierSelect(value, field)}
+								>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Select tier" />
+									</SelectTrigger>
+									<SelectContent>
+										{TIER_DATA.map((tier) => (
+											<SelectItem key={tier.id} value={tier.id.toString()}>
+												{tier.name}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<Label
+									htmlFor="stallPrice"
+									className="text-xs text-muted-foreground"
+								>
+									Price: RM {totalPrice}
+								</Label>
+							</div>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+		</div>
+	);
+}
+
 export default function UpdateStallForm({
 	stall,
 	onSubmit,
 	setOpenDialog,
 }: StallFormProps) {
+	const isMobile = useIsMobile();
 	const parsedStartAt = stall.startAt ? new Date(stall.startAt) : new Date();
 	const parsedEndAt = stall.endAt ? new Date(stall.endAt) : new Date();
 
@@ -71,9 +328,6 @@ export default function UpdateStallForm({
 			},
 		},
 	});
-
-	const [startDate, setStartDate] = useState<Date>(parsedStartAt);
-	const [endDate, setEndDate] = useState<Date>(parsedEndAt);
 
 	// Handle tier selection with proper type updates
 	const handleTierSelect = (value: string, field: any) => {
@@ -103,19 +357,16 @@ export default function UpdateStallForm({
 			toast.error(`${error}`);
 		},
 		onSuccess: (data) => {
-			// console.log("Stall updated successfully:", data);
 			toast.success("Stall updated successfully");
-			form.reset(); // Reset form after successful submission
+			form.reset();
 			if (onSubmit) onSubmit(data);
 			if (setOpenDialog) setOpenDialog(false);
 		},
 	});
 
 	async function handleSubmit(values: z.infer<typeof updateStallSchema>) {
-		// Ensure `startAt` and `endAt` are in Date format
 		values.startAt = new Date(values.startAt);
 		values.endAt = new Date(values.endAt);
-
 		await mutation.mutateAsync(values);
 	}
 
@@ -129,273 +380,28 @@ export default function UpdateStallForm({
 		return <div className="justify-center p-4">Error: {error?.message}</div>;
 	}
 
+	const formContent = (
+		<StallFormFields
+			form={form}
+			data={data}
+			stall={stall}
+			totalPrice={totalPrice}
+			handleTierSelect={handleTierSelect}
+		/>
+	);
+
 	return (
 		<div className="flex flex-col px-12 w-full md:px-0">
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 					<div className="grid gap-4">
-						<ScrollArea className="h-[600px] overflow-y-auto gap-4 rounded-md">
-							<div className="grid gap-4">
-								{/* Stall Name Field */}
-								<FormField
-									control={form.control}
-									name="stallName"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">Stall Name</FormLabel>
-											<FormControl>
-												<Input placeholder="Stall Name" {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Description Field */}
-								<FormField
-									control={form.control}
-									name="description"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">Description</FormLabel>
-											<FormControl>
-												<Input placeholder="Description" {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Stall Image Field */}
-								<FormField
-									control={form.control}
-									name="stallImage"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">
-												Stall Image URL
-											</FormLabel>
-											<FormControl>
-												<Input placeholder="Stall Image URL" {...field} />
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								<FormField
-									control={form.control}
-									name="stallSize"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">Stall Size</FormLabel>
-											<FormControl>
-												<Input
-													type="number"
-													step="0.01"
-													placeholder="Stall Size"
-													{...field}
-													onChange={(e) =>
-														field.onChange(
-															Number(parseFloat(e.target.value).toFixed(2))
-														)
-													}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Stall Owner Field */}
-								<FormField
-									control={form.control}
-									name="stallOwner"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">
-												Stall Owner Email
-											</FormLabel>
-											<FormControl>
-												<Select
-													defaultValue={stall.stallOwnerId?.email}
-													onValueChange={field.onChange}
-												>
-													<SelectTrigger className="w-full">
-														<SelectValue placeholder="Select owner email" />
-													</SelectTrigger>
-													<SelectContent>
-														<SelectGroup>
-															<SelectLabel>Owner Emails</SelectLabel>
-															{data?.user.map((user) => (
-																<SelectItem key={user.id} value={user.email}>
-																	{user.email}
-																</SelectItem>
-															))}
-														</SelectGroup>
-													</SelectContent>
-												</Select>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Rent Status Field */}
-								<FormField
-									control={form.control}
-									name="rentStatus"
-									render={({ field }) => (
-										<FormItem className="flex flex-row items-start space-x-3 space-y-0">
-											<FormControl>
-												<Checkbox
-													checked={field.value}
-													onCheckedChange={field.onChange}
-												/>
-											</FormControl>
-											<FormLabel className="select-none font-normal">
-												Rent Status
-											</FormLabel>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Start Date Field */}
-								<FormField
-									control={form.control}
-									name="startAt"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">Start Date</FormLabel>
-											<FormControl>
-												<Popover>
-													<PopoverTrigger asChild>
-														<Button
-															variant="outline"
-															className={cn(
-																"w-full justify-start text-left font-normal",
-																!field.value && "text-muted-foreground"
-															)}
-														>
-															<CalendarIcon className="mr-2 h-4 w-4" />
-															{field.value ? (
-																format(field.value, "PPP")
-															) : (
-																<span>Pick a date</span>
-															)}
-														</Button>
-													</PopoverTrigger>
-													<PopoverContent className="w-auto p-0" align="start">
-														<Calendar
-															mode="single"
-															selected={
-																field.value ? new Date(field.value) : startDate
-															} // Ensure this is a Date object
-															onSelect={(date) => {
-																field.onChange(date);
-																setStartDate(date || new Date()); // Default to current date if no date selected
-															}}
-															initialFocus
-															className="rounded-md border shadow"
-														/>
-													</PopoverContent>
-												</Popover>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* End Date Field */}
-								<FormField
-									control={form.control}
-									name="endAt"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">End Date</FormLabel>
-											<FormControl>
-												<Popover>
-													<PopoverTrigger asChild>
-														<Button
-															variant="outline"
-															className={cn(
-																"w-full justify-start text-left font-normal",
-																!field.value && "text-muted-foreground"
-															)}
-														>
-															<CalendarIcon className="mr-2 h-4 w-4" />
-															{field.value ? (
-																format(field.value, "PPP")
-															) : (
-																<span>Pick a date</span>
-															)}
-														</Button>
-													</PopoverTrigger>
-													<PopoverContent className="w-auto p-0" align="start">
-														<Calendar
-															mode="single"
-															selected={
-																field.value ? new Date(field.value) : endDate
-															} // Ensure this is a Date object
-															onSelect={(date) => {
-																field.onChange(date);
-																setEndDate(date || new Date()); // Default to current date if no date selected
-															}}
-															initialFocus
-															className="rounded-md border shadow"
-														/>
-													</PopoverContent>
-												</Popover>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-
-								{/* Updated Stall Tier Field */}
-								<FormField
-									control={form.control}
-									name="stallTierNumber"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="select-none">Stall Tier</FormLabel>
-											<FormControl>
-												<div className="space-y-2">
-													<Select
-														value={field.value.tierId.toString()}
-														onValueChange={(value) =>
-															handleTierSelect(value, field)
-														}
-													>
-														<SelectTrigger className="w-full">
-															<SelectValue placeholder="Select tier" />
-														</SelectTrigger>
-														<SelectContent>
-															{TIER_DATA.map((tier) => (
-																<SelectItem
-																	key={tier.id}
-																	value={tier.id.toString()}
-																>
-																	{tier.name}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-													<Label
-														htmlFor="stallPrice"
-														className="text-xs text-muted-foreground"
-													>
-														Price: RM {totalPrice}
-													</Label>
-												</div>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							</div>
-						</ScrollArea>
+						{isMobile ? (
+							<ScrollArea className="h-[600px] overflow-y-auto gap-4 rounded-md">
+								{formContent}
+							</ScrollArea>
+						) : (
+							formContent
+						)}
 						<Button
 							type="submit"
 							className="w-full"
