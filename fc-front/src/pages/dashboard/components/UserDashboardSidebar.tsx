@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth-client";
 
 type Role = "admin" | "user" | "rental";
 
@@ -59,11 +60,10 @@ interface SessionData {
 }
 
 export default function UserDashboardSidebar({
-	authClient,
 	...props
-}: React.ComponentProps<typeof Sidebar> & { authClient?: any }) {
+}: React.ComponentProps<typeof Sidebar>) {
 	const queryClient = useQueryClient();
-	const { data: session, isLoading, error, refetch } = useSession(authClient);
+	const { data: session, isLoading, error, refetch } = useSession();
 	const [currentSession, setCurrentSession] = useState<SessionData | null>(
 		null
 	);
@@ -71,8 +71,20 @@ export default function UserDashboardSidebar({
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (session) {
-			setCurrentSession(session);
+		if (session?.user) {
+			const typedSession: SessionData = {
+				user: {
+					id: session.user.id,
+					name: session.user.name,
+					email: session.user.email,
+					role: session.user.role as Role,
+					image: session.user.image === null ? undefined : session.user.image,
+				},
+				session: {
+					impersonatedBy: session.session?.impersonatedBy ? true : false,
+				},
+			};
+			setCurrentSession(typedSession);
 		}
 	}, [session]);
 
@@ -208,6 +220,10 @@ export default function UserDashboardSidebar({
 							title: "Tenant Information",
 							url: "/dashboard/tenant-information",
 						},
+						{
+							title: "Stall Utilities Payment",
+							url: "/dashboard/stall-payment",
+						},
 					],
 				},
 				{
@@ -268,6 +284,10 @@ export default function UserDashboardSidebar({
 						{
 							title: "Stall Information",
 							url: "/dashboard/rental-dashboard",
+						},
+						{
+							title: "Stall Payment",
+							url: "/dashboard/stall-utilities",
 						},
 					],
 				},

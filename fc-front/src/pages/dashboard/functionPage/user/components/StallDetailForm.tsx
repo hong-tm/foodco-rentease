@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useSession } from "@/api/adminApi";
-import { authClient } from "@/lib/auth-client";
 import { Calendar } from "@/components/ui/calendar";
 import {
 	Popover,
@@ -60,14 +59,14 @@ export default function StallDetailForm({
 		},
 	});
 
-	const { data, error, isLoading } = useSession(authClient);
+	const { data, error, isLoading } = useSession();
 
 	if (isLoading) {
 		return <div className="justify-center p-4">Loading...</div>;
 	}
 
 	if (error || !data) {
-		return <div className="justify-center p-4">Error: {error?.message}</div>;
+		return <div className="justify-center p-4">{error?.message}</div>;
 	}
 
 	async function handleAppointment() {
@@ -89,7 +88,6 @@ export default function StallDetailForm({
 
 			await mutation.mutateAsync(values);
 		} catch (error: any) {
-			toast.error("Failed to submit appointment request: " + error.message);
 			console.error(error);
 		} finally {
 			setPending(false);

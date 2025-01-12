@@ -7,7 +7,9 @@ import type {
 	PaymentIntentResponse,
 	PaymentIntentRequest,
 	CreatePaymentRecordRequest,
-} from "@/lib/sharedType";
+	CreatePaymentUtilityRequest,
+	// UpdatePaymentStatusRequest,
+} from "@server/lib/sharedType";
 
 // Stripe initialization
 export const stripePromise = loadStripe(
@@ -84,6 +86,62 @@ export async function createPaymentRecord(
 	return responseData;
 }
 
+export const updatePaymentStatus = async ({
+	paymentId,
+	newPaymentId,
+	paymentStatus,
+}: {
+	paymentId: string;
+	newPaymentId: string;
+	paymentStatus: boolean;
+}): Promise<UpdatePaymentStatusResponse> => {
+	const session = await authClient.getSession();
+	const token = session?.data?.session?.token;
+
+	if (!token) throw new Error("No token found");
+
+	const res = await api.payments["update-payment-status"].$post({
+		json: {
+			paymentId,
+			newPaymentId,
+			paymentStatus,
+		},
+	});
+
+	const data: UpdatePaymentStatusResponse = await res.json();
+
+	if (!res.ok) {
+		console.error("Update payment status error:", data);
+		if ("error" in data) {
+			throw new Error(data.error);
+		}
+		throw new Error("Failed to update payment status");
+	}
+
+	return data;
+};
+
+export async function createUtilityPaymentRecord(
+	data: CreatePaymentUtilityRequest
+): Promise<PaymentRecord> {
+	const session = await authClient.getSession();
+	const token = session?.data?.session?.token;
+
+	if (!token) throw new Error("No token found");
+
+	const res = await api.payments["create-utility-payment"].$post({
+		json: data,
+	});
+
+	if (!res.ok) {
+		const error = (await res.json()) as { error: string };
+		throw new Error(error.error || "Failed to create utility payment record");
+	}
+
+	const responseData = (await res.json()) as PaymentRecord;
+	return responseData;
+}
+
 // Query Options
 export const getAllPaymentRecordsQueryOptions = queryOptions<PaymentRecord[]>({
 	queryKey: ["get-payment-records"],
@@ -98,3 +156,12 @@ export function removePaymentRecordById(
 ): PaymentRecord[] {
 	return records ? records.filter((record) => record.paymentId !== id) : [];
 }
+
+type UpdatePaymentStatusResponse =
+	| {
+			success: boolean;
+			payment: any;
+	  }
+	| {
+			error: string;
+	  };

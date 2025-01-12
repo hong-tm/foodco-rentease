@@ -38,7 +38,7 @@ export function AdminActionButton({
 	const [openImpersonate, setOpenImpersonate] = useState(false);
 	const [openBanUser, setOpenBanUser] = useState(false);
 
-	const { refetch } = useSession(authClient);
+	const { refetch } = useSession();
 
 	const handleChangeRole = async () => {
 		try {
@@ -70,6 +70,10 @@ export function AdminActionButton({
 				onSuccess: () => {
 					navigate("/dashboard", { replace: true });
 					toast.success("Impersonating user successfully");
+					queryClient.invalidateQueries({
+						queryKey: ["user-session"],
+						refetchType: "active",
+					});
 				},
 				onError: (error) => {
 					toast.error("Failed to impersonate user: " + error);

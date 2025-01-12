@@ -1,17 +1,10 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 
 export function PaymentSuccessPage() {
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		// Show success message
-		toast.success("Payment completed successfully!");
-	}, []);
 
 	return (
 		<div className="container mx-auto max-w-md mt-20">

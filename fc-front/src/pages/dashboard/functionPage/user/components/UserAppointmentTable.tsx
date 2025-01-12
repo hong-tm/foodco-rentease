@@ -23,7 +23,7 @@ import { getAllPaymentRecordsQueryOptions } from "@/api/paymentApi";
 import type {
 	PaymentNotification,
 	PaymentIntentResponse,
-} from "@/lib/sharedType";
+} from "@server/lib/sharedType";
 
 interface PaymentIntentParams {
 	amount: number;
@@ -32,7 +32,7 @@ interface PaymentIntentParams {
 }
 
 export default function UserAppointmentTable() {
-	const { data: session } = useSession({});
+	const { data: session } = useSession();
 	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 	const [clientSecret, setClientSecret] = useState("");
 	const [selectedNotification, setSelectedNotification] =
@@ -232,6 +232,7 @@ export default function UserAppointmentTable() {
 					amount={calculateAmount(selectedNotification)}
 					stallId={selectedNotification.stallNumber || 0}
 					userId={selectedNotification.userId?.toString() || ""}
+					paymentType="rental"
 				/>
 			)}
 		</div>

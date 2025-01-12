@@ -19,6 +19,7 @@ import { Loader2 } from "lucide-react";
 import { updateUsernameFormSchema } from "@server/lib/sharedType";
 import { useSession } from "@/api/adminApi";
 import { ResponsiveFormDialog } from "./ResponsiveFormDialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UpdateProfileButtonProps = {
 	onUpdate: (newName: string) => void;
@@ -38,15 +39,16 @@ export default function UpdateProfileButton({
 	const [pending, setPending] = useState(false);
 	const [dialogOpen, setDialogOpen] = useState(false);
 
-	const { data: session, isLoading, error } = useSession(authClient);
+	const { data: session, isLoading, error } = useSession();
+	const queryClient = useQueryClient();
 
-	if (session && !userName) {
-		const name = session.data?.user?.name;
-		if (name) setUserName(name);
+	// Update userName when session data is available
+	if (session?.user?.name && !userName) {
+		setUserName(session.user.name);
 	}
 
 	if (isLoading) {
-		return <div>Loading...</div>; // Add a loading state
+		return <div>Loading...</div>;
 	}
 
 	if (error) {
@@ -58,22 +60,26 @@ export default function UpdateProfileButton({
 		const { name } = values;
 		setPending(true);
 
-		await authClient.updateUser(
-			{
-				name,
-			},
-			{
-				onSuccess: () => {
-					onUpdate(name);
-					setDialogOpen(false);
-					toast.success("Name updated successfully");
+		try {
+			await authClient.updateUser(
+				{
+					name,
 				},
-				onError: (ctx: ErrorContext) => {
-					toast.error(ctx.error.message ?? "An error occurred");
-				},
-			}
-		);
-		setPending(false);
+				{
+					onSuccess: () => {
+						onUpdate(name);
+						setDialogOpen(false);
+						toast.success("Name updated successfully");
+						queryClient.invalidateQueries({ queryKey: ["user-session"] });
+					},
+					onError: (ctx: ErrorContext) => {
+						toast.error(ctx.error.message ?? "An error occurred");
+					},
+				}
+			);
+		} finally {
+			setPending(false);
+		}
 	}
 
 	return (
@@ -90,7 +96,6 @@ export default function UpdateProfileButton({
 						className="space-y-8 mx-4"
 					>
 						<div className="grid gap-4">
-							{/* Name Field */}
 							<FormField
 								control={form.control}
 								name="name"

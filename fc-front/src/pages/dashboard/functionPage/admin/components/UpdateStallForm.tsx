@@ -33,18 +33,15 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { StallFormProps, updateStall } from "@/api/stallApi";
+import {
+	fetchStallTierPricesQueryOptions,
+	StallFormProps,
+	updateStall,
+} from "@/api/stallApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { fetchRentalsQueryOptions } from "@/api/adminApi";
 import { useIsMobile } from "@/hooks/useIsMobile";
-
-// Define tier data
-const TIER_DATA = [
-	{ id: 1, name: "Tier 1", price: 50 },
-	{ id: 2, name: "Tier 2", price: 80 },
-	{ id: 3, name: "Tier 3", price: 100 },
-];
 
 function StallFormFields({
 	form,
@@ -52,12 +49,14 @@ function StallFormFields({
 	stall,
 	totalPrice,
 	handleTierSelect,
+	tierData,
 }: {
 	form: any;
 	data: any;
 	stall: any;
 	totalPrice: any;
 	handleTierSelect: (value: string, field: any) => void;
+	tierData: any[];
 }) {
 	return (
 		<div className="grid gap-4">
@@ -279,7 +278,7 @@ function StallFormFields({
 										<SelectValue placeholder="Select tier" />
 									</SelectTrigger>
 									<SelectContent>
-										{TIER_DATA.map((tier) => (
+										{tierData.map((tier) => (
 											<SelectItem key={tier.id} value={tier.id.toString()}>
 												{tier.name}
 											</SelectItem>
@@ -308,6 +307,15 @@ export default function UpdateStallForm({
 	setOpenDialog,
 }: StallFormProps) {
 	const isMobile = useIsMobile();
+	const { data: tierQueryData } = useQuery(fetchStallTierPricesQueryOptions);
+
+	const tierData =
+		tierQueryData?.tierPrice.map((tier) => ({
+			id: tier.tierId,
+			name: `Tier ${tier.tierName}`,
+			price: tier.tierPrice,
+		})) ?? [];
+
 	const parsedStartAt = stall.startAt ? new Date(stall.startAt) : new Date();
 	const parsedEndAt = stall.endAt ? new Date(stall.endAt) : new Date();
 
@@ -331,7 +339,7 @@ export default function UpdateStallForm({
 
 	// Handle tier selection with proper type updates
 	const handleTierSelect = (value: string, field: any) => {
-		const selectedTier = TIER_DATA.find((tier) => tier.id === Number(value));
+		const selectedTier = tierData.find((tier) => tier.id === Number(value));
 		if (selectedTier) {
 			field.onChange({
 				tierId: selectedTier.id,
@@ -387,6 +395,7 @@ export default function UpdateStallForm({
 			stall={stall}
 			totalPrice={totalPrice}
 			handleTierSelect={handleTierSelect}
+			tierData={tierData}
 		/>
 	);
 
@@ -396,7 +405,7 @@ export default function UpdateStallForm({
 				<form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
 					<div className="grid gap-4">
 						{isMobile ? (
-							<ScrollArea className="h-[600px] overflow-y-auto gap-4 rounded-md">
+							<ScrollArea className="h-[600px] overflow-x-auto gap-4 rounded-md">
 								{formContent}
 							</ScrollArea>
 						) : (

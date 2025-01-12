@@ -10,7 +10,6 @@ import { FishSymbol } from "lucide-react";
 import UpdateStallForm from "./UpdateStallForm";
 import { StallButtonProps } from "@/api/stallApi";
 import { useQueryClient } from "@tanstack/react-query";
-import { authClient } from "@/lib/auth-client";
 import { useSession } from "@/api/adminApi";
 import { toast } from "sonner";
 import StallDetailForm from "../../user/components/StallDetailForm";
@@ -28,7 +27,7 @@ export const StallButton: React.FC<StallButtonProps> = ({
 		onOpen(null);
 	};
 
-	const { data: session, isLoading, error } = useSession(authClient);
+	const { data: session, isLoading, error } = useSession();
 
 	if (isLoading) return <div>Loading...</div>;
 	if (error) return toast.error("An error occurred: " + error);

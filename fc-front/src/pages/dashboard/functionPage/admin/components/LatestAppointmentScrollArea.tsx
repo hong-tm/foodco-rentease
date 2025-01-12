@@ -22,7 +22,7 @@ import {
 import { startOfDay } from "date-fns";
 
 export default function LatestAppointmentScrollArea() {
-	const { data: session } = useSession({});
+	const { data: session } = useSession();
 	const { data: users } = useQuery(fetchUsersQueryOptions);
 	const { data: notifications } = useQuery({
 		...getAllNotificationQueryOptions,

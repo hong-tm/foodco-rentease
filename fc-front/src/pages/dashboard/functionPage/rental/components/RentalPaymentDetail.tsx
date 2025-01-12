@@ -1,7 +1,9 @@
-"use client";
-
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import { getAllPaymentRecordsQueryOptions } from "@/api/paymentApi";
+import { useSession } from "@/api/adminApi";
+import { Loader2 } from "lucide-react";
 
 import {
 	Card,
@@ -17,51 +19,6 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-	{
-		month: "January",
-		electric: 150,
-		water: 80,
-		rental: 500,
-		total: 730,
-	},
-	{
-		month: "February",
-		electric: 180,
-		water: 85,
-		rental: 500,
-		total: 765,
-	},
-	{
-		month: "March",
-		electric: 165,
-		water: 90,
-		rental: 500,
-		total: 755,
-	},
-	{
-		month: "April",
-		electric: 200,
-		water: 95,
-		rental: 500,
-		total: 795,
-	},
-	{
-		month: "May",
-		electric: 220,
-		water: 100,
-		rental: 500,
-		total: 820,
-	},
-	{
-		month: "June",
-		electric: 190,
-		water: 88,
-		rental: 500,
-		total: 778,
-	},
-];
 
 const chartConfig = {
 	electric: {
@@ -79,19 +36,88 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function RentalPaymentDetail() {
+	const { data: session } = useSession();
+	const userId = session?.user?.id;
+
+	const { data: payments, isLoading } = useQuery({
+		...getAllPaymentRecordsQueryOptions,
+		select: (data) => {
+			if (!data) return [];
+
+			// Filter payments by status and type
+			const validPayments = data.filter(
+				(payment) =>
+					payment.paymentStatus &&
+					["water", "electric", "rental"].includes(payment.paymentType) &&
+					payment.userId === userId
+			);
+
+			// Group payments by month
+			const monthlyPayments = validPayments.reduce((acc, payment) => {
+				const date = new Date(payment.paymentDate);
+				const monthKey = `${date.getFullYear()}-${String(
+					date.getMonth() + 1
+				).padStart(2, "0")}`;
+				const monthName = date.toLocaleString("default", { month: "long" });
+
+				if (!acc[monthKey]) {
+					acc[monthKey] = {
+						month: monthName,
+						monthKey,
+						electric: 0,
+						water: 0,
+						rental: 0,
+						total: 0,
+					};
+				}
+
+				const amount = parseFloat(payment.paymentAmount);
+				acc[monthKey][payment.paymentType] += amount;
+				acc[monthKey].total += amount;
+
+				return acc;
+			}, {} as Record<string, any>);
+
+			// Convert to array and sort by date
+			return Object.values(monthlyPayments)
+				.sort((a, b) => a.monthKey.localeCompare(b.monthKey))
+				.map(({ monthKey, ...rest }) => rest);
+		},
+	});
+
+	if (isLoading) {
+		return (
+			<Card>
+				<CardContent className="flex justify-center items-center min-h-[300px]">
+					<Loader2 className="h-8 w-8 animate-spin" />
+				</CardContent>
+			</Card>
+		);
+	}
+
+	if (!payments || payments.length === 0) {
+		return (
+			<Card>
+				<CardContent className="flex justify-center items-center min-h-[300px]">
+					<p className="text-muted-foreground">No payment records found.</p>
+				</CardContent>
+			</Card>
+		);
+	}
+
 	return (
 		<Card>
 			<CardHeader className="pb-2">
 				<CardTitle>Payment Details</CardTitle>
 				<CardDescription>
-					Monthly payment breakdown for utilities and rental
+					onthly payment breakdown for utilities and rental
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="pb-2">
 				<ChartContainer config={chartConfig}>
 					<AreaChart
 						accessibilityLayer
-						data={chartData}
+						data={payments}
 						margin={{
 							left: 12,
 							right: 12,
@@ -145,14 +171,14 @@ export default function RentalPaymentDetail() {
 				<div className="flex w-full items-start gap-2 text-sm">
 					<div className="grid gap-2">
 						<div className="flex items-center gap-2 font-medium leading-none">
-							{chartData[chartData.length - 1].total >
-							chartData[chartData.length - 2]?.total ? (
+							{payments[payments.length - 1]?.total >
+							payments[payments.length - 2]?.total ? (
 								<>
 									Total expenses increased by <TrendingUp className="h-4 w-4" />
 									{(
-										((chartData[chartData.length - 1]?.total -
-											chartData[chartData.length - 2]?.total) /
-											chartData[chartData.length - 2]?.total) *
+										((payments[payments.length - 1]?.total -
+											payments[payments.length - 2]?.total) /
+											payments[payments.length - 2]?.total) *
 										100
 									).toFixed(1)}
 									% this month
@@ -162,9 +188,9 @@ export default function RentalPaymentDetail() {
 									Total expenses decreased by{" "}
 									<TrendingDown className="h-4 w-4" />
 									{(
-										((chartData[chartData.length - 2]?.total -
-											chartData[chartData.length - 1]?.total) /
-											chartData[chartData.length - 2]?.total) *
+										((payments[payments.length - 2]?.total -
+											payments[payments.length - 1]?.total) /
+											payments[payments.length - 2]?.total) *
 										100
 									).toFixed(1)}
 									% this month
@@ -172,7 +198,8 @@ export default function RentalPaymentDetail() {
 							)}
 						</div>
 						<div className="flex items-center gap-2 leading-none text-muted-foreground">
-							January - June 2024
+							{payments[0]?.month} - {payments[payments.length - 1]?.month}{" "}
+							{new Date().getFullYear()}
 						</div>
 					</div>
 				</div>

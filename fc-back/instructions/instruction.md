@@ -77,7 +77,7 @@ fc-back/
 - **Framework**: React 18.3.1
 - **Build Tool**: Vite
 - **Styling**: TailwindCSS with Shadcn UI components
-- **State Management**: React Query
+- **State Management**: Tanstack Query
 - **Routing**: React Router
 - **Validation**: Zod
 - **Payment**: Stripe integration
@@ -164,5 +164,3 @@ fc-front/
 - Zod schema validation
 - React Query for data fetching
 - Comprehensive error handling
-
-Would you like me to add or modify any specific sections of this documentation?

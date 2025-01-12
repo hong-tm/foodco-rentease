@@ -14,12 +14,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { FileDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
-import type { PaymentRecord } from "@/lib/sharedType";
 import {
 	Select,
 	SelectContent,
@@ -29,10 +23,57 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { FileDown } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import type { PaymentRecord } from "@server/lib/sharedType";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useSession } from "@/api/adminApi";
+
+interface MonthSelectorProps {
+	value: string;
+	onValueChange: (value: string) => void;
+}
+
+function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
+	const months = [
+		{ value: "0", label: "January" },
+		{ value: "1", label: "February" },
+		{ value: "2", label: "March" },
+		{ value: "3", label: "April" },
+		{ value: "4", label: "May" },
+		{ value: "5", label: "June" },
+		{ value: "6", label: "July" },
+		{ value: "7", label: "August" },
+		{ value: "8", label: "September" },
+		{ value: "9", label: "October" },
+		{ value: "10", label: "November" },
+		{ value: "11", label: "December" },
+	];
+
+	return (
+		<Select value={value} onValueChange={onValueChange}>
+			<SelectTrigger className="w-[180px]">
+				<SelectValue placeholder="Filter by month" />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					<SelectLabel>Months</SelectLabel>
+					<SelectItem value="all">All Months</SelectItem>
+					{months.map((month) => (
+						<SelectItem key={month.value} value={month.value}>
+							{month.label}
+						</SelectItem>
+					))}
+				</SelectGroup>
+			</SelectContent>
+		</Select>
+	);
+}
 
 interface PaymentRecordsTableProps {
 	title: string;
@@ -49,23 +90,41 @@ export function PaymentRecordsTable({
 	showMonthFilter = false,
 	isLoading,
 }: PaymentRecordsTableProps) {
-	const { data: session } = useSession({});
+	const { data: session } = useSession();
 	const isRental = session?.user?.role === "rental";
 
 	const [selectedMonth, setSelectedMonth] = useState<string>("all");
+	const [selectedType, setSelectedType] = useState<string>("all");
 	const [filteredRecords, setFilteredRecords] = useState<PaymentRecord[]>([]);
 
 	useEffect(() => {
-		if (selectedMonth === "all") {
-			setFilteredRecords(records);
-		} else {
-			const filtered = records.filter((record) => {
+		let filtered = [...records];
+
+		// Filter by month if selected
+		if (selectedMonth !== "all") {
+			filtered = filtered.filter((record) => {
 				const date = new Date(record.paymentDate);
 				return date.getMonth() === parseInt(selectedMonth);
 			});
-			setFilteredRecords(filtered);
 		}
-	}, [selectedMonth, records]);
+
+		// Filter by payment type if selected
+		if (selectedType !== "all") {
+			filtered = filtered.filter(
+				(record) => record.paymentType === selectedType
+			);
+		}
+
+		// Sort records: rental first, then electric, then water
+		filtered.sort((a, b) => {
+			const typeOrder = { rental: 0, electric: 1, water: 2 };
+			const aOrder = typeOrder[a.paymentType as keyof typeof typeOrder] ?? 3;
+			const bOrder = typeOrder[b.paymentType as keyof typeof typeOrder] ?? 3;
+			return aOrder - bOrder;
+		});
+
+		setFilteredRecords(filtered);
+	}, [selectedMonth, selectedType, records]);
 
 	const downloadPdfMutation = useMutation({
 		mutationFn: async () => {
@@ -121,134 +180,154 @@ export function PaymentRecordsTable({
 
 	if (!records || records.length === 0) {
 		return (
-			<Card className="w-full">
+			<Card className="mx-auto w-full bg-muted/10 p-4 md:p-6 lg:p-8 rounded-lg shadow-md">
 				<CardHeader>
 					<CardTitle>{title}</CardTitle>
-					<CardDescription>No payment records found</CardDescription>
+					<CardDescription>No record</CardDescription>
 				</CardHeader>
 			</Card>
 		);
 	}
 
 	return (
-		<Card className="w-full">
-			<CardHeader className="flex flex-row items-center justify-between">
-				<div>
-					<CardTitle>{title}</CardTitle>
-					<CardDescription>{description}</CardDescription>
-				</div>
-				{showMonthFilter && (
-					<Select value={selectedMonth} onValueChange={setSelectedMonth}>
-						<SelectTrigger className="w-[180px]">
-							<SelectValue placeholder="Filter by month" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectGroup>
-								<SelectLabel>Months</SelectLabel>
-								<SelectItem value="all">All Months</SelectItem>
-								<SelectItem value="0">January</SelectItem>
-								<SelectItem value="1">February</SelectItem>
-								<SelectItem value="2">March</SelectItem>
-								<SelectItem value="3">April</SelectItem>
-								<SelectItem value="4">May</SelectItem>
-								<SelectItem value="5">June</SelectItem>
-								<SelectItem value="6">July</SelectItem>
-								<SelectItem value="7">August</SelectItem>
-								<SelectItem value="8">September</SelectItem>
-								<SelectItem value="9">October</SelectItem>
-								<SelectItem value="10">November</SelectItem>
-								<SelectItem value="11">December</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-				)}
-			</CardHeader>
-			<CardContent>
-				<Table>
-					<TableHeader>
-						<TableRow>
-							<TableHead className="text-left">User</TableHead>
-							<TableHead className="text-left">Payment ID</TableHead>
-							<TableHead className="text-center">Stall No.</TableHead>
-							<TableHead className="text-center">Type</TableHead>
-							<TableHead className="text-right">Amount (RM)</TableHead>
-							<TableHead className="text-center">Status</TableHead>
-							<TableHead className="text-left">Date</TableHead>
-						</TableRow>
-					</TableHeader>
-					<TableBody>
-						{filteredRecords.map((record) => (
-							<TableRow key={record.paymentId}>
-								<TableCell>
-									<div className="flex items-center gap-2">
-										<Avatar className="h-8 w-8">
-											<AvatarImage
-												src={record.paymentUser?.image || undefined}
-												alt={record.paymentUser?.name || "User"}
-											/>
-											<AvatarFallback>
-												{record.paymentUser?.name?.[0] || "U"}
-											</AvatarFallback>
-										</Avatar>
-										<span>{record.paymentUser?.name || "Unknown User"}</span>
-									</div>
-								</TableCell>
-								<TableCell className="text-left">{record.paymentId}</TableCell>
-								<TableCell className="text-center">{record.stallId}</TableCell>
-								<TableCell className="text-center">
-									{record.paymentType}
-								</TableCell>
-								<TableCell className="text-right">
-									{record.paymentAmount}
-								</TableCell>
-								<TableCell className="text-center">
-									<Badge
-										variant="secondary"
-										className={`${
-											record.paymentStatus
-												? "bg-green-100 text-green-800"
-												: "bg-red-100 text-red-800"
-										}`}
-									>
-										{record.paymentStatus ? "Paid" : "Pending"}
-									</Badge>
-								</TableCell>
-								<TableCell className="text-left">
-									{typeof record.paymentDate === "object"
-										? record.paymentDate.toLocaleDateString()
-										: new Date(record.paymentDate).toLocaleDateString()}
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</CardContent>
-			<CardFooter className="flex justify-end gap-4">
-				{session?.user?.role !== "user" && (
-					<>
-						<Button
-							variant="outline"
-							onClick={() => downloadPdfMutation.mutate()}
-							disabled={downloadPdfMutation.isPending}
-						>
-							<FileDown className="mr-2 h-4 w-4" />
-							{downloadPdfMutation.isPending
-								? "Downloading..."
-								: "Download PDF"}
-						</Button>
-						<Button
-							variant="outline"
-							onClick={() => downloadCsvMutation.mutate()}
-							disabled={downloadCsvMutation.isPending}
-						>
-							<FileDown className="mr-2 h-4 w-4" />
-							{downloadCsvMutation.isPending
-								? "Downloading..."
-								: "Download CSV"}
-						</Button>
-					</>
-				)}
-			</CardFooter>
-		</Card>
+		<div className="grid grid-cols-1 gap-4">
+			<div className="overflow-x-auto">
+				<Card className="mx-auto w-full bg-muted/10 p-4 md:p-6 lg:p-8 rounded-lg shadow-md">
+					<CardHeader className="flex flex-col items-center justify-between sm:flex-row">
+						<div>
+							<CardTitle>{title}</CardTitle>
+							<CardDescription>{description}</CardDescription>
+						</div>
+						<div className="flex gap-4">
+							{showMonthFilter && (
+								<MonthSelector
+									value={selectedMonth}
+									onValueChange={setSelectedMonth}
+								/>
+							)}
+							<Select value={selectedType} onValueChange={setSelectedType}>
+								<SelectTrigger className="w-[180px]">
+									<SelectValue placeholder="Filter by type" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectGroup>
+										<SelectLabel>Payment Type</SelectLabel>
+										<SelectItem value="all">All Types</SelectItem>
+										<SelectItem value="rental">Rental</SelectItem>
+										<SelectItem value="electric">Electric</SelectItem>
+										<SelectItem value="water">Water</SelectItem>
+									</SelectGroup>
+								</SelectContent>
+							</Select>
+						</div>
+					</CardHeader>
+
+					<CardContent>
+						<Table>
+							<TableHeader className="sticky top-0 bg-background">
+								<TableRow>
+									<TableHead className="text-left">User</TableHead>
+									<TableHead className="text-left">Payment ID</TableHead>
+									<TableHead className="text-center">Stall No.</TableHead>
+									<TableHead className="text-center">Type</TableHead>
+									<TableHead className="text-right">Amount (RM)</TableHead>
+									<TableHead className="text-center">Status</TableHead>
+									<TableHead className="text-left">Date</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								{filteredRecords.map((record) => (
+									<TableRow key={record.paymentId}>
+										<TableCell>
+											<div className="flex items-center gap-2">
+												<Avatar className="h-8 w-8">
+													<AvatarImage
+														src={record.paymentUser?.image || undefined}
+														alt={record.paymentUser?.name || "User"}
+													/>
+													<AvatarFallback>
+														{record.paymentUser?.name?.[0] || "U"}
+													</AvatarFallback>
+												</Avatar>
+												<span>
+													{record.paymentUser?.name || "Unknown User"}
+												</span>
+											</div>
+										</TableCell>
+										<TableCell className="text-left">
+											{record.paymentId}
+										</TableCell>
+										<TableCell className="text-center">
+											{record.stallId}
+										</TableCell>
+										<TableCell className="text-center">
+											<Badge
+												variant="secondary"
+												className={`${
+													record.paymentType === "rental"
+														? "bg-blue-100 text-blue-800"
+														: record.paymentType === "electric"
+														? "bg-yellow-100 text-yellow-800"
+														: "bg-cyan-100 text-cyan-800"
+												}`}
+											>
+												{record.paymentType}
+											</Badge>
+										</TableCell>
+										<TableCell className="text-right">
+											{record.paymentAmount}
+										</TableCell>
+										<TableCell className="text-center">
+											<Badge
+												variant="secondary"
+												className={`${
+													record.paymentStatus
+														? "bg-green-100 text-green-800"
+														: "bg-red-100 text-red-800"
+												}`}
+											>
+												{record.paymentStatus ? "Paid" : "Pending"}
+											</Badge>
+										</TableCell>
+										<TableCell className="text-left">
+											{typeof record.paymentDate === "object"
+												? record.paymentDate.toLocaleDateString()
+												: new Date(record.paymentDate).toLocaleDateString()}
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
+					</CardContent>
+
+					<CardFooter className="flex justify-end gap-4">
+						{session?.user?.role !== "user" && (
+							<>
+								<Button
+									variant="outline"
+									onClick={() => downloadPdfMutation.mutate()}
+									disabled={downloadPdfMutation.isPending}
+								>
+									<FileDown className="mr-2 h-4 w-4" />
+									{downloadPdfMutation.isPending
+										? "Downloading..."
+										: "Download PDF"}
+								</Button>
+								<Button
+									variant="outline"
+									onClick={() => downloadCsvMutation.mutate()}
+									disabled={downloadCsvMutation.isPending}
+								>
+									<FileDown className="mr-2 h-4 w-4" />
+									{downloadCsvMutation.isPending
+										? "Downloading..."
+										: "Download CSV"}
+								</Button>
+							</>
+						)}
+					</CardFooter>
+				</Card>
+			</div>
+		</div>
 	);
 }
