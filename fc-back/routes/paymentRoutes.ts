@@ -8,6 +8,8 @@ import {
 import {
 	paymentIntentSchema,
 	createPaymentRecordSchema,
+	createPaymentUtilitySchema,
+	updatePaymentStatusSchema,
 } from "../lib/sharedType.js";
 import type {
 	PaymentIntentResponse,
@@ -140,6 +142,52 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 		}
 	)
 
+	.post(
+		"/update-payment-status",
+		zValidator("json", updatePaymentStatusSchema),
+		async (c) => {
+			try {
+				const data = c.req.valid("json");
+				const payment = await PaymentTable.update(
+					{
+						paymentStatus: data.paymentStatus,
+						paymentId: data.newPaymentId, // Update payment ID to new one from Stripe
+					},
+					{
+						where: { paymentId: data.paymentId },
+						returning: true,
+					}
+				);
+
+				if (!payment[0]) {
+					return c.json({ error: "Payment record not found" }, 404);
+				}
+
+				return c.json({ success: true, payment: payment[1][0] });
+			} catch (error: any) {
+				return c.json({ error: error.message }, 500);
+			}
+		}
+	)
+
+	.post(
+		"/create-utility-payment",
+		zValidator("json", createPaymentUtilitySchema),
+		async (c) => {
+			const data = c.req.valid("json");
+			const payment = await PaymentTable.create({
+				...data,
+				paymentDate: new Date(data.paymentDate),
+			});
+
+			if (!payment) {
+				return c.notFound();
+			}
+
+			return c.json({ payment });
+		}
+	)
+
 	.get("/download-pdf", adminVerify(), async (c) => {
 		try {
 			const payments = await PaymentTable.findAll({
@@ -205,21 +253,23 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 // Helper functions for generating PDF and CSV
 async function generatePDF(payments: any[]) {
 	const pdfDoc = await PDFDocument.create();
-	const font = await pdfDoc.embedFont(StandardFonts.CourierBold);
-	let currentPage = pdfDoc.addPage([850, 1100]);
+	const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+	const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+	let currentPage = pdfDoc.addPage([1100, 850]); // Landscape orientation
 	const { height } = currentPage.getSize();
 
 	let yOffset = height - 50;
 	const lineHeight = 25;
 
-	// Define column layout
+	// Define column layout with more space for Payment ID
 	const columns = [
-		{ text: "Payment ID", x: 50, width: 200 },
-		{ text: "User ID", x: 270, width: 200 },
-		{ text: "Stall No.", x: 490, width: 80 },
-		{ text: "Amount (RM)", x: 590, width: 80 },
-		{ text: "Status", x: 690, width: 60 },
-		{ text: "Date", x: 770, width: 80 },
+		{ text: "Payment ID", x: 50, width: 250 },
+		{ text: "User", x: 310, width: 150 },
+		{ text: "Stall No.", x: 470, width: 80 },
+		{ text: "Type", x: 560, width: 80 },
+		{ text: "Amount (RM)", x: 650, width: 100 },
+		{ text: "Status", x: 760, width: 80 },
+		{ text: "Date", x: 850, width: 100 },
 	];
 
 	// Draw headers and initial content for first page
@@ -231,7 +281,7 @@ async function generatePDF(payments: any[]) {
 			x: 50,
 			y: yOffset,
 			size: 24,
-			font,
+			font: boldFont,
 		});
 		yOffset -= lineHeight * 2;
 
@@ -250,7 +300,7 @@ async function generatePDF(payments: any[]) {
 				x: col.x,
 				y: yOffset,
 				size: 12,
-				font,
+				font: boldFont,
 			});
 		});
 		yOffset -= lineHeight;
@@ -258,7 +308,7 @@ async function generatePDF(payments: any[]) {
 		// Header separator line
 		page.drawLine({
 			start: { x: 50, y: yOffset + 10 },
-			end: { x: 850, y: yOffset + 10 },
+			end: { x: 950, y: yOffset + 10 },
 			thickness: 1,
 			color: rgb(0.8, 0.8, 0.8),
 		});
@@ -268,24 +318,32 @@ async function generatePDF(payments: any[]) {
 	// Draw initial page header
 	drawPageHeader(currentPage);
 
+	// Sort payments by date (newest first)
+	const sortedPayments = [...payments].sort(
+		(a, b) =>
+			new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime()
+	);
+
 	// Records
-	for (const payment of payments) {
+	for (const payment of sortedPayments) {
 		// Check if we need a new page
 		if (yOffset < 50) {
-			currentPage = pdfDoc.addPage([850, 1100]);
+			currentPage = pdfDoc.addPage([1100, 850]); // Landscape orientation
 			drawPageHeader(currentPage);
 		}
 
-		// Payment ID
+		// Payment ID (full length)
 		currentPage.drawText(payment.paymentId, {
 			x: columns[0].x,
 			y: yOffset,
-			size: 10,
+			size: 8,
 			font,
 		});
 
-		// User ID
-		currentPage.drawText(payment.userId, {
+		// User Name
+		const userName = payment.paymentUser?.name || "Unknown";
+		const encodedName = userName.replace(/[^\x00-\x7F]/g, "?");
+		currentPage.drawText(encodedName, {
 			x: columns[1].x,
 			y: yOffset,
 			size: 10,
@@ -300,9 +358,23 @@ async function generatePDF(payments: any[]) {
 			font,
 		});
 
-		// Amount
-		currentPage.drawText(payment.paymentAmount, {
+		// Payment Type
+		currentPage.drawText(payment.paymentType, {
 			x: columns[3].x,
+			y: yOffset,
+			size: 10,
+			font,
+			color:
+				payment.paymentType === "rental"
+					? rgb(0, 0, 0.8)
+					: payment.paymentType === "electric"
+					? rgb(0.8, 0.6, 0)
+					: rgb(0, 0.6, 0.8),
+		});
+
+		// Amount
+		currentPage.drawText(payment.paymentAmount.toString(), {
+			x: columns[4].x,
 			y: yOffset,
 			size: 10,
 			font,
@@ -310,7 +382,7 @@ async function generatePDF(payments: any[]) {
 
 		// Status
 		currentPage.drawText(payment.paymentStatus ? "Paid" : "Pending", {
-			x: columns[4].x,
+			x: columns[5].x,
 			y: yOffset,
 			size: 10,
 			font,
@@ -318,8 +390,12 @@ async function generatePDF(payments: any[]) {
 		});
 
 		// Date
-		currentPage.drawText(new Date(payment.paymentDate).toLocaleDateString(), {
-			x: columns[5].x,
+		const date = new Date(payment.paymentDate);
+		const formattedDate = `${date.getFullYear()}/${(date.getMonth() + 1)
+			.toString()
+			.padStart(2, "0")}/${date.getDate().toString().padStart(2, "0")}`;
+		currentPage.drawText(formattedDate, {
+			x: columns[6].x,
 			y: yOffset,
 			size: 10,
 			font,
@@ -330,7 +406,7 @@ async function generatePDF(payments: any[]) {
 		// Record separator line
 		currentPage.drawLine({
 			start: { x: 50, y: yOffset + 10 },
-			end: { x: 800, y: yOffset + 10 },
+			end: { x: 950, y: yOffset + 10 },
 			thickness: 0.5,
 			color: rgb(0.9, 0.9, 0.9),
 		});

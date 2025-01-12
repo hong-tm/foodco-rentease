@@ -1,5 +1,9 @@
 import { api } from "@/lib/api";
-import { StallUserAttributes, UserAttributes } from "@server/db/userModel";
+import {
+	StallTierAttributes,
+	StallUserAttributes,
+	UserAttributes,
+} from "@server/db/userModel";
 import { updateStallSchema } from "@server/lib/sharedType";
 import { UseQueryOptions } from "@tanstack/react-query";
 import { z } from "zod";
@@ -30,6 +34,10 @@ export type StallButtonProps = {
 	onOpen: (stallId: string | null) => void;
 	isOpen: boolean;
 };
+
+export interface GetStallTierPricesResponse {
+	tierPrice: StallTierAttributes[];
+}
 
 // Function
 
@@ -70,6 +78,15 @@ export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> 
 		totalStalls,
 		stalls: stall,
 	} as GetCurrentVacancyResponse;
+}
+
+export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse> {
+	const Response = await api.stalls.tierPrices.$get();
+
+	if (!Response.ok) throw new Error("Failed to fetch stall tier prices");
+
+	const data = await Response.json();
+	return data as GetStallTierPricesResponse;
 }
 
 export async function updateStall(values: z.infer<typeof updateStallSchema>) {
@@ -114,6 +131,13 @@ export const fetchCurrentVacancyQueryOptions: UseQueryOptions<GetCurrentVacancyR
 	{
 		queryKey: ["fetch-current-vacancy"],
 		queryFn: fetchCurrentVacancy,
+		staleTime: 1000 * 60 * 1, // Cache for 1 minute
+	};
+
+export const fetchStallTierPricesQueryOptions: UseQueryOptions<GetStallTierPricesResponse> =
+	{
+		queryKey: ["fetch-stall-tier-prices"],
+		queryFn: fetchStallTierPrices,
 		staleTime: 1000 * 60 * 1, // Cache for 1 minute
 	};
 

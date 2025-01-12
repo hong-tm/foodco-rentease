@@ -4,7 +4,7 @@ import { PaymentRecordsTable } from "@/components/PaymentRecordsTable";
 import { useSession } from "@/api/adminApi";
 
 export function UserReportPage() {
-	const { data: session } = useSession({});
+	const { data: session } = useSession();
 	const { data: records, isLoading } = useQuery(
 		getAllPaymentRecordsQueryOptions
 	);

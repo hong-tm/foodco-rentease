@@ -7,7 +7,7 @@ import { DashboardLayoutPage } from "./pages/dashboard/DashboardLayoutPage.tsx";
 import App from "./App.tsx";
 import SignUpPage from "./pages/(auth)/SignUpPage.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { authClient } from "./lib/auth-client.ts";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const FeedbackDisplayPage = lazy(() =>
 	import("./pages/feedback/FeedbackDisplayPage.tsx").then((module) => ({
@@ -137,6 +137,22 @@ const UserReportPage = lazy(() =>
 	)
 );
 
+const AdminStallPayment = lazy(() =>
+	import("./pages/dashboard/functionPage/admin/AdminStallPayment.tsx").then(
+		(module) => ({
+			default: module.AdminStallPayment,
+		})
+	)
+);
+
+const RentalStallUtilitiesPage = lazy(() =>
+	import(
+		"./pages/dashboard/functionPage/rental/RentalStallUtilitiesPage.tsx"
+	).then((module) => ({
+		default: module.RentalStallUtilitiesPage,
+	}))
+);
+
 const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
@@ -164,7 +180,7 @@ const router = createBrowserRouter(
 		},
 		{
 			path: "/dashboard",
-			element: <DashboardLayoutPage authClient={authClient} />,
+			element: <DashboardLayoutPage />,
 			children: [
 				{
 					path: "/dashboard/feedback",
@@ -176,11 +192,11 @@ const router = createBrowserRouter(
 				},
 				{
 					path: "/dashboard/monthly-rent-overview",
-					element: <DashboardLayoutPage authClient={authClient} />,
+					element: <DashboardLayoutPage />,
 				},
 				{
 					path: "/dashboard/account",
-					element: <UserProfilePage authClient={authClient} />,
+					element: <UserProfilePage />,
 				},
 				{
 					path: "/dashboard/admin",
@@ -226,6 +242,14 @@ const router = createBrowserRouter(
 					path: "/dashboard/user-report",
 					element: <UserReportPage />,
 				},
+				{
+					path: "/dashboard/stall-payment",
+					element: <AdminStallPayment />,
+				},
+				{
+					path: "/dashboard/stall-utilities",
+					element: <RentalStallUtilitiesPage />,
+				},
 			],
 		},
 	],
@@ -244,6 +268,7 @@ createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+				<ReactQueryDevtools initialIsOpen={false} />
 				<RouterProvider router={router} future={{ v7_startTransition: true }} />
 			</ThemeProvider>
 		</QueryClientProvider>

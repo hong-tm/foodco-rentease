@@ -1,5 +1,9 @@
 import { Hono } from "hono";
-import { Stall as StallTable, user as UserTable } from "../db/userModel.js";
+import {
+	Stall as StallTable,
+	user as UserTable,
+	StallTier as StallTierTable,
+} from "../db/userModel.js";
 import { zValidator } from "@hono/zod-validator";
 import { updateStallSchema } from "../lib/sharedType.js";
 import { adminVerify } from "../lib/verifyuser.js";
@@ -20,6 +24,11 @@ export const stallsRoute = new Hono()
 		});
 
 		return c.json({ stall: stalls });
+	})
+
+	.get("/tierPrices", async (c) => {
+		const tierPrice = await StallTierTable.findAll();
+		return c.json({ tierPrice });
 	})
 
 	.get("/:stallOwner", async (c) => {

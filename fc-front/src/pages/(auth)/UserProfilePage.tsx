@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect } from "react";
 import { toast } from "sonner";
 import {
 	Card,
@@ -11,30 +10,9 @@ import {
 } from "@/components/ui/card";
 import UpdateProfileButton from "../dashboard/components/UpdateProfileButton";
 import { useSession } from "@/api/adminApi";
-import { useUser } from "@/context/UserContext"; // Import UserData type
 
-export default function UserProfilePage({ authClient }: { authClient: any }) {
-	const { data: session, error, isLoading } = useSession(authClient);
-	const { user, setUser } = useUser(); // Use the context here
-
-	useEffect(() => {
-		if (session) {
-			// Extracting the user data from the session and setting it in the context
-			const { user: sessionUser } = session;
-
-			if (sessionUser) {
-				setUser({
-					name: sessionUser.name || "",
-					role: sessionUser.role || "",
-					email: sessionUser.email || "",
-					id: sessionUser.id || "",
-					verified: sessionUser.verified ?? false,
-					phone: sessionUser.phone || "",
-					avatar: sessionUser.image || "",
-				});
-			}
-		}
-	}, [session, setUser]);
+export default function UserProfilePage() {
+	const { data: session, error, isLoading } = useSession();
 
 	if (error) {
 		toast.error("An error occurred: " + error);
@@ -42,39 +20,28 @@ export default function UserProfilePage({ authClient }: { authClient: any }) {
 
 	if (isLoading) return <div>Loading...</div>;
 
-	// Now, user data is retrieved from the context
+	if (!session?.user) return null;
+
+	// Use session data directly
 	const userData = [
-		{ label: "Name", value: user?.name || "" },
-		{ label: "Role", value: user?.role || "" },
-		{ label: "Email", value: user?.email || "" },
-		{ label: "User ID", value: user?.id || "" },
+		{ label: "Name", value: session.user.name || "" },
+		{ label: "Role", value: session.user.role || "" },
+		{ label: "Email", value: session.user.email || "" },
+		{ label: "User ID", value: session.user.id || "" },
 		{
 			label: "Verified",
-			value: user?.verified ? "Yes" : "No",
+			value: session.user.emailVerified ? "Yes" : "No",
 		},
-		{ label: "Phone", value: user?.phone || "Not available" },
+		{ label: "Phone", value: session.user.phone || "Not available" },
 	];
 
 	const getFallback = (name: string) => {
 		if (!name) return "??";
 		const initials = name
-			.split(" ") // Split the name into words
-			.map((word) => word[0]?.toUpperCase() || "") // Get the first letter of each word
-			.join(""); // Combine them
-		return initials.slice(0, 2); // Take the first two letters
-	};
-
-	const handleNameUpdate = (newName: string) => {
-		setUser({
-			...user,
-			name: newName,
-			role: user?.role || "", // Ensure role is always a string
-			email: user?.email || "", // Ensure email is always a string
-			id: user?.id || "", // Ensure id is always a string
-			verified: user?.verified ?? false, // Ensure verified is a boolean
-			phone: user?.phone || "", // Ensure phone is always a string
-			avatar: user?.avatar || "", // Ensure avatar is always a string
-		});
+			.split(" ")
+			.map((word) => word[0]?.toUpperCase() || "")
+			.join("");
+		return initials.slice(0, 2);
 	};
 
 	return (
@@ -84,15 +51,15 @@ export default function UserProfilePage({ authClient }: { authClient: any }) {
 					<Avatar className="w-16 h-16 rounded-full mb-3">
 						<AvatarImage
 							rel="preload"
-							src={user?.avatar}
-							alt={`${user?.name}'s avatar`}
+							src={session.user.image || ""}
+							alt={`${session.user.name}'s avatar`}
 						/>
 						<AvatarFallback className="rounded-lg">
-							{getFallback(user?.name || "")}
+							{getFallback(session.user.name || "")}
 						</AvatarFallback>
 					</Avatar>
 					<CardTitle className="text-2xl font-bold text-center mt-4">
-						{`${user?.name}'s Profile`}
+						{`${session.user.name}'s Profile`}
 						<CardDescription></CardDescription>
 					</CardTitle>
 				</CardHeader>
@@ -113,7 +80,7 @@ export default function UserProfilePage({ authClient }: { authClient: any }) {
 
 				<CardFooter className="flex flex-col w-full text-center items-center justify-center gap-2">
 					<div className="flex gap-8">
-						<UpdateProfileButton onUpdate={handleNameUpdate} />
+						<UpdateProfileButton onUpdate={() => {}} />
 					</div>
 					<p className="text-sm text-neutral-400 mt-3">End of Profile</p>
 				</CardFooter>

@@ -172,19 +172,25 @@ export const updateAppointmentStatusSchema = z.object({
 export const paymentSchema = z.object({
 	paymentId: z.string(),
 	stallId: z.number().int().positive(),
+	userId: z.string(),
 	paymentType: z.string(),
 	paymentAmount: z.string(),
 	paymentStatus: z.boolean(),
 	paymentDate: z.date(),
-	user: z
+	paymentUser: z
 		.object({
-			name: z.string(),
+			id: z.string(),
+			name: z.string().nullable(),
 			image: z.string().nullable(),
 		})
 		.nullable(),
 });
 
 export type PaymentRecord = z.infer<typeof paymentSchema>;
+
+export type CreatePaymentUtilityRequest = z.infer<
+	typeof createPaymentUtilitySchema
+>;
 
 export interface RawPaymentRecord {
 	paymentId: string;
@@ -248,6 +254,43 @@ export const createPaymentRecordSchema = z.object({
 	paymentDate: z.string(),
 });
 
+export const updatePaymentStatusSchema = z.object({
+	paymentId: z.string(),
+	newPaymentId: z.string(),
+	paymentStatus: z.boolean(),
+});
+
+export type UpdatePaymentStatusRequest = z.infer<
+	typeof updatePaymentStatusSchema
+>;
+
 export type CreatePaymentRecordRequest = z.infer<
 	typeof createPaymentRecordSchema
 >;
+
+export const createPaymentUtilitySchema = z.object({
+	paymentId: z.string(),
+	stallId: z.number(),
+	userId: z.string(),
+	paymentAmount: z.string(),
+	paymentType: z.string(),
+	paymentStatus: z.boolean(),
+	paymentDate: z.string(),
+});
+
+export const stallUtilitiesFormSchema = z.object({
+	stallId: z.coerce
+		.number({ message: "Please select a stall" })
+		.int()
+		.positive({ message: "Please select a stall" }),
+	paymentType: z.enum(["water", "electric", "rental"], {
+		required_error: "Please select a utility type",
+	}),
+	paymentAmount: z.coerce
+		.number({ message: "Amount must be at least RM 0.01" })
+		.positive({ message: "Amount must be positive" })
+		.min(0.01, { message: "Amount must be at least RM 0.01" }),
+	paymentDate: z.coerce.date({ message: "Please select a date" }),
+});
+
+export type StallUtilitiesFormValues = z.infer<typeof stallUtilitiesFormSchema>;

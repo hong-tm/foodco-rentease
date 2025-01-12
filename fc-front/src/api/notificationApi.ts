@@ -13,7 +13,16 @@ export async function createAppointment(
 	values: z.infer<typeof createAppointmentSchema>
 ) {
 	const res = await api.notifications["$post"]({ json: values });
-	if (!res.ok) throw new Error("Failed to create appointment");
+	if (!res.ok) {
+		const error = await res.json();
+		if (typeof error === "object" && error && "error" in error) {
+			if (error.error === "You have already made this appointment request") {
+				throw new Error(error.error);
+			}
+		}
+		throw new Error("Failed to create appointment");
+	}
+	return res.json();
 }
 
 export async function updateAppointmentStatus(

@@ -50,20 +50,12 @@ export async function fetchRentals(): Promise<GetRentalsResponse> {
 	return { user, stalls };
 }
 
-export const useSession = (authClient: any) => {
+export const useSession = () => {
 	return useQuery({
 		queryKey: ["user-session"],
 		queryFn: async () => {
 			try {
 				const session = await authClient.getSession();
-				// Check for admin session if regular session is not found
-				if (!session.data) {
-					const adminSession = await authClient.admin.getSession();
-					if (adminSession.data) {
-						return adminSession.data;
-					}
-					throw new Error("No session data found");
-				}
 				return session.data;
 			} catch (error) {
 				console.error("Session error:", error);

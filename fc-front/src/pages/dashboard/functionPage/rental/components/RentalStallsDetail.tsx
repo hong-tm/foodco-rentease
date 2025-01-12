@@ -11,7 +11,7 @@ import { useSession } from "@/api/adminApi";
 import { Badge } from "@/components/ui/badge";
 
 export default function RentalStallsDetail() {
-	const { data: session } = useSession({});
+	const { data: session } = useSession();
 	const { data, isLoading, error } = useQuery(
 		fetchStallCurrentQueryOptions(session?.user?.id || "")
 	);

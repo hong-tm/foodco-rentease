@@ -6,7 +6,11 @@ import {
 	useElements,
 } from "@stripe/react-stripe-js";
 import { StripeElementsOptions } from "@stripe/stripe-js";
-import { stripePromise, createPaymentRecord } from "@/api/paymentApi";
+import {
+	stripePromise,
+	createPaymentRecord,
+	updatePaymentStatus,
+} from "@/api/paymentApi";
 import { Button } from "./ui/button";
 import {
 	Dialog,
@@ -33,9 +37,19 @@ interface CheckoutFormProps {
 	amount: number;
 	stallId: number;
 	userId: string;
+	paymentType: string;
+	originalPaymentId?: string;
+	onClose: () => void;
 }
 
-const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
+const CheckoutForm = ({
+	amount,
+	stallId,
+	userId,
+	paymentType,
+	originalPaymentId,
+	onClose,
+}: CheckoutFormProps) => {
 	const stripe = useStripe();
 	const elements = useElements();
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -46,20 +60,62 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 	const queryClient = useQueryClient();
 
 	const paymentMutation = useMutation({
-		mutationFn: createPaymentRecord,
-		onSuccess: () => {
-			toast.success("Payment successful and record saved!");
-			queryClient.invalidateQueries({ queryKey: ["get-payment-records"] });
-			setTimeout(() => {
+		mutationFn: async (paymentData: { paymentId: string }) => {
+			try {
+				if (originalPaymentId) {
+					// For utility payments, update existing record
+					const updateResult = await updatePaymentStatus({
+						paymentId: originalPaymentId,
+						newPaymentId: paymentData.paymentId,
+						paymentStatus: true,
+					});
+					console.log("Update payment result:", updateResult);
+					if ("error" in updateResult) {
+						throw new Error(updateResult.error);
+					}
+					return updateResult.payment;
+				} else {
+					// For rental payments, create new record
+					const createResult = await createPaymentRecord({
+						paymentId: paymentData.paymentId,
+						stallId: stallId,
+						userId: userId,
+						paymentAmount: amount.toString(),
+						paymentType: paymentType,
+						paymentStatus: true,
+						paymentDate: new Date().toISOString(),
+					});
+					console.log("Create payment result:", createResult);
+					return createResult;
+				}
+			} catch (error) {
+				console.error("Payment mutation error:", error);
+				throw error;
+			}
+		},
+		onSuccess: (data) => {
+			console.log("Payment mutation success:", data);
+			if (!originalPaymentId) {
+				// For rental payments, navigate to success page
 				navigate(
-					`/dashboard/payment-success?payment_id=${paymentMutation.data?.paymentId}&stall_id=${stallId}`
+					`/dashboard/payment-success?payment_id=${
+						data?.paymentId || ""
+					}&stall_id=${stallId}`
 				);
-			}, 2000);
+			} else {
+				// For utility payments, just show toast and close modal
+				toast.success("Payment successful and record saved!");
+				if (typeof onClose === "function") {
+					onClose();
+				}
+			}
+			queryClient.invalidateQueries({ queryKey: ["get-payment-records"] });
 		},
 		onError: (error: Error) => {
-			console.error("Error saving payment record:", error);
+			console.error("Payment mutation error:", error);
 			toast.error(
-				"Payment successful but failed to save record. Please contact support."
+				error.message ||
+					"Failed to save payment record. Please contact support."
 			);
 		},
 	});
@@ -85,6 +141,7 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 			});
 
 			if (result.error) {
+				console.error("Stripe payment error:", result.error);
 				setErrorMessage(result.error.message ?? "An unknown error occurred");
 				setPaymentStatus("failed");
 				toast.error(result.error.message ?? "Payment failed");
@@ -92,20 +149,21 @@ const CheckoutForm = ({ amount, stallId, userId }: CheckoutFormProps) => {
 				result.paymentIntent &&
 				result.paymentIntent.status === "succeeded"
 			) {
+				console.log("Stripe payment success:", result.paymentIntent);
 				setPaymentStatus("success");
 
-				paymentMutation.mutate({
-					paymentId: result.paymentIntent.id,
-					stallId: stallId,
-					userId: userId,
-					paymentAmount: amount.toString(),
-					paymentType: "rental",
-					paymentStatus: true,
-					paymentDate: new Date().toISOString(),
-				});
+				try {
+					await paymentMutation.mutateAsync({
+						paymentId: result.paymentIntent.id,
+					});
+				} catch (mutationError) {
+					console.error("Payment mutation error:", mutationError);
+					setErrorMessage("Failed to save payment record");
+					setPaymentStatus("failed");
+				}
 			}
 		} catch (error) {
-			console.error("Payment error:", error);
+			console.error("Payment submission error:", error);
 			setErrorMessage("An unexpected error occurred");
 			setPaymentStatus("failed");
 			toast.error("Payment failed");
@@ -163,6 +221,8 @@ interface PaymentModalProps {
 	amount: number;
 	stallId: number;
 	userId: string;
+	paymentType: string;
+	originalPaymentId?: string;
 }
 
 export default function PaymentModal({
@@ -172,6 +232,8 @@ export default function PaymentModal({
 	amount,
 	stallId,
 	userId,
+	paymentType,
+	originalPaymentId,
 }: PaymentModalProps) {
 	const [ready, setReady] = useState(false);
 
@@ -205,7 +267,14 @@ export default function PaymentModal({
 					</DrawerHeader>
 					<div className="flex flex-col gap-4 mx-6 mb-2">
 						<Elements stripe={stripePromise} options={options}>
-							<CheckoutForm amount={amount} stallId={stallId} userId={userId} />
+							<CheckoutForm
+								amount={amount}
+								stallId={stallId}
+								userId={userId}
+								paymentType={paymentType}
+								originalPaymentId={originalPaymentId}
+								onClose={onClose}
+							/>
 						</Elements>
 					</div>
 					<DrawerFooter className="pt-0">
@@ -226,7 +295,14 @@ export default function PaymentModal({
 					<DialogDescription>Payment for Stall #{stallId}</DialogDescription>
 				</DialogHeader>
 				<Elements stripe={stripePromise} options={options}>
-					<CheckoutForm amount={amount} stallId={stallId} userId={userId} />
+					<CheckoutForm
+						amount={amount}
+						stallId={stallId}
+						userId={userId}
+						paymentType={paymentType}
+						originalPaymentId={originalPaymentId}
+						onClose={onClose}
+					/>
 				</Elements>
 			</DialogContent>
 		</Dialog>

@@ -13,13 +13,12 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useSession } from "@/api/adminApi";
 import { toast } from "sonner";
 import Breadcrumbs from "./components/Breadcrumbs";
-import { UserProvider } from "@/context/UserContext";
 
-export function DashboardLayoutPage({ authClient }: { authClient: any }) {
+export function DashboardLayoutPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const { data: session, isLoading, error } = useSession(authClient);
+	const { data: session, isLoading, error } = useSession();
 
 	useEffect(() => {
 		if (!isLoading && session && location.pathname === "/dashboard") {
@@ -45,7 +44,7 @@ export function DashboardLayoutPage({ authClient }: { authClient: any }) {
 	if (isLoading) {
 		return (
 			<SidebarProvider>
-				<UserDashboardSidebar authClient={authClient} />
+				<UserDashboardSidebar />
 				<SidebarInset>
 					<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
 						<div className="flex items-center gap-2 px-4">
@@ -64,38 +63,35 @@ export function DashboardLayoutPage({ authClient }: { authClient: any }) {
 	}
 
 	if (error || (!isLoading && !session)) {
-		navigate("/");
-		return toast.error("You are not logged in");
+		return toast.error("You are not logged in, please refresh the page");
 	}
 
 	return (
-		<UserProvider>
-			<SidebarProvider>
-				<UserDashboardSidebar authClient={authClient} />
-				<SidebarInset>
-					<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
-						<div className="flex items-center gap-2 px-4">
-							<SidebarTrigger className="-ml-1" />
-							<ModeToggle />
-							<Separator orientation="vertical" className="mr-2 h-4" />
-							<Breadcrumbs />
-						</div>
-					</header>
-					<main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
-						<ErrorBoundary
-							fallback={
-								<div className="p-2">
-									Something went wrong, please refresh the page ...
-								</div>
-							}
-						>
-							<Suspense fallback={<DashboardSkeleton />}>
-								<Outlet />
-							</Suspense>
-						</ErrorBoundary>
-					</main>
-				</SidebarInset>
-			</SidebarProvider>
-		</UserProvider>
+		<SidebarProvider>
+			<UserDashboardSidebar />
+			<SidebarInset>
+				<header className="flex h-16 shrink-0 items-center gap-2 justify-between">
+					<div className="flex items-center gap-2 px-4">
+						<SidebarTrigger className="-ml-1" />
+						<ModeToggle />
+						<Separator orientation="vertical" className="mr-2 h-4" />
+						<Breadcrumbs />
+					</div>
+				</header>
+				<main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
+					<ErrorBoundary
+						fallback={
+							<div className="p-2">
+								Something went wrong, please refresh the page ...
+							</div>
+						}
+					>
+						<Suspense fallback={<DashboardSkeleton />}>
+							<Outlet />
+						</Suspense>
+					</ErrorBoundary>
+				</main>
+			</SidebarInset>
+		</SidebarProvider>
 	);
 }

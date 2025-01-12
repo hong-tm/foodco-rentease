@@ -15,8 +15,14 @@ import { Badge } from "@/components/ui/badge";
 import { startOfDay } from "date-fns";
 import AdminAppointmentActionButton from "./AdminAppointmentActionButton";
 
-export default function AdminAppointmentTable() {
-	const { data: session } = useSession({});
+interface AdminAppointmentTableProps {
+	selectedMonth: string;
+}
+
+export default function AdminAppointmentTable({
+	selectedMonth,
+}: AdminAppointmentTableProps) {
+	const { data: session } = useSession();
 	const { data: users } = useQuery(fetchUsersQueryOptions);
 	const {
 		data: notifications,
@@ -39,16 +45,23 @@ export default function AdminAppointmentTable() {
 		return <div className="justify-center p-4">No notifications found</div>;
 	}
 
-	// Filter out expired appointments
+	// Filter out expired appointments and by selected month
 	const today = startOfDay(new Date());
 	const currentNotifications = notifications.filter((notification) => {
-		const appointmentDate = startOfDay(new Date(notification.appointmentDate));
-		return appointmentDate >= today;
+		const appointmentDate = new Date(notification.appointmentDate);
+		const isCurrentOrFuture = startOfDay(appointmentDate) >= today;
+		const isSelectedMonth =
+			selectedMonth === "all" ||
+			appointmentDate.getMonth().toString() === selectedMonth;
+		return isCurrentOrFuture && isSelectedMonth;
 	});
 
 	if (currentNotifications.length === 0) {
 		return (
-			<div className="justify-center p-4">No current appointments found</div>
+			<div className="justify-center p-4">
+				No current appointments found{" "}
+				{selectedMonth !== "all" ? "for the selected month" : ""}
+			</div>
 		);
 	}
 
