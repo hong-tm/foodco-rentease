@@ -30,6 +30,8 @@ export default function Breadcrumbs() {
 		"admin-report": "Admin Report",
 		"rental-report": "Rental Report",
 		"user-report": "User Report",
+		"stall-payment": "Stall Payment",
+		"stall-utilities": "Stall Utilities",
 	};
 
 	let currentLink = "";
