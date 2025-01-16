@@ -75,3 +75,4 @@ fc-back/better-auth_migrations/*
 fc-back/webpage
 fc-back/webpage/*
 fc-back/db/initDB.ts
+fc-back/instructions/*
