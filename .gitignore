@@ -78,3 +78,5 @@ fc-back/db/initDB.ts
 fc-back/instructions/*
 fc-back/instructions
 fc-back/.cursorignore
+fc-front/public/robots.txt
+fc-front/public/sitemap.xml
