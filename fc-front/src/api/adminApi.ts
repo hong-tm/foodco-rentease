@@ -62,7 +62,6 @@ export const useSession = () => {
 				throw error;
 			}
 		},
-		staleTime: 1000 * 60 * 3, // Cache for 3 minutes
 		retry: 1, // Only retry once for session fetching
 	});
 };

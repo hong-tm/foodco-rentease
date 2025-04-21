@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "fc-front"
+		},
+		{
+			"path": "."
 		}
 	],
 	"settings": {
