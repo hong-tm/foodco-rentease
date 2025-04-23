@@ -97,7 +97,7 @@ export default function SignInPage() {
 					toast.success(`Welcome, ${email}!`);
 					navigate("/dashboard", { replace: true });
 				},
-				onError: (ctx: ErrorContext) => {
+				onError: async (ctx: any) => {
 					toast.error(ctx.error.message ?? "An error occurred");
 					setPending(false);
 				},
@@ -121,7 +121,7 @@ export default function SignInPage() {
 					// toast.success("Welcome, Google User!");
 					// navigate("/dashboard", { replace: true });
 				},
-				onError: (ctx: ErrorContext) => {
+				onError: async (ctx: ErrorContext) => {
 					toast.error(ctx.error.message);
 					setPendingGoogle(false);
 				},
@@ -143,7 +143,7 @@ export default function SignInPage() {
 				onSuccess: async () => {
 					// toast.success("Welcome, Github User!");
 				},
-				onError: (ctx: ErrorContext) => {
+				onError: async (ctx: any) => {
 					toast.error(ctx.error.message);
 					setPendingGithub(false);
 				},
