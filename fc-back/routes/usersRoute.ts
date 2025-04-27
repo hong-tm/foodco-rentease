@@ -58,7 +58,7 @@ export const usersRoute = new Hono()
 		zValidator("json", emailSchema),
 		async (c) => {
 			try {
-				const { to, subject, text } = await c.req.valid("json");
+				const { to, subject, text } = c.req.valid("json");
 
 				// Debug the extracted fields
 				console.log("Request payload:", { to, subject, text });
