@@ -151,23 +151,6 @@ export default function SignInPage() {
 		);
 	}
 
-	// async function handlerSignInGoogleOneTap() {
-	// 	await authClient.oneTap({
-	// 		fetchOptions: {
-	// 			onRequest: () => {
-	// 				setPendingGoogle(true);
-	// 			},
-	// 			onSuccess: () => {
-	// 				navigate("/dashboard");
-	// 			},
-	// 			onError: (ctx: ErrorContext) => {
-	// 				toast.error(ctx.error.message);
-	// 				setPendingGoogle(false);
-	// 			},
-	// 		},
-	// 	});
-	// }
-
 	return (
 		<div className="flex h-screen w-full items-center justify-center px-4">
 			<BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
