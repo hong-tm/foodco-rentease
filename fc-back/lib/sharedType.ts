@@ -1,3 +1,4 @@
+import { url } from "inspector";
 import { z } from "zod";
 
 export const signupformSchema = z
@@ -294,3 +295,22 @@ export const stallUtilitiesFormSchema = z.object({
 });
 
 export type StallUtilitiesFormValues = z.infer<typeof stallUtilitiesFormSchema>;
+
+export const emailSendSchema = z.object({
+	user: z.object({
+		email: z.string().email(),
+		id: z.string(),
+	}),
+	url: z.string().url(),
+});
+
+// Create a TypeScript type from the schema
+export type EmailSendType = z.infer<typeof emailSendSchema>;
+
+export const SocialProfile = z.object({
+	given_name: z.string().min(1),
+	family_name: z.string().min(1),
+	name: z.string().min(1).optional(),
+});
+
+export type SocialProfileType = z.infer<typeof SocialProfile>;

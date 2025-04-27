@@ -5,6 +5,7 @@ import { sendEmail } from "../action/email/email.js";
 import pg from "pg";
 import env from "../env.js";
 import { ac, rental, user, admin } from "./permissions.js";
+import type { EmailSendType, SocialProfileType } from "./sharedType.js";
 
 dotenv.config();
 const { Pool } = pg;
@@ -47,7 +48,7 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		requireEmailVerification: true,
-		sendResetPassword: async ({ user, url }) => {
+		sendResetPassword: async ({ user, url }: EmailSendType) => {
 			await sendEmail({
 				to: user.email,
 				subject: "Reset your password",
@@ -58,14 +59,11 @@ export const auth = betterAuth({
 	emailVerification: {
 		sendOnSignUp: true,
 		autoSignInAfterVerification: true,
-		sendVerificationEmail: async ({ user, token }) => {
-			const verificationUrl = `${env.BETTER_AUTH_URL}/api/auth/verify-email?token=${token}&callbackURL=${env.EMAIL_VERIFICATION_CALLBACK_URL}`;
-
+		sendVerificationEmail: async ({ user, url }: EmailSendType) => {
 			await sendEmail({
 				to: user.email,
 				subject: "Verify your email",
-				text: `Please verify your email by clicking on this link: 
-				${verificationUrl}`,
+				text: `Please verify your email by clicking on this link: ${url}`,
 			});
 		},
 	},
@@ -73,7 +71,7 @@ export const auth = betterAuth({
 		google: {
 			clientId: env.GOOGLE_CLIENT_ID,
 			clientSecret: env.GOOGLE_CLIENT_SECRET,
-			mapProfileToUser: (profile) => {
+			mapProfileToUser: (profile: SocialProfileType) => {
 				return {
 					firstName: profile.given_name,
 					lastName: profile.family_name,
@@ -83,10 +81,10 @@ export const auth = betterAuth({
 		github: {
 			clientId: env.GITHUB_CLIENT_ID,
 			clientSecret: env.GITHUB_CLIENT_SECRET,
-			mapProfileToUser: (profile) => {
+			mapProfileToUser: (profile: SocialProfileType) => {
 				return {
-					firstName: profile.name.split(" ")[0],
-					lastName: profile.name.split(" ")[1],
+					firstName: profile.name?.split(" ")[0],
+					lastName: profile.name?.split(" ")[1],
 				};
 			},
 		},
