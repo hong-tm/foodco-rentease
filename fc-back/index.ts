@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { prettyJSON } from "hono/pretty-json";
-import { Sequelize } from "@sequelize/core";
+import Sequelize from "@sequelize/core";
 import { auth } from "./lib/auth.js";
 import { cors } from "hono/cors";
 import { expensesRoute } from "./routes/expensesRoute.js";
