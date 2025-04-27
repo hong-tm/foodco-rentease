@@ -81,7 +81,7 @@ export const auth = betterAuth({
 		github: {
 			clientId: env.GITHUB_CLIENT_ID,
 			clientSecret: env.GITHUB_CLIENT_SECRET,
-			mapProfileToUser: (profile: SocialProfileType) => {
+			mapProfileToUser: (profile) => {
 				return {
 					firstName: profile.name?.split(" ")[0],
 					lastName: profile.name?.split(" ")[1],
