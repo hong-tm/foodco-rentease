@@ -14,12 +14,12 @@
 </div>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#tech-stack">Tech Stack</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#user-roles">User Roles</a> •
-  <a href="#star-history">Star History</a> •
-  <a href="#license">License</a>
+  <a href="#-features">Features</a> •
+  <a href="#️-tech-stack">Tech Stack</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-user-roles">User Roles</a> •
+  <a href="#-star-history">Star History</a> •
+  <a href="#-license">License</a>
 </p>
 
 ---
