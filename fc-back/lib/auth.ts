@@ -38,7 +38,7 @@ export const auth = betterAuth({
 		adminPlugin({
 			defaultRole: "user",
 			adminRoles: ["admin"],
-			ac: ac,
+			ac,
 			roles: { admin, user, rental },
 			// adminUserIds: env.ADMIN_USER_IDS?.split(",") || [],
 		}),
