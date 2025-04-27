@@ -7,7 +7,9 @@
     <a href="#tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.5-3178C6" alt="TypeScript" /></a>
     <a href="#tech-stack"><img src="https://img.shields.io/badge/React-18.3-61DAFB" alt="React" /></a>
   </p>
-  <img src="https://github.com/user-attachments/assets/2c235832-f074-44b6-9c96-a78618a6ef9f" alt="FoodCo RentEase" />
+
+![foodco-banner](https://github.com/user-attachments/assets/2c235832-f074-44b6-9c96-a78618a6ef9f)
+
   <h3>A streamlined rental management platform for food courts</h3>
 </div>
 
