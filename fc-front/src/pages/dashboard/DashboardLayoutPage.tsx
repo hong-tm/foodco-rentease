@@ -63,7 +63,8 @@ export function DashboardLayoutPage() {
 	}
 
 	if (error || (!isLoading && !session)) {
-		return toast.error("You are not logged in, please refresh the page");
+		navigate("/");
+		return toast.error("You are not logged in, please login to continue");
 	}
 
 	return (
