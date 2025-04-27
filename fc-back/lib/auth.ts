@@ -1,10 +1,10 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
 import * as dotenv from "dotenv";
-import { admin, oneTap, openAPI } from "better-auth/plugins";
+import { admin as adminPlugin, oneTap, openAPI } from "better-auth/plugins";
 import { sendEmail } from "../action/email/email.js";
 import pg from "pg";
 import env from "../env.js";
-import { ac, rental, user, admin as adminUser } from "./permissions.js";
+import { ac, rental, user, admin } from "./permissions.js";
 
 dotenv.config();
 const { Pool } = pg;
@@ -35,11 +35,11 @@ export const auth = betterAuth({
 	plugins: [
 		openAPI(),
 		oneTap(),
-		admin({
+		adminPlugin({
 			defaultRole: "user",
 			adminRoles: ["admin"],
-			ac,
-			roles: { adminUser, user, rental },
+			ac: ac,
+			roles: { admin, user, rental },
 			// adminUserIds: env.ADMIN_USER_IDS?.split(",") || [],
 		}),
 	],
