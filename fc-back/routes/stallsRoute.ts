@@ -32,7 +32,7 @@ export const stallsRoute = new Hono()
 	})
 
 	.get("/:stallOwner", async (c) => {
-		const { stallOwner } = c.req.param();
+		const stallOwner = c.req.param("stallOwner");
 
 		// Find user by ID first
 		const user = await UserTable.findByPk(stallOwner);
@@ -64,7 +64,7 @@ export const stallsRoute = new Hono()
 		adminVerify(),
 		zValidator("json", updateStallSchema),
 		async (c) => {
-			const { stallId } = c.req.param();
+			const stallId = c.req.param("stallId");
 			const body = await c.req.json();
 
 			// console.log("Received Stall ID:", stallId);
@@ -105,10 +105,13 @@ export const stallsRoute = new Hono()
 			// Save the changes
 			await stall.save();
 
-			return c.json({
-				message: "Stall updated successfully",
-				stall,
-			});
+			return c.json(
+				{
+					message: "Stall updated successfully",
+					stall,
+				},
+				200
+			);
 		}
 	)
 
@@ -126,6 +129,8 @@ export const stallsRoute = new Hono()
 		});
 
 		const rentedStalls = allStalls.filter((stall) => stall.rentStatus);
+
+		c.status(200);
 
 		return c.json({
 			totalStalls: allStalls.length,
