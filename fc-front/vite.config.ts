@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import build from "@hono/vite-build/node";
 import react from "@vitejs/plugin-react";
 import path from "path";
 // import { visualizer } from "rollup-plugin-visualizer";
@@ -7,6 +8,12 @@ import path from "path";
 export default defineConfig({
 	plugins: [
 		react(),
+		build({
+			// Defaults are `src/index.ts`,`./src/index.tsx`,`./app/server.ts`
+			entry: "./src/index.tsx",
+			// port option is only for Node.js adapter. Default is 3000
+			port: 3000,
+		}),
 		// visualizer({
 		// 	open: true,
 		// 	gzipSize: true,
