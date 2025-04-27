@@ -21,7 +21,7 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { Parser } from "@json2csv/plainjs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-	apiVersion: "2024-12-18.acacia",
+	apiVersion: "2025-02-24.acacia",
 });
 
 type UserContext = {
