@@ -27,7 +27,7 @@ import { pinoLogger } from "hono-pino";
 import pretty from "pino-pretty";
 import { pino } from "pino";
 import env from "./env.js";
-import initDB from "./db/initDB.js";
+// import initDB from "./db/initDB.js";
 import { stallsRoute } from "./routes/stallsRoute.js";
 import { notificationsRoutes } from "./routes/notificationsRoutes.js";
 import { paymentRoutes } from "./routes/paymentRoutes.js";
@@ -248,22 +248,22 @@ async function syncModels(log = true) {
 // dropTables();
 
 // Sequential initialization with error handling
-async function initializeDatabase() {
-	const modelsSynced = await syncModels();
-	if (!modelsSynced) {
-		console.error("Database initialization aborted: Model sync failed");
-		return;
-	}
+// async function initializeDatabase() {
+// 	const modelsSynced = await syncModels();
+// 	if (!modelsSynced) {
+// 		console.error("Database initialization aborted: Model sync failed");
+// 		return;
+// 	}
 
-	try {
-		await initDB();
-		console.log("Database initialized successfully");
-	} catch (error) {
-		console.error("Failed to initialize database:", error);
-	}
-}
+// 	try {
+// 		await initDB();
+// 		console.log("Database initialized successfully");
+// 	} catch (error) {
+// 		console.error("Failed to initialize database:", error);
+// 	}
+// }
 
-initializeDatabase();
+// initializeDatabase();
 
 try {
 	await sequelize.authenticate();
