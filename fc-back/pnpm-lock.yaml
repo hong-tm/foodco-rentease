@@ -13,7 +13,7 @@ importers:
         version: 1.14.1(hono@4.7.7)
       '@hono/zod-validator':
         specifier: ^0.4.3
-        version: 0.4.3(hono@4.7.7)(zod@3.24.3)
+        version: 0.4.3(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
       '@json2csv/plainjs':
         specifier: ^7.0.6
         version: 7.0.6
@@ -78,8 +78,8 @@ importers:
         specifier: ^6.3.3
         version: 6.3.3(@types/node@20.17.31)(tsx@4.19.3)
       zod:
-        specifier: ^3.24.3
-        version: 3.24.3
+        specifier: 4.0.0-beta.20250424T163858
+        version: 4.0.0-beta.20250424T163858
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.13
@@ -534,6 +534,9 @@ packages:
 
   '@types/validator@13.15.0':
     resolution: {integrity: sha512-nh7nrWhLr6CBq9ldtw0wx+z9wKnnv/uTVLA9g/3/TcOYxbpOSZE+MhKPmWqU+K0NvThjhv12uD8MuqijB0WzEA==}
+
+  '@zod/core@0.9.0':
+    resolution: {integrity: sha512-bVfPiV2kDUkAJ4ArvV4MHcPZA8y3xOX6/SjzSy2kX2ACopbaaAP4wk6hd/byRmfi9MLNai+4SFJMmcATdOyclg==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -1705,6 +1708,9 @@ packages:
   zod@3.24.3:
     resolution: {integrity: sha512-HhY1oqzWCQWuUqvBFnsyrtZRhyPeR7SUGv+C4+MsisMuVfSPx8HpwWqH8tRahSlt6M3PiFAcoeFhZAqIXTxoSg==}
 
+  zod@4.0.0-beta.20250424T163858:
+    resolution: {integrity: sha512-fKhW+lEJnfUGo0fvQjmam39zUytARR2UdCEh7/OXJSBbKScIhD343K74nW+UUHu/r6dkzN6Uc/GqwogFjzpCXg==}
+
 snapshots:
 
   '@better-auth/utils@0.2.4':
@@ -1806,6 +1812,11 @@ snapshots:
     dependencies:
       hono: 4.7.7
       zod: 3.24.3
+
+  '@hono/zod-validator@0.4.3(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)':
+    dependencies:
+      hono: 4.7.7
+      zod: 4.0.0-beta.20250424T163858
 
   '@jridgewell/resolve-uri@3.1.2': {}
 
@@ -2085,6 +2096,8 @@ snapshots:
       pg-types: 4.0.2
 
   '@types/validator@13.15.0': {}
+
+  '@zod/core@0.9.0': {}
 
   abbrev@1.1.1:
     optional: true
@@ -3334,3 +3347,7 @@ snapshots:
   yn@3.1.1: {}
 
   zod@3.24.3: {}
+
+  zod@4.0.0-beta.20250424T163858:
+    dependencies:
+      '@zod/core': 0.9.0
