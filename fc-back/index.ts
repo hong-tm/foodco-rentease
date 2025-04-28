@@ -247,7 +247,7 @@ async function syncModels(log = true) {
 
 // dropTables();
 
-// Sequential initialization with error handling
+// Sequential initialization with error handling, need initDB.ts in db file
 // async function initializeDatabase() {
 // 	const modelsSynced = await syncModels();
 // 	if (!modelsSynced) {
