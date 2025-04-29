@@ -119,6 +119,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.63.0
         version: 5.63.0(@tanstack/react-query@5.63.0(react@18.3.1))(react@18.3.1)
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       better-auth:
         specifier: ^1.2.7
         version: 1.2.7
@@ -258,6 +261,9 @@ importers:
       postcss:
         specifier: ^8.4.47
         version: 8.5.3
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
       rollup-plugin-visualizer:
         specifier: ^5.14.0
         version: 5.14.0(rollup@4.34.9)
@@ -1705,6 +1711,9 @@ packages:
   '@types/geojson@7946.0.14':
     resolution: {integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==}
 
+  '@types/js-cookie@3.0.6':
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
+
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -2632,6 +2641,11 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
+    hasBin: true
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -4517,6 +4531,8 @@ snapshots:
 
   '@types/geojson@7946.0.14': {}
 
+  '@types/js-cookie@3.0.6': {}
+
   '@types/json-schema@7.0.15': {}
 
   '@types/node@22.7.9':
@@ -5072,6 +5088,7 @@ snapshots:
       '@tabler/icons-react': 3.21.0(react@18.3.1)
       '@tanstack/react-query': 5.63.0(react@18.3.1)
       '@tanstack/react-query-devtools': 5.63.0(@tanstack/react-query@5.63.0(react@18.3.1))(react@18.3.1)
+      '@types/js-cookie': 3.0.6
       better-auth: 1.2.7
       blurhash: 2.0.5
       class-variance-authority: 0.7.1
@@ -5483,6 +5500,8 @@ snapshots:
       source-map-js: 1.2.1
 
   prelude-ls@1.2.1: {}
+
+  prettier@3.5.3: {}
 
   prop-types@15.8.1:
     dependencies:
