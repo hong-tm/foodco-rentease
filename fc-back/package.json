@@ -13,7 +13,7 @@
 	"description": "",
 	"dependencies": {
 		"@hono/node-server": "^1.14.1",
-		"@hono/zod-validator": "^0.4.3",
+		"@hono/zod-validator": "^0.5.0",
 		"@json2csv/plainjs": "^7.0.6",
 		"@marsidev/react-turnstile": "^1.1.0",
 		"@sequelize/core": "7.0.0-alpha.46",
@@ -40,6 +40,7 @@
 	"devDependencies": {
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^20.17.31",
+		"prettier": "^3.5.3",
 		"ts-node": "^10.9.2",
 		"tsx": "^4.19.3",
 		"typescript": "^5.8.3"

@@ -12,8 +12,8 @@ importers:
         specifier: ^1.14.1
         version: 1.14.1(hono@4.7.7)
       '@hono/zod-validator':
-        specifier: ^0.4.3
-        version: 0.4.3(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
+        specifier: ^0.5.0
+        version: 0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
       '@json2csv/plainjs':
         specifier: ^7.0.6
         version: 7.0.6
@@ -87,6 +87,9 @@ importers:
       '@types/node':
         specifier: ^20.17.31
         version: 20.17.31
+      prettier:
+        specifier: ^3.5.3
+        version: 3.5.3
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@20.17.31)(typescript@5.8.3)
@@ -271,8 +274,8 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/zod-validator@0.4.3':
-    resolution: {integrity: sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ==}
+  '@hono/zod-validator@0.5.0':
+    resolution: {integrity: sha512-ds5bW6DCgAnNHP33E3ieSbaZFd5dkV52ZjyaXtGoR06APFrCtzAsKZxTHwOrJNBdXsi0e5wNwo5L4nVEVnJUdg==}
     peerDependencies:
       hono: '>=3.9.0'
       zod: ^3.19.1
@@ -1808,12 +1811,7 @@ snapshots:
     dependencies:
       hono: 4.7.7
 
-  '@hono/zod-validator@0.4.3(hono@4.7.7)(zod@3.24.3)':
-    dependencies:
-      hono: 4.7.7
-      zod: 3.24.3
-
-  '@hono/zod-validator@0.4.3(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)':
+  '@hono/zod-validator@0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)':
     dependencies:
       hono: 4.7.7
       zod: 4.0.0-beta.20250424T163858
@@ -2397,7 +2395,7 @@ snapshots:
   fc-back@file:(@types/node@20.17.31)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tsx@4.19.3):
     dependencies:
       '@hono/node-server': 1.14.1(hono@4.7.7)
-      '@hono/zod-validator': 0.4.3(hono@4.7.7)(zod@3.24.3)
+      '@hono/zod-validator': 0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
       '@json2csv/plainjs': 7.0.6
       '@marsidev/react-turnstile': 1.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@sequelize/core': 7.0.0-alpha.46
@@ -2418,7 +2416,7 @@ snapshots:
       resend: 4.4.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       stripe: 17.7.0
       vite: 6.3.3(@types/node@20.17.31)(tsx@4.19.3)
-      zod: 3.24.3
+      zod: 4.0.0-beta.20250424T163858
     transitivePeerDependencies:
       - '@types/node'
       - bluebird
