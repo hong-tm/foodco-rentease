@@ -5,8 +5,8 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Suspense, useEffect } from 'react'
+import { Outlet, useLocation, Navigate } from 'react-router-dom'
+import { Suspense } from 'react'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -16,35 +16,13 @@ import Breadcrumbs from './components/Breadcrumbs'
 import Cookies from 'js-cookie'
 
 export function DashboardLayoutPage() {
-  const navigate = useNavigate()
   const location = useLocation()
-
   const sidebarStateCookie = Cookies.get('sidebar:state')
   const defaultOpen = sidebarStateCookie === 'true'
 
   const { data: session, isLoading, error } = useSession()
 
-  useEffect(() => {
-    if (!isLoading && session && location.pathname === '/dashboard') {
-      // Redirect based on user role only if on "/dashboard"
-      const userRole = session?.user?.role
-      switch (userRole) {
-        case 'admin':
-          navigate('/dashboard/admin-dashboard', { replace: true })
-          break
-        case 'rental':
-          navigate('/dashboard/rental-dashboard', { replace: true })
-          break
-        case 'user':
-          navigate('/dashboard/stall-availability', { replace: true })
-          break
-        default:
-          toast.error('Unknown role')
-          break
-      }
-    }
-  }, [isLoading, session, location.pathname, navigate])
-
+  // Handle loading state
   if (isLoading) {
     return (
       <SidebarProvider defaultOpen={defaultOpen}>
@@ -66,11 +44,29 @@ export function DashboardLayoutPage() {
     )
   }
 
-  if (error || (!isLoading && !session)) {
-    navigate('/')
-    return toast.error('You are not logged in, please login to continue')
+  // Handle error or no session
+  if (error || !session) {
+    toast.error('You are not logged in, please login to continue')
+    return <Navigate to="/" replace />
   }
 
+  // Handle role-based redirects when at /dashboard root
+  if (location.pathname === '/dashboard') {
+    const userRole = session?.user?.role
+    switch (userRole) {
+      case 'admin':
+        return <Navigate to="/dashboard/admin-dashboard" replace />
+      case 'rental':
+        return <Navigate to="/dashboard/rental-dashboard" replace />
+      case 'user':
+        return <Navigate to="/dashboard/stall-availability" replace />
+      default:
+        toast.error('Unknown role')
+      // Fall through to render dashboard with error
+    }
+  }
+
+  // Render the dashboard for authenticated users
   return (
     <SidebarProvider>
       <UserDashboardSidebar />
