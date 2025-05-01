@@ -71,7 +71,7 @@ export function DashboardLayoutPage() {
     <SidebarProvider>
       <UserDashboardSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 justify-between">
+        <header className="flex h-16 shrink-0 items-center gap-2 justify-between sticky top-0 bg-background z-10 rounded-t-xl">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <ModeToggle />
