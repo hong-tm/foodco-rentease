@@ -1,5 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { SidebarMenuSkeleton } from '@/components/ui/sidebar'
+import { SidebarMenuItem } from '@/components/ui/sidebar'
+import { SidebarMenu } from '@/components/ui/sidebar'
 
 export function DashboardSkeleton() {
-	return <Skeleton className="h-full w-full rounded-xl" />;
+  return (
+    <SidebarMenu>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <SidebarMenuItem key={index}>
+          <SidebarMenuSkeleton />
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  )
 }
