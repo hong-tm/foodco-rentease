@@ -1,12 +1,12 @@
-import "./index.scss";
-import SignInPage from "./pages/(auth)/SignInPage";
+import './index.css'
+import SignInPage from './pages/(auth)/SignInPage'
 
 export default function App() {
-	return (
-		<>
-			<div>
-				<SignInPage />
-			</div>
-		</>
-	);
+  return (
+    <>
+      <div>
+        <SignInPage />
+      </div>
+    </>
+  )
 }
