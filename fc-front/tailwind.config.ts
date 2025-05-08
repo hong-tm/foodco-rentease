@@ -126,20 +126,16 @@ export default {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-animate'),
-    require('tailwindcss-motion'),
-    addVariablesForColors,
-  ],
+  plugins: [require('tailwindcss-animate'), require('tailwindcss-motion')],
 }
 
-function addVariablesForColors({ addBase, theme }: any) {
-  let allColors = flattenColorPalette(theme('colors'))
-  let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
-  )
+// function addVariablesForColors({ addBase, theme }: any) {
+//   let allColors = flattenColorPalette(theme('colors'))
+//   let newVars = Object.fromEntries(
+//     Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
+//   )
 
-  addBase({
-    ':root': newVars,
-  })
-}
+//   addBase({
+//     ':root': newVars,
+//   })
+// }
