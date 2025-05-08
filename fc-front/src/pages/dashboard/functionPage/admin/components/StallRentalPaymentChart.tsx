@@ -1,5 +1,5 @@
 import React from 'react'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUpIcon } from 'lucide-react'
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import type { PaymentRecord } from '@server/lib/sharedType'
@@ -22,7 +22,7 @@ import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 const chartConfig = {
   rental: {
     label: 'Rental',
-    color: 'hsl(var(--chart-1))',
+    color: 'var(--chart-1)',
   },
 } satisfies ChartConfig
 
@@ -141,7 +141,7 @@ export default function StallRentalPaymentChart() {
             <PolarGrid />
             <PolarAngleAxis
               dataKey="shortMonth"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              tick={{ fill: 'var(--muted-foreground)' }}
             />
             <Radar
               dataKey="rental"
@@ -154,7 +154,7 @@ export default function StallRentalPaymentChart() {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           {trendingPercentage > 0 ? 'Trending up' : 'Trending down'} by{' '}
-          <TrendingUp
+          <TrendingUpIcon
             className={`h-4 w-4 ${
               trendingPercentage < 0
                 ? 'rotate-180 text-destructive'

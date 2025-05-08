@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, use, useEffect, useState } from "react";
 import { Toaster } from "./ui/sonner";
 
 type Theme = "dark" | "light" | "system";
@@ -60,15 +60,15 @@ export function ThemeProvider({
 	};
 
 	return (
-		<ThemeProviderContext.Provider {...props} value={value}>
-			{children}
-			<Toaster richColors theme={theme === "dark" ? "dark" : "light"} />
-		</ThemeProviderContext.Provider>
-	);
+        (<ThemeProviderContext {...props} value={value}>
+            {children}
+            <Toaster richColors theme={theme === "dark" ? "dark" : "light"} />
+        </ThemeProviderContext>)
+    );
 }
 
 export const useTheme = () => {
-	const context = useContext(ThemeProviderContext);
+	const context = use(ThemeProviderContext);
 
 	if (context === undefined)
 		throw new Error("useTheme must be used within a ThemeProvider");
