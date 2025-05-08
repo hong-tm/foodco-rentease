@@ -18,9 +18,10 @@ export default defineConfig({
     // }) as PluginOption,
   ] as PluginOption[],
   build: {
-    minify: false, // 禁用压缩，减少内存使用
+    minify: true, // 禁用压缩，减少内存使用
     target: 'esnext',
     chunkSizeWarningLimit: 1000, // 增加警告的 chunk 大小限制
+    outDir: '../fc-back/webpage',
   },
   resolve: {
     alias: {
