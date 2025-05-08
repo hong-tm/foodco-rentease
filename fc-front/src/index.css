@@ -1,5 +1,5 @@
-@config "./tailwind.config";
-@config "./postcss.config";
+@config "../tailwind.config";
+@config "../postcss.config";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
