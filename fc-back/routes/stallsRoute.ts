@@ -65,7 +65,7 @@ export const stallsRoute = new Hono()
     zValidator('json', updateStallSchema),
     async (c) => {
       const stallId = c.req.param('stallId')
-      const body = await c.req.json()
+      const body = c.req.valid('json')
 
       // console.log("Received Stall ID:", stallId);
       // console.log("Validated Body:", body);
