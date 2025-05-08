@@ -50,7 +50,7 @@ export default function RentalStallsDetail() {
 							key={stall.stallNumber}
 							className="overflow-hidden transition-all border-none shadow-none"
 						>
-							<div className="relative aspect-[16/9]">
+							<div className="relative aspect-16/9">
 								<img
 									src={stall.stallImage || "/placeholder-stall.jpg"}
 									alt={`Stall ${stall.stallNumber}`}

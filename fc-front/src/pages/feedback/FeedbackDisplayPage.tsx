@@ -116,7 +116,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
 				</AlertDialog>
 			</div>
 
-			<CardContent className="flex-grow">
+			<CardContent className="grow">
 				<p className="break-words">{feedback.feedbackContent}</p>
 			</CardContent>
 			<CardFooter className="flex gap-3">

@@ -13,7 +13,7 @@ export default function NotFoundPage() {
 					<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-6xl">
 						(；´д｀)ゞ 404
 					</h1>
-					<p className="leading-7 [&:not(:first-child)]:mt-6">
+					<p className="leading-7 not-first:mt-6">
 						Sorry, the page you are looking for does not exist.
 					</p>
 

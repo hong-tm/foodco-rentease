@@ -390,7 +390,7 @@ export default function UserDashboardSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to="#">
-                <div className="group flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground bg-gradient-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02] hover:animate-gradient-hover">
+                <div className="group flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground bg-linear-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02] hover:animate-gradient-hover">
                   <TowerControlIcon className="size-4" />
                 </div>
 

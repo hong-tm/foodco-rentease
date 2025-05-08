@@ -47,7 +47,7 @@ export default function StallsTable() {
 							isOpen={openStallId === `stall-${stalls[0].stallNumber}`}
 						/>
 					)}
-					<div className="flex-grow border-t border-dashed border-gray-300 mx-4"></div>
+					<div className="grow border-t border-dashed border-gray-300 mx-4"></div>
 					{stalls[1] && (
 						<StallButton
 							stall={stalls[1]}
