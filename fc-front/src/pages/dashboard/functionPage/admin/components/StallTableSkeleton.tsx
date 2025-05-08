@@ -34,7 +34,7 @@ export function StallsTableSkeleton() {
 			{isMiddleRow ? (
 				<>
 					<Skeleton className="w-16 h-16" />
-					<div className="flex-grow border-t border-dashed border-gray-300 mx-4"></div>
+					<div className="grow border-t border-dashed border-gray-300 mx-4"></div>
 					<Skeleton className="w-16 h-16" />
 				</>
 			) : (
