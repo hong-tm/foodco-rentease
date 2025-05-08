@@ -10,10 +10,10 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.14.1
-        version: 1.14.1(hono@4.7.7)
+        version: 1.14.1(hono@4.7.8)
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
+        version: 0.5.0(hono@4.7.8)(zod@4.0.0-beta.20250424T163858)
       '@json2csv/plainjs':
         specifier: ^7.0.6
         version: 7.0.6
@@ -48,11 +48,11 @@ importers:
         specifier: 'file:'
         version: file:(@types/node@20.17.31)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tsx@4.19.3)
       hono:
-        specifier: ^4.7.7
-        version: 4.7.7
+        specifier: ^4.7.8
+        version: 4.7.8
       hono-pino:
         specifier: ^0.7.2
-        version: 0.7.2(hono@4.7.7)(pino@9.6.0)
+        version: 0.7.2(hono@4.7.8)(pino@9.6.0)
       npm:
         specifier: ^10.9.2
         version: 10.9.2
@@ -882,8 +882,8 @@ packages:
       hono: '>=4.0.0'
       pino: '>=7.1.0'
 
-  hono@4.7.7:
-    resolution: {integrity: sha512-2PCpQRbN87Crty8/L/7akZN3UyZIAopSoRxCwRbJgUuV1+MHNFHzYFxZTg4v/03cXUm+jce/qa2VSBZpKBm3Qw==}
+  hono@4.7.8:
+    resolution: {integrity: sha512-PCibtFdxa7/Ldud9yddl1G81GjYaeMYYTq4ywSaNsYbB1Lug4mwtOMJf2WXykL0pntYwmpRJeOI3NmoDgD+Jxw==}
     engines: {node: '>=16.9.0'}
 
   html-to-text@9.0.5:
@@ -1807,13 +1807,13 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@hono/node-server@1.14.1(hono@4.7.7)':
+  '@hono/node-server@1.14.1(hono@4.7.8)':
     dependencies:
-      hono: 4.7.7
+      hono: 4.7.8
 
-  '@hono/zod-validator@0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)':
+  '@hono/zod-validator@0.5.0(hono@4.7.8)(zod@4.0.0-beta.20250424T163858)':
     dependencies:
-      hono: 4.7.7
+      hono: 4.7.8
       zod: 4.0.0-beta.20250424T163858
 
   '@jridgewell/resolve-uri@3.1.2': {}
@@ -2394,8 +2394,8 @@ snapshots:
 
   fc-back@file:(@types/node@20.17.31)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(tsx@4.19.3):
     dependencies:
-      '@hono/node-server': 1.14.1(hono@4.7.7)
-      '@hono/zod-validator': 0.5.0(hono@4.7.7)(zod@4.0.0-beta.20250424T163858)
+      '@hono/node-server': 1.14.1(hono@4.7.8)
+      '@hono/zod-validator': 0.5.0(hono@4.7.8)(zod@4.0.0-beta.20250424T163858)
       '@json2csv/plainjs': 7.0.6
       '@marsidev/react-turnstile': 1.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@sequelize/core': 7.0.0-alpha.46
@@ -2406,8 +2406,8 @@ snapshots:
       better-auth: 1.2.7
       better-sqlite3: 11.9.1
       dotenv: 16.5.0
-      hono: 4.7.7
-      hono-pino: 0.7.2(hono@4.7.7)(pino@9.6.0)
+      hono: 4.7.8
+      hono-pino: 0.7.2(hono@4.7.8)(pino@9.6.0)
       npm: 10.9.2
       pdf-lib: 1.17.1
       pg: 8.15.6
@@ -2525,13 +2525,13 @@ snapshots:
 
   help-me@5.0.0: {}
 
-  hono-pino@0.7.2(hono@4.7.7)(pino@9.6.0):
+  hono-pino@0.7.2(hono@4.7.8)(pino@9.6.0):
     dependencies:
       defu: 6.1.4
-      hono: 4.7.7
+      hono: 4.7.8
       pino: 9.6.0
 
-  hono@4.7.7: {}
+  hono@4.7.8: {}
 
   html-to-text@9.0.5:
     dependencies:
