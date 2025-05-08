@@ -4,12 +4,29 @@ export const signupformSchema = z
   .object({
     name: z
       .string()
-      .min(2, { error: 'Name must be at least 2 characters long' }),
+      .min(2, {
+        error: (iss) => {
+          return `Name must have ${iss.minimum} characters or more`
+        },
+      })
+      .max(32, {
+        error: (iss) => {
+          return `Name must have ${iss.maximum} characters or less`
+        },
+      }),
     email: z.email({ error: 'Invalid email address' }),
     password: z
       .string()
-      .min(8, { error: 'Password must be at least 8 characters long' })
-      .max(32, { error: 'Password must be at most 32 characters long' })
+      .min(8, {
+        error: (iss) => {
+          return `Password must have ${iss.minimum} characters or more`
+        },
+      })
+      .max(32, {
+        error: (iss) => {
+          return `Password must have ${iss.maximum} characters or less`
+        },
+      })
       .regex(/(?=.*[A-Z])/, {
         error: 'At least one uppercase character',
       })
@@ -34,9 +51,28 @@ export const signinFormSchema = z.object({
   email: z.string().email({ error: 'Invalid email address' }),
   password: z
     .string()
-    .min(8, { error: 'Password must be at least 8 characters long' })
-    .max(32, { error: 'Password must be at most 32 characters long' })
-    .regex(/[a-zA-Z0-9]/, { error: 'Password must be alphanumeric' }),
+    .min(8, {
+      error: (iss) => {
+        return `Password must have ${iss.minimum} characters or more`
+      },
+    })
+    .max(32, {
+      error: (iss) => {
+        return `Password must have ${iss.maximum} characters or less`
+      },
+    })
+    .regex(/(?=.*[A-Z])/, {
+      error: 'At least one uppercase character',
+    })
+    .regex(/(?=.*[a-z])/, {
+      error: 'At least one lowercase character',
+    })
+    .regex(/(?=.*\d)/, {
+      error: 'At least one digit',
+    })
+    .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
+      error: 'At least one special character',
+    }),
   rememberMe: z.boolean(),
   token: z.string(),
 })
@@ -49,9 +85,15 @@ export const resetPasswordFormSchema = z
   .object({
     password: z
       .string()
-      .min(8, { error: 'Password must be at least 8 characters long' })
-      .regex(/(?=.*[A-Z])/, {
-        error: 'At least one uppercase character',
+      .min(8, {
+        error: (iss) => {
+          return `Password must have ${iss.minimum} characters or more`
+        },
+      })
+      .max(32, {
+        error: (iss) => {
+          return `Password must have ${iss.maximum} characters or less`
+        },
       })
       .regex(/(?=.*[a-z])/, {
         error: 'At least one lowercase character',
@@ -73,11 +115,19 @@ export const changePasswordFormSchema = z
   .object({
     currentPassword: z
       .string()
-      .min(8, { error: 'Password must be at least 8 characters long' })
+      .min(8, {
+        error: (iss) => {
+          return `Password must have ${iss.minimum} characters or more`
+        },
+      })
       .regex(/[a-zA-Z0-9]/, { error: 'Password must be alphanumeric' }),
     password: z
       .string()
-      .min(8, { error: 'Password must be at least 8 characters long' })
+      .min(8, {
+        error: (iss) => {
+          return `Password must have ${iss.minimum} characters or more`
+        },
+      })
       .regex(/(?=.*[A-Z])/, {
         error: 'At least one uppercase character',
       })
@@ -100,8 +150,16 @@ export const changePasswordFormSchema = z
 export const updateUsernameFormSchema = z.object({
   name: z
     .string()
-    .min(2, { error: 'Name must be at least 2 characters long' })
-    .max(32, { error: 'Name must be at most 32 characters long' }),
+    .min(2, {
+      error: (iss) => {
+        return `Name must have ${iss.minimum} characters or more`
+      },
+    })
+    .max(32, {
+      error: (iss) => {
+        return `Name must have ${iss.maximum} characters or less`
+      },
+    }),
 })
 
 export const feedbackSchema = z.object({
@@ -185,7 +243,7 @@ export const emailSchema = z.object({
 export const appointmentSchema = z.object({
   notificationId: z.number().int().positive().min(1),
   userId: z.string(),
-  notificationerror: z.string(),
+  notificationMessage: z.string(),
   notificationRead: z.boolean(),
   appointmentDate: z.coerce.date(),
   stallNumber: z.number().int().positive().min(1),
