@@ -2,12 +2,15 @@ import { defineConfig } from 'vite'
 import viteReact from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import type { PluginOption } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
 // import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     viteReact(),
+    tailwindcss(),
     // visualizer({
     // 	open: true,
     // 	gzipSize: true,
