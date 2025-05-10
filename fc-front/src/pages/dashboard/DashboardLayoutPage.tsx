@@ -6,7 +6,6 @@ import {
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 import { Outlet, useLocation, Navigate } from 'react-router-dom'
-import { Suspense } from 'react'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import { ErrorBoundary } from 'react-error-boundary'
@@ -87,9 +86,7 @@ export function DashboardLayoutPage() {
               </div>
             }
           >
-            <Suspense fallback={<DashboardSkeleton />}>
-              <Outlet />
-            </Suspense>
+            <Outlet />
           </ErrorBoundary>
         </main>
       </SidebarInset>
