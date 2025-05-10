@@ -155,7 +155,7 @@ export function VacancyChart() {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
           {currentMonth} rental rate is {rentedRate}%
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 text-balance">
             ({vacancyStatus.status}) {vacancyStatus.trend}
           </span>
         </div>

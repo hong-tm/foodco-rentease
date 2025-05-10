@@ -121,7 +121,7 @@ export default function UserDashboardSidebar({
 
   if (isLoading)
     return (
-      <Sidebar collapsible="icon" variant="inset" {...props}>
+      <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -384,7 +384,7 @@ export default function UserDashboardSidebar({
   const currentRole = (userRole as Role) || 'user'
 
   return (
-    <Sidebar collapsible="icon" variant="inset" {...props}>
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
