@@ -7,7 +7,7 @@ import { zValidator } from '@hono/zod-validator'
 import { emailSchema } from '../lib/sharedType.js'
 
 export const usersRoute = new Hono()
-  .get('/', adminVerify, async (c) => {
+  .get('/', adminVerify(), async (c) => {
     const users = await UserTable.findAll({
       order: ['name'],
     })
