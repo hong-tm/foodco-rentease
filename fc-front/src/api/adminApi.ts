@@ -35,11 +35,11 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
     }
 
     throw new Error('No users found')
-  } catch (error: any) {
-    console.error('Error fetching users:', error?.message || error)
+  } catch (error) {
+    console.error('Error fetching users:', error)
     throw error instanceof Error
       ? error
-      : new Error(`Failed to fetch users: ${error?.message || 'Unknown error'}`)
+      : new Error(`Failed to fetch users: ${error}`)
   }
 }
 
