@@ -7,7 +7,7 @@ import {
 } from '@server/db/userModel'
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 
-export interface GetUsersResponse {
+export type GetUsersResponse = {
   users: UserAttributes[]
 }
 
