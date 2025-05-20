@@ -153,10 +153,10 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
-      <BackgroundLines className="flex items-center justify-center w-full h-full flex-col px-4 -z-15">
-        <Card className="mx-auto max-w-lg z-10 lg:min-w-[500px]">
-          <CardHeader className="flex w-full items-center justify-center select-none text-center">
-            <div className="flex w-full items-center justify-center motion-preset-wiggle motion-preset-bounce motion-delay-150">
+      <BackgroundLines className="-z-15 flex h-full w-full flex-col items-center justify-center px-4">
+        <Card className="z-10 mx-auto max-w-lg lg:min-w-[500px]">
+          <CardHeader className="flex w-full items-center justify-center text-center select-none">
+            <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
             <CardTitle className="text-2xl">
@@ -196,13 +196,13 @@ export default function SignInPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem className="grid gap-2">
-                        <div className="flex justify-between items-center">
+                        <div className="flex items-center justify-between">
                           <FormLabel htmlFor="password" className="select-none">
                             Password
                           </FormLabel>
                           <Link
                             to="forget-password"
-                            className="ml-auto inline-block text-sm underline "
+                            className="ml-auto inline-block text-sm underline"
                           >
                             Forgot your password?
                           </Link>
@@ -255,11 +255,11 @@ export default function SignInPage() {
                 </div>
               </form>
             </Form>
-            <div className="mt-4 text-center text-sm select-none grid gap-4">
+            <div className="mt-4 grid gap-4 text-center text-sm select-none">
               <Separator />
               <Button
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 py-2 px-4"
+                className="flex w-full items-center justify-center gap-3 px-4 py-2"
                 onClick={handlerSignInGoogle}
                 disabled={pendingGoogle}
               >
@@ -278,7 +278,7 @@ export default function SignInPage() {
               </Button>
               <Button
                 variant="outline"
-                className="w-full flex items-center justify-center gap-3 py-2 px-4"
+                className="flex w-full items-center justify-center gap-3 px-4 py-2"
                 onClick={handlerSignInGithub}
                 disabled={pendingGithub}
               >
@@ -304,7 +304,7 @@ export default function SignInPage() {
               </Link>
             </div>
           </CardContent>
-          <div className="flex p-2 justify-center item-center">
+          <div className="item-center flex justify-center p-2">
             <ModeToggle />
           </div>
         </Card>

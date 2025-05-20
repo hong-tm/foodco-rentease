@@ -61,7 +61,7 @@ function PhoneInput({ className, onChange, ...props }: PhoneInputProps) {
 type InputComponentProps = React.ComponentProps<typeof Input>
 
 function InputComponent(props: InputComponentProps) {
-  return <Input className="rounded-e-lg rounded-s-none" {...props} />
+  return <Input className="rounded-s-none rounded-e-lg" {...props} />
 }
 
 type CountrySelectOption = { label: string; value: RPNInput.Country }
@@ -92,7 +92,7 @@ const CountrySelect = ({
         <Button
           type="button"
           variant={'outline'}
-          className={cn('flex gap-1 rounded-e-none rounded-s-lg px-3')}
+          className={cn('flex gap-1 rounded-s-lg rounded-e-none px-3')}
           disabled={disabled}
         >
           <FlagComponent country={value} countryName={value} />

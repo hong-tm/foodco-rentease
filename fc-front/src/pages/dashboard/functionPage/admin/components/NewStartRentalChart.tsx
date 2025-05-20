@@ -129,7 +129,7 @@ export function NewStartRentalChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
+        <div className="flex items-center gap-2 leading-none font-medium">
           {chartData.length > 0 &&
             `Most starts in ${
               chartData.reduce((max, item) =>
@@ -143,12 +143,12 @@ export function NewStartRentalChart() {
           <TrendingUpIcon
             className={`h-4 w-4 ${
               trendingPercentage < 0
-                ? 'rotate-180 text-destructive'
+                ? 'text-destructive rotate-180'
                 : 'text-green-500'
             }`}
           />
         </div>
-        <div className="leading-none text-muted-foreground">
+        <div className="text-muted-foreground leading-none">
           Showing rental starts by month for {getDateRange()}
         </div>
       </CardFooter>
