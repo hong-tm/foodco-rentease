@@ -87,7 +87,7 @@ export default function NewTenantChart() {
           <CardTitle>User Registration</CardTitle>
           <CardDescription>Loading data...</CardDescription>
         </CardHeader>
-        <CardContent className="h-[200px] flex items-center justify-center">
+        <CardContent className="flex h-[200px] items-center justify-center">
           <div className="animate-pulse">Loading chart data...</div>
         </CardContent>
       </Card>
@@ -151,10 +151,10 @@ export default function NewTenantChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="leading-none text-muted-foreground">
+        <div className="text-muted-foreground leading-none">
           Monthly registration totals
         </div>
-        <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex flex-col gap-1 text-xs">
           {(() => {
             const lastMonth = chartData[chartData.length - 1]
             const prevMonth = chartData[chartData.length - 2]

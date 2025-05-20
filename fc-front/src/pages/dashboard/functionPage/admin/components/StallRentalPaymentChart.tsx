@@ -152,18 +152,18 @@ export default function StallRentalPaymentChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
+        <div className="flex items-center gap-2 leading-none font-medium">
           {trendingPercentage > 0 ? 'Trending up' : 'Trending down'} by{' '}
           <TrendingUpIcon
             className={`h-4 w-4 ${
               trendingPercentage < 0
-                ? 'rotate-180 text-destructive'
+                ? 'text-destructive rotate-180'
                 : 'text-green-500'
             }`}
           />
           {Math.abs(trendingPercentage).toFixed(1)}% this month{' '}
         </div>
-        <div className="flex items-center gap-2 leading-none text-muted-foreground">
+        <div className="text-muted-foreground flex items-center gap-2 leading-none">
           {getDateRangeText()}
         </div>
       </CardFooter>

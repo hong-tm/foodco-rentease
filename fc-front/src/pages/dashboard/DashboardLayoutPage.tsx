@@ -27,7 +27,7 @@ export function DashboardLayoutPage() {
       <SidebarProvider defaultOpen={defaultOpen}>
         <UserDashboardSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 justify-between">
+          <header className="flex h-16 shrink-0 items-center justify-between gap-2">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <ModeToggle />
@@ -35,7 +35,7 @@ export function DashboardLayoutPage() {
               <Breadcrumbs />
             </div>
           </header>
-          <main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
+          <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">
             <DashboardSkeleton />
           </main>
         </SidebarInset>
@@ -70,7 +70,7 @@ export function DashboardLayoutPage() {
     <SidebarProvider>
       <UserDashboardSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 justify-between sticky top-0 bg-background z-10 rounded-t-xl">
+        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 rounded-t-xl">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <ModeToggle />
@@ -78,7 +78,7 @@ export function DashboardLayoutPage() {
             <Breadcrumbs />
           </div>
         </header>
-        <main className="w-full h-full flex flex-1 flex-col gap-4 p-4 pt-0">
+        <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">
           <ErrorBoundary
             fallback={
               <div className="p-2">

@@ -168,7 +168,7 @@ export default function UserDashboardSidebar({
     <Button
       onClick={stopImpersonUser}
       variant="destructive"
-      className="w-full my-2 hover:bg-red-600 hover:text-white"
+      className="my-2 w-full hover:bg-red-600 hover:text-white"
     >
       Stop Impersonating
     </Button>
@@ -390,7 +390,7 @@ export default function UserDashboardSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to="#">
-                <div className="group flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground bg-linear-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02] hover:animate-gradient-hover">
+                <div className="group text-sidebar-primary-foreground hover:animate-gradient-hover flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02]">
                   <TowerControlIcon className="size-4" />
                 </div>
 

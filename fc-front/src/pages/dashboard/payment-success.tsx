@@ -7,11 +7,11 @@ export function PaymentSuccessPage() {
   const navigate = useNavigate()
 
   return (
-    <div className="container mx-auto max-w-md mt-20">
+    <div className="container mx-auto mt-20 max-w-md">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CheckCircleIcon className="text-green-500 h-6 w-6" />
+            <CheckCircleIcon className="h-6 w-6 text-green-500" />
             Payment Successful
           </CardTitle>
         </CardHeader>

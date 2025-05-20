@@ -79,7 +79,7 @@ export default function FeedbackHapinessLineChart({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="px-2 sm:p-6 overflow-x-auto">
+      <CardContent className="overflow-x-auto px-2 sm:p-6">
         <ChartContainer
           config={chartConfig}
           className="aspect-auto h-[250px] w-full min-w-[500px]"
@@ -122,7 +122,7 @@ export default function FeedbackHapinessLineChart({
         </ChartContainer>
       </CardContent>
       {analytics && (
-        <CardFooter className="flex flex-row justify-between items-center border-t p-4 flex-wrap">
+        <CardFooter className="flex flex-row flex-wrap items-center justify-between border-t p-4">
           <div className="flex items-center gap-2">
             {analytics.status === 'Positive' ? (
               <TrendingUpIcon className="h-3.5 w-3.5 text-green-500" />
@@ -133,7 +133,7 @@ export default function FeedbackHapinessLineChart({
             )}
             <span className="text-sm font-medium">{analytics.status}</span>
           </div>
-          <div className="flex gap-4 text-xs text-muted-foreground flex-wrap">
+          <div className="text-muted-foreground flex flex-wrap gap-4 text-xs">
             <span>Highest: {analytics.highestStall.totalHappiness}</span>
             <span>Best: Stall {analytics.highestStall.stallId}</span>
             <span className="text-destructive">

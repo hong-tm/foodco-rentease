@@ -40,7 +40,7 @@ export function VacancyChart() {
 
   if (error) {
     return (
-      <Card className="flex flex-col h-full">
+      <Card className="flex h-full flex-col">
         <CardHeader>
           <CardTitle>Error Loading Data</CardTitle>
           <CardDescription>Unable to fetch stall rental status</CardDescription>
@@ -93,7 +93,7 @@ export function VacancyChart() {
   ]
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex h-full flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Stall Rental Status</CardTitle>
         <CardDescription>{currentMonth} Overview</CardDescription>
@@ -153,16 +153,16 @@ export function VacancyChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
+        <div className="flex items-center gap-2 leading-none font-medium">
           {currentMonth} rental rate is {rentedRate}%
           <span className="flex items-center gap-1 text-balance">
             ({vacancyStatus.status}) {vacancyStatus.trend}
           </span>
         </div>
-        <div className="leading-none text-muted-foreground">
+        <div className="text-muted-foreground leading-none">
           {rentedStalls} stalls rented out of {totalStalls} total stalls
         </div>
-        <div className="text-xs text-muted-foreground mt-2">
+        <div className="text-muted-foreground mt-2 text-xs">
           Suggestion: {vacancyStatus.suggestion}
         </div>
       </CardFooter>
