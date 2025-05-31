@@ -1,6 +1,9 @@
 import { api } from '@/lib/api'
 import { NotificationAttributes, UserAttributes } from '@server/db/userModel'
-import { createAppointmentSchema } from '@server/lib/sharedType'
+import {
+  createAppointmentSchema,
+  updateAppointmentStatusSchema,
+} from '@server/lib/sharedType'
 import { queryOptions } from '@tanstack/react-query'
 import { z } from 'zod'
 
@@ -9,9 +12,11 @@ export interface NotificationResponse {
   userId: UserAttributes[]
 }
 
-export async function createAppointment(
-  values: z.infer<typeof createAppointmentSchema>,
-) {
+type AppointmentData = z.infer<typeof createAppointmentSchema>
+
+type UpdateAppointmentStatusData = z.infer<typeof updateAppointmentStatusSchema>
+
+export async function createAppointment(values: AppointmentData) {
   const res = await api.notifications['$post']({ json: values })
   if (!res.ok) {
     const error = await res.json()
@@ -26,12 +31,10 @@ export async function createAppointment(
 }
 
 export async function updateAppointmentStatus(
-  notificationId: number,
-  notificationRead: boolean,
-  stallNumber: number,
+  values: UpdateAppointmentStatusData,
 ) {
   const res = await api.notifications['update-appoitmentStatus'].$post({
-    json: { notificationId, notificationRead, stallNumber },
+    json: values,
   })
   if (!res.ok) throw new Error('Failed to update appointment status')
   return res.json()

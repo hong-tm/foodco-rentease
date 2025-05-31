@@ -1,5 +1,9 @@
 import { Button } from '@/components/ui/button'
-import { CircleCheckBig, CircleOff, EllipsisVertical } from 'lucide-react'
+import {
+  CircleCheckBigIcon,
+  CircleOffIcon,
+  EllipsisVerticalIcon,
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,23 +18,29 @@ import { updateAppointmentStatus } from '@/api/notificationApi'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+type AppointmentData = {
+  appointmentId: number
+  appointmentStatus: boolean | null
+  stallNumber: number
+}
+
 export default function AdminAppointmentActionButton({
   appointmentId,
   appointmentStatus,
   stallNumber,
-}: {
-  appointmentId: number
-  appointmentStatus: boolean | null
-  stallNumber: number
-}) {
+}: AppointmentData) {
   const [openApproveAppointment, setOpenApproveAppointment] = useState(false)
   const [openRejectAppointment, setOpenRejectAppointment] = useState(false)
   const queryClient = useQueryClient()
 
   const { mutate: approveAppointment, isPending: isApproving } = useMutation({
-    mutationFn: () => updateAppointmentStatus(appointmentId, true, stallNumber),
+    mutationFn: () =>
+      updateAppointmentStatus({
+        notificationId: appointmentId,
+        notificationRead: true,
+        stallNumber,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
       toast.success('Appointment approved successfully')
       setOpenApproveAppointment(false)
     },
@@ -38,19 +48,28 @@ export default function AdminAppointmentActionButton({
       toast.error('Failed to approve appointment')
       console.error(error)
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
+    },
   })
 
   const { mutate: rejectAppointment, isPending: isRejecting } = useMutation({
     mutationFn: () =>
-      updateAppointmentStatus(appointmentId, false, stallNumber),
+      updateAppointmentStatus({
+        notificationId: appointmentId,
+        notificationRead: false,
+        stallNumber,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
       toast.success('Appointment rejected successfully')
       setOpenRejectAppointment(false)
     },
     onError: (error) => {
       toast.error('Failed to reject appointment')
       console.error(error)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
     },
   })
 
@@ -73,7 +92,7 @@ export default function AdminAppointmentActionButton({
       />
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
-          <EllipsisVertical className="h-4 w-4" />
+          <EllipsisVerticalIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -84,7 +103,7 @@ export default function AdminAppointmentActionButton({
           disabled={appointmentStatus === true || isApproving}
           className="flex items-center"
         >
-          <CircleCheckBig className="mr-2 h-4 w-4" />
+          <CircleCheckBigIcon className="mr-2 h-4 w-4" />
           {isApproving ? 'Approving...' : 'Approve'}
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -92,7 +111,7 @@ export default function AdminAppointmentActionButton({
           disabled={appointmentStatus === false || isRejecting}
           className="flex items-center"
         >
-          <CircleOff className="mr-2 h-4 w-4" />
+          <CircleOffIcon className="mr-2 h-4 w-4" />
           {isRejecting ? 'Rejecting...' : 'Reject'}
         </DropdownMenuItem>
       </DropdownMenuContent>
