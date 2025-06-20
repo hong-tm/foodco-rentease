@@ -61,36 +61,26 @@ const CheckoutForm = ({
 
   const paymentMutation = useMutation({
     mutationFn: async (paymentData: { paymentId: string }) => {
-      try {
-        if (originalPaymentId) {
-          // For utility payments, update existing record
-          const updateResult = await updatePaymentStatus({
-            paymentId: originalPaymentId,
-            newPaymentId: paymentData.paymentId,
-            paymentStatus: true,
-          })
-          console.log('Update payment result:', updateResult)
-          if ('error' in updateResult) {
-            throw new Error(updateResult.error)
-          }
-          return updateResult.payment
-        } else {
-          // For rental payments, create new record
-          const createResult = await createPaymentRecord({
-            paymentId: paymentData.paymentId,
-            stallId: stallId,
-            userId: userId,
-            paymentAmount: amount.toString(),
-            paymentType: paymentType,
-            paymentStatus: true,
-            paymentDate: new Date().toISOString(),
-          })
-          console.log('Create payment result:', createResult)
-          return createResult
-        }
-      } catch (error) {
-        console.error('Payment mutation error:', error)
-        throw error
+      if (originalPaymentId) {
+        // For utility payments, update existing record
+        await updatePaymentStatus({
+          paymentId: originalPaymentId,
+          newPaymentId: paymentData.paymentId,
+          paymentStatus: true,
+        })
+      } else {
+        // For rental payments, create new record
+        const createResult = await createPaymentRecord({
+          paymentId: paymentData.paymentId,
+          stallId: stallId,
+          userId: userId,
+          paymentAmount: amount.toString(),
+          paymentType: paymentType,
+          paymentStatus: true,
+          paymentDate: new Date().toISOString(),
+        })
+        console.log('Create payment result:', createResult)
+        return createResult
       }
     },
     onSuccess: (data) => {

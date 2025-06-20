@@ -6,6 +6,7 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "types": ["node", "hono"],
+    "lib": ["ES2020", "DOM"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "moduleResolution": "NodeNext",
