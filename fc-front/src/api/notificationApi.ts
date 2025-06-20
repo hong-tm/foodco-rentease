@@ -18,15 +18,12 @@ type UpdateAppointmentStatusData = z.infer<typeof updateAppointmentStatusSchema>
 
 export async function createAppointment(values: AppointmentData) {
   const res = await api.notifications['$post']({ json: values })
+
   if (!res.ok) {
-    const error = await res.json()
-    if (typeof error === 'object' && error && 'error' in error) {
-      if (error.error === 'You have already made this appointment request') {
-        throw new Error(error.error)
-      }
-    }
-    throw new Error('Failed to create appointment')
+    const data = await res.json()
+    throw new Error(data.error)
   }
+
   return res.json()
 }
 
@@ -36,17 +33,25 @@ export async function updateAppointmentStatus(
   const res = await api.notifications['update-appoitmentStatus'].$post({
     json: values,
   })
-  if (!res.ok) throw new Error('Failed to update appointment status')
-  return res.json()
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
+
+  const data = await res.json()
+  return data.notification
 }
 
 export async function fetchNotifications() {
   const res = await api.notifications.$get()
-  if (!res.ok) throw new Error('Failed to fetch notifications')
+
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
 
   const data = await res.json()
-  const { notification } = data as NotificationResponse
-  return notification
+  return data.notification as NotificationAttributes[]
 }
 
 export async function fetchUserNotifications(userId: string) {
@@ -54,11 +59,13 @@ export async function fetchUserNotifications(userId: string) {
     param: { userId },
   })
 
-  if (!res.ok) throw new Error('Failed to fetch notifications')
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
 
   const data = await res.json()
-  const { notification } = data as NotificationResponse
-  return notification
+  return data.notification as NotificationAttributes[]
 }
 
 // QueryOptions

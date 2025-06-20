@@ -13,10 +13,10 @@ export const usersRoute = new Hono()
     })
 
     if (!users) {
-      return c.notFound()
+      return c.json({ error: 'Users not found!' }, 404)
     }
 
-    return c.json({ user: users })
+    return c.json({ user: users }, 200)
   })
 
   .get('/rentals', adminVerify(), async (c) => {
@@ -44,12 +44,10 @@ export const usersRoute = new Hono()
     })
 
     if (!users) {
-      return c.notFound()
+      return c.json({ error: 'Users not found!' }, 404)
     }
 
-    c.status(200)
-
-    return c.json({ user: users })
+    return c.json({ user: users }, 200)
   })
 
   .post(
@@ -71,7 +69,7 @@ export const usersRoute = new Hono()
         const emailResponse = await sendEmail({ to, subject, text })
         console.log('Email response:', emailResponse)
 
-        return c.json({ message: 'Reminder email sent successfully!' })
+        return c.json({ message: 'Reminder email sent successfully!' }, 200)
       } catch (err: any) {
         console.error('Error in /send-reminder-email:', err.message || err)
         return c.json({ error: 'Send reminder email failed!' }, 500)

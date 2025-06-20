@@ -39,7 +39,8 @@ export async function getAllFeedback(): Promise<Feedback[]> {
   })
 
   if (!res.ok) {
-    throw new Error('Failed to fetch feedbacks')
+    const data = await res.json()
+    throw new Error(data.error)
   }
 
   // Cast the response to FeedbackResponse using `as`
@@ -57,17 +58,28 @@ export async function getFeedbackHappiness(): Promise<
   FeedbackHappinessResponse['stallHappiness']
 > {
   const res = await api.feedbacks['get-feedbackHappiness'].$get()
-  if (!res.ok) throw new Error('Failed to fetch feedbacks')
+
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
+
   const data = await res.json()
-  const { stallHappiness } = data as FeedbackHappinessResponse
-  return stallHappiness
+  return data.stallHappiness
 }
 
 export async function createFeedback(
   values: z.infer<typeof createFeedbackSchema>,
 ) {
   const res = await api.feedbacks['$post']({ json: values })
-  if (!res.ok) throw new Error('Failed to create feedback')
+
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
+
+  const data = await res.json()
+  return data.feedback
 }
 
 export async function deleteFeedback({ id }: { id: number }) {
@@ -75,7 +87,13 @@ export async function deleteFeedback({ id }: { id: number }) {
     param: { id: id.toString() },
   })
 
-  if (!res.ok) throw new Error('Failed to delete feedback')
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
+
+  const data = await res.json()
+  return data.feedback
 }
 
 // QueryOptions

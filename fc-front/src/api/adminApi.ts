@@ -1,5 +1,6 @@
 import { api } from '@/lib/api'
 import { authClient } from '@/lib/auth-client'
+import { ErrorContext } from '@better-fetch/fetch'
 import {
   StallAttributes,
   UserAttributes,
@@ -23,31 +24,31 @@ export interface SendReminderEmailResponse {
 }
 
 export async function fetchUsers(): Promise<GetUsersResponse> {
-  try {
-    const response = await authClient.admin.listUsers({
-      query: {
-        sortBy: 'name',
+  const { data } = await authClient.admin.listUsers({
+    query: {
+      sortBy: 'name',
+    },
+    fetchOptions: {
+      onError(context: ErrorContext) {
+        throw new Error(context.error.message || context.error.statusText)
       },
-    })
+    },
+  })
 
-    if (response.data) {
-      return response.data as GetUsersResponse
-    }
-
-    throw new Error('No users found')
-  } catch (error) {
-    console.error('Error fetching users:', error)
-    throw error instanceof Error
-      ? error
-      : new Error(`Failed to fetch users: ${error}`)
-  }
+  return data as GetUsersResponse
 }
 
 export async function fetchRentals(): Promise<GetRentalsResponse> {
   const res = await api.users['rentals'].$get()
-  if (!res.ok) throw new Error('Failed to fetch rentals')
+
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.error)
+  }
+
   const data = await res.json()
   const { user, stalls } = data as GetRentalsResponse
+
   if (!Array.isArray(user)) throw new Error('Invalid user data format')
 
   return { user, stalls }
@@ -57,13 +58,14 @@ export const useSession = () => {
   return useQuery({
     queryKey: ['user-session'],
     queryFn: async () => {
-      try {
-        const session = await authClient.getSession()
-        return session.data
-      } catch (error) {
-        console.error('Session error:', error)
-        throw error
-      }
+      const session = await authClient.getSession({
+        fetchOptions: {
+          onError: (context: ErrorContext) => {
+            throw new Error(context.error.message || context.error.statusText)
+          },
+        },
+      })
+      return session.data
     },
     retry: 1, // Only retry once for session fetching
   })
@@ -80,9 +82,8 @@ export async function sendReminderEmail({
     })
 
     if (!res.ok) {
-      const errorBody = await res.json()
-      console.error('Send email error:', errorBody)
-      throw new Error('Failed to send email')
+      const data = await res.json()
+      throw new Error(data.error)
     }
     return res
   } catch (error) {

@@ -44,11 +44,13 @@ export interface GetStallTierPricesResponse {
 export async function fetchStalls(): Promise<GetStallsResponse> {
   const Response = await api.stalls.$get()
 
-  if (!Response.ok) throw new Error('Failed to fetch stalls')
+  if (!Response.ok) {
+    const data = await Response.json()
+    throw new Error(data.error)
+  }
 
   const data = await Response.json()
-  const { stall } = data as GetStallsResponse
-  return { stall, users: [] }
+  return data as GetStallsResponse
 }
 
 export async function fetchStallCurrent(
@@ -58,7 +60,11 @@ export async function fetchStallCurrent(
     param: { stallOwner: stallId },
   })
 
-  if (!Response.ok) throw new Error('Failed to fetch stall')
+  if (!Response.ok) {
+    const data = await Response.json()
+    throw new Error(data.error)
+  }
+
   const data = await Response.json()
   return data as GetStallCurrentResponse
 }
@@ -66,27 +72,32 @@ export async function fetchStallCurrent(
 export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
   const Response = await api.stalls.$get()
 
-  if (!Response.ok) throw new Error('Failed to fetch stalls')
+  if (!Response.ok) {
+    const data = await Response.json()
+    throw new Error(data.error)
+  }
 
   const data = await Response.json()
-  const { stall } = data
 
   // Calculate total stalls
-  const totalStalls = stall.length
+  const totalStalls = data.stall.length
 
   return {
     totalStalls,
-    stalls: stall,
+    stalls: data.stall,
   } as GetCurrentVacancyResponse
 }
 
 export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse> {
   const Response = await api.stalls.tierPrices.$get()
 
-  if (!Response.ok) throw new Error('Failed to fetch stall tier prices')
+  if (!Response.ok) {
+    const data = await Response.json()
+    throw new Error(data.error)
+  }
 
   const data = await Response.json()
-  return data as GetStallTierPricesResponse
+  return { tierPrice: data.tierPrice } as GetStallTierPricesResponse
 }
 
 export async function updateStall(values: z.infer<typeof updateStallSchema>) {
@@ -107,17 +118,12 @@ export async function updateStall(values: z.infer<typeof updateStallSchema>) {
   })
 
   if (!Response.ok) {
-    const errorData = (await Response.json()) as
-      | { error: string }
-      | { message: string; stall: {} }
-    if ('error' in errorData) {
-      throw new Error(errorData.error || 'Failed to update stall')
-    } else {
-      throw new Error(errorData.message || 'Failed to update stall')
-    }
+    const data = await Response.json()
+    throw new Error(data.error)
   }
 
-  return Response.json()
+  const data = await Response.json()
+  return data.stall
 }
 
 // QueryOptions

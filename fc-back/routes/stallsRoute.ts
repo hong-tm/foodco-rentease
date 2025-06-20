@@ -23,12 +23,21 @@ export const stallsRoute = new Hono()
       ],
     })
 
-    return c.json({ stall: stalls })
+    if (!stalls) {
+      return c.json({ error: 'Stalls not found!' }, 404)
+    }
+
+    return c.json({ stall: stalls }, 200)
   })
 
   .get('/tierPrices', async (c) => {
     const tierPrice = await StallTierTable.findAll()
-    return c.json({ tierPrice })
+
+    if (!tierPrice) {
+      return c.json({ error: 'Tier prices not found!' }, 404)
+    }
+
+    return c.json({ tierPrice: tierPrice }, 200)
   })
 
   .get('/:stallOwner', async (c) => {
@@ -56,7 +65,11 @@ export const stallsRoute = new Hono()
       order: [['stallNumber', 'ASC']],
     })
 
-    return c.json({ stalls, user })
+    if (!stalls) {
+      return c.json({ error: 'Stalls not found!' }, 404)
+    }
+
+    return c.json({ stalls, user }, 200)
   })
 
   .post(
@@ -130,10 +143,15 @@ export const stallsRoute = new Hono()
 
     const rentedStalls = allStalls.filter((stall) => stall.rentStatus)
 
-    c.status(200)
+    if (!rentedStalls) {
+      return c.json({ error: 'Rented stalls not found!' }, 404)
+    }
 
-    return c.json({
-      totalStalls: allStalls.length,
-      stalls: rentedStalls,
-    })
+    return c.json(
+      {
+        totalStalls: allStalls.length,
+        stalls: rentedStalls,
+      },
+      200,
+    )
   })
