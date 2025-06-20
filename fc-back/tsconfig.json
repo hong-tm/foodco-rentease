@@ -1,14 +1,15 @@
 {
-	"compilerOptions": {
-		"target": "ESNext",
-		"module": "NodeNext",
-		"strict": true,
-		"verbatimModuleSyntax": true,
-		"skipLibCheck": true,
-		"types": ["node", "hono"],
-		"jsx": "react-jsx",
-		"jsxImportSource": "hono/jsx",
-		"moduleResolution": "NodeNext",
-		"experimentalDecorators": true
-	}
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "types": ["node", "hono"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "moduleResolution": "NodeNext",
+    "experimentalDecorators": true,
+    "composite": true
+  }
 }

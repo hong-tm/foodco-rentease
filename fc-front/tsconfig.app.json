@@ -27,5 +27,10 @@
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true
   },
-  "include": ["src", "../fc-back/src/api/auth/auth.ts"]
+  "include": ["src", "../fc-back/src/api/auth/auth.ts"],
+  "references": [
+    {
+      "path": "../fc-back/tsconfig.json"
+    }
+  ]
 }
