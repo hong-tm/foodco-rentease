@@ -29,11 +29,12 @@ export async function getAllPaymentRecords(): Promise<PaymentRecord[]> {
   const res = await api.payments.records.$get()
 
   if (!res.ok) {
-    throw new Error('Failed to fetch payment records')
+    const data = await res.json()
+    throw new Error(data.error)
   }
 
-  const data = (await res.json()) as PaymentRecord[]
-  return data
+  const data = await res.json()
+  return data as PaymentRecord[]
 }
 
 export async function createPaymentIntent(
@@ -57,8 +58,8 @@ export async function createPaymentIntent(
   })
 
   if (!res.ok) {
-    const error = (await res.json()) as { error: string }
-    throw new Error(error.error || 'Failed to create payment intent')
+    const data = await res.json()
+    throw new Error(data.error)
   }
 
   const data = (await res.json()) as PaymentIntentResponse
@@ -78,12 +79,16 @@ export async function createPaymentRecord(
   })
 
   if (!res.ok) {
-    const error = (await res.json()) as { error: string }
-    throw new Error(error.error || 'Failed to create payment record')
+    const data = await res.json()
+    throw new Error(data.error)
   }
 
-  const responseData = (await res.json()) as PaymentRecord
-  return responseData
+  const responseData = await res.json()
+
+  return {
+    ...responseData,
+    paymentDate: new Date(responseData.paymentDate),
+  }
 }
 
 export const updatePaymentStatus = async ({
@@ -94,7 +99,7 @@ export const updatePaymentStatus = async ({
   paymentId: string
   newPaymentId: string
   paymentStatus: boolean
-}): Promise<UpdatePaymentStatusResponse> => {
+}) => {
   const session = await authClient.getSession()
   const token = session?.data?.session?.token
 
@@ -108,16 +113,12 @@ export const updatePaymentStatus = async ({
     },
   })
 
-  const data: UpdatePaymentStatusResponse = await res.json()
-
   if (!res.ok) {
-    console.error('Update payment status error:', data)
-    if ('error' in data) {
-      throw new Error(data.error)
-    }
-    throw new Error('Failed to update payment status')
+    const data = await res.json()
+    throw new Error(data.error)
   }
 
+  const data = await res.json()
   return data
 }
 
@@ -156,12 +157,3 @@ export function removePaymentRecordById(
 ): PaymentRecord[] {
   return records ? records.filter((record) => record.paymentId !== id) : []
 }
-
-type UpdatePaymentStatusResponse =
-  | {
-      success: boolean
-      payment: any
-    }
-  | {
-      error: string
-    }

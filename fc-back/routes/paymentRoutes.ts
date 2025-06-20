@@ -39,10 +39,10 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
       })
 
       if (!payments) {
-        return c.notFound()
+        return c.json({ error: 'Payment not found!' }, 404)
       }
 
-      return c.json(payments)
+      return c.json(payments, 200)
     } catch (error: any) {
       return c.json({ error: error.message }, 500)
     }
@@ -67,9 +67,9 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         const response: PaymentIntentResponse = {
           clientSecret: paymentIntent.client_secret || '',
         }
-        return c.json(response)
+        return c.json(response, 201)
       } catch (error: any) {
-        return c.json({ error: error.message }, 500)
+        return c.json({ error: 'Internal Server Error!' }, 500)
       }
     },
   )
@@ -86,7 +86,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         })
 
         if (!payment) {
-          return c.notFound()
+          return c.json({ error: 'Payment not found!' }, 404)
         }
 
         // Update stall information
@@ -134,8 +134,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
             : null,
         }
 
-        c.status(201)
-        return c.json(paymentRecord)
+        return c.json(paymentRecord, 201)
       } catch (error: any) {
         return c.json({ error: error.message }, 500)
       }
@@ -159,13 +158,13 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
           },
         )
 
-        if (!payment[0]) {
+        if (!payment) {
           return c.json({ error: 'Payment record not found' }, 404)
         }
 
-        return c.json({ success: true, payment: payment[1][0] })
+        return c.json(payment, 201)
       } catch (error: any) {
-        return c.json({ error: error.message }, 500)
+        return c.json({ error: 'Internal Sever Error!' }, 500)
       }
     },
   )
@@ -413,8 +412,9 @@ async function generatePDF(payments: any[]) {
   }
 
   const pdfBytes = await pdfDoc.save()
+  const normalizedBytes = new Uint8Array(pdfBytes)
 
-  return new Response(pdfBytes, {
+  return new Response(normalizedBytes, {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': 'attachment; filename=payment-records.pdf',

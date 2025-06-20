@@ -274,7 +274,8 @@ export const paymentSchema = z.object({
       name: z.string().nullable(),
       image: z.string().nullable(),
     })
-    .nullable(),
+    .nullable()
+    .optional(),
 })
 
 export type PaymentRecord = z.infer<typeof paymentSchema>
