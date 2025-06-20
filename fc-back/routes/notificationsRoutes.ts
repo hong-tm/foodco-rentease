@@ -28,10 +28,10 @@ export const notificationsRoutes = new Hono()
     })
 
     if (!notifications) {
-      return c.notFound()
+      return c.json({ error: 'Notifications not found!' }, 404)
     }
 
-    return c.json({ notification: notifications })
+    return c.json({ notification: notifications }, 200)
   })
 
   .get('/:userId', async (c) => {
@@ -53,7 +53,12 @@ export const notificationsRoutes = new Hono()
         ['appointmentDate', 'ASC'],
       ],
     })
-    return c.json({ notification: notifications })
+
+    if (!notifications) {
+      return c.json({ error: 'Notifications not found!' }, 404)
+    }
+
+    return c.json({ notification: notifications }, 200)
   })
 
   .post('/', zValidator('json', createAppointmentSchema), async (c) => {
@@ -77,10 +82,10 @@ export const notificationsRoutes = new Hono()
     const notification = await NotificationTable.create(data)
 
     if (!notification) {
-      return c.notFound()
+      return c.json({ error: 'Notification not found!' }, 404)
     }
 
-    return c.json({ notification })
+    return c.json({ notification: notification }, 201)
   })
 
   .post(
@@ -98,9 +103,9 @@ export const notificationsRoutes = new Hono()
       )
 
       if (!notification) {
-        return c.notFound()
+        return c.json({ error: 'Notification not found!' }, 404)
       }
 
-      return c.json({ notification })
+      return c.json({ notification: notification }, 201)
     },
   )

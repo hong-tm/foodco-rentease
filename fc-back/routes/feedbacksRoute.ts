@@ -11,10 +11,10 @@ export const feedbacksRoute = new Hono()
     })
 
     if (!feedbacks) {
-      return c.notFound()
+      return c.json({ error: 'Feedbacks not found!' }, 404)
     }
 
-    return c.json({ feedback: feedbacks })
+    return c.json({ feedback: feedbacks }, 200)
   })
 
   .post('/', zValidator('json', createFeedbackSchema), async (c) => {
@@ -22,13 +22,13 @@ export const feedbacksRoute = new Hono()
       const feedback = await FeedbackTable.create(c.req.valid('json'))
 
       if (!feedback) {
-        return c.notFound()
+        return c.json({ error: 'Feedback not found!' }, 404)
       }
 
       c.status(201)
-      return c.json({ feedback: feedback })
+      return c.json({ feedback: feedback }, 201)
     } catch (error: any) {
-      return c.json({ error: error.message })
+      return c.json({ error: 'Internal server error!' }, 500)
     }
   })
 
@@ -42,9 +42,10 @@ export const feedbacksRoute = new Hono()
     })
 
     if (!feedback) {
-      return c.notFound()
+      return c.json({ error: 'Feedback not found!' }, 404)
     }
-    return c.json({ feedback: feedback })
+
+    return c.json({ feedback: feedback }, 200)
   })
 
   .get('/get-feedbackHappiness', adminVerify(), async (c) => {
@@ -72,16 +73,19 @@ export const feedbacksRoute = new Hono()
     })
 
     if (!feedbacks.length) {
-      return c.json({ stallHappiness: [] })
+      return c.json({ error: 'No feedbacks found!' }, 404)
     }
 
-    return c.json({
-      stallHappiness: feedbacks.map((feedback: any) => ({
-        stallId: feedback.stall,
-        totalHappiness: Number(feedback.totalHappiness),
-        totalFeedbacks: feedback.totalFeedbacks,
-      })),
-    })
+    return c.json(
+      {
+        stallHappiness: feedbacks.map((feedback: any) => ({
+          stallId: feedback.stall,
+          totalHappiness: Number(feedback.totalHappiness),
+          totalFeedbacks: feedback.totalFeedbacks,
+        })),
+      },
+      200,
+    )
   })
 
 // .get("/:id", (c) =>
