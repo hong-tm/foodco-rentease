@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { zValidator } from '@hono/zod-validator'
 
 const expensesSchema = z.object({

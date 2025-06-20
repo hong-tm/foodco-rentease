@@ -6,7 +6,7 @@ import {
 } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
 import { UseQueryOptions } from '@tanstack/react-query'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export interface GetStallsResponse {
   stall: StallUserAttributes[]

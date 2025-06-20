@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/auth-client'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   Form,
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form'
 import { ErrorContext } from '@better-fetch/fetch'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { updateUsernameFormSchema } from '@server/lib/sharedType'
 import { useSession } from '@/api/adminApi'
 import { ResponsiveFormDialog } from './ResponsiveFormDialog'
@@ -119,7 +119,7 @@ export default function UpdateProfileButton({
                 {pending ? (
                   <>
                     Save Change
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                   </>
                 ) : (
                   'Save Change'

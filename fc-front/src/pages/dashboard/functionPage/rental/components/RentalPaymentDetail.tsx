@@ -1,9 +1,9 @@
-import { TrendingDown, TrendingUp } from 'lucide-react'
+import { TrendingDownIcon, TrendingUpIcon } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
 import { useQuery } from '@tanstack/react-query'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import { useSession } from '@/api/adminApi'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 
 import {
   Card,
@@ -92,7 +92,7 @@ export default function RentalPaymentDetail() {
     return (
       <Card>
         <CardContent className="flex min-h-[300px] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
+          <Loader2Icon className="h-8 w-8 animate-spin" />
         </CardContent>
       </Card>
     )
@@ -177,7 +177,8 @@ export default function RentalPaymentDetail() {
               {payments[payments.length - 1]?.total >
               payments[payments.length - 2]?.total ? (
                 <>
-                  Total expenses increased by <TrendingUp className="h-4 w-4" />
+                  Total expenses increased by{' '}
+                  <TrendingUpIcon className="h-4 w-4" />
                   {(
                     ((payments[payments.length - 1]?.total -
                       payments[payments.length - 2]?.total) /
@@ -189,7 +190,7 @@ export default function RentalPaymentDetail() {
               ) : (
                 <>
                   Total expenses decreased by{' '}
-                  <TrendingDown className="h-4 w-4" />
+                  <TrendingDownIcon className="h-4 w-4" />
                   {(
                     ((payments[payments.length - 2]?.total -
                       payments[payments.length - 1]?.total) /

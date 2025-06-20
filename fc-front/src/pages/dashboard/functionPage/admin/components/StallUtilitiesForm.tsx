@@ -28,7 +28,7 @@ import { GetStallsResponse } from '@/api/stallApi'
 import { createUtilityPaymentRecord } from '@/api/paymentApi'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
-import { CalendarIcon, Loader2 } from 'lucide-react'
+import { CalendarIcon, Loader2Icon } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import {
   Popover,
@@ -46,9 +46,9 @@ export default function StallUtilitiesForm() {
   const form = useForm<StallUtilitiesFormValues>({
     resolver: zodResolver(stallUtilitiesFormSchema),
     defaultValues: {
-      stallId: undefined,
+      stallId: 0,
       paymentType: undefined,
-      paymentAmount: undefined,
+      paymentAmount: 0,
       paymentDate: undefined,
     },
   })
@@ -231,7 +231,7 @@ export default function StallUtilitiesForm() {
           {mutation.isPending ? (
             <>
               Creating Utility Payment
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
             </>
           ) : (
             <>Create Utility Payment</>

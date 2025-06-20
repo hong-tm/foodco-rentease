@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -22,7 +22,7 @@ import {
 import { PasswordInput } from '@/components/ui/passwod-input'
 import { useState } from 'react'
 import { authClient } from '@/lib/auth-client'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { changePasswordFormSchema } from '@server/lib/sharedType'
 
@@ -148,7 +148,7 @@ export default function ChangePasswordPage() {
                     {pending ? (
                       <>
                         Reset Password
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                       </>
                     ) : (
                       'Reset Password'
