@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
+import { Slot as SlotPrimitive } from 'radix-ui'
 import { VariantProps, cva } from 'class-variance-authority'
 import { PanelLeftIcon } from 'lucide-react'
 
@@ -398,7 +398,7 @@ function SidebarGroupLabel({
   asChild = false,
   ...props
 }: React.ComponentProps<'div'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'div'
+  const Comp = asChild ? SlotPrimitive.Slot : 'div'
 
   return (
     <Comp
@@ -419,7 +419,7 @@ function SidebarGroupAction({
   asChild = false,
   ...props
 }: React.ComponentProps<'button'> & { asChild?: boolean }) {
-  const Comp = asChild ? Slot : 'button'
+  const Comp = asChild ? SlotPrimitive.Slot : 'button'
 
   return (
     <Comp
@@ -525,7 +525,7 @@ const SidebarMenuButton = React.forwardRef<
     ref,
   ) => {
     const { state } = useSidebar()
-    const Comp = asChild ? Slot : 'button'
+    const Comp = asChild ? SlotPrimitive.Slot : 'button'
 
     const button = (
       <Comp
@@ -562,7 +562,7 @@ function SidebarMenuAction({
   asChild?: boolean
   showOnHover?: boolean
 }) {
-  const Comp = asChild ? Slot : 'button'
+  const Comp = asChild ? SlotPrimitive.Slot : 'button'
 
   return (
     <Comp
@@ -685,7 +685,7 @@ function SidebarMenuSubButton({
   size?: 'sm' | 'md'
   isActive?: boolean
 }) {
-  const Comp = asChild ? Slot : 'a'
+  const Comp = asChild ? SlotPrimitive.Slot : 'a'
 
   return (
     <Comp
