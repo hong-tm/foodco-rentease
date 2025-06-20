@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ import { ModeToggle } from '@/components/mode-toggle'
 import { BackgroundLines } from '@/components/ui/background-lines'
 import { FishSymbolIcon } from '@/components/fish-symbol'
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { authClient } from '@/lib/auth-client'
 import { ErrorContext } from '@better-fetch/fetch'
 import { Turnstile } from '@marsidev/react-turnstile'
@@ -240,7 +240,7 @@ export default function SignUpPage() {
                     {pending ? (
                       <>
                         Register
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                       </>
                     ) : (
                       'Register'

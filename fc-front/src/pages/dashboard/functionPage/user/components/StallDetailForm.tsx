@@ -14,7 +14,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createAppointment } from '@/api/notificationApi'
 import { toast } from 'sonner'
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { useSession } from '@/api/adminApi'
 import { Calendar } from '@/components/ui/calendar'
 import {
@@ -192,7 +192,7 @@ export default function StallDetailForm({
               {pending ? (
                 <>
                   Make Appointment
-                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="ml-2 h-4 w-4 animate-spin" />
                 </>
               ) : (
                 'Make Appointment'

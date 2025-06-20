@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export const signupformSchema = z
   .object({
@@ -370,29 +370,31 @@ export const createPaymentUtilitySchema = z.object({
   paymentDate: z.string(),
 })
 
+const utilitiesType = ['water', 'electric', 'rental'] as const
+
 export const stallUtilitiesFormSchema = z.object({
-  stallId: z.coerce
+  stallId: z
     .number({ error: 'Please select a stall' })
     .int()
     .positive({ error: 'Please select a stall' }),
-  paymentType: z.enum(['water', 'electric', 'rental'], {
+  paymentType: z.enum(utilitiesType, {
     error: 'Please select a utility type',
   }),
-  paymentAmount: z.coerce
+  paymentAmount: z
     .number({ error: 'Amount must be at least RM 0.01' })
     .positive({ error: 'Amount must be positive' })
     .min(0.01, { error: 'Amount must be at least RM 0.01' }),
-  paymentDate: z.coerce.date({ error: 'Please select a date' }),
+  paymentDate: z.date({ error: 'Please select a date' }),
 })
 
-export type StallUtilitiesFormValues = z.infer<typeof stallUtilitiesFormSchema>
+export type StallUtilitiesFormValues = z.input<typeof stallUtilitiesFormSchema>
 
 export const emailSendSchema = z.object({
   user: z.object({
-    email: z.string().email(),
+    email: z.email(),
     id: z.string(),
   }),
-  url: z.string().url(),
+  url: z.url(),
 })
 
 // Create a TypeScript type from the schema

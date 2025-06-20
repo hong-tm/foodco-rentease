@@ -5,7 +5,7 @@ import {
   updateAppointmentStatusSchema,
 } from '@server/lib/sharedType'
 import { queryOptions } from '@tanstack/react-query'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 export interface NotificationResponse {
   notification: NotificationAttributes[] // Assuming your feedback array is of type 'Feedback'

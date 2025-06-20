@@ -1,4 +1,10 @@
-import { Angry, Frown, Laugh, Loader2, Smile } from 'lucide-react'
+import {
+  AngryIcon,
+  FrownIcon,
+  LaughIcon,
+  Loader2Icon,
+  SmileIcon,
+} from 'lucide-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { Button } from '@/components/ui/button'
@@ -6,7 +12,7 @@ import { StallCombobox } from '../../dashboard/components/StallCombobox'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import {
   Form,
   FormControl,
@@ -21,10 +27,10 @@ import { createFeedback } from '@/api/feedbackApi'
 import { createFeedbackSchema } from '@server/lib/sharedType'
 
 const feedback = [
-  { happiness: 4, emoji: <Laugh size={16} className="stroke-inherit" /> },
-  { happiness: 3, emoji: <Smile size={16} className="stroke-inherit" /> },
-  { happiness: 2, emoji: <Frown size={16} className="stroke-inherit" /> },
-  { happiness: 1, emoji: <Angry size={16} className="stroke-inherit" /> },
+  { happiness: 4, emoji: <LaughIcon size={16} className="stroke-inherit" /> },
+  { happiness: 3, emoji: <SmileIcon size={16} className="stroke-inherit" /> },
+  { happiness: 2, emoji: <FrownIcon size={16} className="stroke-inherit" /> },
+  { happiness: 1, emoji: <AngryIcon size={16} className="stroke-inherit" /> },
 ]
 
 export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
@@ -166,7 +172,7 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
               {pending ? (
                 <>
                   Submit
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 </>
               ) : (
                 'Submit'

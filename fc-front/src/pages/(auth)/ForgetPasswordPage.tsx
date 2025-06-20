@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod/v4'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import {
@@ -22,7 +22,7 @@ import { BackgroundLines } from '@/components/ui/background-lines'
 import { authClient } from '@/lib/auth-client'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { forgotPasswordFormSchema } from '@server/lib/sharedType'
 
 export default function ForgetPasswordPage() {
@@ -103,7 +103,7 @@ export default function ForgetPasswordPage() {
                     {pending ? (
                       <>
                         Send Reset Link
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                       </>
                     ) : (
                       'Send Reset Link'

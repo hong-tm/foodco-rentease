@@ -9,7 +9,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Angry, Frown, Laugh, Smile } from 'lucide-react'
+import { AngryIcon, FrownIcon, LaughIcon, SmileIcon } from 'lucide-react'
 import { twMerge } from 'tailwind-merge'
 import {
   Feedback,
@@ -17,7 +17,7 @@ import {
   removeFeedbackById,
   deleteFeedback,
 } from '@/api/feedbackApi'
-import { Trash2 } from 'lucide-react'
+import { Trash2Icon } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,17 +30,17 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Happiness levels mapped to emojis
 const emojiMap: Record<Feedback['happiness'], JSX.Element> = {
-  4: <Laugh size={16} />,
-  3: <Smile size={16} />,
-  2: <Frown size={16} />,
-  1: <Angry size={16} />,
+  4: <LaughIcon size={16} />,
+  3: <SmileIcon size={16} />,
+  2: <FrownIcon size={16} />,
+  1: <AngryIcon size={16} />,
 }
 
 export function FeedbackDisplayPage() {
@@ -92,7 +92,7 @@ function FeedbackCard({ feedback }: { feedback: Feedback }) {
               size="icon"
               className="hover:text-destructive"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2Icon className="h-4 w-4" />
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -182,7 +182,7 @@ function FeedbackDeleteButton({
     >
       {mutation.isPending ? (
         <>
-          Delete <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Delete <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
         </>
       ) : (
         'Delete'
