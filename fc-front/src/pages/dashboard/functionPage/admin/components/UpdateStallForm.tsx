@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { CalendarIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import * as z from 'zod'
+import * as z from 'zod/v4'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updateStallSchema } from '@server/lib/sharedType'
@@ -41,7 +41,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { fetchRentalsQueryOptions } from '@/api/adminApi'
-import { useIsMobile } from '@/hooks/useIsMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 function StallFormFields({
   form,
@@ -209,7 +209,7 @@ function StallFormFields({
                     mode="single"
                     selected={field.value ? new Date(field.value) : new Date()}
                     onSelect={field.onChange}
-                    initialFocus
+                    autoFocus
                     className="rounded-md border shadow"
                   />
                 </PopoverContent>
@@ -319,12 +319,13 @@ export default function UpdateStallForm({
   const parsedStartAt = stall.startAt ? new Date(stall.startAt) : new Date()
   const parsedEndAt = stall.endAt ? new Date(stall.endAt) : new Date()
 
+  // Fix: Ensure correct Zod type inference and resolver typing for useForm
   const form = useForm<z.infer<typeof updateStallSchema>>({
     resolver: zodResolver(updateStallSchema),
     defaultValues: {
-      stallNumber: stall.stallNumber || 0,
-      stallName: stall.stallName || '',
-      description: stall.description || '',
+      stallNumber: stall.stallNumber ?? 0,
+      stallName: stall.stallName ?? '',
+      description: stall.description ?? '',
       stallImage: stall.stallImage || '',
       stallSize: stall.stallSize || 0,
       stallOwner: stall.stallOwnerId?.email || '',

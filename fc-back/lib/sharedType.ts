@@ -219,14 +219,14 @@ export const updateStallSchema = z
     stallNumber: z.number().int().positive().min(1),
     stallName: z.string().min(1, 'Stall name is required'),
     description: z.string().optional(),
-    stallImage: z.string().url('Must be a valid URL').optional(),
-    stallSize: z.coerce.number().min(0, 'Size must be positive'),
+    stallImage: z.url('Must be a valid URL').optional(),
+    stallSize: z.number().min(0, 'Size must be positive'),
     stallOwner: z.string().min(1, 'Owner email is required').email().optional(),
     rentStatus: z.boolean({ error: 'Rent status is required' }),
-    startAt: z.coerce.date(),
-    endAt: z.coerce.date(),
+    startAt: z.date(),
+    endAt: z.date(),
     stallTierNumber: z.object({
-      tierId: z.coerce.number({ error: 'Tier ID must be a number' }),
+      tierId: z.number({ error: 'Tier ID must be a number' }),
     }),
   })
   .refine((data) => data.endAt > data.startAt, {
