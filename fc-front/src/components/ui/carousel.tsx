@@ -4,7 +4,7 @@ import * as React from 'react'
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from 'embla-carousel-react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -33,7 +33,7 @@ type CarouselContextProps = {
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
 function useCarousel() {
-  const context = React.use(CarouselContext)
+  const context = React.useContext(CarouselContext)
 
   if (!context) {
     throw new Error('useCarousel must be used within a <Carousel />')
@@ -105,7 +105,7 @@ function Carousel({
   }, [api, onSelect])
 
   return (
-    <CarouselContext
+    <CarouselContext.Provider
       value={{
         carouselRef,
         api: api,
@@ -128,7 +128,7 @@ function Carousel({
       >
         {children}
       </div>
-    </CarouselContext>
+    </CarouselContext.Provider>
   )
 }
 
@@ -195,7 +195,7 @@ function CarouselPrevious({
       onClick={scrollPrev}
       {...props}
     >
-      <ArrowLeft />
+      <ArrowLeftIcon />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -225,7 +225,7 @@ function CarouselNext({
       onClick={scrollNext}
       {...props}
     >
-      <ArrowRight />
+      <ArrowRightIcon />
       <span className="sr-only">Next slide</span>
     </Button>
   )

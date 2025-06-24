@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -55,7 +55,7 @@ export function StallCombobox({
               ? stalls.find((stall) => parseInt(stall.value, 10) === value)
                   ?.label
               : 'Select Stall...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
@@ -77,7 +77,7 @@ export function StallCombobox({
           {value
             ? stalls.find((stall) => parseInt(stall.value, 10) === value)?.label
             : 'Select Stall...'}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
         </Button>
       </DrawerTrigger>
       <VisuallyHidden>
@@ -120,9 +120,9 @@ function StallList({
                 setOpen(false)
               }}
             >
-              <Check
+              <CheckIcon
                 className={cn(
-                  'mr-2 h-4 w-4',
+                  'mr-2 size-4',
                   value === parseInt(stall.value, 10)
                     ? 'opacity-100'
                     : 'opacity-0',

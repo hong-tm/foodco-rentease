@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { FileDown } from 'lucide-react'
+import { FileDownIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
@@ -308,7 +308,7 @@ export function PaymentRecordsTable({
                   onClick={() => downloadPdfMutation.mutate()}
                   disabled={downloadPdfMutation.isPending}
                 >
-                  <FileDown className="mr-2 h-4 w-4" />
+                  <FileDownIcon className="mr-2 h-4 w-4" />
                   {downloadPdfMutation.isPending
                     ? 'Downloading...'
                     : 'Download PDF'}
@@ -318,7 +318,7 @@ export function PaymentRecordsTable({
                   onClick={() => downloadCsvMutation.mutate()}
                   disabled={downloadCsvMutation.isPending}
                 >
-                  <FileDown className="mr-2 h-4 w-4" />
+                  <FileDownIcon className="mr-2 h-4 w-4" />
                   {downloadCsvMutation.isPending
                     ? 'Downloading...'
                     : 'Download CSV'}
