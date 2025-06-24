@@ -1,13 +1,19 @@
 import { getFeedbackHappinessQueryOptions } from '@/api/feedbackApi'
 import { useQuery } from '@tanstack/react-query'
+import {
+  AlertTriangleIcon,
+  TrendingDownIcon,
+  TrendingUpIcon,
+} from 'lucide-react'
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
+
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card'
 import {
   ChartConfig,
@@ -15,11 +21,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import {
-  AlertTriangleIcon,
-  TrendingDownIcon,
-  TrendingUpIcon,
-} from 'lucide-react'
 
 interface FeedbackHapinessLineChartProps {
   className?: string

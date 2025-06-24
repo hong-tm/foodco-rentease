@@ -1,36 +1,37 @@
-import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
-import { serveStatic } from '@hono/node-server/serve-static'
-import { prettyJSON } from 'hono/pretty-json'
-import Sequelize from '@sequelize/core'
-import { auth } from './lib/auth.js'
 import { cors } from 'hono/cors'
-import { expensesRoute } from './routes/expensesRoute.js'
+import { prettyJSON } from 'hono/pretty-json'
+import { serve } from '@hono/node-server'
+import { serveStatic } from '@hono/node-server/serve-static'
 import type { TurnstileServerValidationResponse } from '@marsidev/react-turnstile'
+import Sequelize from '@sequelize/core'
 // import { SqliteDialect } from "@sequelize/sqlite3";
 import { PostgresDialect } from '@sequelize/postgres'
+import { pinoLogger } from 'hono-pino'
+import { pino } from 'pino'
+import pretty from 'pino-pretty'
+
 import {
-  user,
-  account,
   Feedback,
   Notification,
   Payment,
-  session,
   Stall,
-  verification,
-  Utilities,
   StallTier,
+  Utilities,
+  account,
+  session,
+  user,
+  verification,
 } from './db/userModel.js'
-import { feedbacksRoute } from './routes/feedbacksRoute.js'
-import { usersRoute } from './routes/usersRoute.js'
-import { pinoLogger } from 'hono-pino'
-import pretty from 'pino-pretty'
-import { pino } from 'pino'
 import env from './env.js'
-// import initDB from "./db/initDB.js";
-import { stallsRoute } from './routes/stallsRoute.js'
+import { auth } from './lib/auth.js'
+import { expensesRoute } from './routes/expensesRoute.js'
+import { feedbacksRoute } from './routes/feedbacksRoute.js'
 import { notificationsRoutes } from './routes/notificationsRoutes.js'
 import { paymentRoutes } from './routes/paymentRoutes.js'
+// import initDB from "./db/initDB.js";
+import { stallsRoute } from './routes/stallsRoute.js'
+import { usersRoute } from './routes/usersRoute.js'
 
 const app = new Hono<{
   Variables: {

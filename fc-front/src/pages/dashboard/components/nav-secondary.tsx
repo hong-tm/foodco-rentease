@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { type LucideIcon } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 
 import {
   SidebarGroup,
@@ -8,7 +9,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { NavLink } from 'react-router-dom'
 
 export function NavSecondary({
   items,

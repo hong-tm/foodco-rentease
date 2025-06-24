@@ -1,14 +1,14 @@
-import { z } from 'zod/v4'
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { forgotPasswordFormSchema } from '@server/lib/sharedType'
+import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { toast } from 'sonner'
+import { z } from 'zod/v4'
+
+import { authClient } from '@/lib/auth-client'
+
+import { BackgroundLines } from '@/components/ui/background-lines'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -17,13 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { BackgroundLines } from '@/components/ui/background-lines'
-import { authClient } from '@/lib/auth-client'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { Loader2Icon } from 'lucide-react'
-import { forgotPasswordFormSchema } from '@server/lib/sharedType'
 
 export default function ForgetPasswordPage() {
   const form = useForm<z.infer<typeof forgotPasswordFormSchema>>({

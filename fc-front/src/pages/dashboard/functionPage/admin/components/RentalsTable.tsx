@@ -1,3 +1,7 @@
+import { fetchRentalsQueryOptions } from '@/api/adminApi'
+import { useQuery } from '@tanstack/react-query'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Table,
   TableBody,
@@ -8,10 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
 import { TenantActionButton } from './TenantActionButton'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useQuery } from '@tanstack/react-query'
-import { fetchRentalsQueryOptions } from '@/api/adminApi'
 
 export default function RentalsTable() {
   const { data, error, isLoading } = useQuery(fetchRentalsQueryOptions)

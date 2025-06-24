@@ -5,7 +5,8 @@
     "dev": "tsx watch index.ts",
     "build": "tsc --outDir dist",
     "start": "node dist/index.js",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "prettier --write ."
   },
   "keywords": [],
   "author": "hong-tm",
@@ -38,6 +39,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.19.1",
     "@types/pg": "^8.15.4",

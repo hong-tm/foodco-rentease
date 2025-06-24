@@ -1,5 +1,6 @@
+import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react'
-
 import {
   Label,
   PolarGrid,
@@ -16,12 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-
 import { ChartConfig, ChartContainer } from '@/components/ui/chart'
-
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-
-import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
 
 const chartConfig = {
   occupiedStalls: {

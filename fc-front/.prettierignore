@@ -1,0 +1,9 @@
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+public/
+.vscode/
+dist/
+*.md
+routeTree.gen.ts

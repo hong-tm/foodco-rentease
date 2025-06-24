@@ -1,15 +1,16 @@
-import { api } from '@/lib/api'
-import { authClient } from '@/lib/auth-client'
-import { queryOptions } from '@tanstack/react-query'
-import { loadStripe } from '@stripe/stripe-js'
 import type {
-  PaymentRecord,
-  PaymentIntentResponse,
-  PaymentIntentRequest,
   CreatePaymentRecordRequest,
   CreatePaymentUtilityRequest,
+  PaymentIntentRequest,
+  PaymentIntentResponse,
+  PaymentRecord,
   // UpdatePaymentStatusRequest,
 } from '@server/lib/sharedType'
+import { loadStripe } from '@stripe/stripe-js'
+import { queryOptions } from '@tanstack/react-query'
+
+import { api } from '@/lib/api'
+import { authClient } from '@/lib/auth-client'
 
 // Stripe initialization
 export const stripePromise = loadStripe(

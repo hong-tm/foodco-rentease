@@ -1,5 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useSession } from '@/api/adminApi'
 import { toast } from 'sonner'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Card,
   CardContent,
@@ -8,8 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import UpdateProfileButton from '../dashboard/components/UpdateProfileButton'
-import { useSession } from '@/api/adminApi'
 
 export default function UserProfilePage() {
   const { data: session, error, isLoading } = useSession()

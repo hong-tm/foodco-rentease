@@ -1,11 +1,14 @@
-import { fetchStallsQueryOptions, GetStallsResponse } from '@/api/stallApi'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useState } from 'react'
+import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useQuery } from '@tanstack/react-query'
-import { StallsTableSkeleton } from './StallTableSkeleton'
-import { useState } from 'react'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 import { StallButton } from './StallButton'
+import { StallsTableSkeleton } from './StallTableSkeleton'
 
 export default function StallsTable() {
   const isMobile = useIsMobile()

@@ -1,4 +1,3 @@
-import { api } from '@/lib/api'
 import {
   StallTierAttributes,
   StallUserAttributes,
@@ -7,6 +6,8 @@ import {
 import { updateStallSchema } from '@server/lib/sharedType'
 import { UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod/v4'
+
+import { api } from '@/lib/api'
 
 export interface GetStallsResponse {
   stall: StallUserAttributes[]

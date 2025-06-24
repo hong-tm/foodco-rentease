@@ -1,6 +1,7 @@
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { Button } from './ui/button'
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { toast } from 'sonner'
+
+import { Button } from './ui/button'
 
 interface CheckoutFormProps {
   amount: number

@@ -1,7 +1,8 @@
-import { AuroraBackground } from '@/components/ui/aurora-background'
-import { Button } from '@/components/ui/button'
 import { ChevronLeft, Undo2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+
+import { AuroraBackground } from '@/components/ui/aurora-background'
+import { Button } from '@/components/ui/button'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()

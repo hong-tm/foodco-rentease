@@ -1,17 +1,18 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { z } from 'zod/v4'
+import { useState } from 'react'
+import { ErrorContext } from '@better-fetch/fetch'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Turnstile } from '@marsidev/react-turnstile'
+import { signupformSchema } from '@server/lib/sharedType'
+import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { z } from 'zod/v4'
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { authClient } from '@/lib/auth-client'
+import { verifyTurnstileToken } from '@/lib/verifyTurnstileToken'
+
+import { BackgroundLines } from '@/components/ui/background-lines'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -20,19 +21,19 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/passwod-input'
+import { FishSymbolIcon } from '@/components/fish-symbol'
 // import { PhoneInput } from "@/components/ui/phone-input";
 import { ModeToggle } from '@/components/mode-toggle'
-import { BackgroundLines } from '@/components/ui/background-lines'
-import { FishSymbolIcon } from '@/components/fish-symbol'
-import { useState } from 'react'
-import { Loader2Icon } from 'lucide-react'
-import { authClient } from '@/lib/auth-client'
-import { ErrorContext } from '@better-fetch/fetch'
-import { Turnstile } from '@marsidev/react-turnstile'
-import { verifyTurnstileToken } from '@/lib/verifyTurnstileToken'
-import { signupformSchema } from '@server/lib/sharedType'
 
 export default function SignUpPage() {
   const form = useForm<z.infer<typeof signupformSchema>>({

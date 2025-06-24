@@ -1,4 +1,3 @@
-import { api } from '@/lib/api'
 import { NotificationAttributes, UserAttributes } from '@server/db/userModel'
 import {
   createAppointmentSchema,
@@ -6,6 +5,8 @@ import {
 } from '@server/lib/sharedType'
 import { queryOptions } from '@tanstack/react-query'
 import { z } from 'zod/v4'
+
+import { api } from '@/lib/api'
 
 export interface NotificationResponse {
   notification: NotificationAttributes[] // Assuming your feedback array is of type 'Feedback'

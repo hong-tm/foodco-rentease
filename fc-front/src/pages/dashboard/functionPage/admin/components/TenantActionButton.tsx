@@ -1,4 +1,10 @@
+import { useState } from 'react'
 import { sendReminderEmail } from '@/api/adminApi'
+import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
+import { useMutation } from '@tanstack/react-query'
+import { EllipsisVerticalIcon } from 'lucide-react'
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -8,11 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
-import { useMutation } from '@tanstack/react-query'
-import { EllipsisVerticalIcon } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
 
 type UserAction = {
   userName: string

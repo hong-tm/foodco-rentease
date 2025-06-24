@@ -1,11 +1,11 @@
 import FeedbackHapinessLineChart from './components/FeedbackHapinessLineChart'
-import LatestStallExpiryScrollArea from './components/LatestStallExpiryScrollArea'
 import LatestAppointmentScrollArea from './components/LatestAppointmentScrollArea'
-import { VacancyChart } from './components/VacancyChart'
-import NewTenantChart from './components/NewTenantChart'
-import StallUtilitiesChart from './components/StallUtilitiesChart'
-import StallRentalPaymentChart from './components/StallRentalPaymentChart'
+import LatestStallExpiryScrollArea from './components/LatestStallExpiryScrollArea'
 import { NewStartRentalChart } from './components/NewStartRentalChart'
+import NewTenantChart from './components/NewTenantChart'
+import StallRentalPaymentChart from './components/StallRentalPaymentChart'
+import StallUtilitiesChart from './components/StallUtilitiesChart'
+import { VacancyChart } from './components/VacancyChart'
 
 export function AdminDashboard() {
   return (

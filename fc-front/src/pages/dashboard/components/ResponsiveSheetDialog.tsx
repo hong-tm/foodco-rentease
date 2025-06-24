@@ -1,14 +1,8 @@
 import * as React from 'react'
 
-import { Button } from '@/components/ui/button'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
+import { useIsMobile } from '@/hooks/use-mobile'
 
+import { Button } from '@/components/ui/button'
 import {
   Drawer,
   DrawerClose,
@@ -18,7 +12,13 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { useIsMobile } from '@/hooks/use-mobile'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 
 export function ResponsiveSheetDialog({
   children,

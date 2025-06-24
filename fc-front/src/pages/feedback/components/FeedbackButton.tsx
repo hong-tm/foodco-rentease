@@ -1,4 +1,7 @@
 import { useState } from 'react'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -16,7 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { useIsMobile } from '@/hooks/use-mobile'
+
 import { FeedbackForm } from './FeedbackForm'
 
 export function FeedbackButton() {

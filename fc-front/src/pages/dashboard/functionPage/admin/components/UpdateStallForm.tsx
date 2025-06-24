@@ -1,3 +1,24 @@
+import { fetchRentalsQueryOptions } from '@/api/adminApi'
+import {
+  StallFormProps,
+  fetchStallTierPricesQueryOptions,
+  updateStall,
+} from '@/api/stallApi'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { updateStallSchema } from '@server/lib/sharedType'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import * as z from 'zod/v4'
+
+import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
+
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -7,22 +28,13 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Calendar } from '@/components/ui/calendar'
+import { Label } from '@/components/ui/label'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { CalendarIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import * as z from 'zod/v4'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { updateStallSchema } from '@server/lib/sharedType'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -32,16 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
-import {
-  fetchStallTierPricesQueryOptions,
-  StallFormProps,
-  updateStall,
-} from '@/api/stallApi'
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { fetchRentalsQueryOptions } from '@/api/adminApi'
-import { useIsMobile } from '@/hooks/use-mobile'
 
 function StallFormFields({
   form,

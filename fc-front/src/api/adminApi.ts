@@ -1,12 +1,13 @@
-import { api } from '@/lib/api'
-import { authClient } from '@/lib/auth-client'
 import { ErrorContext } from '@better-fetch/fetch'
 import {
   StallAttributes,
   UserAttributes,
   UserStallAttributes,
 } from '@server/db/userModel'
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { UseQueryOptions, useQuery } from '@tanstack/react-query'
+
+import { api } from '@/lib/api'
+import { authClient } from '@/lib/auth-client'
 
 export type GetUsersResponse = {
   users: UserAttributes[]

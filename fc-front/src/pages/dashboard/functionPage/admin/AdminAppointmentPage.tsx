@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+
 import {
   Card,
   CardContent,
@@ -7,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import AdminAppointmentTable from './components/AdminAppointmentTable'
 import {
   Select,
   SelectContent,
@@ -15,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useState } from 'react'
+
+import AdminAppointmentTable from './components/AdminAppointmentTable'
 
 export function AdminAppointmentPage() {
   const [selectedMonth, setSelectedMonth] = useState('all')

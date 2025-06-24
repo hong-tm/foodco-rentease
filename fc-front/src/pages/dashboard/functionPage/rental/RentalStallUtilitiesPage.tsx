@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import StallUtilitiesDetails from './components/StallUtilitiesDetails'
 
 export function RentalStallUtilitiesPage() {

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   BadgeCheck,
   ChevronsUpDown,
@@ -5,6 +6,9 @@ import {
   LogOut,
   RectangleEllipsis,
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+
+import { authClient } from '@/lib/auth-client'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -22,9 +26,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { useState } from 'react'
-import { authClient } from '@/lib/auth-client'
-import { useNavigate } from 'react-router-dom'
+
 import { ResponsiveAlertDialog } from './ResponsiveAlertDialog'
 
 export function NavUser({

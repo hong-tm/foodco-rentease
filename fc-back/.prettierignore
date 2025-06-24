@@ -1,0 +1,11 @@
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+static/
+webpage/
+dist/
+backup/
+data/
+*.md
+.env

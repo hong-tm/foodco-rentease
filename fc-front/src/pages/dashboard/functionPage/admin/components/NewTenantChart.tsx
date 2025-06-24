@@ -1,5 +1,7 @@
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
+import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
+import { TrendingDownIcon, TrendingUpIcon } from 'lucide-react'
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -15,8 +17,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { fetchUsersQueryOptions } from '@/api/adminApi'
-import { TrendingDownIcon, TrendingUpIcon } from 'lucide-react'
 
 export default function NewTenantChart() {
   const { data: usersData, isLoading } = useQuery(fetchUsersQueryOptions)

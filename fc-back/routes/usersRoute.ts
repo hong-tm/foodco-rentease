@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
-import { user as UserTable } from '../db/userModel.js'
-import { Op } from '@sequelize/core'
-import { adminVerify } from '../lib/verifyuser.js'
-import { sendEmail } from '../action/email/email.js'
 import { zValidator } from '@hono/zod-validator'
+import { Op } from '@sequelize/core'
+
+import { sendEmail } from '../action/email/email.js'
+import { user as UserTable } from '../db/userModel.js'
 import { emailSchema } from '../lib/sharedType.js'
+import { adminVerify } from '../lib/verifyuser.js'
 
 export const usersRoute = new Hono()
   .get('/', adminVerify(), async (c) => {

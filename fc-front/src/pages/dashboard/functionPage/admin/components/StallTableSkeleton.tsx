@@ -1,7 +1,9 @@
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { useIsMobile } from '@/hooks/use-mobile'
 
 export function StallsTableSkeleton() {
   const isMobile = useIsMobile()

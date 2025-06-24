@@ -1,21 +1,21 @@
 import {
   DataTypes,
   Model,
+  type CreationOptional,
   type InferAttributes,
   type InferCreationAttributes,
-  type CreationOptional,
   type NonAttribute,
 } from '@sequelize/core'
 import {
   Attribute,
-  PrimaryKey,
-  NotNull,
-  Default,
-  BelongsTo,
-  Unique,
-  Table,
   AutoIncrement,
+  BelongsTo,
+  Default,
   HasMany,
+  NotNull,
+  PrimaryKey,
+  Table,
+  Unique,
 } from '@sequelize/core/decorators-legacy'
 
 export type UserAttributes = InferAttributes<user>

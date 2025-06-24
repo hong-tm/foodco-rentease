@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+
 import {
   Card,
   CardContent,
@@ -7,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import UserAppointmentTable from './components/UserAppointmentTable'
 
 export function UserAppointmentPage() {

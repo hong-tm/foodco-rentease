@@ -1,3 +1,9 @@
+import { useSession } from '@/api/adminApi'
+import Cookies from 'js-cookie'
+import { ErrorBoundary } from 'react-error-boundary'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { toast } from 'sonner'
+
 import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
@@ -5,14 +11,10 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
-import { Outlet, useLocation, Navigate } from 'react-router-dom'
-import UserDashboardSidebar from './components/UserDashboardSidebar'
-import { DashboardSkeleton } from './components/DashboardSkeleton'
-import { ErrorBoundary } from 'react-error-boundary'
-import { useSession } from '@/api/adminApi'
-import { toast } from 'sonner'
+
 import Breadcrumbs from './components/Breadcrumbs'
-import Cookies from 'js-cookie'
+import { DashboardSkeleton } from './components/DashboardSkeleton'
+import UserDashboardSidebar from './components/UserDashboardSidebar'
 
 export function DashboardLayoutPage() {
   const location = useLocation()

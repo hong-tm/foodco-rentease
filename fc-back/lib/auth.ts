@@ -1,10 +1,11 @@
 import { betterAuth, type BetterAuthOptions } from 'better-auth'
-import * as dotenv from 'dotenv'
 import { admin as adminPlugin, oneTap, openAPI } from 'better-auth/plugins'
-import { sendEmail } from '../action/email/email.js'
+import * as dotenv from 'dotenv'
 import pg from 'pg'
+
+import { sendEmail } from '../action/email/email.js'
 import env from '../env.js'
-import { ac, rental, user, admin } from './permissions.js'
+import { ac, admin, rental, user } from './permissions.js'
 import type { EmailSendType, SocialProfileType } from './sharedType.js'
 
 dotenv.config()

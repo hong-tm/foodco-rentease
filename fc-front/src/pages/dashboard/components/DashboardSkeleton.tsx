@@ -1,6 +1,8 @@
-import { SidebarMenuSkeleton } from '@/components/ui/sidebar'
-import { SidebarMenuItem } from '@/components/ui/sidebar'
-import { SidebarMenu } from '@/components/ui/sidebar'
+import {
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuSkeleton,
+} from '@/components/ui/sidebar'
 
 export function DashboardSkeleton() {
   return (

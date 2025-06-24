@@ -1,26 +1,35 @@
 import * as React from 'react'
+import { useEffect, useState } from 'react'
+import { useSession } from '@/api/adminApi'
+import { NavMain } from '@/pages/dashboard/components/nav-main'
+import { NavQuick } from '@/pages/dashboard/components/nav-quick'
+import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
+import { NavUser } from '@/pages/dashboard/components/nav-user'
+import { useQueryClient } from '@tanstack/react-query'
 import {
-  TowerControlIcon,
-  SendIcon,
-  ChartAreaIcon,
-  CommandIcon,
-  UsersIcon,
   BadgeDollarSignIcon,
   BellElectricIcon,
   BookDownIcon,
-  ScrollIcon,
-  SignatureIcon,
+  ChartAreaIcon,
+  CommandIcon,
   CreditCardIcon,
+  FileUserIcon,
+  HistoryIcon,
   HousePlusIcon,
   ListOrderedIcon,
-  HistoryIcon,
-  FileUserIcon,
+  ScrollIcon,
+  SendIcon,
   ShieldCheckIcon,
+  SignatureIcon,
+  TowerControlIcon,
+  UsersIcon,
 } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 
-import { NavMain } from '@/pages/dashboard/components/nav-main'
-import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
-import { NavUser } from '@/pages/dashboard/components/nav-user'
+import { authClient } from '@/lib/auth-client'
+
+import { Button } from '@/components/ui/button'
 import {
   Sidebar,
   SidebarContent,
@@ -31,14 +40,6 @@ import {
   SidebarMenuItem,
   SidebarMenuSkeleton,
 } from '@/components/ui/sidebar'
-import { NavQuick } from '@/pages/dashboard/components/nav-quick'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useSession } from '@/api/adminApi'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
-import { useEffect, useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import { authClient } from '@/lib/auth-client'
 
 type Role = 'admin' | 'user' | 'rental'
 
