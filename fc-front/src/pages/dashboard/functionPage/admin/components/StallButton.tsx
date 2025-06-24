@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
-import { FishSymbol } from 'lucide-react'
+import { FishSymbolIcon } from 'lucide-react'
 import UpdateStallForm from './UpdateStallForm'
 import { StallButtonProps } from '@/api/stallApi'
 import { useQueryClient } from '@tanstack/react-query'
@@ -56,7 +56,7 @@ export const StallButton: React.FC<StallButtonProps> = ({
               size="lg"
               className="flex h-16 w-16 flex-col items-center justify-center p-0"
             >
-              <FishSymbol className="mb-1 h-6 w-6" />
+              <FishSymbolIcon className="mb-1 size-6" />
               <span className="text-xs">{stall.stallNumber}</span>
             </Button>
           </TooltipTrigger>

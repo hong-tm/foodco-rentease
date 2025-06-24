@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useMutation } from '@tanstack/react-query'
-import { EllipsisVertical } from 'lucide-react'
+import { EllipsisVerticalIcon } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -71,7 +71,7 @@ export function TenantActionButton({
 
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <EllipsisVertical />
+            <EllipsisVerticalIcon />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
