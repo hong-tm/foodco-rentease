@@ -1,5 +1,7 @@
 import * as React from 'react'
 
+import { useIsMobile } from '@/hooks/use-mobile'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,7 +19,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { useIsMobile } from '@/hooks/use-mobile'
 
 export function ResponsiveFormDialog({
   children,

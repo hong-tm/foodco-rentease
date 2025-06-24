@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
+import { useQuery } from '@tanstack/react-query'
+
 import { PaymentRecordsTable } from '@/components/PaymentRecordsTable'
 
 export function AdminReportPage() {

@@ -1,14 +1,5 @@
+import { useState } from 'react'
 import { useSession } from '@/api/adminApi'
-import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { authClient } from '@/lib/auth-client'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import {
@@ -18,9 +9,20 @@ import {
   UserRoundCog,
   UserX,
 } from 'lucide-react'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+
+import { authClient } from '@/lib/auth-client'
+
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 type UserAction = {
   userId: string

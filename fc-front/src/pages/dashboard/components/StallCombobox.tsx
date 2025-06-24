@@ -1,5 +1,10 @@
+import { useState } from 'react'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
+
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
+
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -22,9 +27,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { useState } from 'react'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 const stalls = Array.from({ length: 20 }, (_, i) => ({
   value: `${i + 1}`,

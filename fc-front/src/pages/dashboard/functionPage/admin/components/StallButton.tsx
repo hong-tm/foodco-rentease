@@ -1,3 +1,10 @@
+import { useSession } from '@/api/adminApi'
+import { StallButtonProps } from '@/api/stallApi'
+import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
+import { useQueryClient } from '@tanstack/react-query'
+import { FishSymbolIcon } from 'lucide-react'
+import { toast } from 'sonner'
+
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
@@ -5,14 +12,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
-import { FishSymbolIcon } from 'lucide-react'
-import UpdateStallForm from './UpdateStallForm'
-import { StallButtonProps } from '@/api/stallApi'
-import { useQueryClient } from '@tanstack/react-query'
-import { useSession } from '@/api/adminApi'
-import { toast } from 'sonner'
+
 import StallDetailForm from '../../user/components/StallDetailForm'
+import UpdateStallForm from './UpdateStallForm'
 
 export const StallButton: React.FC<StallButtonProps> = ({
   stall,

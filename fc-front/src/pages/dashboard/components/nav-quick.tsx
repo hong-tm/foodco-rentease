@@ -1,4 +1,5 @@
 import { ChevronRightIcon, type LucideIcon } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 
 import {
   Collapsible,
@@ -16,7 +17,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
-import { NavLink } from 'react-router-dom'
 
 export function NavQuick({
   items,

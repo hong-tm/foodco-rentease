@@ -1,6 +1,7 @@
+import { fetchStallsQueryOptions } from '@/api/stallApi'
+import { useQuery } from '@tanstack/react-query'
 import { TrendingUpIcon } from 'lucide-react'
 import { LabelList, RadialBar, RadialBarChart } from 'recharts'
-import { useQuery } from '@tanstack/react-query'
 
 import {
   Card,
@@ -16,7 +17,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { fetchStallsQueryOptions } from '@/api/stallApi'
 
 export function NewStartRentalChart() {
   const { data: stallData } = useQuery(fetchStallsQueryOptions)

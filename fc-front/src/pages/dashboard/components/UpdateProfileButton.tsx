@@ -1,10 +1,17 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { authClient } from '@/lib/auth-client'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod/v4'
+import { useSession } from '@/api/adminApi'
+import { ErrorContext } from '@better-fetch/fetch'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { updateUsernameFormSchema } from '@server/lib/sharedType'
+import { useQueryClient } from '@tanstack/react-query'
+import { Loader2Icon } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod/v4'
+
+import { authClient } from '@/lib/auth-client'
+
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -13,13 +20,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { ErrorContext } from '@better-fetch/fetch'
-import { toast } from 'sonner'
-import { Loader2Icon } from 'lucide-react'
-import { updateUsernameFormSchema } from '@server/lib/sharedType'
-import { useSession } from '@/api/adminApi'
+import { Input } from '@/components/ui/input'
+
 import { ResponsiveFormDialog } from './ResponsiveFormDialog'
-import { useQueryClient } from '@tanstack/react-query'
 
 type UpdateProfileButtonProps = {
   onUpdate: (newName: string) => void

@@ -1,9 +1,15 @@
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { updateAppointmentStatus } from '@/api/notificationApi'
+import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   CircleCheckBigIcon,
   CircleOffIcon,
   EllipsisVerticalIcon,
 } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,11 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
-import { useState } from 'react'
-import { updateAppointmentStatus } from '@/api/notificationApi'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
 
 type AppointmentData = {
   appointmentId: number

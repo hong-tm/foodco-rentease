@@ -1,4 +1,18 @@
+import { useState } from 'react'
+import { useSession } from '@/api/adminApi'
+import { createAppointment } from '@/api/notificationApi'
+import { StallFormProps } from '@/api/stallApi'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { addDays, format } from 'date-fns'
+import { CalendarIcon, Loader2Icon } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { cn } from '@/lib/utils'
+
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Card,
   CardContent,
@@ -7,16 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { StallFormProps } from '@/api/stallApi'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createAppointment } from '@/api/notificationApi'
-import { toast } from 'sonner'
-import { useState } from 'react'
-import { Loader2Icon } from 'lucide-react'
-import { useSession } from '@/api/adminApi'
-import { Calendar } from '@/components/ui/calendar'
 import {
   Popover,
   PopoverContent,
@@ -29,9 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CalendarIcon } from 'lucide-react'
-import { addDays, format } from 'date-fns'
-import { cn } from '@/lib/utils'
 
 export default function StallDetailForm({
   stall,

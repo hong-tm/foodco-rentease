@@ -1,13 +1,17 @@
-import { lazy, StrictMode } from 'react'
+import { StrictMode, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
+
 import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { ThemeProvider } from '@/components/theme-provider'
-import { DashboardLayoutPage } from './pages/dashboard/DashboardLayoutPage.tsx'
-import App from './App.tsx'
-import SignUpPage from './pages/(auth)/SignUpPage.tsx'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+
+import { ThemeProvider } from '@/components/theme-provider'
+
+import App from './App.tsx'
+import SignUpPage from './pages/(auth)/SignUpPage.tsx'
+import { DashboardLayoutPage } from './pages/dashboard/DashboardLayoutPage.tsx'
 
 const FeedbackDisplayPage = lazy(() =>
   import('./pages/feedback/FeedbackDisplayPage.tsx').then((module) => ({

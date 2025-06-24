@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -6,8 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import StallsTable from './components/StallsTable'
-import { Badge } from '@/components/ui/badge'
 
 export function StallAvailabilityPage() {
   return (

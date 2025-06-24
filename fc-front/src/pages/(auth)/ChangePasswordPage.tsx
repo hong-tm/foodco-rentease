@@ -1,16 +1,14 @@
-import { z } from 'zod/v4'
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { changePasswordFormSchema } from '@server/lib/sharedType'
+import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { z } from 'zod/v4'
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
+import { authClient } from '@/lib/auth-client'
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -19,12 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { PasswordInput } from '@/components/ui/passwod-input'
-import { useState } from 'react'
-import { authClient } from '@/lib/auth-client'
-import { Loader2Icon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { changePasswordFormSchema } from '@server/lib/sharedType'
 
 export default function ChangePasswordPage() {
   const form = useForm<z.infer<typeof changePasswordFormSchema>>({

@@ -1,8 +1,10 @@
 import React from 'react'
+import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
+import type { PaymentRecord } from '@server/lib/sharedType'
+import { useQuery } from '@tanstack/react-query'
 import { TrendingUpIcon } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
-import { useQuery } from '@tanstack/react-query'
-import type { PaymentRecord } from '@server/lib/sharedType'
+
 import {
   Card,
   CardContent,
@@ -17,7 +19,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
-import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 
 type MonthlyData = {
   month: string

@@ -1,10 +1,11 @@
 import { Hono } from 'hono'
+import { zValidator } from '@hono/zod-validator'
+
 import {
   Stall as StallTable,
-  user as UserTable,
   StallTier as StallTierTable,
+  user as UserTable,
 } from '../db/userModel.js'
-import { zValidator } from '@hono/zod-validator'
 import { updateStallSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
 

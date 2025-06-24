@@ -1,3 +1,10 @@
+import { fetchUsersQueryOptions, useSession } from '@/api/adminApi'
+import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { useQuery } from '@tanstack/react-query'
+import { startOfDay } from 'date-fns'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -6,13 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useQuery } from '@tanstack/react-query'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
-import { useSession } from '@/api/adminApi'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { fetchUsersQueryOptions } from '@/api/adminApi'
-import { Badge } from '@/components/ui/badge'
-import { startOfDay } from 'date-fns'
+
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
 
 interface AdminAppointmentTableProps {

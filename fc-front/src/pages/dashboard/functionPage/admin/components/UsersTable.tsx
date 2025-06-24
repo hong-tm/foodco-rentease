@@ -1,7 +1,8 @@
-import { fetchUsersQueryOptions, GetUsersResponse } from '@/api/adminApi'
+import { GetUsersResponse, fetchUsersQueryOptions } from '@/api/adminApi'
+import { useQuery } from '@tanstack/react-query'
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-
 import {
   Table,
   TableBody,
@@ -13,10 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { useQuery } from '@tanstack/react-query'
-
 import { AdminActionButton } from './AdminActionButton'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function UsersTable() {
   const { data, error, isLoading } = useQuery<GetUsersResponse>(

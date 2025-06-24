@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+
 import { Toaster } from './ui/sonner'
 
 type Theme = 'dark' | 'light' | 'system'

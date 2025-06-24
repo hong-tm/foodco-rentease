@@ -1,14 +1,15 @@
+import React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
+
 import {
   Breadcrumb,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
 } from '@/components/ui/breadcrumb'
-import React from 'react'
 
 export default function Breadcrumbs() {
   const location = useLocation()

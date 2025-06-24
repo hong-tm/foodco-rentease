@@ -1,11 +1,12 @@
 import { Hono } from 'hono'
-import { Notification as NotificationTable } from '../db/userModel.js'
 import { zValidator } from '@hono/zod-validator'
+import { literal } from '@sequelize/core'
+
+import { Notification as NotificationTable } from '../db/userModel.js'
 import {
   createAppointmentSchema,
   updateAppointmentStatusSchema,
 } from '../lib/sharedType.js'
-import { literal } from '@sequelize/core'
 
 export const notificationsRoutes = new Hono()
 

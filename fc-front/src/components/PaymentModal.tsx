@@ -1,27 +1,22 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  createPaymentRecord,
+  stripePromise,
+  updatePaymentStatus,
+} from '@/api/paymentApi'
 import {
   Elements,
   PaymentElement,
-  useStripe,
   useElements,
+  useStripe,
 } from '@stripe/react-stripe-js'
 import { StripeElementsOptions } from '@stripe/stripe-js'
-import {
-  stripePromise,
-  createPaymentRecord,
-  updatePaymentStatus,
-} from '@/api/paymentApi'
-import { Button } from './ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog'
-import { toast } from 'sonner'
-import { useNavigate } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+
 import {
   Drawer,
   DrawerClose,
@@ -31,7 +26,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { useIsMobile } from '@/hooks/use-mobile'
+
+import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog'
 
 interface CheckoutFormProps {
   amount: number

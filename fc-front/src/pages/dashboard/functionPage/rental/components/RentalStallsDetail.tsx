@@ -1,5 +1,8 @@
+import { useSession } from '@/api/adminApi'
 import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
+
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -7,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { useSession } from '@/api/adminApi'
-import { Badge } from '@/components/ui/badge'
 
 export default function RentalStallsDetail() {
   const { data: session } = useSession()

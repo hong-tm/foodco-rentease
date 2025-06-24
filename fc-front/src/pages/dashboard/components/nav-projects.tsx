@@ -5,6 +5,7 @@ import {
   Trash2,
   type LucideIcon,
 } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 
 import {
   DropdownMenu,
@@ -22,7 +23,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { NavLink } from 'react-router-dom'
 
 export function NavProjects({
   projects,
