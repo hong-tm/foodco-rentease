@@ -32,6 +32,7 @@ const EnvSchema = z.object({
   PG_PORT: z.coerce.number().default(5432),
 
   NODE_ENV: z.string().default('development'),
+  PORT: z.coerce.number().min(1),
 
   STRIPE_SECRET_KEY: z.string(),
   STRIPE_DOMAIN: z.string(),
