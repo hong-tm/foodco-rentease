@@ -24,7 +24,7 @@ import {
   verification,
 } from './db/userModel.js'
 import env from './env.js'
-import { auth } from './lib/auth.js'
+import { auth, type AuthType } from './lib/auth.js'
 import { expensesRoute } from './routes/expensesRoute.js'
 import { feedbacksRoute } from './routes/feedbacksRoute.js'
 import { notificationsRoutes } from './routes/notificationsRoutes.js'
@@ -33,12 +33,7 @@ import { paymentRoutes } from './routes/paymentRoutes.js'
 import { stallsRoute } from './routes/stallsRoute.js'
 import { usersRoute } from './routes/usersRoute.js'
 
-const app = new Hono<{
-  Variables: {
-    user: typeof auth.$Infer.Session.user | null
-    session: typeof auth.$Infer.Session.session | null
-  }
-}>()
+const app = new Hono<AuthType>()
 
 const allowedOrigins = env.ALLOWED_ORIGINS?.split(',') || []
 const verifyEndpoint = env.TURNSTILE_VERIFY_URL
@@ -90,15 +85,6 @@ app.use(
 app.get('/api', (c) => {
   return c.text('API is running!')
 })
-
-export const apiRoutes = app
-  .basePath('/api')
-  .route('/expenses', expensesRoute)
-  .route('/feedbacks', feedbacksRoute)
-  .route('/users', usersRoute)
-  .route('/stalls', stallsRoute)
-  .route('/notifications', notificationsRoutes)
-  .route('/payments', paymentRoutes)
 
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
@@ -183,10 +169,19 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
   return auth.handler(c.req.raw)
 })
 
-// Server static files
-app.get('*', serveStatic({ root: './webpage' }))
+export const apiRoutes = app
+  .basePath('/api')
+  .route('/expenses', expensesRoute)
+  .route('/feedbacks', feedbacksRoute)
+  .route('/users', usersRoute)
+  .route('/stalls', stallsRoute)
+  .route('/notifications', notificationsRoutes)
+  .route('/payments', paymentRoutes)
 
-app.get('*', serveStatic({ path: './webpage/index.html' }))
+// Server static files
+app.use('*', serveStatic({ root: './webpage' }))
+
+app.use('*', serveStatic({ path: './webpage/index.html' }))
 
 app.get('/', (c) => {
   return c.text('Hello, World!')
