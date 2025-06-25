@@ -1,4 +1,4 @@
-import type { Context, Next } from 'hono'
+import { createMiddleware } from 'hono/factory'
 
 // export function adminVerify() {
 // 	return async (c: Context, next: Next) => {
@@ -17,7 +17,7 @@ import type { Context, Next } from 'hono'
 // }
 
 export function adminVerify() {
-  return async (c: Context, next: Next) => {
+  return createMiddleware(async (c, next) => {
     const user = c.get('user')
 
     if (!user) {
@@ -37,11 +37,11 @@ export function adminVerify() {
       user.id,
     )
     await next()
-  }
+  })
 }
 
 export function notUserVerify() {
-  return async (c: Context, next: Next) => {
+  return createMiddleware(async (c, next) => {
     const user = c.get('user')
 
     if (!user) {
@@ -61,11 +61,11 @@ export function notUserVerify() {
       user.id,
     )
     await next()
-  }
+  })
 }
 
 export function rentalVerify() {
-  return async (c: Context, next: Next) => {
+  return createMiddleware(async (c, next) => {
     const user = c.get('user')
 
     if (user.role !== 'rental') {
@@ -77,5 +77,5 @@ export function rentalVerify() {
 
     // console.log("RentalVerify - Rental verification successful");
     await next()
-  }
+  })
 }

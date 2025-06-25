@@ -43,42 +43,42 @@ export interface GetStallTierPricesResponse {
 // Function
 
 export async function fetchStalls(): Promise<GetStallsResponse> {
-  const Response = await api.stalls.$get()
+  const res = await api.stalls.$get()
 
-  if (!Response.ok) {
-    const data = await Response.json()
+  if (!res.ok) {
+    const data = await res.json()
     throw new Error(data.error)
   }
 
-  const data = await Response.json()
+  const data = await res.json()
   return data as GetStallsResponse
 }
 
 export async function fetchStallCurrent(
   stallId: string,
 ): Promise<GetStallCurrentResponse> {
-  const Response = await api.stalls[':stallOwner'].$get({
+  const res = await api.stalls[':stallOwner'].$get({
     param: { stallOwner: stallId },
   })
 
-  if (!Response.ok) {
-    const data = await Response.json()
+  if (!res.ok) {
+    const data = await res.json()
     throw new Error(data.error)
   }
 
-  const data = await Response.json()
+  const data = await res.json()
   return data as GetStallCurrentResponse
 }
 
 export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
-  const Response = await api.stalls.$get()
+  const res = await api.stalls.$get()
 
-  if (!Response.ok) {
-    const data = await Response.json()
+  if (!res.ok) {
+    const data = await res.json()
     throw new Error(data.error)
   }
 
-  const data = await Response.json()
+  const data = await res.json()
 
   // Calculate total stalls
   const totalStalls = data.stall.length
@@ -90,14 +90,14 @@ export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> 
 }
 
 export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse> {
-  const Response = await api.stalls.tierPrices.$get()
+  const res = await api.stalls.tierPrices.$get()
 
-  if (!Response.ok) {
-    const data = await Response.json()
+  if (!res.ok) {
+    const data = await res.json()
     throw new Error(data.error)
   }
 
-  const data = await Response.json()
+  const data = await res.json()
   return { tierPrice: data.tierPrice } as GetStallTierPricesResponse
 }
 
@@ -113,17 +113,17 @@ export async function updateStall(values: z.infer<typeof updateStallSchema>) {
     throw new Error('Stall ID is required')
   }
 
-  const Response = await api.stalls[':stallId'].$post({
+  const res = await api.stalls[':stallId'].$post({
     json: values,
     param: { stallId },
   })
 
-  if (!Response.ok) {
-    const data = await Response.json()
+  if (!res.ok) {
+    const data = await res.json()
     throw new Error(data.error)
   }
 
-  const data = await Response.json()
+  const data = await res.json()
   return data.stall
 }
 

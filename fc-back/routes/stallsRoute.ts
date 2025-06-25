@@ -8,8 +8,9 @@ import {
 } from '../db/userModel.js'
 import { updateStallSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
+import type { AuthType } from '../lib/auth.js'
 
-export const stallsRoute = new Hono()
+export const stallsRoute = new Hono<AuthType>()
 
   .get('/', async (c) => {
     const stalls = await StallTable.findAll({
