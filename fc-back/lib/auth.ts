@@ -1,15 +1,14 @@
-import { betterAuth, type BetterAuthOptions } from 'better-auth'
+import { betterAuth } from 'better-auth'
+import type { BetterAuthOptions } from 'better-auth'
+
 import { admin as adminPlugin, oneTap, openAPI } from 'better-auth/plugins'
-import * as dotenv from 'dotenv'
-import pg from 'pg'
+import { Pool } from 'pg'
 
 import { sendEmail } from '../action/email/email.js'
 import env from '../env.js'
 import { ac, admin, rental, user } from './permissions.js'
 import type { EmailSendType, SocialProfileType } from './sharedType.js'
-
-dotenv.config()
-const { Pool } = pg
+// import type { UserAttributes } from '../db/userModel.js'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -23,7 +22,6 @@ export const auth = betterAuth({
     port: env.PG_PORT,
     max: 10,
   }),
-
   user: {
     additionalFields: {
       phone: {
@@ -111,5 +109,12 @@ export const auth = betterAuth({
     },
   },
 } satisfies BetterAuthOptions)
+
+export type AuthType = {
+  Variables: {
+    user: typeof auth.$Infer.Session.user | null
+    session: typeof auth.$Infer.Session.session | null
+  }
+}
 
 export type Session = typeof auth.$Infer.Session

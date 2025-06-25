@@ -22,7 +22,7 @@
     "@sequelize/sqlite3": "7.0.0-alpha.46",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^5.10.0",
-    "better-auth": "^1.2.9",
+    "better-auth": "^1.2.10",
     "better-sqlite3": "^11.10.0",
     "dotenv": "^16.5.0",
     "fc-back": "file:",

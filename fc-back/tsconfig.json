@@ -5,12 +5,17 @@
     "strict": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "types": ["node", "hono"],
     "lib": ["ES2020", "DOM"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "moduleResolution": "NodeNext",
     "experimentalDecorators": true,
-    "composite": true
-  }
+    "composite": true,
+    "resolveJsonModule": true,
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules"],
+  "include": ["./**/*.ts", "./*.ts"]
 }
