@@ -4,8 +4,9 @@ import { zValidator } from '@hono/zod-validator'
 import { Feedback as FeedbackTable } from '../db/userModel.js'
 import { createFeedbackSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
+import type { AuthType } from '../lib/auth.js'
 
-export const feedbacksRoute = new Hono()
+export const feedbacksRoute = new Hono<AuthType>()
   .get('/', adminVerify(), async (c) => {
     const feedbacks = await FeedbackTable.findAll({
       order: [['createdAt', 'DESC']],

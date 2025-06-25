@@ -6,8 +6,9 @@ import { sendEmail } from '../action/email/email.js'
 import { user as UserTable } from '../db/userModel.js'
 import { emailSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
+import type { AuthType } from '../lib/auth.js'
 
-export const usersRoute = new Hono()
+export const usersRoute = new Hono<AuthType>()
   .get('/', adminVerify(), async (c) => {
     const users = await UserTable.findAll({
       order: ['name'],

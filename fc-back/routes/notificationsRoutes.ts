@@ -7,8 +7,9 @@ import {
   createAppointmentSchema,
   updateAppointmentStatusSchema,
 } from '../lib/sharedType.js'
+import type { AuthType } from '../lib/auth.js'
 
-export const notificationsRoutes = new Hono()
+export const notificationsRoutes = new Hono<AuthType>()
 
   .get('/', async (c) => {
     const notifications = await NotificationTable.findAll({
