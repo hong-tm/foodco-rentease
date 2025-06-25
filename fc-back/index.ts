@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { HTTPException } from 'hono/http-exception'
 import { prettyJSON } from 'hono/pretty-json'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
@@ -8,6 +9,7 @@ import Sequelize from '@sequelize/core'
 // import { SqliteDialect } from "@sequelize/sqlite3";
 import { PostgresDialect } from '@sequelize/postgres'
 import { pinoLogger } from 'hono-pino'
+import { rateLimiter } from 'hono-rate-limiter'
 import { pino } from 'pino'
 import pretty from 'pino-pretty'
 
@@ -72,15 +74,6 @@ app.use('*', async (c, next) => {
 })
 
 app.use('*', prettyJSON())
-
-app.use(
-  pinoLogger({
-    pino: pino(env.NODE_ENV === 'production' ? undefined : pretty()),
-    http: {
-      reqId: () => crypto.randomUUID(),
-    },
-  }),
-)
 
 app.get('/api', (c) => {
   return c.text('API is running!')
@@ -169,6 +162,33 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
   return auth.handler(c.req.raw)
 })
 
+app.use(
+  pinoLogger({
+    pino: pino(env.NODE_ENV === 'production' ? undefined : pretty()),
+    http: {
+      reqId: () => crypto.randomUUID(),
+    },
+  }),
+)
+
+app.use(
+  rateLimiter<AuthType>({
+    windowMs: 3 * 60 * 1000, // 3 minutes
+    limit: 100,
+    standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+    message: { message: 'Too many requests, please try again later.' },
+    keyGenerator: (c) => {
+      const user = c.get('user')
+
+      if (!user)
+        throw new HTTPException(401, { message: 'User Not Authorize!' })
+
+      return user?.id
+    }, // Method to generate custom identifiers for clients.
+    // store: ... , // Redis, MemoryStore, etc. See below.
+  }),
+)
+
 export const apiRoutes = app
   .basePath('/api')
   .route('/expenses', expensesRoute)
@@ -182,10 +202,6 @@ export const apiRoutes = app
 app.use('*', serveStatic({ root: './webpage' }))
 
 app.use('*', serveStatic({ path: './webpage/index.html' }))
-
-app.get('/', (c) => {
-  return c.text('Hello, World!')
-})
 
 //sequalize
 const sequelize = new Sequelize({
