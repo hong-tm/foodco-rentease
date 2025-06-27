@@ -1,4 +1,4 @@
-import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
+import { fetchCurrentVacancyQueryOptions, stallsQueryKey } from '@/api/stallApi'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react'
 import {
@@ -31,7 +31,7 @@ export function VacancyChart() {
   const queryClient = useQueryClient()
 
   queryClient.invalidateQueries({
-    queryKey: ['fetch-current-vacancy'],
+    queryKey: stallsQueryKey.getVacancy(),
   })
 
   if (error) {

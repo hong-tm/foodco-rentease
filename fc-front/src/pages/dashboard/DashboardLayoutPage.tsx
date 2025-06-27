@@ -18,7 +18,7 @@ import UserDashboardSidebar from './components/UserDashboardSidebar'
 
 export function DashboardLayoutPage() {
   const location = useLocation()
-  const sidebarStateCookie = Cookies.get('sidebar:state')
+  const sidebarStateCookie = Cookies.get('sidebar_state')
   const defaultOpen = sidebarStateCookie === 'true'
 
   const { data: session, isLoading, error } = useSession()

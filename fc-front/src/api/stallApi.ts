@@ -9,24 +9,23 @@ import { z } from 'zod/v4'
 
 import { api } from '@/lib/api'
 
-export interface GetStallsResponse {
+export type GetStallsResponse = {
   stall: StallUserAttributes[]
-  users: UserAttributes[]
 }
 
-export interface GetCurrentVacancyResponse {
+export type GetCurrentVacancyResponse = {
   totalStalls: number
   stalls: StallUserAttributes[]
 }
 
-export interface GetStallCurrentResponse {
+export type GetStallCurrentResponse = {
   stalls: StallUserAttributes[]
   user: UserAttributes
 }
 
 export type StallFormProps = {
   stall: StallUserAttributes
-  onSubmit?: (data: any) => void
+  onSubmit?: (data: unknown) => void
   setOpenDialog?: (open: boolean) => void
 }
 
@@ -34,10 +33,6 @@ export type StallButtonProps = {
   stall: StallUserAttributes
   onOpen: (stallId: string | null) => void
   isOpen: boolean
-}
-
-export interface GetStallTierPricesResponse {
-  tierPrice: StallTierAttributes[]
 }
 
 // Function
@@ -51,7 +46,9 @@ export async function fetchStalls(): Promise<GetStallsResponse> {
   }
 
   const data = await res.json()
-  return data as GetStallsResponse
+  return {
+    stall: data.stall as StallUserAttributes[],
+  }
 }
 
 export async function fetchStallCurrent(
@@ -67,7 +64,10 @@ export async function fetchStallCurrent(
   }
 
   const data = await res.json()
-  return data as GetStallCurrentResponse
+  return {
+    stalls: data.stalls as StallUserAttributes[],
+    user: data.user as UserAttributes,
+  }
 }
 
 export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
@@ -89,7 +89,7 @@ export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> 
   } as GetCurrentVacancyResponse
 }
 
-export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse> {
+export async function fetchStallTierPrices(): Promise<StallTierAttributes[]> {
   const res = await api.stalls.tierPrices.$get()
 
   if (!res.ok) {
@@ -98,7 +98,7 @@ export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse
   }
 
   const data = await res.json()
-  return { tierPrice: data.tierPrice } as GetStallTierPricesResponse
+  return data.tierPrice
 }
 
 export async function updateStall(values: z.infer<typeof updateStallSchema>) {
@@ -127,31 +127,41 @@ export async function updateStall(values: z.infer<typeof updateStallSchema>) {
   return data
 }
 
+// query-keys
+export const stallsQueryKey = {
+  all: ['stall'],
+  stalls: () => [...stallsQueryKey.all, 'get-stall'],
+  findByStallId: (stallId: string) => [...stallsQueryKey.all, stallId],
+  getVacancy: () => [...stallsQueryKey.all, 'get-vacancy'],
+  getTiers: () => [...stallsQueryKey.all, 'get-tier'],
+}
+
 // QueryOptions
 export const fetchStallsQueryOptions: UseQueryOptions<GetStallsResponse> = {
-  queryKey: ['fetch-stalls'],
+  queryKey: stallsQueryKey.stalls(),
   queryFn: fetchStalls,
   staleTime: 1000 * 60 * 1, // Cache for 1 minute
 }
 
 export const fetchCurrentVacancyQueryOptions: UseQueryOptions<GetCurrentVacancyResponse> =
   {
-    queryKey: ['fetch-current-vacancy'],
+    queryKey: stallsQueryKey.getVacancy(),
     queryFn: fetchCurrentVacancy,
     staleTime: 1000 * 60 * 1, // Cache for 1 minute
   }
 
-export const fetchStallTierPricesQueryOptions: UseQueryOptions<GetStallTierPricesResponse> =
-  {
-    queryKey: ['fetch-stall-tier-prices'],
-    queryFn: fetchStallTierPrices,
-    staleTime: 1000 * 60 * 1, // Cache for 1 minute
-  }
+export const fetchStallTierPricesQueryOptions: UseQueryOptions<
+  StallTierAttributes[]
+> = {
+  queryKey: stallsQueryKey.getTiers(),
+  queryFn: fetchStallTierPrices,
+  staleTime: 1000 * 60 * 1, // Cache for 1 minute
+}
 
 export const fetchStallCurrentQueryOptions = (
   stallId: string,
 ): UseQueryOptions<GetStallCurrentResponse> => ({
-  queryKey: ['fetch-stall-current', stallId],
+  queryKey: stallsQueryKey.findByStallId(stallId),
   queryFn: () => fetchStallCurrent(stallId),
   staleTime: 1000 * 60 * 1, // Cache for 1 minute
 })

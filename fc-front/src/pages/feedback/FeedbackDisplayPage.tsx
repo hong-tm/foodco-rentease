@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   Feedback,
   deleteFeedback,
+  feedbacksQueryKey,
   getAllFeedbackQueryOptions,
   removeFeedbackById,
 } from '@/api/feedbackApi'
@@ -171,8 +172,9 @@ function FeedbackDeleteButton({
       toast.error(`Failed to delete feedback ${id}`)
     },
     onSuccess: () => {
-      queryClient.setQueryData<Feedback[]>(['get-feedbacks'], (oldData) =>
-        removeFeedbackById(oldData, id),
+      queryClient.setQueryData<Feedback[]>(
+        [feedbacksQueryKey.feedbacks],
+        (oldData) => removeFeedbackById(oldData, id),
       )
 
       toast.success(`Feedback ${id} deleted`)

@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { updateAppointmentStatus } from '@/api/notificationApi'
+import {
+  notificationsQueryKey,
+  updateAppointmentStatus,
+} from '@/api/notificationApi'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
@@ -50,7 +53,7 @@ export default function AdminAppointmentActionButton({
       console.error(error)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey.all })
     },
   })
 
@@ -70,7 +73,7 @@ export default function AdminAppointmentActionButton({
       console.error(error)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['get-notifications'] })
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey.all })
     },
   })
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   createPaymentRecord,
+  paymentsQueryKey,
   stripePromise,
   updatePaymentStatus,
 } from '@/api/paymentApi'
@@ -102,7 +103,7 @@ const CheckoutForm = ({
           onClose()
         }
       }
-      queryClient.invalidateQueries({ queryKey: ['get-payment-records'] })
+      queryClient.invalidateQueries({ queryKey: paymentsQueryKey.record() })
     },
     onError: (error: Error) => {
       console.error('Payment mutation error:', error)

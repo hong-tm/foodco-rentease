@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ErrorContext } from '@better-fetch/fetch'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { signinFormSchema } from '@server/lib/sharedType'
@@ -101,7 +100,7 @@ export default function SignInPage() {
           toast.success(`Welcome, ${email}!`)
           navigate('/dashboard', { replace: true })
         },
-        onError: async (ctx: any) => {
+        onError: async (ctx) => {
           toast.error(ctx.error.message ?? 'An error occurred')
           setPending(false)
         },
@@ -125,7 +124,7 @@ export default function SignInPage() {
           // toast.success("Welcome, Google User!");
           // navigate("/dashboard", { replace: true });
         },
-        onError: async (ctx: ErrorContext) => {
+        onError: async (ctx) => {
           toast.error(ctx.error.message)
           setPendingGoogle(false)
         },
@@ -147,7 +146,7 @@ export default function SignInPage() {
         onSuccess: async () => {
           // toast.success("Welcome, Github User!");
         },
-        onError: async (ctx: any) => {
+        onError: async (ctx) => {
           toast.error(ctx.error.message)
           setPendingGithub(false)
         },
@@ -157,7 +156,7 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
-      <BackgroundLines className="-z-15 flex h-full w-full flex-col items-center justify-center px-4">
+      <BackgroundLines className="z-15 flex h-full w-full flex-col items-center justify-center px-4">
         <Card className="z-10 mx-auto max-w-lg lg:min-w-[500px]">
           <CardHeader className="flex w-full items-center justify-center text-center select-none">
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">

@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { useSession } from '@/api/adminApi'
+import { useSession, usersQueryKey } from '@/api/adminApi'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import {
-  EllipsisVertical,
-  UserPen,
-  UserRoundCheck,
-  UserRoundCog,
-  UserX,
+  EllipsisVerticalIcon,
+  UserPenIcon,
+  UserRoundCheckIcon,
+  UserRoundCogIcon,
+  UserXIcon,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -51,7 +51,7 @@ export function AdminActionButton({
       })
 
       await queryClient.invalidateQueries({
-        queryKey: ['fetch-users'],
+        queryKey: usersQueryKey.all,
         refetchType: 'active',
       })
 
@@ -101,7 +101,7 @@ export function AdminActionButton({
       }
 
       await queryClient.invalidateQueries({
-        queryKey: ['fetch-users'],
+        queryKey: usersQueryKey.all,
         refetchType: 'active',
       })
     } catch (error) {
@@ -143,22 +143,22 @@ export function AdminActionButton({
         />
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <EllipsisVertical />
+            <EllipsisVerticalIcon />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Admin Action</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpenChangeRole(true)}>
-            <UserPen />
+            <UserPenIcon />
             Change Role
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenImpersonate(true)}>
-            <UserRoundCog />
+            <UserRoundCogIcon />
             Impersonate User
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenBanUser(true)}>
-            {userBanned ? <UserRoundCheck /> : <UserX />}
+            {userBanned ? <UserRoundCheckIcon /> : <UserXIcon />}
             {userBanned ? 'Unban User' : 'Ban User'}
           </DropdownMenuItem>
           <DropdownMenuSeparator />

@@ -80,13 +80,16 @@ export function NewStartRentalChart() {
 
   const trendingPercentage = calculateTrending()
 
-  const chartConfig = chartData.reduce((acc: any, item) => {
-    acc[item.month] = {
-      label: item.month,
-      color: item.fill,
-    }
-    return acc
-  }, {}) satisfies ChartConfig
+  const chartConfig = chartData.reduce(
+    (acc: Record<string, { label: string; color: string }>, item) => {
+      acc[item.month] = {
+        label: item.month,
+        color: item.fill,
+      }
+      return acc
+    },
+    {},
+  ) satisfies ChartConfig
 
   const getDateRange = () => {
     const currentDate = new Date()

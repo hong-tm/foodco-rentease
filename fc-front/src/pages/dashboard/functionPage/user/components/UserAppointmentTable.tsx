@@ -4,6 +4,7 @@ import { getUserNotificationQueryOptions } from '@/api/notificationApi'
 import {
   createPaymentIntent,
   getAllPaymentRecordsQueryOptions,
+  paymentsQueryKey,
 } from '@/api/paymentApi'
 import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
 import type {
@@ -63,7 +64,7 @@ export default function UserAppointmentTable() {
     onSuccess: (data) => {
       setClientSecret(data.clientSecret)
       setIsPaymentModalOpen(true)
-      queryClient.invalidateQueries({ queryKey: ['get-payment-records'] })
+      queryClient.invalidateQueries({ queryKey: paymentsQueryKey.record() })
     },
     onError: (error: Error) => {
       console.error('Error creating payment:', error)
@@ -205,12 +206,20 @@ export default function UserAppointmentTable() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handlePaymentClick(notification)}
+                        onClick={() =>
+                          handlePaymentClick({
+                            ...notification,
+                            notificationerror: '',
+                          })
+                        }
                         disabled={paymentMutation.isPending}
                       >
                         {paymentMutation.isPending
                           ? 'Processing...'
-                          : `Make Payment (RM${calculateAmount(notification)})`}
+                          : `Make Payment (RM${calculateAmount({
+                              ...notification,
+                              notificationerror: '',
+                            })})`}
                       </Button>
                     )
                   ) : (

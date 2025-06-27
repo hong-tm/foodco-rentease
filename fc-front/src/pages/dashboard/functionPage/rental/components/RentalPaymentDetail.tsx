@@ -70,20 +70,38 @@ export default function RentalPaymentDetail() {
               total: 0,
             }
           }
-
           const amount = parseFloat(payment.paymentAmount)
-          acc[monthKey][payment.paymentType] += amount
+          if (payment.paymentType === 'electric') {
+            acc[monthKey].electric += amount
+          } else if (payment.paymentType === 'water') {
+            acc[monthKey].water += amount
+          } else if (payment.paymentType === 'rental') {
+            acc[monthKey].rental += amount
+          }
           acc[monthKey].total += amount
 
           return acc
         },
-        {} as Record<string, any>,
+        {} as Record<
+          string,
+          {
+            month: string
+            monthKey: string
+            electric: number
+            water: number
+            rental: number
+            total: number
+          }
+        >,
       )
 
       // Convert to array and sort by date
       return Object.values(monthlyPayments)
         .sort((a, b) => a.monthKey.localeCompare(b.monthKey))
-        .map(({ monthKey, ...rest }) => rest)
+        .map(({ monthKey, ...rest }) => ({
+          ...rest,
+          monthKey: monthKey.toString(),
+        }))
     },
   })
 
