@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Parser } from '@json2csv/plainjs'
+import { tryCatch } from 'lib/try-catch.js'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import Stripe from 'stripe'
 
@@ -40,12 +41,12 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
       })
 
       if (!payments) {
-        return c.json({ error: 'Payment not found!' }, 404)
+        return c.json({ message: 'Payment not found!' }, 404)
       }
 
       return c.json(payments, 200)
     } catch (error: any) {
-      return c.json({ error: error.message }, 500)
+      return c.json({ message: error.message }, 500)
     }
   })
 
@@ -70,7 +71,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         }
         return c.json(response, 201)
       } catch (error: any) {
-        return c.json({ error: 'Internal Server Error!' }, 500)
+        return c.json({ message: 'Internal Server Error!' }, 500)
       }
     },
   )
@@ -87,7 +88,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         })
 
         if (!payment) {
-          return c.json({ error: 'Payment not found!' }, 404)
+          return c.json({ message: 'Payment not found!' }, 404)
         }
 
         // Update stall information
@@ -137,7 +138,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
         return c.json(paymentRecord, 201)
       } catch (error: any) {
-        return c.json({ error: error.message }, 500)
+        return c.json({ message: error.message }, 500)
       }
     },
   )
@@ -160,19 +161,22 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         )
 
         if (!payment) {
-          return c.json({ error: 'Payment record not found' }, 404)
+          return c.json({ message: 'Payment record not found' }, 404)
         }
 
         return c.json(payment, 201)
       } catch (error: any) {
-        return c.json({ error: 'Internal Sever Error!' }, 500)
+        return c.json({ message: 'Internal Sever Error!' }, 500)
       }
     },
   )
-
   .post(
     '/create-utility-payment',
-    zValidator('json', createPaymentUtilitySchema),
+    zValidator('json', createPaymentUtilitySchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid payment data!' }, 400)
+      }
+    }),
     async (c) => {
       const data = c.req.valid('json')
       const payment = await PaymentTable.create({
@@ -181,27 +185,26 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
       })
 
       if (!payment) {
-        return c.notFound()
+        return c.json({ message: 'Payment not found!' }, 404)
       }
 
-      return c.json({ payment })
+      return c.json({ payment: payment }, 201)
     },
   )
-
   .get('/download-pdf', adminVerify(), async (c) => {
-    try {
-      const payments = await PaymentTable.findAll({
+    const { data: payments, error } = await tryCatch(
+      PaymentTable.findAll({
         order: [['paymentDate', 'DESC']],
         include: ['paymentUser'],
-      })
+      }),
+    )
 
-      return await generatePDF(payments)
-    } catch (error: any) {
-      console.error('PDF generation error:', error)
-      return c.json({ error: error.message }, 500)
+    if (error) {
+      return c.json({ message: error.message }, 500)
     }
-  })
 
+    return await generatePDF(payments)
+  })
   .get('/download-csv', adminVerify(), async (c) => {
     try {
       const payments = await PaymentTable.findAll({
@@ -211,10 +214,9 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return await generateCSV(payments)
     } catch (error: any) {
-      return c.json({ error: error.message }, 500)
+      return c.json({ message: error.message }, 500)
     }
   })
-
   .get('/download-rental-pdf', async (c) => {
     try {
       const userId = c.get('user')?.id
@@ -229,10 +231,9 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
       return await generatePDF(payments)
     } catch (error: any) {
       console.error('PDF generation error:', error)
-      return c.json({ error: error.message }, 500)
+      return c.json({ message: error.message }, 500)
     }
   })
-
   .get('/download-rental-csv', async (c) => {
     try {
       const userId = c.get('user')?.id
@@ -246,7 +247,7 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return await generateCSV(payments)
     } catch (error: any) {
-      return c.json({ error: error.message }, 500)
+      return c.json({ message: error.message }, 500)
     }
   })
 

@@ -77,20 +77,17 @@ export async function sendReminderEmail({
   subject,
   text,
 }: SendReminderEmailResponse) {
-  try {
-    const res = await api.users['send-reminder-email'].$post({
-      json: { to, subject, text },
-    })
+  const res = await api.users['send-reminder-email'].$post({
+    json: { to, subject, text },
+  })
 
-    if (!res.ok) {
-      const data = await res.json()
-      throw new Error(data.error)
-    }
-    return res
-  } catch (error) {
-    console.error('Error in sendReminderEmail:', error)
-    throw error
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error(data.message)
   }
+
+  const data = await res.json()
+  return data
 }
 
 // QueryOptions

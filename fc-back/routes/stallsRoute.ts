@@ -1,17 +1,18 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
+import { tryCatch } from 'lib/try-catch.js'
+import { z } from 'zod/v4'
 
 import {
   Stall as StallTable,
   StallTier as StallTierTable,
   user as UserTable,
 } from '../db/userModel.js'
+import type { AuthType } from '../lib/auth.js'
 import { updateStallSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
-import type { AuthType } from '../lib/auth.js'
 
 export const stallsRoute = new Hono<AuthType>()
-
   .get('/', async (c) => {
     const stalls = await StallTable.findAll({
       order: ['stallNumber'],
@@ -26,29 +27,27 @@ export const stallsRoute = new Hono<AuthType>()
     })
 
     if (!stalls) {
-      return c.json({ error: 'Stalls not found!' }, 404)
+      return c.json({ message: 'Stalls not found!' }, 404)
     }
 
     return c.json({ stall: stalls }, 200)
   })
-
   .get('/tierPrices', async (c) => {
     const tierPrice = await StallTierTable.findAll()
 
     if (!tierPrice) {
-      return c.json({ error: 'Tier prices not found!' }, 404)
+      return c.json({ message: 'Tier prices not found!' }, 404)
     }
 
     return c.json({ tierPrice: tierPrice }, 200)
   })
-
   .get('/:stallOwner', async (c) => {
     const stallOwner = c.req.param('stallOwner')
 
     // Find user by ID first
     const user = await UserTable.findByPk(stallOwner)
     if (!user) {
-      return c.json({ error: 'User not found' }, 404)
+      return c.json({ message: 'User not found' }, 404)
     }
 
     // Get all stalls owned by this user
@@ -68,22 +67,54 @@ export const stallsRoute = new Hono<AuthType>()
     })
 
     if (!stalls) {
-      return c.json({ error: 'Stalls not found!' }, 404)
+      return c.json({ message: 'Stalls not found!' }, 404)
     }
 
     return c.json({ stalls, user }, 200)
   })
+  .get('/current-vacancy', async (c) => {
+    const allStalls = await StallTable.findAll({
+      order: ['stallNumber'],
+      include: [
+        {
+          association: 'stallTierNumber',
+        },
+        {
+          association: 'stallOwnerId',
+        },
+      ],
+    })
 
+    const rentedStalls = allStalls.filter((stall) => stall.rentStatus)
+
+    if (!rentedStalls) {
+      return c.json({ message: 'Rented stalls not found!' }, 404)
+    }
+
+    return c.json(
+      {
+        totalStalls: allStalls.length,
+        stalls: rentedStalls,
+      },
+      200,
+    )
+  })
   .post(
     '/:stallId',
     adminVerify(),
-    zValidator('json', updateStallSchema),
+    zValidator('json', updateStallSchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid stall data!' }, 400)
+      }
+    }),
+    zValidator('param', z.object({ stallId: z.string() }), (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid stall ID!' }, 400)
+      }
+    }),
     async (c) => {
-      const stallId = c.req.param('stallId')
+      const { stallId } = c.req.valid('param')
       const body = c.req.valid('json')
-
-      // console.log("Received Stall ID:", stallId);
-      // console.log("Validated Body:", body);
 
       // Get user id from email
       const user = await UserTable.findOne({
@@ -93,14 +124,14 @@ export const stallsRoute = new Hono<AuthType>()
       })
 
       if (!user) {
-        return c.json({ error: 'User not found' }, 404)
+        return c.json({ message: 'User not found' }, 404)
       }
 
       // Find the stall first
       const stall = await StallTable.findByPk(stallId)
 
       if (!stall) {
-        return c.json({ error: 'Stall not found' }, 404)
+        return c.json({ message: 'Stall not found' }, 404)
       }
 
       // Update stall data
@@ -118,42 +149,12 @@ export const stallsRoute = new Hono<AuthType>()
       })
 
       // Save the changes
-      await stall.save()
+      const { data: savedStall, error } = await tryCatch(stall.save())
 
-      return c.json(
-        {
-          message: 'Stall updated successfully',
-          stall,
-        },
-        200,
-      )
+      if (error) {
+        return c.json({ message: 'Failed to update stall!' }, 500)
+      }
+
+      return c.json({ stall: savedStall }, 200)
     },
   )
-
-  .get('/current-vacancy', async (c) => {
-    const allStalls = await StallTable.findAll({
-      order: ['stallNumber'],
-      include: [
-        {
-          association: 'stallTierNumber',
-        },
-        {
-          association: 'stallOwnerId',
-        },
-      ],
-    })
-
-    const rentedStalls = allStalls.filter((stall) => stall.rentStatus)
-
-    if (!rentedStalls) {
-      return c.json({ error: 'Rented stalls not found!' }, 404)
-    }
-
-    return c.json(
-      {
-        totalStalls: allStalls.length,
-        stalls: rentedStalls,
-      },
-      200,
-    )
-  })

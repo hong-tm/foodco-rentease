@@ -1,12 +1,13 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Op } from '@sequelize/core'
+import { tryCatch } from 'lib/try-catch.js'
 
 import { sendEmail } from '../action/email/email.js'
 import { user as UserTable } from '../db/userModel.js'
+import type { AuthType } from '../lib/auth.js'
 import { emailSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
-import type { AuthType } from '../lib/auth.js'
 
 export const usersRoute = new Hono<AuthType>()
   .get('/', adminVerify(), async (c) => {
@@ -20,7 +21,6 @@ export const usersRoute = new Hono<AuthType>()
 
     return c.json({ user: users }, 200)
   })
-
   .get('/rentals', adminVerify(), async (c) => {
     const users = await UserTable.findAll({
       where: {
@@ -51,30 +51,32 @@ export const usersRoute = new Hono<AuthType>()
 
     return c.json({ user: users }, 200)
   })
-
   .post(
     '/send-reminder-email',
     adminVerify(),
-    zValidator('json', emailSchema),
+    zValidator('json', emailSchema, (result, c) => {
+      if (!result.success)
+        return c.json({ message: 'Invalid email data!' }, 400)
+    }),
     async (c) => {
-      try {
-        const { to, subject, text } = c.req.valid('json')
+      const { to, subject, text } = c.req.valid('json')
 
-        // Debug the extracted fields
-        console.log('Request payload:', { to, subject, text })
-
-        if (!to || !subject || !text) {
-          return c.json({ error: 'Missing required fields' }, 400)
-        }
-
-        // Debug sendEmail response
-        const emailResponse = await sendEmail({ to, subject, text })
-        console.log('Email response:', emailResponse)
-
-        return c.json({ message: 'Reminder email sent successfully!' }, 200)
-      } catch (err: any) {
-        console.error('Error in /send-reminder-email:', err.message || err)
-        return c.json({ error: 'Send reminder email failed!' }, 500)
+      if (!to || !subject || !text) {
+        return c.json(
+          { message: 'Missing required fields for the email!' },
+          400,
+        )
       }
+
+      const { data: emailResponse, error } = await tryCatch(
+        sendEmail({ to, subject, text }),
+      )
+
+      if (error) {
+        console.error('Error in /send-reminder-email:', error.message || error)
+        return c.json({ message: 'Send reminder email failed!' }, 500)
+      }
+
+      return c.json({ emailResponse: emailResponse }, 201)
     },
   )

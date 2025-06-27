@@ -82,22 +82,22 @@ app.get('/api', (c) => {
 // app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
 // app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
 
-app.use(
-  '/api/auth/*', // or replace with "*" to enable cors for all routes
-  cors({
-    origin: (origin, _) => {
-      if (allowedOrigins.includes(origin)) {
-        return origin
-      }
-      return undefined
-    },
-    allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['POST', 'GET', 'OPTIONS'],
-    exposeHeaders: ['Content-Length'],
-    maxAge: 600,
-    credentials: true,
-  }),
-)
+// app.use(
+//   '/api/auth/*', // or replace with "*" to enable cors for all routes
+//   cors({
+//     origin: (origin, _) => {
+//       if (allowedOrigins.includes(origin)) {
+//         return origin
+//       }
+//       return undefined
+//     },
+//     allowHeaders: ['Content-Type', 'Authorization'],
+//     allowMethods: ['POST', 'GET', 'OPTIONS'],
+//     exposeHeaders: ['Content-Length'],
+//     maxAge: 600,
+//     credentials: true,
+//   }),
+// )
 
 app.get('/session', async (c) => {
   const session = c.get('session')

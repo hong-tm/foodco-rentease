@@ -1,10 +1,12 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
+import { tryCatch } from 'lib/try-catch.js'
+import { z } from 'zod/v4'
 
 import { Feedback as FeedbackTable } from '../db/userModel.js'
+import type { AuthType } from '../lib/auth.js'
 import { createFeedbackSchema } from '../lib/sharedType.js'
 import { adminVerify } from '../lib/verifyuser.js'
-import type { AuthType } from '../lib/auth.js'
 
 export const feedbacksRoute = new Hono<AuthType>()
   .get('/', adminVerify(), async (c) => {
@@ -13,69 +15,96 @@ export const feedbacksRoute = new Hono<AuthType>()
     })
 
     if (!feedbacks) {
-      return c.json({ error: 'Feedbacks not found!' }, 404)
+      return c.json({ message: 'Feedbacks not found!' }, 404)
     }
 
     return c.json({ feedback: feedbacks }, 200)
   })
-
-  .post('/', zValidator('json', createFeedbackSchema), async (c) => {
-    try {
-      const feedback = await FeedbackTable.create(c.req.valid('json'))
+  .post(
+    '/',
+    zValidator('json', createFeedbackSchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid feedback data!' }, 400)
+      }
+    }),
+    async (c) => {
+      const { data: feedback, error } = await tryCatch(
+        FeedbackTable.create(c.req.valid('json')),
+      )
 
       if (!feedback) {
-        return c.json({ error: 'Feedback not found!' }, 404)
+        return c.json({ message: 'Feedback not found!' }, 404)
       }
 
-      c.status(201)
+      if (error) {
+        return c.json({ message: 'Internal Server Error!' }, 500)
+      }
+
       return c.json({ feedback: feedback }, 201)
-    } catch (error: any) {
-      return c.json({ error: 'Internal server error!' }, 500)
-    }
-  })
+    },
+  )
+  .delete(
+    '/:id',
+    zValidator('param', z.object({ id: z.number() }), (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid feedback id!' }, 400)
+      }
+    }),
+    adminVerify(),
+    async (c) => {
+      const id = c.req.valid('param').id
 
-  .delete('/:id', adminVerify(), async (c) => {
-    const id = Number.parseInt(c.req.param('id'))
+      const { data: feedback, error } = await tryCatch(
+        FeedbackTable.destroy({
+          where: {
+            id: id,
+          },
+        }),
+      )
 
-    const feedback = await FeedbackTable.destroy({
-      where: {
-        id: id,
-      },
-    })
+      if (!feedback) {
+        return c.json({ message: 'Feedback not found!' }, 404)
+      }
 
-    if (!feedback) {
-      return c.json({ error: 'Feedback not found!' }, 404)
-    }
+      if (error) {
+        return c.json({ message: 'Internal Server Error!' }, 500)
+      }
 
-    return c.json({ feedback: feedback }, 200)
-  })
-
+      return c.json({ feedback: feedback }, 200)
+    },
+  )
   .get('/get-feedbackHappiness', adminVerify(), async (c) => {
-    const feedbacks = await FeedbackTable.findAll({
-      attributes: [
-        'stall',
-        [
-          FeedbackTable.sequelize!.fn(
-            'SUM',
-            FeedbackTable.sequelize!.col('happiness'),
-          ),
-          'totalHappiness',
+    const { data: feedbacks, error } = await tryCatch(
+      FeedbackTable.findAll({
+        attributes: [
+          'stall',
+          [
+            FeedbackTable.sequelize!.fn(
+              'SUM',
+              FeedbackTable.sequelize!.col('happiness'),
+            ),
+            'totalHappiness',
+          ],
+          [
+            FeedbackTable.sequelize!.fn(
+              'COUNT',
+              FeedbackTable.sequelize!.col('id'),
+            ),
+            'totalFeedbacks',
+          ],
         ],
-        [
-          FeedbackTable.sequelize!.fn(
-            'COUNT',
-            FeedbackTable.sequelize!.col('id'),
-          ),
-          'totalFeedbacks',
-        ],
-      ],
-      group: ['stall'],
-      raw: true,
-      order: [['stall', 'ASC']],
-    })
+        group: ['stall'],
+        raw: true,
+        order: [['stall', 'ASC']],
+      }),
+    )
 
-    if (!feedbacks.length) {
-      return c.json({ error: 'No feedbacks found!' }, 404)
+    if (!feedbacks) {
+      return c.json({ message: 'No feedbacks found!' }, 404)
+    }
+
+    if (error) {
+      return c.json({ message: 'Internal Server Error!' }, 500)
     }
 
     return c.json(
