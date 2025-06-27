@@ -31,7 +31,7 @@ export async function getAllPaymentRecords(): Promise<PaymentRecord[]> {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -60,7 +60,7 @@ export async function createPaymentIntent(
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = (await res.json()) as PaymentIntentResponse
@@ -81,7 +81,7 @@ export async function createPaymentRecord(
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const responseData = await res.json()
@@ -116,7 +116,7 @@ export const updatePaymentStatus = async ({
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -136,12 +136,12 @@ export async function createUtilityPaymentRecord(
   })
 
   if (!res.ok) {
-    const error = (await res.json()) as { error: string }
-    throw new Error(error.error || 'Failed to create utility payment record')
+    const data = await res.json()
+    throw new Error(data.message)
   }
 
-  const responseData = (await res.json()) as PaymentRecord
-  return responseData
+  const responseData = await res.json()
+  return responseData.payment as PaymentRecord
 }
 
 // Query Options

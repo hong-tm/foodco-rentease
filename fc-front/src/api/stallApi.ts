@@ -47,7 +47,7 @@ export async function fetchStalls(): Promise<GetStallsResponse> {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -63,7 +63,7 @@ export async function fetchStallCurrent(
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -75,7 +75,7 @@ export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> 
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -94,7 +94,7 @@ export async function fetchStallTierPrices(): Promise<GetStallTierPricesResponse
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -120,11 +120,11 @@ export async function updateStall(values: z.infer<typeof updateStallSchema>) {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
-  return data.stall
+  return data
 }
 
 // QueryOptions

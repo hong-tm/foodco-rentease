@@ -22,7 +22,7 @@ export async function createAppointment(values: AppointmentData) {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   return res.json()
@@ -36,7 +36,7 @@ export async function updateAppointmentStatus(
   })
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -48,7 +48,7 @@ export async function fetchNotifications() {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
@@ -62,7 +62,7 @@ export async function fetchUserNotifications(userId: string) {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    throw new Error(data.message)
   }
 
   const data = await res.json()
