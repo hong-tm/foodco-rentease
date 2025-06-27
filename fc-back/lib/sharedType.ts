@@ -78,7 +78,7 @@ export const signinFormSchema = z.object({
 })
 
 export const forgotPasswordFormSchema = z.object({
-  email: z.string().email({ error: 'Invalid email address' }),
+  email: z.email({ error: 'Invalid email address' }),
 })
 
 export const resetPasswordFormSchema = z
@@ -220,11 +220,15 @@ export const updateStallSchema = z
     stallName: z.string().min(1, 'Stall name is required'),
     description: z.string().optional(),
     stallImage: z.url('Must be a valid URL').optional(),
-    stallSize: z.number().min(0, 'Size must be positive'),
-    stallOwner: z.string().min(1, 'Owner email is required').email().optional(),
+    stallSize: z
+      .number({ error: 'Stall size must be a number' })
+      .positive({ error: 'Stall size must be positive' }),
+    stallOwner: z
+      .email({ error: 'This is not a valid email address' })
+      .optional(),
     rentStatus: z.boolean({ error: 'Rent status is required' }),
-    startAt: z.date(),
-    endAt: z.date(),
+    startAt: z.coerce.date(),
+    endAt: z.coerce.date(),
     stallTierNumber: z.object({
       tierId: z.number({ error: 'Tier ID must be a number' }),
     }),
@@ -235,7 +239,7 @@ export const updateStallSchema = z
   })
 
 export const emailSchema = z.object({
-  to: z.string().email(),
+  to: z.email(),
   subject: z.string(),
   text: z.string(),
 })

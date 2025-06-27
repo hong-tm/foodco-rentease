@@ -1,5 +1,5 @@
 import { useSession } from '@/api/adminApi'
-import { StallButtonProps } from '@/api/stallApi'
+import { StallButtonProps, stallsQueryKey } from '@/api/stallApi'
 import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import { FishSymbolIcon } from 'lucide-react'
@@ -25,7 +25,7 @@ export const StallButton: React.FC<StallButtonProps> = ({
   const stallId = `stall-${stall.stallNumber}`
 
   const handleUpdateSuccess = async () => {
-    await queryClient.invalidateQueries({ queryKey: ['fetch-stalls'] })
+    await queryClient.invalidateQueries({ queryKey: stallsQueryKey.stalls() })
     onOpen(null)
   }
 
