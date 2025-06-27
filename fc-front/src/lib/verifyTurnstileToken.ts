@@ -2,7 +2,7 @@
 
 export async function verifyTurnstileToken(
   token: string,
-): Promise<{ success: boolean; data?: any }> {
+): Promise<{ success: boolean; data?: unknown }> {
   try {
     const response = await fetch('/api/auth/verify', {
       method: 'POST',

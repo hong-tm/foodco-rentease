@@ -54,17 +54,11 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
 
   async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
     setPending(true)
-    try {
-      mutation.mutate(values)
-      // console.log("Form submitted:", values);
-      toast.success('Feedback submitted successfully')
-      onClose() // Close the dialog only after successful submission
-    } catch (error: any) {
-      toast.error('Failed to submit feedback:' + error.message)
-      console.error(error)
-    } finally {
-      setPending(false)
-    }
+    mutation.mutate(values)
+    toast.success('Feedback submitted successfully')
+    onClose()
+
+    setPending(false)
   }
 
   return (

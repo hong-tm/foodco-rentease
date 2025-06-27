@@ -69,11 +69,29 @@ export async function fetchUserNotifications(userId: string) {
   return data.notification as NotificationAttributes[]
 }
 
+// query-keys
+export const notificationsQueryKey = {
+  all: ['notification'],
+  notifications: () => [...notificationsQueryKey.all, 'get-notification'],
+  listByFilter: (filter: { archived: boolean }) => [
+    ...notificationsQueryKey.notifications(),
+    filter,
+  ],
+  findByDepartment: (department: string) => [
+    ...notificationsQueryKey.all,
+    department,
+  ],
+  userNotifications: () => [
+    ...notificationsQueryKey.all,
+    'get-user-notifications',
+  ],
+}
+
 // QueryOptions
 export const getAllNotificationQueryOptions = queryOptions<
   NotificationAttributes[]
 >({
-  queryKey: ['get-notifications'],
+  queryKey: notificationsQueryKey.notifications(),
   queryFn: fetchNotifications,
   staleTime: 1000 * 60 * 1, // 1 minutes
 })
@@ -81,7 +99,7 @@ export const getAllNotificationQueryOptions = queryOptions<
 export const getUserNotificationQueryOptions = queryOptions<
   NotificationAttributes[]
 >({
-  queryKey: ['get-user-notifications'],
+  queryKey: notificationsQueryKey.userNotifications(),
   queryFn: ({ queryKey }) => {
     const [, userId] = queryKey
     return fetchUserNotifications(userId as string)

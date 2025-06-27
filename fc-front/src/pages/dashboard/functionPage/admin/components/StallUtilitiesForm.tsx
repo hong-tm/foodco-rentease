@@ -1,4 +1,4 @@
-import { createUtilityPaymentRecord } from '@/api/paymentApi'
+import { createUtilityPaymentRecord, paymentsQueryKey } from '@/api/paymentApi'
 import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -89,7 +89,7 @@ export default function StallUtilitiesForm() {
         paymentAmount: undefined,
         paymentDate: undefined,
       })
-      queryClient.invalidateQueries({ queryKey: ['get-payment-records'] })
+      queryClient.invalidateQueries({ queryKey: paymentsQueryKey.record() })
     },
   })
 

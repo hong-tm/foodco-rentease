@@ -39,7 +39,9 @@ export const stallsRoute = new Hono<AuthType>()
       return c.json({ message: 'Tier prices not found!' }, 404)
     }
 
-    return c.json({ tierPrice: tierPrice }, 200)
+    const validatedTierPrice = tierPrice.map((row) => row.get({ plain: true }))
+
+    return c.json({ tierPrice: validatedTierPrice }, 200)
   })
   .get('/:stallOwner', async (c) => {
     const stallOwner = c.req.param('stallOwner')
@@ -104,7 +106,7 @@ export const stallsRoute = new Hono<AuthType>()
     adminVerify(),
     zValidator('json', updateStallSchema, (result, c) => {
       if (!result.success) {
-        return c.json({ message: 'Invalid stall data!' }, 400)
+        return c.json({ message: `Invalid stall data! ${result.error}` }, 400)
       }
     }),
     zValidator('param', z.object({ stallId: z.string() }), (result, c) => {

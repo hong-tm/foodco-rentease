@@ -144,9 +144,15 @@ export async function createUtilityPaymentRecord(
   return responseData.payment as PaymentRecord
 }
 
+// query key
+export const paymentsQueryKey = {
+  all: ['payment'],
+  record: () => [...paymentsQueryKey.all, 'get-record'],
+}
+
 // Query Options
 export const getAllPaymentRecordsQueryOptions = queryOptions<PaymentRecord[]>({
-  queryKey: ['get-payment-records'],
+  queryKey: paymentsQueryKey.record(),
   queryFn: getAllPaymentRecords,
   staleTime: 1000 * 60 * 1, // 1 minute
 })

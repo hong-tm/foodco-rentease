@@ -13,7 +13,7 @@ export type GetUsersResponse = {
   users: UserAttributes[]
 }
 
-export interface GetRentalsResponse {
+export type GetRentalsResponse = {
   user: UserStallAttributes[]
   stalls: StallAttributes[]
 }
@@ -90,15 +90,22 @@ export async function sendReminderEmail({
   return data
 }
 
+// query key
+export const usersQueryKey = {
+  all: ['user'],
+  users: () => [...usersQueryKey.all, 'get-user'],
+  rentals: () => [...usersQueryKey.all, 'get-rental'],
+}
+
 // QueryOptions
 export const fetchUsersQueryOptions: UseQueryOptions<GetUsersResponse> = {
-  queryKey: ['fetch-users'],
+  queryKey: usersQueryKey.users(),
   queryFn: fetchUsers,
   staleTime: 1000 * 60 * 1, // 1 minute
 }
 
 export const fetchRentalsQueryOptions: UseQueryOptions<GetRentalsResponse> = {
-  queryKey: ['fetch-rentals'],
+  queryKey: usersQueryKey.rentals(),
   queryFn: fetchRentals,
   staleTime: 1000 * 60 * 1, // 1 minute
 }

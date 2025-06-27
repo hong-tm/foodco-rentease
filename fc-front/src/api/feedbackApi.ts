@@ -97,13 +97,27 @@ export async function deleteFeedback({ id }: { id: number }) {
   return data.feedback
 }
 
-// QueryOptions
+// query key
+export const feedbacksQueryKey = {
+  all: ['feedback'],
+  feedbacks: () => [...feedbacksQueryKey.all, 'get-feedback'],
+  happiness: () => [...feedbacksQueryKey.all, 'get-happiness'],
+}
 
+// QueryOptions
 export const getAllFeedbackQueryOptions = queryOptions<Feedback[]>({
-  queryKey: ['get-feedbacks'],
+  queryKey: feedbacksQueryKey.feedbacks(),
   queryFn: getAllFeedback,
   staleTime: 1000 * 60 * 1, // 1 minutes
   // refetchInterval: 5000, // Refetch every 5 seconds
+})
+
+export const getFeedbackHappinessQueryOptions = queryOptions<
+  FeedbackHappinessResponse['stallHappiness']
+>({
+  queryKey: feedbacksQueryKey.happiness(),
+  queryFn: getFeedbackHappiness,
+  staleTime: 1000 * 60 * 1, // 1 minutes
 })
 
 export function removeFeedbackById(
@@ -112,11 +126,3 @@ export function removeFeedbackById(
 ): Feedback[] {
   return feedbacks ? feedbacks.filter((feedback) => feedback.id !== id) : []
 }
-
-export const getFeedbackHappinessQueryOptions = queryOptions<
-  FeedbackHappinessResponse['stallHappiness']
->({
-  queryKey: ['get-feedback-happiness'],
-  queryFn: getFeedbackHappiness,
-  staleTime: 1000 * 60 * 1, // 1 minutes
-})

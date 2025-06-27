@@ -37,7 +37,7 @@ export function ResponsiveSheetDialog({
 
   if (isMobile) {
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer open={isOpen} onOpenChange={setIsOpen} autoFocus>
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
@@ -45,7 +45,7 @@ export function ResponsiveSheetDialog({
               <DrawerDescription>{description}</DrawerDescription>
             )}
           </DrawerHeader>
-          {children}
+          <div className="grid flex-1 auto-rows-min gap-6 px-4">{children}</div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="ghost">Cancel</Button>
@@ -63,7 +63,7 @@ export function ResponsiveSheetDialog({
           <SheetTitle>{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        {children}
+        <div className="grid flex-1 auto-rows-min gap-6 px-4">{children}</div>
       </SheetContent>
     </Sheet>
   )

@@ -100,15 +100,18 @@ export default function UserDashboardSidebar({
     try {
       await authClient.admin.stopImpersonating()
       // Optimistically update the session data
-      queryClient.setQueryData(['user-session'], (oldData: any) => {
-        if (oldData) {
-          return {
-            ...oldData,
-            session: { ...oldData.session, impersonatedBy: false },
+      queryClient.setQueryData(
+        ['user-session'],
+        (oldData: { session: { impersonatedBy: boolean } } | undefined) => {
+          if (oldData) {
+            return {
+              ...oldData,
+              session: { ...oldData.session, impersonatedBy: false },
+            }
           }
-        }
-        return oldData
-      })
+          return oldData
+        },
+      )
 
       // Optionally, refetch session if necessary
       await refetch()

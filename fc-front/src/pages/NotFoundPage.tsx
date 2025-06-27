@@ -1,4 +1,4 @@
-import { ChevronLeft, Undo2 } from 'lucide-react'
+import { ChevronLeftIcon, Undo2Icon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { AuroraBackground } from '@/components/ui/aurora-background'
@@ -20,14 +20,14 @@ export default function NotFoundPage() {
 
           <div className="mt-4 flex flex-col gap-4">
             <Button variant="default" onClick={() => navigate(-1)}>
-              <Undo2 />
+              <Undo2Icon />
               Previous Page
             </Button>
             <Button
               variant="secondary"
               onClick={() => navigate('/', { replace: true })}
             >
-              <ChevronLeft />
+              <ChevronLeftIcon />
               Login Page
             </Button>
           </div>
