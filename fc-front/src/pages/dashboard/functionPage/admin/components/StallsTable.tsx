@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -34,7 +35,11 @@ export default function StallsTable() {
     )
   }
 
-  const renderRow = (stalls: any[], isMiddleRow: boolean, rowIndex: number) => (
+  const renderRow = (
+    stalls: StallUserAttributes[],
+    isMiddleRow: boolean,
+    rowIndex: number,
+  ) => (
     <div
       key={`row-${rowIndex}`}
       className={`flex ${

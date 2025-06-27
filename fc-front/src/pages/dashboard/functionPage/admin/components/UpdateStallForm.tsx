@@ -1,15 +1,17 @@
-import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import {
+  GetStallsResponse,
   StallFormProps,
   fetchStallTierPricesQueryOptions,
+  fetchStallsQueryOptions,
   updateStall,
 } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { StallUserAttributes } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { UseFormReturn, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod/v4'
 
@@ -53,13 +55,27 @@ function StallFormFields({
   handleTierSelect,
   tierData,
 }: {
-  form: any
-  data: any
-  stall: any
-  totalPrice: any
-  handleTierSelect: (value: string, field: any) => void
-  tierData: any[]
+  form: UseFormReturn<z.input<typeof updateStallSchema>>
+  data: GetStallsResponse
+  stall: StallUserAttributes
+  totalPrice: number
+  handleTierSelect: (
+    value: string,
+    field: { onChange: (value: unknown) => void },
+  ) => void
+  tierData: { id: number; name: string; price: number }[]
 }) {
+  // Deduplicate owners by email
+  const uniqueOwners = data?.stall
+    ? Array.from(
+        new Map(
+          data.stall
+            .filter((stall) => stall.stallOwnerId && stall.stallOwnerId.email)
+            .map((stall) => [stall.stallOwnerId.email, stall.stallOwnerId]),
+        ).values(),
+      )
+    : []
+
   return (
     <div className="grid gap-4">
       {/* Stall Name Field */}
@@ -119,9 +135,7 @@ function StallFormFields({
                 step="0.01"
                 placeholder="Stall Size"
                 {...field}
-                onChange={(e) =>
-                  field.onChange(Number(parseFloat(e.target.value).toFixed(2)))
-                }
+                onChange={(e) => field.onChange(e.target.valueAsNumber)}
               />
             </FormControl>
             <FormMessage />
@@ -147,9 +161,9 @@ function StallFormFields({
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Owner Emails</SelectLabel>
-                    {data?.user.map((user: any) => (
-                      <SelectItem key={user.id} value={user.email}>
-                        {user.email}
+                    {uniqueOwners.map((owner) => (
+                      <SelectItem key={owner.email} value={owner.email}>
+                        {owner.email}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -199,8 +213,12 @@ function StallFormFields({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value ? (
+                    {field.value instanceof Date &&
+                    !isNaN(field.value.getTime()) ? (
                       format(field.value, 'PPP')
+                    ) : typeof field.value === 'string' &&
+                      !isNaN(new Date(field.value).getTime()) ? (
+                      format(new Date(field.value), 'PPP')
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -209,7 +227,24 @@ function StallFormFields({
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : new Date()}
+                    selected={(() => {
+                      if (
+                        field.value instanceof Date &&
+                        !isNaN(field.value.getTime())
+                      )
+                        return field.value
+                      if (
+                        field.value instanceof Date &&
+                        !isNaN(field.value.getTime())
+                      )
+                        return field.value
+                      const v = field.value
+                      if (typeof v === 'string' || typeof v === 'number') {
+                        const d = new Date(v)
+                        return !isNaN(d.getTime()) ? d : undefined
+                      }
+                      return undefined
+                    })()}
                     onSelect={field.onChange}
                     autoFocus
                     className="rounded-md border shadow"
@@ -240,8 +275,12 @@ function StallFormFields({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value ? (
+                    {field.value instanceof Date &&
+                    !isNaN(field.value.getTime()) ? (
                       format(field.value, 'PPP')
+                    ) : typeof field.value === 'string' &&
+                      !isNaN(new Date(field.value).getTime()) ? (
+                      format(new Date(field.value), 'PPP')
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -250,9 +289,21 @@ function StallFormFields({
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : new Date()}
+                    selected={(() => {
+                      if (
+                        field.value instanceof Date &&
+                        !isNaN(field.value.getTime())
+                      )
+                        return field.value
+                      const v = field.value
+                      if (typeof v === 'string' || typeof v === 'number') {
+                        const d = new Date(v)
+                        return !isNaN(d.getTime()) ? d : undefined
+                      }
+                      return undefined
+                    })()}
                     onSelect={field.onChange}
-                    initialFocus
+                    autoFocus
                     className="rounded-md border shadow"
                   />
                 </PopoverContent>
@@ -312,28 +363,28 @@ export default function UpdateStallForm({
   const { data: tierQueryData } = useQuery(fetchStallTierPricesQueryOptions)
 
   const tierData =
-    tierQueryData?.tierPrice.map((tier) => ({
+    tierQueryData?.map((tier) => ({
       id: tier.tierId,
       name: `Tier ${tier.tierName}`,
       price: tier.tierPrice,
     })) ?? []
 
-  const parsedStartAt = stall.startAt ? new Date(stall.startAt) : new Date()
-  const parsedEndAt = stall.endAt ? new Date(stall.endAt) : new Date()
-
   // Fix: Ensure correct Zod type inference and resolver typing for useForm
-  const form = useForm<z.infer<typeof updateStallSchema>>({
+  const form = useForm<z.input<typeof updateStallSchema>>({
     resolver: zodResolver(updateStallSchema),
     defaultValues: {
       stallNumber: stall.stallNumber ?? 0,
       stallName: stall.stallName ?? '',
       description: stall.description ?? '',
       stallImage: stall.stallImage || '',
-      stallSize: stall.stallSize || 0,
+      stallSize:
+        typeof stall.stallSize === 'number'
+          ? stall.stallSize
+          : Number(stall.stallSize) || 0,
       stallOwner: stall.stallOwnerId?.email || '',
       rentStatus: Boolean(stall.rentStatus),
-      startAt: parsedStartAt,
-      endAt: parsedEndAt,
+      startAt: stall.startAt,
+      endAt: stall.endAt,
       stallTierNumber: {
         tierId: stall.stallTierNumber?.tierId || 1,
       },
@@ -341,7 +392,10 @@ export default function UpdateStallForm({
   })
 
   // Handle tier selection with proper type updates
-  const handleTierSelect = (value: string, field: any) => {
+  const handleTierSelect = (
+    value: string,
+    field: { onChange: (value: unknown) => void },
+  ) => {
     const selectedTier = tierData.find((tier) => tier.id === Number(value))
     if (selectedTier) {
       field.onChange({
@@ -375,13 +429,23 @@ export default function UpdateStallForm({
     },
   })
 
-  async function handleSubmit(values: z.infer<typeof updateStallSchema>) {
-    values.startAt = new Date(values.startAt)
-    values.endAt = new Date(values.endAt)
-    await mutation.mutateAsync(values)
+  async function handleSubmit(values: z.input<typeof updateStallSchema>) {
+    const payload = {
+      ...values,
+      startAt:
+        values.startAt instanceof Date
+          ? values.startAt
+          : new Date(values.startAt as string),
+      endAt:
+        values.endAt instanceof Date
+          ? values.endAt
+          : new Date(values.endAt as string),
+    }
+
+    await mutation.mutateAsync(payload)
   }
 
-  const { data, error, isLoading } = useQuery(fetchRentalsQueryOptions)
+  const { data, error, isLoading } = useQuery(fetchStallsQueryOptions)
 
   if (isLoading) {
     return <div className="justify-center p-4">Loading...</div>
@@ -396,7 +460,7 @@ export default function UpdateStallForm({
       form={form}
       data={data}
       stall={stall}
-      totalPrice={totalPrice}
+      totalPrice={Number(totalPrice)}
       handleTierSelect={handleTierSelect}
       tierData={tierData}
     />

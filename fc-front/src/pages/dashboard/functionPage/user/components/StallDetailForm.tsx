@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSession } from '@/api/adminApi'
-import { createAppointment } from '@/api/notificationApi'
+import { createAppointment, notificationsQueryKey } from '@/api/notificationApi'
 import { StallFormProps } from '@/api/stallApi'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -53,7 +53,7 @@ export default function StallDetailForm({
     onSuccess: async (data) => {
       toast.success('Appointment request sent successfully')
       await queryClient.invalidateQueries({
-        queryKey: ['get-user-notifications'],
+        queryKey: notificationsQueryKey.all,
       })
       if (onSubmit) onSubmit(data)
       if (setOpenDialog) setOpenDialog(false)
@@ -72,27 +72,24 @@ export default function StallDetailForm({
 
   async function handleAppointment() {
     setPending(true)
-    try {
-      if (!data?.user?.id) {
-        throw new Error('User ID is required')
-      }
-      if (!appointmentDate) {
-        throw new Error('Please select an appointment date')
-      }
 
-      const values = {
-        userId: data.user.id,
-        notificationMessage: `I want to make appointment for Stall ${stall.stallNumber}`,
-        appointmentDate: appointmentDate,
-        stallNumber: stall.stallNumber,
-      }
-
-      await mutation.mutateAsync(values)
-    } catch (error: any) {
-      console.error(error)
-    } finally {
-      setPending(false)
+    if (!data?.user?.id) {
+      throw new Error('User ID is required')
     }
+    if (!appointmentDate) {
+      throw new Error('Please select an appointment date')
+    }
+
+    const values = {
+      userId: data.user.id,
+      notificationMessage: `I want to make appointment for Stall ${stall.stallNumber}`,
+      appointmentDate: appointmentDate,
+      stallNumber: stall.stallNumber,
+    }
+
+    await mutation.mutateAsync(values)
+
+    setPending(false)
   }
 
   return (
