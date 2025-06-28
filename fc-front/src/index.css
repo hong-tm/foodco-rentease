@@ -127,6 +127,40 @@ code {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --animate-aurora: aurora 60s linear infinite;
+  --animate-slide-down: slide-down 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-in;
+
+  @keyframes aurora {
+    from {
+      background-position:
+        50% 50%,
+        50% 50%;
+    }
+    to {
+      background-position:
+        350% 50%,
+        350% 50%;
+    }
+  }
+
+  @keyframes slide-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 @layer base {
@@ -139,38 +173,5 @@ code {
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
-  }
-}
-
-/* styles.css */
-.CollapsibleContent {
-  overflow: hidden;
-}
-
-.CollapsibleContent[data-state='open'] {
-  animation: slideDown 200ms ease-out;
-}
-
-.CollapsibleContent[data-state='closed'] {
-  animation: slideUp 200ms ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    height: 0;
-  }
-
-  to {
-    height: var(--radix-collapsible-content-height);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    height: var(--radix-collapsible-content-height);
-  }
-
-  to {
-    height: 0;
   }
 }
