@@ -157,8 +157,8 @@ export default function SignInPage() {
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
       <BackgroundLines className="z-15 flex h-full w-full flex-col items-center justify-center px-4">
-        <Card className="z-10 mx-auto max-w-lg lg:min-w-[500px]">
-          <CardHeader className="flex w-full items-center justify-center text-center select-none">
+        <Card className="z-10 mx-auto max-w-md lg:min-w-[500px]">
+          <CardHeader className="text-center">
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
