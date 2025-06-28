@@ -412,7 +412,7 @@ export default function UserDashboardSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="[scrollbar-color:--alpha(var(--foreground)/20)_transparent] [scrollbar-width:thin]">
         <NavMain items={data[currentRole]?.navMain || []} />
         <NavQuick items={data[currentRole]?.navQuick} />
         <NavSecondary
