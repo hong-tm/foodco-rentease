@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSession } from '@/api/adminApi'
-import { ErrorContext } from '@better-fetch/fetch'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updateUsernameFormSchema } from '@server/lib/sharedType'
 import { useQueryClient } from '@tanstack/react-query'
@@ -75,7 +74,7 @@ export default function UpdateProfileButton({
             toast.success('Name updated successfully')
             queryClient.invalidateQueries({ queryKey: ['user-session'] })
           },
-          onError: (ctx: ErrorContext) => {
+          onError: (ctx) => {
             toast.error(ctx.error.message ?? 'An error occurred')
           },
         },
