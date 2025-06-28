@@ -67,8 +67,6 @@ export default function SignInPage() {
   // }
   // checkSession();
 
-  //TODO Fix UI Layout all
-
   async function SignIn(values: z.infer<typeof signinFormSchema>) {
     setPending(true)
 
