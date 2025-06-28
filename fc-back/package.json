@@ -1,6 +1,11 @@
 {
   "name": "fc-back",
   "type": "module",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "hong-tm",
+  "license": "ISC",
+  "description": "A backend for glue management dashboard, using Hono framework",
   "scripts": {
     "dev": "tsx watch index.ts",
     "build": "tsc --outDir dist",
@@ -8,10 +13,6 @@
     "preview": "vite preview",
     "check": "prettier --write ."
   },
-  "keywords": [],
-  "author": "hong-tm",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "@hono/node-server": "^1.14.4",
     "@hono/zod-validator": "^0.7.0",
