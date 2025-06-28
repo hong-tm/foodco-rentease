@@ -1,4 +1,4 @@
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeftIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { AuroraBackground } from '@/components/ui/aurora-background'
@@ -23,7 +23,7 @@ export function EmailVerifiedPage() {
               variant="default"
               onClick={() => navigate('/', { replace: true })}
             >
-              <ChevronLeft />
+              <ChevronLeftIcon />
               Login Page
             </Button>
           </div>

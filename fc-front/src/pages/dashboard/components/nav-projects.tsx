@@ -1,8 +1,8 @@
 import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
+  FolderIcon,
+  MoreHorizontalIcon,
+  ShareIcon,
+  Trash2Icon,
   type LucideIcon,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
@@ -50,7 +50,7 @@ export function NavProjects({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
+                  <MoreHorizontalIcon />
                   {/* <span className="sr-only">More</span> */}
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
@@ -60,16 +60,16 @@ export function NavProjects({
                 align={isMobile ? 'end' : 'start'}
               >
                 <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
+                  <FolderIcon className="text-muted-foreground" />
                   <span>View Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
+                  <ShareIcon className="text-muted-foreground" />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
+                  <Trash2Icon className="text-muted-foreground" />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

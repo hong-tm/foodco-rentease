@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import {
-  BadgeCheck,
-  ChevronsUpDown,
-  Loader2,
-  LogOut,
-  RectangleEllipsis,
+  BadgeCheckIcon,
+  ChevronsUpDownIcon,
+  Loader2Icon,
+  LogOutIcon,
+  RectangleEllipsisIcon,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -97,7 +97,7 @@ export function NavUser({
                 <span className="truncate font-semibold">{user.name}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDownIcon className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
@@ -131,7 +131,7 @@ export function NavUser({
               <DropdownMenuItem
                 onClick={() => navigate('/dashboard/change-password')}
               >
-                <RectangleEllipsis />
+                <RectangleEllipsisIcon />
                 Change Password
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -139,18 +139,18 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => navigate('/dashboard/account')}>
-                <BadgeCheck />
+                <BadgeCheckIcon />
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
 
             <DropdownMenuItem onClick={() => setDialogOpen(true)}>
-              <LogOut />
+              <LogOutIcon />
               {pending ? (
                 <>
                   <span>Log Out</span>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
                 </>
               ) : (
                 'Log Out'
