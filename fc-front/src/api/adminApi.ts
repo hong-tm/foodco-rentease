@@ -1,4 +1,3 @@
-import { ErrorContext } from '@better-fetch/fetch'
 import {
   StallAttributes,
   UserAttributes,
@@ -30,7 +29,7 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
       sortBy: 'name',
     },
     fetchOptions: {
-      onError(context: ErrorContext) {
+      onError(context) {
         throw new Error(context.error.message || context.error.statusText)
       },
     },
@@ -61,7 +60,7 @@ export const useSession = () => {
     queryFn: async () => {
       const session = await authClient.getSession({
         fetchOptions: {
-          onError: (context: ErrorContext) => {
+          onError: (context) => {
             throw new Error(context.error.message || context.error.statusText)
           },
         },

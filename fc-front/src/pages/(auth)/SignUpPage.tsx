@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { ErrorContext } from '@better-fetch/fetch'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { signupformSchema } from '@server/lib/sharedType'
@@ -82,7 +81,7 @@ export default function SignUpPage() {
           toast.success(`Check Your Email: ${email}!`)
           navigate('/')
         },
-        onError: (ctx: ErrorContext) => {
+        onError: (ctx) => {
           toast.error(ctx.error.message ?? 'An error occurred')
           setPending(false) // This works fine for errors returned by `authClient`
         },
