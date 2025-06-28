@@ -6,7 +6,7 @@ import {
 } from '@/api/paymentApi'
 import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
-import { Droplet, Home, Loader2, Zap } from 'lucide-react'
+import { DropletIcon, HomeIcon, Loader2Icon, ZapIcon } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -67,7 +67,7 @@ export default function StallUtilitiesDetails() {
   if (isSessionLoading || isStallLoading || isPaymentLoading) {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2Icon className="h-8 w-8 animate-spin" />
       </div>
     )
   }
@@ -161,7 +161,7 @@ export default function StallUtilitiesDetails() {
                 <div className="bg-muted/50 space-y-3 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Droplet className="h-4 w-4 text-blue-500" />
+                      <DropletIcon className="h-4 w-4 text-blue-500" />
                       <div className="flex flex-col">
                         <span>Water Bill</span>
                         <span className="text-muted-foreground text-sm">
@@ -183,7 +183,7 @@ export default function StallUtilitiesDetails() {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Zap className="h-4 w-4 text-yellow-500" />
+                      <ZapIcon className="h-4 w-4 text-yellow-500" />
                       <div className="flex flex-col">
                         <span>Electric Bill</span>
                         <span className="text-muted-foreground text-sm">
@@ -207,7 +207,7 @@ export default function StallUtilitiesDetails() {
                   <Separator />
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Home className="h-4 w-4 text-green-500" />
+                      <HomeIcon className="h-4 w-4 text-green-500" />
                       <div className="flex flex-col">
                         <span>Rental Fee</span>
                         <span className="text-muted-foreground text-sm">
@@ -253,7 +253,7 @@ export default function StallUtilitiesDetails() {
                   ) : (
                     <>
                       Pay
-                      <Droplet className="h-4 w-4 text-blue-500" />
+                      <DropletIcon className="h-4 w-4 text-blue-500" />
                     </>
                   )}
                 </Button>
@@ -281,7 +281,7 @@ export default function StallUtilitiesDetails() {
                   ) : (
                     <>
                       Pay
-                      <Zap className="h-4 w-4 text-yellow-500" />
+                      <ZapIcon className="h-4 w-4 text-yellow-500" />
                     </>
                   )}
                 </Button>
@@ -310,7 +310,7 @@ export default function StallUtilitiesDetails() {
                   ) : (
                     <>
                       Pay
-                      <Home className="h-4 w-4 text-green-500" />
+                      <HomeIcon className="h-4 w-4 text-green-500" />
                     </>
                   )}
                 </Button>
