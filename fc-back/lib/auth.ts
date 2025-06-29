@@ -1,6 +1,5 @@
 import { betterAuth } from 'better-auth'
 import type { BetterAuthOptions } from 'better-auth'
-
 import { admin as adminPlugin, oneTap, openAPI } from 'better-auth/plugins'
 import { Pool } from 'pg'
 
@@ -8,6 +7,7 @@ import { sendEmail } from '../action/email/email.js'
 import env from '../env.js'
 import { ac, admin, rental, user } from './permissions.js'
 import type { EmailSendType, SocialProfileType } from './sharedType.js'
+
 // import type { UserAttributes } from '../db/userModel.js'
 
 export const auth = betterAuth({
@@ -57,7 +57,8 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendOnSignUp: true,
-    autoSignInAfterVerification: true,
+    // autoSignInAfterVerification: true,
+    expiresIn: 3600, // 1 hour
     sendVerificationEmail: async ({ user, url }: EmailSendType) => {
       await sendEmail({
         to: user.email,
