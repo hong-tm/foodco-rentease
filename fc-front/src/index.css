@@ -137,6 +137,7 @@ code {
         50% 50%,
         50% 50%;
     }
+
     to {
       background-position:
         350% 50%,
@@ -148,6 +149,7 @@ code {
     from {
       height: 0;
     }
+
     to {
       height: var(--radix-collapsible-content-height);
     }
@@ -157,6 +159,7 @@ code {
     from {
       height: var(--radix-collapsible-content-height);
     }
+
     to {
       height: 0;
     }
@@ -167,9 +170,11 @@ code {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
