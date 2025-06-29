@@ -237,7 +237,7 @@ export default function SignInPage() {
                       // Update token field
                       form.setValue('token', token, { shouldValidate: true })
                     }}
-                    onError={() => console.log('Turnstile error')}
+                    onError={() => toast.warning('Turnstile error')}
                   />
 
                   {/* Hidden input for token */}
