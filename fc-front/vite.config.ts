@@ -31,6 +31,7 @@ export default defineConfig(({ command }) => {
       target: 'esnext',
       chunkSizeWarningLimit: 1000, // 增加警告的 chunk 大小限制
       outDir: '../fc-back/webpage',
+      emptyOutDir: true,
     },
     resolve: {
       alias: {
