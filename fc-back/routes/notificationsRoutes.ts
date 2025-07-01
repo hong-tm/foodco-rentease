@@ -1,7 +1,6 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { literal } from '@sequelize/core'
-import { tryCatch } from 'lib/try-catch.js'
 
 import { Notification as NotificationTable } from '../db/userModel.js'
 import type { AuthType } from '../lib/auth.js'
@@ -9,6 +8,7 @@ import {
   createAppointmentSchema,
   updateAppointmentStatusSchema,
 } from '../lib/sharedType.js'
+import { tryCatch } from '../lib/try-catch.js'
 
 export const notificationsRoutes = new Hono<AuthType>()
   .get('/', async (c) => {

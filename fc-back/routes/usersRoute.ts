@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Op } from '@sequelize/core'
-import { tryCatch } from 'lib/try-catch.js'
 
 import { sendEmail } from '../action/email/email.js'
 import { user as UserTable } from '../db/userModel.js'
 import type { AuthType } from '../lib/auth.js'
 import { emailSchema } from '../lib/sharedType.js'
+import { tryCatch } from '../lib/try-catch.js'
 import { adminVerify } from '../lib/verifyuser.js'
 
 export const usersRoute = new Hono<AuthType>()
