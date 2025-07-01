@@ -18,6 +18,7 @@
     "@hono/zod-validator": "^0.7.0",
     "@json2csv/plainjs": "^7.0.6",
     "@marsidev/react-turnstile": "^1.1.0",
+    "@sentry/node": "^9.34.0",
     "@sequelize/core": "7.0.0-alpha.46",
     "@sequelize/postgres": "7.0.0-alpha.46",
     "@sequelize/sqlite3": "7.0.0-alpha.46",

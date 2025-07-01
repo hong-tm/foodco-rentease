@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { tryCatch } from 'lib/try-catch.js'
 import { z } from 'zod/v4'
 
 import {
@@ -10,6 +9,7 @@ import {
 } from '../db/userModel.js'
 import type { AuthType } from '../lib/auth.js'
 import { updateStallSchema } from '../lib/sharedType.js'
+import { tryCatch } from '../lib/try-catch.js'
 import { adminVerify } from '../lib/verifyuser.js'
 
 export const stallsRoute = new Hono<AuthType>()
