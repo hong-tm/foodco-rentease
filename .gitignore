@@ -82,3 +82,4 @@ fc-back/.cursorignore
 fc-front/public/robots.txt
 fc-front/public/sitemap.xml
 fc-back/.cursorrules
+fc-front/.env
