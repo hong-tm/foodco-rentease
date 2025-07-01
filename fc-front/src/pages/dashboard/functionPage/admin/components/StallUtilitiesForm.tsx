@@ -47,7 +47,7 @@ export default function StallUtilitiesForm() {
   const form = useForm<StallUtilitiesFormValues>({
     resolver: zodResolver(stallUtilitiesFormSchema),
     defaultValues: {
-      stallId: 0,
+      stallId: undefined,
       paymentType: undefined,
       paymentAmount: 0,
       paymentDate: undefined,
@@ -115,7 +115,7 @@ export default function StallUtilitiesForm() {
                   {...field}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select a stall" />
                     </SelectTrigger>
                   </FormControl>
@@ -143,7 +143,7 @@ export default function StallUtilitiesForm() {
                 <FormLabel>Utility Type</FormLabel>
                 <Select onValueChange={onChange} value={value || ''} {...field}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select utility type" />
                     </SelectTrigger>
                   </FormControl>
@@ -214,7 +214,7 @@ export default function StallUtilitiesForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      initialFocus
+                      autoFocus
                     />
                   </PopoverContent>
                 </Popover>
