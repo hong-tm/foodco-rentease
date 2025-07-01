@@ -26,6 +26,7 @@ import {
   verification,
 } from './db/userModel.js'
 import env from './env.js'
+import { initSentry } from './instrument.js'
 import { auth, type AuthType } from './lib/auth.js'
 import { expensesRoute } from './routes/expensesRoute.js'
 import { feedbacksRoute } from './routes/feedbacksRoute.js'
@@ -36,6 +37,10 @@ import { stallsRoute } from './routes/stallsRoute.js'
 import { usersRoute } from './routes/usersRoute.js'
 
 const app = new Hono<AuthType>()
+
+if (env.NODE_ENV === 'production') {
+  initSentry()
+}
 
 const allowedOrigins = env.ALLOWED_ORIGINS?.split(',') || []
 const verifyEndpoint = env.TURNSTILE_VERIFY_URL
@@ -172,9 +177,10 @@ app.use(
 )
 
 app.use(
+  '/api/*',
   rateLimiter<AuthType>({
     windowMs: 3 * 60 * 1000, // 3 minutes
-    limit: 100,
+    limit: 300,
     standardHeaders: 'draft-7', // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
     message: { message: 'Too many requests, please try again later.' },
     keyGenerator: (c) => {
