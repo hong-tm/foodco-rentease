@@ -36,7 +36,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-interface MonthSelectorProps {
+type MonthSelectorProps = {
   value: string
   onValueChange: (value: string) => void
 }
@@ -77,7 +77,7 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
   )
 }
 
-interface PaymentRecordsTableProps {
+type PaymentRecordsTableProps = {
   title: string
   description: string
   records: PaymentRecord[]

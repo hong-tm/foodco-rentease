@@ -22,7 +22,7 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 
-interface FeedbackHapinessLineChartProps {
+type FeedbackHapinessLineChartProps = {
   className?: string
 }
 

@@ -17,7 +17,7 @@ export type GetRentalsResponse = {
   stalls: StallAttributes[]
 }
 
-export interface SendReminderEmailResponse {
+export type SendReminderEmailResponse = {
   to: string
   subject: string
   text: string

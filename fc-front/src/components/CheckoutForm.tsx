@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 
 import { Button } from './ui/button'
 
-interface CheckoutFormProps {
+type CheckoutFormProps = {
   amount: number
   onSuccess: (paymentIntentId: string) => void
   isProcessing: boolean

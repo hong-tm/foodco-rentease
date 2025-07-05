@@ -37,7 +37,7 @@ import {
   DialogTitle,
 } from './ui/dialog'
 
-interface CheckoutFormProps {
+type CheckoutFormProps = {
   amount: number
   stallId: number
   userId: string
@@ -208,7 +208,7 @@ const CheckoutForm = ({
   )
 }
 
-interface PaymentModalProps {
+type PaymentModalProps = {
   isOpen: boolean
   onClose: () => void
   clientSecret: string

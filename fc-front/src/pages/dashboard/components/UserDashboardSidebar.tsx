@@ -43,7 +43,7 @@ import {
 
 type Role = 'admin' | 'user' | 'rental'
 
-export interface User {
+export type User = {
   id: string
   name: string
   email: string
@@ -51,11 +51,11 @@ export interface User {
   image?: string
 }
 
-interface UserSession {
+type UserSession = {
   impersonatedBy?: boolean
 }
 
-interface SessionData {
+type SessionData = {
   user: User
   session: UserSession
 }
