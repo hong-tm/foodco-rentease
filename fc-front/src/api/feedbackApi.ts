@@ -5,7 +5,7 @@ import { z } from 'zod/v4'
 import { api } from '@/lib/api'
 import { authClient } from '@/lib/auth-client'
 
-export interface Feedback {
+export type Feedback = {
   id: number
   happiness: number // Assuming happiness is an integer (1 to 4)
   stall: number // Stall number
@@ -13,11 +13,11 @@ export interface Feedback {
   createdAt: string // Date of creation
 }
 
-export interface FeedbackResponse {
+export type FeedbackResponse = {
   feedback: Feedback[] // Assuming your feedback array is of type 'Feedback'
 }
 
-export interface FeedbackHappinessResponse {
+export type FeedbackHappinessResponse = {
   stallHappiness: {
     stallId: number
     totalHappiness: number

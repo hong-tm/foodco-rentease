@@ -288,7 +288,7 @@ export type CreatePaymentUtilityRequest = z.infer<
   typeof createPaymentUtilitySchema
 >
 
-export interface RawPaymentRecord {
+export type RawPaymentRecord = {
   paymentId: string
   stallId: number
   userId: string
@@ -321,11 +321,11 @@ export const paymentIntentSchema = z.object({
 
 export type PaymentIntentRequest = z.infer<typeof paymentIntentSchema>
 
-export interface PaymentIntentResponse {
+export type PaymentIntentResponse = {
   clientSecret: string
 }
 
-export interface PaymentNotification {
+export type PaymentNotification = {
   notificationId: number
   notificationerror: string
   notificationRead: boolean | null
@@ -334,7 +334,7 @@ export interface PaymentNotification {
   userId?: string | number
 }
 
-export interface PaymentIntentParams {
+export type PaymentIntentParams = {
   amount: number
   stallId: number
   userId: string

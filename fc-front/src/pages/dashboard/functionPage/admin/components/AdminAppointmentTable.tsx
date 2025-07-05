@@ -16,7 +16,7 @@ import {
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
 
-interface AdminAppointmentTableProps {
+type AdminAppointmentTableProps = {
   selectedMonth: string
 }
 

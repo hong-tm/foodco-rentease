@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/table'
 import PaymentModal from '@/components/PaymentModal'
 
-interface PaymentIntentParams {
+type PaymentIntentParams = {
   amount: number
   stallId: number
   userId: string
