@@ -11,7 +11,6 @@ import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
 import { authClient } from '@/lib/auth-client'
-import { verifyTurnstileToken } from '@/lib/verifyTurnstileToken'
 
 import { BackgroundLines } from '@/components/ui/background-lines'
 import { Button } from '@/components/ui/button'
@@ -57,31 +56,10 @@ export default function SignInPage() {
   const [pendingGoogle, setPendingGoogle] = useState(false)
   const [pendingGithub, setPendingGithub] = useState(false)
 
-  // async function checkSession() {
-  // 	const session = await authClient.getSession();
-
-  // 	if (session.data?.user) {
-  // 		navigate("/dashboard", { replace: true });
-  // 		return;
-  // 	}
-  // }
-  // checkSession();
-
   async function SignIn(values: z.infer<typeof signinFormSchema>) {
     setPending(true)
 
-    // Verify Turnstile token
-    const { success, data } = await verifyTurnstileToken(values.token)
-
-    if (!success) {
-      console.log('Failed to verify Turnstile')
-      setPending(false)
-      return
-    }
-
-    console.log('Turnstile verification successful:', data)
-
-    const { email, password, rememberMe } = values
+    const { email, password, rememberMe, token } = values
 
     await authClient.signIn.email(
       {
@@ -101,6 +79,10 @@ export default function SignInPage() {
         onError: async (ctx) => {
           toast.error(ctx.error.message ?? 'An error occurred')
           setPending(false)
+        },
+        headers: {
+          // only work on the domain that set in cloudflare turnstile,in development prefer to use google sign in
+          'x-captcha-response': token,
         },
       },
     )
@@ -237,6 +219,7 @@ export default function SignInPage() {
                       // Update token field
                       form.setValue('token', token, { shouldValidate: true })
                     }}
+                    // only work on the domain,in production prefer to use google sign in
                     onError={() => toast.warning('Turnstile error')}
                   />
 

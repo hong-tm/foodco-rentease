@@ -400,14 +400,3 @@ export const emailSendSchema = z.object({
   }),
   url: z.url(),
 })
-
-// Create a TypeScript type from the schema
-export type EmailSendType = z.infer<typeof emailSendSchema>
-
-export const SocialProfile = z.object({
-  given_name: z.string().min(1),
-  family_name: z.string().min(1),
-  name: z.string().min(1).optional(),
-})
-
-export type SocialProfileType = z.infer<typeof SocialProfile>
