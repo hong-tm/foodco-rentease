@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
 import { authClient } from '@/lib/auth-client'
-import { verifyTurnstileToken } from '@/lib/verifyTurnstileToken'
 
 import { BackgroundLines } from '@/components/ui/background-lines'
 import { Button } from '@/components/ui/button'
@@ -51,20 +50,9 @@ export default function SignUpPage() {
   const [pending, setPending] = useState(false)
 
   async function onSubmit(values: z.infer<typeof signupformSchema>) {
-    // Verify Turnstile token
     setPending(true)
 
-    const { success, data } = await verifyTurnstileToken(values.token)
-
-    if (!success) {
-      console.log('Failed to verify Turnstile')
-      setPending(false)
-      return
-    }
-
-    console.log('Turnstile verification successful:', data)
-
-    const { name, email, password } = values
+    const { name, email, password, token } = values
 
     await authClient.signUp.email(
       {
@@ -85,6 +73,10 @@ export default function SignUpPage() {
           toast.error(ctx.error.message ?? 'An error occurred')
           setPending(false) // This works fine for errors returned by `authClient`
         },
+        headers: {
+          // only work on the domain that set in cloudflare turnstile,in development prefer to use google sign in
+          'x-captcha-response': token,
+        },
       },
     )
 
@@ -93,9 +85,9 @@ export default function SignUpPage() {
 
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
-      <BackgroundLines className="-z-15 flex h-full w-full flex-col items-center justify-center px-4">
-        <Card className="z-10 mx-auto max-w-lg">
-          <CardHeader className="flex w-full items-center justify-center text-center select-none">
+      <BackgroundLines className="z-15 flex h-full w-full flex-col items-center justify-center px-4">
+        <Card className="z-10 mx-auto max-w-md lg:min-w-[500px]">
+          <CardHeader className="flex w-full flex-col items-center justify-center text-center select-none">
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
@@ -230,7 +222,8 @@ export default function SignUpPage() {
                       // Update token field
                       form.setValue('token', token, { shouldValidate: true })
                     }}
-                    onError={() => console.log('Turnstile error')}
+                    // only work on the domain,in production prefer to use google sign in
+                    onError={() => toast.warning('Turnstile error')}
                   />
 
                   {/* Hidden input for token */}
