@@ -46,6 +46,20 @@ const allowedOrigins = env.ALLOWED_ORIGINS?.split(',') || []
 const verifyEndpoint = env.TURNSTILE_VERIFY_URL
 const secret = env.TURNSTILE_SECRET_KEY
 
+app.use('*', async (c, next) => {
+  const session = await auth.api.getSession({ headers: c.req.raw.headers })
+
+  if (!session) {
+    c.set('user', null)
+    c.set('session', null)
+    return next()
+  }
+
+  c.set('user', session.user)
+  c.set('session', session.session)
+  return next()
+})
+
 // Add CORS middleware for all routes
 app.use(
   '*',
@@ -63,20 +77,6 @@ app.use(
     credentials: true,
   }),
 )
-
-app.use('*', async (c, next) => {
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-
-  if (!session) {
-    c.set('user', null)
-    c.set('session', null)
-    return next()
-  }
-
-  c.set('user', session.user)
-  c.set('session', session.session)
-  return next()
-})
 
 app.use('*', prettyJSON())
 

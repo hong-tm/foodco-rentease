@@ -1,14 +1,16 @@
-import { betterAuth } from 'better-auth'
 import type { BetterAuthOptions } from 'better-auth'
-import { admin as adminPlugin, oneTap, openAPI } from 'better-auth/plugins'
+import { betterAuth } from 'better-auth'
+import {
+  admin as adminPlugin,
+  captcha,
+  oneTap,
+  openAPI,
+} from 'better-auth/plugins'
 import { Pool } from 'pg'
 
 import { sendEmail } from '../action/email/email.js'
 import env from '../env.js'
 import { ac, admin, rental, user } from './permissions.js'
-import type { EmailSendType, SocialProfileType } from './sharedType.js'
-
-// import type { UserAttributes } from '../db/userModel.js'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -42,12 +44,16 @@ export const auth = betterAuth({
       roles: { admin, user, rental },
       // adminUserIds: env.ADMIN_USER_IDS?.split(",") || [],
     }),
+    captcha({
+      provider: 'cloudflare-turnstile',
+      secretKey: env.TURNSTILE_SECRET_KEY,
+    }),
   ],
 
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }: EmailSendType) => {
+    sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
         subject: 'Reset your password',
@@ -59,7 +65,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     // autoSignInAfterVerification: true,
     expiresIn: 3600, // 1 hour
-    sendVerificationEmail: async ({ user, url }: EmailSendType) => {
+    sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
         subject: 'Verify your email',
@@ -71,7 +77,7 @@ export const auth = betterAuth({
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      mapProfileToUser: (profile: SocialProfileType) => {
+      mapProfileToUser: (profile) => {
         return {
           firstName: profile.given_name,
           lastName: profile.family_name,
