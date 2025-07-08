@@ -41,12 +41,10 @@ export default function ChangePasswordPage() {
   const navigate = useNavigate()
 
   async function onSubmit(values: z.infer<typeof changePasswordFormSchema>) {
-    await authClient.changePassword(
-      {
-        newPassword: values.password,
-        currentPassword: values.currentPassword,
-      },
-      {
+    await authClient.changePassword({
+      newPassword: values.password,
+      currentPassword: values.currentPassword,
+      fetchOptions: {
         onRequest: () => {
           setPending(true)
           toast.loading('Updating...', { id: 'change-password' })
@@ -64,7 +62,7 @@ export default function ChangePasswordPage() {
           setPending(false)
         },
       },
-    )
+    })
   }
 
   return (

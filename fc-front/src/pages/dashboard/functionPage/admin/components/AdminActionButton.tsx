@@ -43,32 +43,34 @@ export function AdminActionButton({
   const { refetch } = useSession()
 
   const handleChangeRole = async () => {
-    try {
-      const newRole = userRole === 'rental' ? 'user' : 'rental'
-      await authClient.admin.setRole({
-        userId,
-        role: newRole,
-      })
+    const newRole = userRole === 'rental' ? 'user' : 'rental'
+    await authClient.admin.setRole({
+      userId,
+      role: newRole,
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success('Role changed successfully')
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message ?? 'An error occurred')
+        },
+      },
+    })
 
-      await queryClient.invalidateQueries({
-        queryKey: usersQueryKey.all,
-        refetchType: 'active',
-      })
+    await queryClient.invalidateQueries({
+      queryKey: usersQueryKey.all,
+      refetchType: 'active',
+    })
 
-      toast.success('Role changed successfully')
-    } catch (error) {
-      toast.error('Failed to change role: ' + error)
-    }
+    setOpenChangeRole(false)
   }
 
   const navigate = useNavigate()
 
   const handleImpersonateUser = async () => {
-    await authClient.admin.impersonateUser(
-      {
-        userId,
-      },
-      {
+    await authClient.admin.impersonateUser({
+      userId,
+      fetchOptions: {
         onSuccess: () => {
           navigate('/dashboard', { replace: true })
           toast.success('Impersonating user successfully')
@@ -77,36 +79,48 @@ export function AdminActionButton({
             refetchType: 'active',
           })
         },
-        onError: (error) => {
-          toast.error('Failed to impersonate user: ' + error)
+        onError: (ctx) => {
+          toast.error(ctx.error.message ?? 'An error occurred')
         },
       },
-    )
+    })
+    setOpenImpersonate(false)
     await refetch()
   }
 
   const handleBanUser = async () => {
-    try {
-      if (userBanned) {
-        await authClient.admin.unbanUser({
-          userId,
-        })
-        toast.info('User unbanned successfully')
-      } else {
-        await authClient.admin.banUser({
-          userId,
-          banExpiresIn: 60 * 60 * 24 * 1, // 1 day
-        })
-        toast.success('User banned successfully (1 day)')
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: usersQueryKey.all,
-        refetchType: 'active',
+    if (userBanned) {
+      await authClient.admin.unbanUser({
+        userId,
+        fetchOptions: {
+          onSuccess: () => {
+            toast.info('User unbanned successfully')
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message ?? 'An error occurred')
+          },
+        },
       })
-    } catch (error) {
-      toast.error('Failed to change user ban status: ' + error)
+      toast.info('User unbanned successfully')
+    } else {
+      await authClient.admin.banUser({
+        userId,
+        banExpiresIn: 60 * 60 * 24 * 1, // 1 day
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('User banned successfully (1 day)')
+          },
+          onError: (ctx) => {
+            toast.error(ctx.error.message ?? 'An error occurred')
+          },
+        },
+      })
     }
+
+    await queryClient.invalidateQueries({
+      queryKey: usersQueryKey.all,
+      refetchType: 'active',
+    })
   }
 
   return (
