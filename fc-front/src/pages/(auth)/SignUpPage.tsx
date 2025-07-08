@@ -54,13 +54,11 @@ export default function SignUpPage() {
 
     const { name, email, password, token } = values
 
-    await authClient.signUp.email(
-      {
-        email,
-        password,
-        name,
-      },
-      {
+    await authClient.signUp.email({
+      email,
+      password,
+      name,
+      fetchOptions: {
         onRequest: () => {
           setPending(true)
         },
@@ -78,7 +76,7 @@ export default function SignUpPage() {
           'x-captcha-response': token,
         },
       },
-    )
+    })
 
     setPending(false) // Guarantees the loader stops
   }

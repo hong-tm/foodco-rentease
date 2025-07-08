@@ -41,11 +41,9 @@ export default function ResetPasswordPage() {
   const navigate = useNavigate()
 
   async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
-    await authClient.resetPassword(
-      {
-        newPassword: values.password,
-      },
-      {
+    await authClient.resetPassword({
+      newPassword: values.password,
+      fetchOptions: {
         onRequest: () => {
           setPending(true)
         },
@@ -60,7 +58,7 @@ export default function ResetPasswordPage() {
           setPending(false)
         },
       },
-    )
+    })
   }
 
   return (

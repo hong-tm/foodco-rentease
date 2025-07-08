@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   BadgeCheckIcon,
   ChevronsUpDownIcon,
@@ -41,6 +42,7 @@ export function NavUser({
   const { isMobile } = useSidebar()
 
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   const [pending, setPending] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -52,6 +54,7 @@ export function NavUser({
         fetchOptions: {
           onSuccess: () => {
             navigate('/', { replace: true })
+            queryClient.clear()
           },
         },
       })

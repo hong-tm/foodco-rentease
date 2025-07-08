@@ -61,13 +61,11 @@ export default function SignInPage() {
 
     const { email, password, rememberMe, token } = values
 
-    await authClient.signIn.email(
-      {
-        email,
-        password,
-        rememberMe,
-      },
-      {
+    await authClient.signIn.email({
+      email,
+      password,
+      rememberMe,
+      fetchOptions: {
         onRequest: () => {
           setPending(true)
         },
@@ -85,18 +83,16 @@ export default function SignInPage() {
           'x-captcha-response': token,
         },
       },
-    )
+    })
     setPending(false) // Guarantees the loader stops
   }
 
   async function handlerSignInGoogle() {
-    await authClient.signIn.social(
-      {
-        provider: 'google',
-        callbackURL: '/dashboard',
-        errorCallbackURL: '/',
-      },
-      {
+    await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: '/dashboard',
+      errorCallbackURL: '/',
+      fetchOptions: {
         onRequest: () => {
           setPendingGoogle(true)
         },
@@ -109,17 +105,15 @@ export default function SignInPage() {
           setPendingGoogle(false)
         },
       },
-    )
+    })
   }
 
   async function handlerSignInGithub() {
-    await authClient.signIn.social(
-      {
-        provider: 'github',
-        callbackURL: '/dashboard',
-        errorCallbackURL: '/',
-      },
-      {
+    await authClient.signIn.social({
+      provider: 'github',
+      callbackURL: '/dashboard',
+      errorCallbackURL: '/',
+      fetchOptions: {
         onRequest: () => {
           setPendingGithub(true)
         },
@@ -131,7 +125,7 @@ export default function SignInPage() {
           setPendingGithub(false)
         },
       },
-    )
+    })
   }
 
   return (

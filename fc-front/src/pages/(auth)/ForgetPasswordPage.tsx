@@ -40,12 +40,10 @@ export default function ForgetPasswordPage() {
   async function onSubmit(values: z.infer<typeof forgotPasswordFormSchema>) {
     const { email } = values
 
-    await authClient.forgetPassword(
-      {
-        email,
-        redirectTo: '/reset-password',
-      },
-      {
+    await authClient.forgetPassword({
+      email,
+      redirectTo: '/reset-password',
+      fetchOptions: {
         onRequest: () => {
           setPending(true)
         },
@@ -61,7 +59,7 @@ export default function ForgetPasswordPage() {
           setPending(false)
         },
       },
-    )
+    })
   }
 
   return (

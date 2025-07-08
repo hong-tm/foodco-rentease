@@ -63,11 +63,9 @@ export default function UpdateProfileButton({
     setPending(true)
 
     try {
-      await authClient.updateUser(
-        {
-          name,
-        },
-        {
+      await authClient.updateUser({
+        name,
+        fetchOptions: {
           onSuccess: () => {
             onUpdate(name)
             setDialogOpen(false)
@@ -78,7 +76,7 @@ export default function UpdateProfileButton({
             toast.error(ctx.error.message ?? 'An error occurred')
           },
         },
-      )
+      })
     } finally {
       setPending(false)
     }
