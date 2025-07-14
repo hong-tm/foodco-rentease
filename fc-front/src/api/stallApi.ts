@@ -1,10 +1,10 @@
-import {
+import type {
   StallTierAttributes,
   StallUserAttributes,
   UserAttributes,
 } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
-import { UseQueryOptions } from '@tanstack/react-query'
+import type { UseQueryOptions } from '@tanstack/react-query'
 import { z } from 'zod/v4'
 
 import { api } from '@/lib/api'

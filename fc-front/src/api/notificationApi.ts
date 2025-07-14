@@ -1,4 +1,7 @@
-import { NotificationAttributes, UserAttributes } from '@server/db/userModel'
+import type {
+  NotificationAttributes,
+  UserAttributes,
+} from '@server/db/userModel'
 import {
   createAppointmentSchema,
   updateAppointmentStatusSchema,

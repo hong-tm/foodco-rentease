@@ -39,7 +39,7 @@ export const auth = betterAuth({
     oneTap(),
     adminPlugin({
       defaultRole: 'user',
-      adminRoles: ['admin'],
+      adminRoles: 'admin',
       ac,
       roles: { admin, user, rental },
       // adminUserIds: env.ADMIN_USER_IDS?.split(",") || [],

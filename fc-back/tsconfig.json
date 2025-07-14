@@ -1,22 +1,23 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "composite": true,
     "strict": true,
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
     "types": ["node", "hono"],
-    "lib": ["ES2020", "DOM"],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "moduleResolution": "NodeNext",
-    "experimentalDecorators": true,
-    "composite": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
     "emitDecoratorMetadata": true,
-    "baseUrl": "."
+    "experimentalDecorators": true
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "include": ["./**/*.ts", "./*.ts"]
 }

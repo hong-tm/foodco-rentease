@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
+import type { GetStallsResponse } from '@/api/stallApi'
+import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { StallUserAttributes } from '@server/db/userModel'
+import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
 import { useIsMobile } from '@/hooks/use-mobile'

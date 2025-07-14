@@ -1,5 +1,5 @@
 import { useSession } from '@/api/adminApi'
-import { StallButtonProps, stallsQueryKey } from '@/api/stallApi'
+import { type StallButtonProps, stallsQueryKey } from '@/api/stallApi'
 import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import { FishSymbolIcon } from 'lucide-react'

@@ -1,8 +1,9 @@
 import { createUtilityPaymentRecord, paymentsQueryKey } from '@/api/paymentApi'
-import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
+import type { GetStallsResponse } from '@/api/stallApi'
+import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  StallUtilitiesFormValues,
+  type StallUtilitiesFormValues,
   stallUtilitiesFormSchema,
 } from '@server/lib/sharedType'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
