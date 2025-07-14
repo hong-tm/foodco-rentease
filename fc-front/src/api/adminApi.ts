@@ -1,9 +1,10 @@
-import {
+import type {
   StallAttributes,
   UserAttributes,
   UserStallAttributes,
 } from '@server/db/userModel'
-import { UseQueryOptions, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
+import type { UseQueryOptions } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
 import { authClient } from '@/lib/auth-client'
