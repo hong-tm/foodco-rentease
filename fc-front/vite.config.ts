@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import type { PluginOption } from 'vite'
-import oxlintPlugin from 'vite-plugin-oxlint'
+// import oxlintPlugin from 'vite-plugin-oxlint'
 
 // import { visualizer } from "rollup-plugin-visualizer";
 
@@ -13,13 +13,16 @@ export default defineConfig(({ command }) => {
     plugins: [
       viteReact({
         babel: {
-          plugins: ['babel-plugin-react-compiler'],
+          plugins: [
+            ['@babel/plugin-proposal-decorators', { legacy: true }],
+            'babel-plugin-react-compiler',
+          ],
         },
       }),
       tailwindcss(),
-      oxlintPlugin({
-        params: '--deny-warnings --quiet',
-      }),
+      // oxlintPlugin({
+      //   params: '--deny-warnings --quiet',
+      // }),
       // visualizer({
       // 	open: true,
       // 	gzipSize: true,
