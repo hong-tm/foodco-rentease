@@ -1,4 +1,5 @@
-import { GetUsersResponse, fetchUsersQueryOptions } from '@/api/adminApi'
+import type { GetUsersResponse } from '@/api/adminApi'
+import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

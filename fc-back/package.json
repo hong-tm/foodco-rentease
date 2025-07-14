@@ -14,11 +14,11 @@
     "check": "prettier --write ."
   },
   "dependencies": {
-    "@hono/node-server": "^1.15.0",
-    "@hono/zod-validator": "^0.7.0",
+    "@hono/node-server": "^1.16.0",
+    "@hono/zod-validator": "^0.7.1",
     "@json2csv/plainjs": "^7.0.6",
     "@marsidev/react-turnstile": "^1.1.0",
-    "@sentry/node": "^9.36.0",
+    "@sentry/node": "^9.38.0",
     "@sequelize/core": "7.0.0-alpha.46",
     "@sequelize/postgres": "7.0.0-alpha.46",
     "@sequelize/sqlite3": "7.0.0-alpha.46",
@@ -28,7 +28,7 @@
     "better-sqlite3": "^11.10.0",
     "dotenv": "^16.6.1",
     "fc-back": "file:",
-    "hono": "^4.8.4",
+    "hono": "^4.8.5",
     "hono-pino": "^0.7.2",
     "hono-rate-limiter": "^0.4.2",
     "npm": "^10.9.3",
@@ -42,9 +42,9 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
+    "@ianvs/prettier-plugin-sort-imports": "^4.5.1",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^20.19.6",
+    "@types/node": "^20.19.7",
     "@types/pg": "^8.15.4",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.2",

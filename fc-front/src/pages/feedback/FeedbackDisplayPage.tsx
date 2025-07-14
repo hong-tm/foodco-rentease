@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  Feedback,
+  type Feedback,
   deleteFeedback,
   feedbacksQueryKey,
   getAllFeedbackQueryOptions,

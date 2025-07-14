@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSession } from '@/api/adminApi'
 import { createAppointment, notificationsQueryKey } from '@/api/notificationApi'
-import { StallFormProps } from '@/api/stallApi'
+import type { StallFormProps } from '@/api/stallApi'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { addDays, format } from 'date-fns'

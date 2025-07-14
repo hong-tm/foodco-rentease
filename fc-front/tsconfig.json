@@ -38,5 +38,9 @@
     "strictNullChecks": true
   },
 
-  "references": [{ "path": "./../fc-back/tsconfig.json" }]
+  "references": [
+    {
+      "path": "./../fc-back/tsconfig.json"
+    }
+  ]
 }

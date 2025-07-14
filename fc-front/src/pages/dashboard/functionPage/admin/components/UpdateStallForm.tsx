@@ -1,22 +1,21 @@
+import type { GetStallsResponse, StallFormProps } from '@/api/stallApi'
 import {
-  GetStallsResponse,
-  StallFormProps,
   fetchStallTierPricesQueryOptions,
   fetchStallsQueryOptions,
   updateStall,
 } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { StallUserAttributes } from '@server/db/userModel'
+import type { StallUserAttributes } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { UseFormReturn, useForm } from 'react-hook-form'
+import { type UseFormReturn, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod/v4'
 
-import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'

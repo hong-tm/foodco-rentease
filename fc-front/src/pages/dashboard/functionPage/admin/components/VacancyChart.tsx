@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ChartConfig, ChartContainer } from '@/components/ui/chart'
+import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
 
 const chartConfig = {
   occupiedStalls: {
