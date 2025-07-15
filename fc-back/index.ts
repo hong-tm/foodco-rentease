@@ -169,7 +169,14 @@ app.on(['POST', 'GET'], '/api/auth/*', (c) => {
 
 app.use(
   pinoLogger({
-    pino: pino(env.NODE_ENV === 'production' ? undefined : pretty()),
+    pino: pino(
+      {
+        level: env.LOG_LEVEL || 'info',
+      },
+      env.NODE_ENV === 'production'
+        ? undefined
+        : pretty({ translateTime: 'SYS:dd-mm-yyyy HH:MM:ss' }),
+    ),
     http: {
       reqId: () => crypto.randomUUID(),
     },

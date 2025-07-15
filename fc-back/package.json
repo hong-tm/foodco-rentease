@@ -10,6 +10,7 @@
     "dev": "tsx watch index.ts",
     "build": "tsc --outDir dist",
     "start": "node dist/index.js",
+    "clean-install": "npm install --omit=dev",
     "preview": "vite preview",
     "check": "prettier --write ."
   },
