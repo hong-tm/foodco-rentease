@@ -90,14 +90,17 @@ export const notificationsRoutes = new Hono<AuthType>()
         NotificationTable.create(data),
       )
 
-      if (!notification) {
-        return c.json({ message: 'Notification not found!' }, 404)
-      }
-
       if (error) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Create Notification Error',
+        )
         return c.json({ message: 'Internal Server Error!' }, 500)
       }
 
+      if (!notification) {
+        return c.json({ message: 'Notification not found!' }, 404)
+      }
       return c.json({ notification: notification }, 201)
     },
   )
@@ -121,12 +124,16 @@ export const notificationsRoutes = new Hono<AuthType>()
         ),
       )
 
-      if (!notification) {
-        return c.json({ message: 'Notification not found!' }, 404)
+      if (error) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Update Appointment Status Error',
+        )
+        return c.json({ message: 'Internal Server Error!' }, 500)
       }
 
-      if (error) {
-        return c.json({ message: 'Internal Server Error!' }, 500)
+      if (!notification) {
+        return c.json({ message: 'Notification not found!' }, 404)
       }
 
       return c.json({ notification: notification }, 201)

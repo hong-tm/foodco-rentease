@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Parser } from '@json2csv/plainjs'
+import type { AuthType } from 'lib/auth.js'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import Stripe from 'stripe'
 
@@ -26,13 +27,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2025-02-24.acacia',
 })
 
-type UserContext = {
-  user: {
-    id: string
-  }
-}
-
-export const paymentRoutes = new Hono<{ Variables: UserContext }>()
+export const paymentRoutes = new Hono<AuthType>()
   .get('/records', async (c) => {
     try {
       const payments = await PaymentTable.findAll({
@@ -46,7 +41,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return c.json(payments, 200)
     } catch (error: any) {
-      return c.json({ message: error.message }, 500)
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Get Payment Records Error',
+      )
+      return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
 
@@ -71,6 +70,10 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
         }
         return c.json(response, 201)
       } catch (error: any) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Create Payment Intent Error',
+        )
         return c.json({ message: 'Internal Server Error!' }, 500)
       }
     },
@@ -138,7 +141,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
         return c.json(paymentRecord, 201)
       } catch (error: any) {
-        return c.json({ message: error.message }, 500)
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Create Payment Record Error',
+        )
+        return c.json({ message: 'Internal Server Error' }, 500)
       }
     },
   )
@@ -166,6 +173,10 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
         return c.json(payment, 201)
       } catch (error: any) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Update Payment Status Error',
+        )
         return c.json({ message: 'Internal Sever Error!' }, 500)
       }
     },
@@ -200,7 +211,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
     )
 
     if (error) {
-      return c.json({ message: error.message }, 500)
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Download PDF Error',
+      )
+      return c.json({ message: 'Internal Server Error' }, 500)
     }
 
     return await generatePDF(payments)
@@ -214,7 +229,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return await generateCSV(payments)
     } catch (error: any) {
-      return c.json({ message: error.message }, 500)
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Download CSV Error',
+      )
+      return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
   .get('/download-rental-pdf', async (c) => {
@@ -230,8 +249,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return await generatePDF(payments)
     } catch (error: any) {
-      console.error('PDF generation error:', error)
-      return c.json({ message: error.message }, 500)
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Download Rental PDF Error',
+      )
+      return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
   .get('/download-rental-csv', async (c) => {
@@ -247,7 +269,11 @@ export const paymentRoutes = new Hono<{ Variables: UserContext }>()
 
       return await generateCSV(payments)
     } catch (error: any) {
-      return c.json({ message: error.message }, 500)
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Download Rental CSV Error',
+      )
+      return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
 
