@@ -73,8 +73,11 @@ export const usersRoute = new Hono<AuthType>()
       )
 
       if (error) {
-        console.error('Error in /send-reminder-email:', error.message || error)
-        return c.json({ message: 'Send reminder email failed!' }, 500)
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Send Reminder Email Error',
+        )
+        return c.json({ message: 'Internal Server Error' }, 500)
       }
 
       return c.json({ emailResponse: emailResponse }, 201)

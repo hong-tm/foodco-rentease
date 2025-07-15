@@ -154,7 +154,11 @@ export const stallsRoute = new Hono<AuthType>()
       const { data: savedStall, error } = await tryCatch(stall.save())
 
       if (error) {
-        return c.json({ message: 'Failed to update stall!' }, 500)
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Update Stall Error',
+        )
+        return c.json({ message: 'Internal Server Error' }, 500)
       }
 
       return c.json({ stall: savedStall }, 200)

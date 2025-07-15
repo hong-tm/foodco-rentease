@@ -32,12 +32,16 @@ export const feedbacksRoute = new Hono<AuthType>()
         FeedbackTable.create(c.req.valid('json')),
       )
 
-      if (!feedback) {
-        return c.json({ message: 'Feedback not found!' }, 404)
+      if (error) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Create Feedback Error',
+        )
+        return c.json({ message: 'Internal Server Error!' }, 500)
       }
 
-      if (error) {
-        return c.json({ message: 'Internal Server Error!' }, 500)
+      if (!feedback) {
+        return c.json({ message: 'Feedback not found!' }, 404)
       }
 
       return c.json({ feedback: feedback }, 201)
@@ -62,12 +66,16 @@ export const feedbacksRoute = new Hono<AuthType>()
         }),
       )
 
-      if (!feedback) {
-        return c.json({ message: 'Feedback not found!' }, 404)
+      if (error) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Delete Feedback Error',
+        )
+        return c.json({ message: 'Internal Server Error!' }, 500)
       }
 
-      if (error) {
-        return c.json({ message: 'Internal Server Error!' }, 500)
+      if (!feedback) {
+        return c.json({ message: 'Feedback not found!' }, 404)
       }
 
       return c.json({ feedback: feedback }, 200)
@@ -99,12 +107,16 @@ export const feedbacksRoute = new Hono<AuthType>()
       }),
     )
 
-    if (!feedbacks) {
-      return c.json({ message: 'No feedbacks found!' }, 404)
+    if (error) {
+      c.var.logger.error(
+        { cause: error.cause, message: error.message },
+        'Get Feedback Happiness Error',
+      )
+      return c.json({ message: 'Internal Server Error!' }, 500)
     }
 
-    if (error) {
-      return c.json({ message: 'Internal Server Error!' }, 500)
+    if (!feedbacks) {
+      return c.json({ message: 'No feedbacks found!' }, 404)
     }
 
     return c.json(

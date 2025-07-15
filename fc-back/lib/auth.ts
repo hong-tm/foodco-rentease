@@ -6,6 +6,7 @@ import {
   oneTap,
   openAPI,
 } from 'better-auth/plugins'
+import type { PinoLogger } from 'hono-pino'
 import { Pool } from 'pg'
 
 import { sendEmail } from '../action/email/email.js'
@@ -121,6 +122,7 @@ export type AuthType = {
   Variables: {
     user: typeof auth.$Infer.Session.user | null
     session: typeof auth.$Infer.Session.session | null
+    logger: PinoLogger
   }
 }
 
