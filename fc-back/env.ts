@@ -19,6 +19,7 @@ const EnvSchema = z.object({
 
   EMAIL_VERIFICATION_CALLBACK_URL: z.string(),
   RESEND_API: z.string(),
+  RESEND_FROM_EMAIL: z.email(),
   TURNSTILE_SECRET_KEY: z.string(),
   TURNSTILE_VERIFY_URL: z
     .url({ error: 'This is not a valid url' })
