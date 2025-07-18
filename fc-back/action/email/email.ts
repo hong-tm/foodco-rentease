@@ -18,13 +18,14 @@ export async function sendEmail({
   }
 
   const { data, error } = await resend.emails.send({
-    from: `tech@nullsoul.com`,
+    from: env.RESEND_FROM_EMAIL,
     to: to,
     subject: subject,
     text: text,
   })
 
   if (error) {
+    console.log(error)
     throw new Error(error.name)
   }
 
