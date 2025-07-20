@@ -1,8 +1,10 @@
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import type { PluginOption } from 'vite'
+
 // import oxlintPlugin from 'vite-plugin-oxlint'
 
 // import { visualizer } from "rollup-plugin-visualizer";
@@ -11,6 +13,10 @@ import type { PluginOption } from 'vite'
 export default defineConfig(({ command }) => {
   const baseConfig = {
     plugins: [
+      tanstackRouter({
+        target: 'react',
+        autoCodeSplitting: true,
+      }),
       viteReact({
         babel: {
           plugins: [
