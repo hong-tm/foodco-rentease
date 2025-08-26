@@ -31,7 +31,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/passwod-input'
 import { Separator } from '@/components/ui/separator'
 import { FishSymbolIcon } from '@/components/fish-symbol'
@@ -168,6 +167,7 @@ export default function SignInPage() {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="password"
@@ -197,10 +197,26 @@ export default function SignInPage() {
                     )}
                   />
 
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="remember" />
-                    <Label htmlFor="remember">Remember me</Label>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="select-none">
+                            Remember me
+                          </FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   {/* Turnstile */}
                   <Turnstile
