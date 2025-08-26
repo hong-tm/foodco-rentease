@@ -25,7 +25,12 @@ export async function sendEmail({
   })
 
   if (error) {
-    console.log(error)
+    await resend.emails.send({
+      from: env.RESEND_FROM_EMAIL,
+      to: env.RESEND_FROM_EMAIL,
+      subject: 'Error sending email',
+      html: `<p>Error sending email: ${error.message}</p>`,
+    })
     throw new Error(error.name)
   }
 
