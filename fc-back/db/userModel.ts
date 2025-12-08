@@ -132,10 +132,10 @@ export class account extends Model<
   @NotNull
   declare providerId: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare accessToken: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare refreshToken: CreationOptional<string>
 
   @Attribute(DataTypes.TEXT)
