@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import type { PluginOption } from 'vite'
+
 // import oxlintPlugin from 'vite-plugin-oxlint'
 
 // import { visualizer } from "rollup-plugin-visualizer";
