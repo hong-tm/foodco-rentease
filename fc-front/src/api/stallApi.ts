@@ -120,7 +120,7 @@ export async function updateStall(values: z.infer<typeof updateStallSchema>) {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.message)
+    throw new Error('message' in data ? data.message : data.error)
   }
 
   const data = await res.json()

@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Parser } from '@json2csv/plainjs'
-import type { AuthType } from 'lib/auth.js'
+import type { AuthType } from '../lib/auth.js'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import Stripe from 'stripe'
 

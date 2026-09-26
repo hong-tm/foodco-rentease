@@ -6,7 +6,8 @@ import {
   getAllPaymentRecordsQueryOptions,
   paymentsQueryKey,
 } from '@/api/paymentApi'
-import { GetStallsResponse, fetchStallsQueryOptions } from '@/api/stallApi'
+import type { GetStallsResponse } from '@/api/stallApi'
+import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type {
   PaymentIntentResponse,
   PaymentNotification,

@@ -26,8 +26,8 @@ import {
 
 type UserAction = {
   userId: string
-  userRole: string
-  userBanned: boolean
+  userRole?: string
+  userBanned?: boolean | null
 }
 
 export function AdminActionButton({
