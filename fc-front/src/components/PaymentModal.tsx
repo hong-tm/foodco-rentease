@@ -11,7 +11,7 @@ import {
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js'
-import { StripeElementsOptions } from '@stripe/stripe-js'
+import type { StripeElementsOptions } from '@stripe/stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'

@@ -41,7 +41,7 @@ export async function getAllFeedback(): Promise<Feedback[]> {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.message)
+    throw new Error('message' in data ? data.message : data.error)
   }
 
   // Cast the response to FeedbackResponse using `as`
@@ -62,7 +62,7 @@ export async function getFeedbackHappiness(): Promise<
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.message)
+    throw new Error('message' in data ? data.message : data.error)
   }
 
   const data = await res.json()
@@ -90,7 +90,7 @@ export async function deleteFeedback({ id }: { id: number }) {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.message)
+    throw new Error('message' in data ? data.message : data.error)
   }
 
   const data = await res.json()

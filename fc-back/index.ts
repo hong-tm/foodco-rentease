@@ -248,7 +248,7 @@ const sequelize = new Sequelize({
   ],
 })
 
-async function syncModels(log = true) {
+export async function syncModels(log = true) {
   try {
     await sequelize.sync({})
     if (log) {

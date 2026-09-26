@@ -1,21 +1,20 @@
 import type {
-  StallAttributes,
   UserAttributes,
   UserStallAttributes,
 } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 import type { UseQueryOptions } from '@tanstack/react-query'
+import type { UserWithRole } from 'better-auth/client/plugins'
 
 import { api } from '@/lib/api'
 import { authClient } from '@/lib/auth-client'
 
 export type GetUsersResponse = {
-  users: UserAttributes[]
+  users: (UserWithRole & Partial<Pick<UserAttributes, 'phone'>>)[]
 }
 
 export type GetRentalsResponse = {
   user: UserStallAttributes[]
-  stalls: StallAttributes[]
 }
 
 export type SendReminderEmailResponse = {
@@ -36,7 +35,9 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
     },
   })
 
-  return data as GetUsersResponse
+  if (!data) throw new Error('Failed to fetch users')
+
+  return { users: data.users }
 }
 
 export async function fetchRentals(): Promise<GetRentalsResponse> {
@@ -48,11 +49,11 @@ export async function fetchRentals(): Promise<GetRentalsResponse> {
   }
 
   const data = await res.json()
-  const { user, stalls } = data as GetRentalsResponse
+  const { user } = data
 
   if (!Array.isArray(user)) throw new Error('Invalid user data format')
 
-  return { user, stalls }
+  return { user }
 }
 
 export const useSession = () => {
@@ -83,7 +84,7 @@ export async function sendReminderEmail({
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.message)
+    throw new Error('message' in data ? data.message : data.error)
   }
 
   const data = await res.json()
