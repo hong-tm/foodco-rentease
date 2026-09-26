@@ -91,6 +91,7 @@
 <br>
 
 - Node.js (v18+)
+- pnpm (v10+)
 - PostgreSQL (v14+)
 - Stripe account
 - Resend API key
@@ -105,18 +106,18 @@ git clone https://github.com/hong-tm/foodco-rentease.git
 cd foodco-rentease
 
 # Install dependencies
-cd fc-back && npm install
-cd ../fc-front && npm install
+cd fc-back && pnpm install
+cd ../fc-front && pnpm install
 
 # Configure environment variables
 cp .env.example .env
 # Edit .env with your credentials
 
 # Start development servers
-cd fc-back && npm run dev
+cd fc-back && pnpm dev
 
 # In a new terminal
-cd fc-front && npm run dev
+cd fc-front && pnpm dev
 ```
 
 ## 👥 User Roles
