@@ -28,8 +28,10 @@ dist-ssr
 
 # dependencies
 node_modules
-.pnp
 .pnp.js
+
+# npm lockfile is not used; this repo installs with pnpm
+package-lock.json
 
 # testing
 coverage

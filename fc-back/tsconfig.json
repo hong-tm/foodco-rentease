@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "composite": true,
+    "composite": false,
     "strict": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
@@ -14,7 +14,7 @@
     "jsxImportSource": "hono/jsx",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true

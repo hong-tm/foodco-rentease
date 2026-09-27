@@ -273,7 +273,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
         <ReactQueryDevtools initialIsOpen={false} />
-        <RouterProvider router={router} future={{ v7_startTransition: true }} />
+        <RouterProvider router={router} />
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>,
