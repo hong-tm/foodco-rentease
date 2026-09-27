@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 
-import Breadcrumbs from './components/Breadcrumbs'
+import Breadcrumbs from './components/breadcrumbs'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
 

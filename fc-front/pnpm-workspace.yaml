@@ -1,5 +1,32 @@
-onlyBuiltDependencies:
-  - '@parcel/watcher'
-  - '@tailwindcss/oxide'
-  - esbuild
-  - oxc-resolver
+allowBuilds:
+  '@parcel/watcher': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  oxc-resolver: true
+overrides:
+  '@babel/core': 7.29.6
+  '@hono/node-server': 1.19.15
+  browserslist: 4.28.7
+  defu: 6.1.5
+  diff: 5.2.2
+  effect: 3.20.0
+  engine.io: 6.6.7
+  esbuild: 0.25.0
+  fflate: 0.4.9
+  immutable: 5.1.8
+  js-yaml: 4.3.2
+  nanoid@3: 3.3.18
+  nanoid@5: 5.1.16
+  picomatch@2: 2.3.2
+  picomatch@4: 4.0.4
+  piscina: 4.9.3
+  playwright: 1.55.1
+  postcss: 8.5.23
+  rollup: 4.59.0
+  smol-toml: 1.7.1
+  socket.io-parser: 4.2.7
+  tar: 7.5.21
+  tmp: 0.2.7
+  uuid: 11.1.1
+  ws: 8.21.0
+  yaml: 2.8.3
