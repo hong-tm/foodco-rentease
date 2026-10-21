@@ -2,18 +2,16 @@ allowBuilds:
   better-sqlite3: false
   esbuild: true
   sqlite3: false
-onlyBuiltDependencies:
-  - better-sqlite3
-  - esbuild
-  - sqlite3
 overrides:
-  "@opentelemetry/core": "2.8.0"
+  "@opentelemetry/api": "1.9.1"
   "@tootallnate/once": "2.0.1"
-  "brace-expansion": "1.1.18"
+  "brace-expansion": "1.1.21"
   "defu": "6.1.5"
   "diff": "4.0.4"
   "dottie": "2.0.7"
-  "ip-address": "10.3.1"
+  "ip-address": "10.7.1"
+  "fast-copy": "3.1.0"
+  "source-map-js": "1.2.2"
   "lodash": "4.18.1"
   "minimatch": "3.1.4"
   "nanoid": "3.3.18"
