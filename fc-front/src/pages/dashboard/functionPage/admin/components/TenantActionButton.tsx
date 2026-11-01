@@ -5,6 +5,8 @@ import { useMutation } from '@tanstack/react-query'
 import { MailIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { formatDay } from '@/lib/format'
+
 import { Button } from '@/components/ui/button'
 
 type UserAction = {
@@ -49,13 +51,7 @@ export function TenantActionButton({
     <>
       <ResponsiveAlertDialog
         title="Send reminder payment email?"
-        description={`Goes to ${userEmail} for ${userStallName} (stall ${userStallId}), ending ${new Date(
-          stallEndAt,
-        ).toLocaleDateString(undefined, {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        })}.`}
+        description={`Goes to ${userEmail} for ${userStallName} (stall ${userStallId}), ending ${formatDay(stallEndAt)}.`}
         confirmLabel="Send reminder"
         onClick={handlerReminderEmail}
         open={openSendReminder}

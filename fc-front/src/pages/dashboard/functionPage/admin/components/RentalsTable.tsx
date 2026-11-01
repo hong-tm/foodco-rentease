@@ -1,9 +1,12 @@
 import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
 
+import { formatDay } from '@/lib/format'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -19,6 +22,11 @@ import { TenantActionButton } from './TenantActionButton'
 const DAY_MS = 24 * 60 * 60 * 1000
 const REMINDER_WINDOW_DAYS = 7
 
+const labelClass =
+  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
+
+const urgentBadgeClass = 'font-medium tabular-nums'
+
 function daysLeft(endAt?: Date | string | null) {
   if (!endAt) return null
   return Math.ceil((new Date(endAt).getTime() - Date.now()) / DAY_MS)
@@ -33,20 +41,11 @@ function expiryBadge(endAt?: Date | string | null) {
   return `${left} days left`
 }
 
-function formatDay(value?: Date | string | null) {
-  if (!value) return null
-  return new Date(value).toLocaleDateString(undefined, {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
 function leasePeriod(
   startAt?: Date | string | null,
   endAt?: Date | string | null,
 ) {
-  const start = formatDay(startAt) ?? 'No start date'
+  const start = formatDay(startAt) ?? 'no start date'
   const end = formatDay(endAt) ?? 'no end date'
   return `${start} – ${end}`
 }
@@ -56,9 +55,23 @@ export default function RentalsTable() {
 
   if (isLoading) {
     return (
-      <p role="status" className="text-muted-foreground p-4 text-sm">
-        Loading tenants…
-      </p>
+      <div
+        role="status"
+        aria-live="polite"
+        className="border-border flex flex-col gap-5 rounded-xl border p-6"
+      >
+        <span className="sr-only">Loading tenants…</span>
+        {[0, 1, 2, 3].map((row) => (
+          <div key={row} className="flex items-center gap-3" aria-hidden="true">
+            <Skeleton className="size-9 rounded-full" />
+            <div className="flex flex-1 flex-col gap-2">
+              <Skeleton className="h-3 w-40" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+            <Skeleton className="h-8 w-32" />
+          </div>
+        ))}
+      </div>
     )
   }
 
@@ -66,7 +79,7 @@ export default function RentalsTable() {
     return (
       <div
         role="alert"
-        className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-lg border p-4 text-sm"
+        className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
       >
         <p>Tenants could not be loaded: {error.message}</p>
         <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -106,22 +119,26 @@ export default function RentalsTable() {
   const soonest = endingSoon[0]
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <p className="flex items-baseline gap-2">
-          <span className="text-3xl leading-none font-semibold tabular-nums">
+    <div className="flex flex-col gap-6">
+      <section aria-label="Reminder summary" className="flex flex-col gap-3">
+        <div className="flex items-baseline gap-3">
+          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
             {endingSoon.length}
           </span>
-          <span className="text-sm font-medium">
+          <span className={labelClass}>
             {endingSoon.length === 1
               ? 'lease ending within 7 days'
               : 'leases ending within 7 days'}
           </span>
-        </p>
+        </div>
         {soonest ? (
-          <p className="text-muted-foreground text-sm">
-            Soonest: {soonest.stall.stallName} (stall{' '}
-            {soonest.stall.stallNumber}), {formatDay(soonest.stall.endAt)}
+          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+            <span className={labelClass}>Soonest</span>
+            <span className="font-medium">{soonest.stall.stallName}</span>
+            <span className="text-muted-foreground tabular-nums">
+              Stall {soonest.stall.stallNumber} · Ends{' '}
+              {formatDay(soonest.stall.endAt)}
+            </span>
           </p>
         ) : (
           <p className="text-muted-foreground text-sm">
@@ -129,27 +146,37 @@ export default function RentalsTable() {
           </p>
         )}
         {alreadyEnded.length > 0 && (
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm tabular-nums">
             {alreadyEnded.length}{' '}
             {alreadyEnded.length === 1 ? 'lease has' : 'leases have'} already
             ended without a renewal date.
           </p>
         )}
-      </div>
+      </section>
 
-      <div className="border-border overflow-hidden rounded-lg border">
-        <Table>
+      <div className="border-border max-w-full overflow-hidden rounded-xl border">
+        <Table className="table-fixed">
           <TableCaption className="sr-only">
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
           <TableHeader>
-            <TableRow className="bg-muted/40 hover:bg-muted/40">
-              <TableHead>Tenant</TableHead>
-              <TableHead className="hidden lg:table-cell">Stall</TableHead>
-              <TableHead className="hidden lg:table-cell">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className={`h-12 w-[40%] pl-6 ${labelClass}`}>
+                Tenant
+              </TableHead>
+              <TableHead
+                className={`hidden h-12 w-[20%] xl:table-cell ${labelClass}`}
+              >
+                Stall
+              </TableHead>
+              <TableHead
+                className={`hidden h-12 w-[22%] xl:table-cell ${labelClass}`}
+              >
                 Lease period
               </TableHead>
-              <TableHead className="hidden pr-4 text-right lg:table-cell">
+              <TableHead
+                className={`hidden h-12 w-[18%] pr-6 text-right xl:table-cell ${labelClass}`}
+              >
                 Action
               </TableHead>
             </TableRow>
@@ -170,53 +197,72 @@ export default function RentalsTable() {
                   />
                 )
               return (
-                <TableRow key={`${user.id}-${stall.stallNumber}`}>
-                  <TableCell className="py-3 whitespace-normal">
+                <TableRow
+                  key={`${user.id}-${stall.stallNumber}`}
+                  className="border-border/60 hover:bg-muted/30"
+                >
+                  <TableCell className="py-5 pl-6 align-top whitespace-normal">
                     <div className="flex items-start gap-3">
-                      <Avatar className="size-8 shrink-0">
+                      <Avatar className="size-9 shrink-0">
                         <AvatarImage rel="preload" src={user.image} alt="" />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="min-w-0">
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-muted-foreground text-xs">
-                          {user.email} · {user.phone ? user.phone : 'N/A'}
-                        </p>
-                        <p className="text-muted-foreground mt-1 text-xs lg:hidden">
-                          {stall.stallName} · stall {stall.stallNumber} ·{' '}
-                          {stall.stallSize} m²
-                        </p>
-                        <p className="mt-1 flex flex-wrap items-center gap-2 text-xs lg:hidden">
-                          <span className="text-muted-foreground">
-                            {leasePeriod(stall.startAt, stall.endAt)}
-                          </span>
-                          {needsAttention && (
-                            <Badge variant="destructive">
-                              {expiryBadge(stall.endAt)}
-                            </Badge>
-                          )}
-                        </p>
+                      <div className="flex min-w-0 flex-1 flex-col gap-1 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+                        <div className="flex min-w-0 flex-col gap-1">
+                          <p className="text-sm leading-none font-medium">
+                            {user.name}
+                          </p>
+                          <p className="text-muted-foreground text-xs">
+                            {user.email} · {user.phone ? user.phone : 'N/A'}
+                          </p>
+                          <p className="text-muted-foreground mt-1 text-xs xl:hidden">
+                            {stall.stallName} · stall {stall.stallNumber} ·{' '}
+                            {stall.stallSize} m²
+                          </p>
+                          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs xl:hidden">
+                            <span className="text-muted-foreground tabular-nums">
+                              {leasePeriod(stall.startAt, stall.endAt)}
+                            </span>
+                            {needsAttention && (
+                              <Badge
+                                variant="destructive"
+                                className={urgentBadgeClass}
+                              >
+                                {expiryBadge(stall.endAt)}
+                              </Badge>
+                            )}
+                          </p>
+                        </div>
                         {action && (
-                          <div className="mt-2 lg:hidden">{action}</div>
+                          <div className="mt-2 shrink-0 lg:mt-0 xl:hidden">
+                            {action}
+                          </div>
                         )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden py-3 lg:table-cell">
-                    <p className="font-medium">{stall.stallName}</p>
-                    <p className="text-muted-foreground text-xs">
+                  <TableCell className="hidden py-5 align-top whitespace-nowrap xl:table-cell">
+                    <p className="text-sm leading-none font-medium">
+                      {stall.stallName}
+                    </p>
+                    <p className="text-muted-foreground mt-1.5 text-xs tabular-nums">
                       Stall {stall.stallNumber} · {stall.stallSize} m²
                     </p>
                   </TableCell>
-                  <TableCell className="hidden py-3 whitespace-normal lg:table-cell">
-                    <p>{leasePeriod(stall.startAt, stall.endAt)}</p>
+                  <TableCell className="hidden py-5 align-top whitespace-nowrap xl:table-cell">
+                    <p className="text-sm leading-none tabular-nums">
+                      {leasePeriod(stall.startAt, stall.endAt)}
+                    </p>
                     {needsAttention && (
-                      <Badge variant="destructive" className="mt-1">
+                      <Badge
+                        variant="destructive"
+                        className={`mt-2 ${urgentBadgeClass}`}
+                      >
                         {expiryBadge(stall.endAt)}
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="hidden py-3 pr-4 text-right lg:table-cell">
+                  <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">
                     {action}
                   </TableCell>
                 </TableRow>

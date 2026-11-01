@@ -109,6 +109,7 @@ export function ResponsiveAlertDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent
+        className="sm:max-w-md"
         onCloseAutoFocus={(event) => {
           event.preventDefault()
           restoreOpener()
