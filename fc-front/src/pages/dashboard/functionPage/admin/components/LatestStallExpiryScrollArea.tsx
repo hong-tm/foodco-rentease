@@ -1,6 +1,8 @@
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
 
+import { formatDay } from '@/lib/format'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Card,
@@ -18,6 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+const labelClass =
+  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 export default function LatestStallExpiryScrollArea() {
   const { data: stalls } = useQuery({
@@ -45,28 +50,31 @@ export default function LatestStallExpiryScrollArea() {
         <ScrollArea className="h-[320px]">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Stall</TableHead>
-                <TableHead>Expiry Date</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className={labelClass}>Tenant</TableHead>
+                <TableHead className={labelClass}>Stall</TableHead>
+                <TableHead className={labelClass}>Expiry</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {stalls?.stall.map((stall) => (
                 <TableRow key={stall.stallNumber}>
                   <TableCell>
-                    <Avatar>
-                      <AvatarImage src={stall.stallOwnerId?.image || ''} />
+                    <Avatar className="size-8">
+                      <AvatarImage
+                        src={stall.stallOwnerId?.image || ''}
+                        alt=""
+                      />
                       <AvatarFallback>
                         {stall.stallOwnerId?.name?.[0] || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </TableCell>
-                  <TableCell className="font-medium">
+                  <TableCell className="text-sm font-medium whitespace-nowrap">
                     Stall {stall.stallNumber}
                   </TableCell>
-                  <TableCell>
-                    {new Date(stall.endAt).toLocaleDateString()}
+                  <TableCell className="text-sm whitespace-nowrap tabular-nums">
+                    {formatDay(stall.endAt)}
                   </TableCell>
                 </TableRow>
               ))}

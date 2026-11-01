@@ -12,10 +12,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
 
 export default function NewTenantChart() {
@@ -127,7 +127,7 @@ export default function NewTenantChart() {
             <Bar
               dataKey="users"
               layout="vertical"
-              fill="hsl(var(--chart-1))"
+              fill="var(--color-users)"
               radius={4}
               stackId="stack"
             >
@@ -151,9 +151,6 @@ export default function NewTenantChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="text-muted-foreground leading-none">
-          Monthly registration totals
-        </div>
         <div className="text-muted-foreground flex flex-col gap-1 text-xs">
           {(() => {
             const lastMonth = chartData[chartData.length - 1]

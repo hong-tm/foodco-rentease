@@ -3,6 +3,8 @@ import { getAllNotificationQueryOptions } from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
 
+import { formatDay } from '@/lib/format'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Card,
@@ -20,6 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+const labelClass =
+  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 export default function LatestAppointmentScrollArea() {
   const { data: session } = useSession()
@@ -67,10 +72,10 @@ export default function LatestAppointmentScrollArea() {
         <ScrollArea className="h-[320px]">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Stall</TableHead>
-                <TableHead>Date</TableHead>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className={labelClass}>Requester</TableHead>
+                <TableHead className={labelClass}>Stall</TableHead>
+                <TableHead className={labelClass}>Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -81,23 +86,18 @@ export default function LatestAppointmentScrollArea() {
                 return (
                   <TableRow key={notification.notificationId}>
                     <TableCell>
-                      <Avatar>
-                        <AvatarImage
-                          src={user?.image || ''}
-                          alt="User Avatar"
-                        />
+                      <Avatar className="size-8">
+                        <AvatarImage src={user?.image || ''} alt="" />
                         <AvatarFallback>
                           {user?.name?.[0] || 'U'}
                         </AvatarFallback>
                       </Avatar>
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-sm font-medium whitespace-nowrap">
                       Stall {notification.stallId}
                     </TableCell>
-                    <TableCell>
-                      {new Date(
-                        notification.appointmentDate,
-                      ).toLocaleDateString()}
+                    <TableCell className="text-sm whitespace-nowrap tabular-nums">
+                      {formatDay(notification.appointmentDate)}
                     </TableCell>
                   </TableRow>
                 )

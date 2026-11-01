@@ -1,5 +1,5 @@
-import { fetchCurrentVacancyQueryOptions, stallsQueryKey } from '@/api/stallApi'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
+import { useQuery } from '@tanstack/react-query'
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react'
 import {
   Label,
@@ -17,7 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
+import { ChartContainer, type ChartConfig } from '@/components/ui/chart'
 
 const chartConfig = {
   occupiedStalls: {
@@ -28,11 +28,6 @@ const chartConfig = {
 
 export function VacancyChart() {
   const { data, error } = useQuery(fetchCurrentVacancyQueryOptions)
-  const queryClient = useQueryClient()
-
-  queryClient.invalidateQueries({
-    queryKey: stallsQueryKey.getVacancy(),
-  })
 
   if (error) {
     return (
@@ -128,16 +123,9 @@ export function VacancyChart() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
+                          className="fill-muted-foreground text-sm"
                         >
-                          {rentedRate}%
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Rented Rate
+                          {vacancyStatus.status}
                         </tspan>
                       </text>
                     )
@@ -149,14 +137,11 @@ export function VacancyChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          {currentMonth} rental rate is {rentedRate}%
+        <div className="flex items-center gap-2 leading-none font-medium tabular-nums">
+          {rentedStalls} of {totalStalls} stalls rented
           <span className="flex items-center gap-1 text-balance">
-            ({vacancyStatus.status}) {vacancyStatus.trend}
+            {vacancyStatus.trend}
           </span>
-        </div>
-        <div className="text-muted-foreground leading-none">
-          {rentedStalls} stalls rented out of {totalStalls} total stalls
         </div>
         <div className="text-muted-foreground mt-2 text-xs">
           Suggestion: {vacancyStatus.suggestion}

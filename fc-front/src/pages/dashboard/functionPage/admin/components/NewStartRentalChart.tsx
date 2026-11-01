@@ -12,10 +12,10 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
 
 export function NewStartRentalChart() {
@@ -104,6 +104,11 @@ export function NewStartRentalChart() {
     })} ${currentDate.getFullYear()}`
   }
 
+  const peak =
+    chartData.length > 0
+      ? chartData.reduce((max, item) => (item.value > max.value ? item : max))
+      : null
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -133,16 +138,10 @@ export function NewStartRentalChart() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
-          {chartData.length > 0 &&
-            `Most starts in ${
-              chartData.reduce((max, item) =>
-                item.value > max.value ? item : max,
-              ).month
-            } with ${
-              chartData.reduce((max, item) =>
-                item.value > max.value ? item : max,
-              ).value
-            } stalls`}
+          {peak &&
+            `Most starts in ${peak.month} with ${peak.value} ${
+              peak.value === 1 ? 'stall' : 'stalls'
+            }`}
           <TrendingUpIcon
             className={`h-4 w-4 ${
               trendingPercentage < 0
@@ -150,9 +149,6 @@ export function NewStartRentalChart() {
                 : 'text-green-500'
             }`}
           />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing rental starts by month for {getDateRange()}
         </div>
       </CardFooter>
     </Card>
