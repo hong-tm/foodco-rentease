@@ -155,7 +155,7 @@ export default function RentalsTable() {
       </section>
 
       <div className="border-border max-w-full overflow-hidden rounded-xl border">
-        <Table className="table-fixed">
+        <Table className="xl:min-w-[56rem]">
           <TableCaption className="sr-only">
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
@@ -241,7 +241,7 @@ export default function RentalsTable() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden py-5 align-top whitespace-nowrap xl:table-cell">
+                  <TableCell className="hidden py-5 align-top whitespace-normal xl:table-cell">
                     <p className="text-sm leading-none font-medium">
                       {stall.stallName}
                     </p>
@@ -249,7 +249,7 @@ export default function RentalsTable() {
                       Stall {stall.stallNumber} · {stall.stallSize} m²
                     </p>
                   </TableCell>
-                  <TableCell className="hidden py-5 align-top whitespace-nowrap xl:table-cell">
+                  <TableCell className="hidden py-5 align-top whitespace-normal xl:table-cell">
                     <p className="text-sm leading-none tabular-nums">
                       {leasePeriod(stall.startAt, stall.endAt)}
                     </p>
