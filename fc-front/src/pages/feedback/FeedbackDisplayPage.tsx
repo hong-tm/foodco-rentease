@@ -177,7 +177,7 @@ export function FeedbackDisplayPage() {
         </ul>
       </section>
 
-      <div className="border-border max-w-full overflow-hidden rounded-xl border">
+      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Customer feedback with date, stall, rating and comment

@@ -159,7 +159,10 @@ export default function StallUtilitiesPaymentTable() {
   const isFiltered = selectedUser !== 'all' || selectedType !== 'all'
 
   return (
-    <section aria-label="Payment records" className="flex flex-col gap-4">
+    <section
+      aria-label="Payment records"
+      className="flex min-w-0 flex-col gap-4"
+    >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-2">
           <h2 className="text-base font-medium">Payment records</h2>
@@ -220,7 +223,7 @@ export default function StallUtilitiesPaymentTable() {
           </Button>
         </div>
       ) : (
-        <div className="border-border max-w-full overflow-hidden rounded-xl border">
+        <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
           <Table className="xl:min-w-table">
             <TableCaption className="sr-only">
               Utility charges with stall, tenant, amount, status and issue date
