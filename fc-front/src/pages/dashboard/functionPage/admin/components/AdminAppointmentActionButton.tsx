@@ -6,9 +6,9 @@ import {
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
+  ChevronDownIcon,
   CircleCheckBigIcon,
   CircleOffIcon,
-  EllipsisVerticalIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -80,27 +80,30 @@ export default function AdminAppointmentActionButton({
   return (
     <DropdownMenu>
       <ResponsiveAlertDialog
-        title="Are you sure you want to approve this appointment?"
-        description="Approve this appointment will allow the user to make an appointment."
+        title="Approve this appointment?"
+        description={`The tenant for stall ${stallNumber} can then attend the requested slot.`}
+        confirmLabel="Approve"
         onClick={approveAppointment}
         open={openApproveAppointment}
         setOpen={setOpenApproveAppointment}
       />
 
       <ResponsiveAlertDialog
-        title="Are you sure you want to reject this appointment?"
-        description="Reject this appointment will not allow the user to make an appointment."
+        title="Reject this appointment?"
+        description={`The tenant for stall ${stallNumber} keeps their request but cannot attend the slot.`}
+        confirmLabel="Reject"
         onClick={rejectAppointment}
         open={openRejectAppointment}
         setOpen={setOpenRejectAppointment}
       />
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <EllipsisVerticalIcon className="h-4 w-4" />
+        <Button variant="outline" size="sm">
+          {appointmentStatus === null ? 'Decide' : 'Change'}
+          <ChevronDownIcon aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Appointment Action</DropdownMenuLabel>
+        <DropdownMenuLabel>Appointment decision</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => setOpenApproveAppointment(true)}
@@ -108,7 +111,7 @@ export default function AdminAppointmentActionButton({
           className="flex items-center"
         >
           <CircleCheckBigIcon className="mr-2 h-4 w-4" />
-          {isApproving ? 'Approving...' : 'Approve'}
+          {isApproving ? 'Approving…' : 'Approve'}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setOpenRejectAppointment(true)}
@@ -116,7 +119,7 @@ export default function AdminAppointmentActionButton({
           className="flex items-center"
         >
           <CircleOffIcon className="mr-2 h-4 w-4" />
-          {isRejecting ? 'Rejecting...' : 'Reject'}
+          {isRejecting ? 'Rejecting…' : 'Reject'}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
