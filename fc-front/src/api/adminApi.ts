@@ -1,7 +1,4 @@
-import type {
-  UserAttributes,
-  UserStallAttributes,
-} from '@server/db/userModel'
+import type { UserAttributes, UserStallAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 import type { UseQueryOptions } from '@tanstack/react-query'
 import type { UserWithRole } from 'better-auth/client/plugins'
@@ -45,7 +42,15 @@ export async function fetchRentals(): Promise<GetRentalsResponse> {
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    const message =
+      ('message' in data && typeof data.message === 'string'
+        ? data.message
+        : undefined) ??
+      ('error' in data && typeof data.error === 'string'
+        ? data.error
+        : undefined) ??
+      `Request failed with status ${res.status}`
+    throw new Error(message)
   }
 
   const data = await res.json()

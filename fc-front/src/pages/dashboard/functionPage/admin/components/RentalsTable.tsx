@@ -92,13 +92,17 @@ export default function RentalsTable() {
   const endingSoon = leases
     .filter(({ stall }) => {
       const left = daysLeft(stall.endAt)
-      return left !== null && left <= REMINDER_WINDOW_DAYS
+      return left !== null && left >= 0 && left <= REMINDER_WINDOW_DAYS
     })
     .sort(
       (a, b) =>
         new Date(a.stall.endAt as Date).getTime() -
         new Date(b.stall.endAt as Date).getTime(),
     )
+  const alreadyEnded = leases.filter(({ stall }) => {
+    const left = daysLeft(stall.endAt)
+    return left !== null && left < 0
+  })
   const soonest = endingSoon[0]
 
   return (
@@ -122,6 +126,13 @@ export default function RentalsTable() {
         ) : (
           <p className="text-muted-foreground text-sm">
             Every lease runs longer than a week.
+          </p>
+        )}
+        {alreadyEnded.length > 0 && (
+          <p className="text-muted-foreground text-sm">
+            {alreadyEnded.length}{' '}
+            {alreadyEnded.length === 1 ? 'lease has' : 'leases have'} already
+            ended without a renewal date.
           </p>
         )}
       </div>

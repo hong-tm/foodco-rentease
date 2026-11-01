@@ -72,7 +72,6 @@ export function ResponsiveAlertDialog({
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
-        <DrawerClose />
       </Drawer>
     )
   }
