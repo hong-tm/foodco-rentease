@@ -3,8 +3,8 @@ import type { GetStallsResponse } from '@/api/stallApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  type StallUtilitiesFormValues,
   stallUtilitiesFormSchema,
+  type StallUtilitiesFormValues,
 } from '@server/lib/sharedType'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
@@ -121,7 +121,10 @@ export default function StallUtilitiesForm() {
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
+        >
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <FormField
               control={form.control}
@@ -164,7 +167,11 @@ export default function StallUtilitiesForm() {
               render={({ field: { onChange, value, ...field } }) => (
                 <FormItem>
                   <FormLabel>Utility type</FormLabel>
-                  <Select onValueChange={onChange} value={value || ''} {...field}>
+                  <Select
+                    onValueChange={onChange}
+                    value={value || ''}
+                    {...field}
+                  >
                     <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select utility type" />

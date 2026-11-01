@@ -127,7 +127,9 @@ export default function StallUtilitiesPaymentTable() {
     )
   }
 
-  const userById = new Map((usersData?.users ?? []).map((user) => [user.id, user]))
+  const userById = new Map(
+    (usersData?.users ?? []).map((user) => [user.id, user]),
+  )
   const stallById = new Map(
     (stallsData?.stall ?? []).map((stall) => [stall.stallNumber, stall]),
   )

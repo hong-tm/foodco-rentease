@@ -1,7 +1,7 @@
 import { useSession } from '@/api/adminApi'
-import { type StallButtonProps, stallsQueryKey } from '@/api/stallApi'
-import type { StallUserAttributes } from '@server/db/userModel'
+import { stallsQueryKey, type StallButtonProps } from '@/api/stallApi'
 import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
+import type { StallUserAttributes } from '@server/db/userModel'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -52,7 +52,9 @@ export const StallButton: React.FC<
 
   const name = stallName(stall)
   const owner = stall.stallOwnerId?.name
-  const lease = stall.endAt ? `Lease ends ${formatDay(stall.endAt)}` : 'No end date set'
+  const lease = stall.endAt
+    ? `Lease ends ${formatDay(stall.endAt)}`
+    : 'No end date set'
   const stateLabel =
     state === 'vacant' ? 'vacant' : state === 'ended' ? 'lease ended' : 'rented'
   const accessibleName = `Stall ${stall.stallNumber}, ${name ?? 'no name'}, ${stateLabel}`
@@ -82,7 +84,7 @@ export const StallButton: React.FC<
             className={cn(
               'h-auto w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
               state === 'vacant'
-                ? 'border-border bg-transparent hover:bg-muted/40 border-dashed'
+                ? 'border-border hover:bg-muted/40 border-dashed bg-transparent'
                 : 'border-border bg-card hover:bg-muted/40',
               state === 'ended' && 'border-destructive/40',
             )}
@@ -97,7 +99,8 @@ export const StallButton: React.FC<
                   'size-2 shrink-0 rounded-full',
                   state === 'vacant' && 'border-muted-foreground/60 border',
                   state === 'rented' && 'bg-foreground',
-                  state === 'ended' && 'bg-destructive dark:bg-destructive-foreground',
+                  state === 'ended' &&
+                    'bg-destructive dark:bg-destructive-foreground',
                 )}
               />
             </span>

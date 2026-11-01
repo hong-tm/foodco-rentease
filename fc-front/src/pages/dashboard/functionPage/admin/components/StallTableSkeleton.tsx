@@ -10,11 +10,7 @@ export function StallsTableSkeleton() {
   )
 
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="flex flex-col gap-6"
-    >
+    <div role="status" aria-live="polite" className="flex flex-col gap-6">
       <span className="sr-only">Loading stalls…</span>
       <div className="flex flex-col gap-3" aria-hidden="true">
         <Skeleton className="h-8 w-40" />
@@ -29,10 +25,7 @@ export function StallsTableSkeleton() {
           <div className="flex flex-col gap-4">
             {row(7)}
             {[0, 1, 2].map((pair) => (
-              <div
-                key={pair}
-                className="grid grid-cols-2 gap-3 lg:grid-cols-7"
-              >
+              <div key={pair} className="grid grid-cols-2 gap-3 lg:grid-cols-7">
                 <Skeleton className="h-16 rounded-lg" />
                 <span className="border-border/70 col-span-5 mx-2 border-t border-dashed max-lg:hidden" />
                 <Skeleton className="h-16 rounded-lg" />

@@ -58,7 +58,8 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
     },
   })
 
-  const message = useWatch({ control: form.control, name: 'feedbackContent' }) ?? ''
+  const message =
+    useWatch({ control: form.control, name: 'feedbackContent' }) ?? ''
 
   async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
     await mutation.mutateAsync(values).catch(() => undefined)

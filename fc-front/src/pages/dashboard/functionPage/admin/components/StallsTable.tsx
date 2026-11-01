@@ -25,7 +25,8 @@ export type StallState = 'rented' | 'vacant' | 'ended'
 
 export function stallState(stall: StallUserAttributes): StallState {
   if (!stall.rentStatus) return 'vacant'
-  if (stall.endAt && new Date(stall.endAt).getTime() < Date.now()) return 'ended'
+  if (stall.endAt && new Date(stall.endAt).getTime() < Date.now())
+    return 'ended'
   return 'rented'
 }
 
@@ -33,7 +34,10 @@ function Legend() {
   return (
     <ul className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
       <li className="flex items-center gap-1.5">
-        <span aria-hidden="true" className="bg-foreground size-2 rounded-full" />
+        <span
+          aria-hidden="true"
+          className="bg-foreground size-2 rounded-full"
+        />
         Rented
       </li>
       <li className="flex items-center gap-1.5">

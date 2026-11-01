@@ -280,12 +280,17 @@ export default function StallUtilitiesDetails() {
                 <div className="flex flex-wrap items-baseline gap-3">
                   <p className="text-muted-foreground text-xs tabular-nums">
                     {stall.stallTierNumber?.tierName ?? 'No tier'} ·{' '}
-                    {stall.stallSize ? `${toAmount(stall.stallSize)} m²` : 'area not recorded'}
+                    {stall.stallSize
+                      ? `${toAmount(stall.stallSize)} m²`
+                      : 'area not recorded'}
                   </p>
                   {due.length === 0 ? (
                     <span className={labelClass}>Settled</span>
                   ) : (
-                    <Badge variant="outline" className="font-medium tabular-nums">
+                    <Badge
+                      variant="outline"
+                      className="font-medium tabular-nums"
+                    >
                       {due.length} due
                     </Badge>
                   )}

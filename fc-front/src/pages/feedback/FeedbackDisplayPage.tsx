@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import {
-  type Feedback,
   deleteFeedback,
   feedbacksQueryKey,
   getAllFeedbackQueryOptions,
   removeFeedbackById,
+  type Feedback,
 } from '@/api/feedbackApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -42,7 +42,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-
 import { PageHeader } from '@/components/dashboard/PageHeader'
 
 const labelClass =
@@ -96,21 +95,25 @@ export function FeedbackDisplayPage() {
   if (isPending) {
     return (
       <Shell>
-      <div
-        role="status"
-        aria-live="polite"
-        className="border-border flex flex-col gap-5 rounded-xl border p-6"
-      >
-        <span className="sr-only">Loading feedback…</span>
-        {[0, 1, 2, 3, 4].map((row) => (
-          <div key={row} className="flex items-center gap-4" aria-hidden="true">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-4 flex-1" />
-            <Skeleton className="h-8 w-16" />
-          </div>
-        ))}
-      </div>
+        <div
+          role="status"
+          aria-live="polite"
+          className="border-border flex flex-col gap-5 rounded-xl border p-6"
+        >
+          <span className="sr-only">Loading feedback…</span>
+          {[0, 1, 2, 3, 4].map((row) => (
+            <div
+              key={row}
+              className="flex items-center gap-4"
+              aria-hidden="true"
+            >
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 flex-1" />
+              <Skeleton className="h-8 w-16" />
+            </div>
+          ))}
+        </div>
       </Shell>
     )
   }
@@ -163,7 +166,10 @@ export function FeedbackDisplayPage() {
         <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
           {counts.map(({ value, label, count, Icon }) => (
             <li key={value} className="flex items-center gap-2">
-              <Icon className="text-muted-foreground size-4" aria-hidden="true" />
+              <Icon
+                className="text-muted-foreground size-4"
+                aria-hidden="true"
+              />
               <span className="text-sm font-medium tabular-nums">{count}</span>
               <span className="text-muted-foreground text-xs">{label}</span>
             </li>
@@ -238,7 +244,10 @@ function Rating({ happiness }: { happiness: number }) {
   }
   return (
     <span className="flex items-center gap-2">
-      <rating.Icon className="text-muted-foreground size-4" aria-hidden="true" />
+      <rating.Icon
+        className="text-muted-foreground size-4"
+        aria-hidden="true"
+      />
       <span className="text-sm">{rating.label}</span>
     </span>
   )
