@@ -9,12 +9,14 @@ export function AdminReportPage() {
   )
 
   return (
-    <PaymentRecordsTable
-      title="Payment Records"
-      description="Monthly payment records for all stalls"
-      records={records || []}
-      showMonthFilter={true}
-      isLoading={isLoading}
-    />
+    <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
+      <PaymentRecordsTable
+        title="Payment Records"
+        description="Monthly payment records for all stalls"
+        records={records || []}
+        showMonthFilter={true}
+        isLoading={isLoading}
+      />
+    </div>
   )
 }
