@@ -1,11 +1,15 @@
 import { useState } from 'react'
-import { fetchUsersQueryOptions } from '@/api/adminApi'
 import type { GetUsersResponse } from '@/api/adminApi'
+import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
+import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
+
+import { formatDay } from '@/lib/format'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -13,161 +17,355 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+const labelClass =
+  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
+
+// Seven columns split 12 / 22 / 10 / 11 / 13 / 11 / 21 across one ledger. Only
+// the tenant column takes a scale step (w-1/5 is 20%, close but not equal, so
+// every share stays explicit and page-scoped here).
+const COLUMN_WIDTH = {
+  stall: '12%',
+  tenant: '22%',
+  type: '10%',
+  amount: '11%',
+  status: '13%',
+  date: '11%',
+  reference: '21%',
+} as const
+
+function money(value?: string | number | null) {
+  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
+  if (amount === undefined || amount === null || !Number.isFinite(amount)) {
+    return null
+  }
+  return amount.toLocaleString('en-MY', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+function daysOpen(paymentDate: Date | string) {
+  const days = Math.floor(
+    (Date.now() - new Date(paymentDate).getTime()) / DAY_MS,
+  )
+  return Number.isFinite(days) && days >= 0 ? days : null
+}
+
+function typeLabel(type: string) {
+  if (type === 'water') return 'Water'
+  if (type === 'electric') return 'Electric'
+  if (type === 'rental') return 'Rental'
+  return type
+}
+
 export default function StallUtilitiesPaymentTable() {
   const [selectedUser, setSelectedUser] = useState<string>('all')
   const [selectedType, setSelectedType] = useState<string>('all')
-  const { data: payments, isLoading } = useQuery(
-    getAllPaymentRecordsQueryOptions,
-  )
+  const {
+    data: payments,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery(getAllPaymentRecordsQueryOptions)
   const { data: usersData } = useQuery<GetUsersResponse>(fetchUsersQueryOptions)
+  const { data: stallsData } = useQuery(fetchStallsQueryOptions)
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <section
+        role="status"
+        aria-live="polite"
+        aria-label="Payment records"
+        className="flex flex-col gap-4"
+      >
+        <span className="sr-only">Loading utility charges…</span>
+        <div className="flex items-center justify-between gap-3">
+          <Skeleton className="h-6 w-56" />
+          <Skeleton className="h-9 w-64" />
+        </div>
+        <div className="border-border flex flex-col gap-4 rounded-xl border p-6">
+          {[0, 1, 2, 3, 4].map((row) => (
+            <div key={row} className="flex items-center gap-4">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-4 flex-1" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-6 w-24" />
+            </div>
+          ))}
+        </div>
+      </section>
+    )
   }
 
-  const utilityPayments = payments?.filter(
+  if (error) {
+    return (
+      <section aria-label="Payment records" className="flex flex-col gap-4">
+        <h2 className="text-sm font-medium">Payment records</h2>
+        <div
+          role="alert"
+          className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
+        >
+          <p>Utility charges could not be loaded: {error.message}</p>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      </section>
+    )
+  }
+
+  const userById = new Map((usersData?.users ?? []).map((user) => [user.id, user]))
+  const stallById = new Map(
+    (stallsData?.stall ?? []).map((stall) => [stall.stallNumber, stall]),
+  )
+  const userName = (userId: string) => userById.get(userId)?.name ?? userId
+
+  const utilityPayments = (payments ?? []).filter(
     (payment) =>
       payment.paymentType === 'water' || payment.paymentType === 'electric',
   )
 
-  const uniqueUsers = [
-    ...new Set(utilityPayments?.map((payment) => payment.userId)),
-  ]
+  const uniqueUsers = [...new Set(utilityPayments.map((p) => p.userId))]
 
-  const filteredByUser =
-    selectedUser === 'all'
-      ? utilityPayments
-      : utilityPayments?.filter((payment) => payment.userId === selectedUser)
+  const visible = utilityPayments
+    .filter((p) => selectedUser === 'all' || p.userId === selectedUser)
+    .filter((p) => selectedType === 'all' || p.paymentType === selectedType)
+    .sort(
+      (a, b) =>
+        new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime(),
+    )
 
-  const filteredPayments =
-    selectedType === 'all'
-      ? filteredByUser
-      : filteredByUser?.filter(
-          (payment) => payment.paymentType === selectedType,
-        )
-
-  const sortedPayments = filteredPayments?.sort(
-    (b, a) =>
-      new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime(),
+  const unpaid = visible.filter((payment) => !payment.paymentStatus)
+  const unpaidTotal = unpaid.reduce(
+    (sum, payment) =>
+      sum + (Number.parseFloat(payment.paymentAmount ?? '0') || 0),
+    0,
   )
-
-  const getUserName = (userId: string) => {
-    const user = usersData?.users.find((u: { id: string }) => u.id === userId)
-    return user?.name || userId
-  }
+  const isFiltered = selectedUser !== 'all' || selectedType !== 'all'
 
   return (
-    <div className="grid grid-cols-1 space-y-4">
-      <div className="flex justify-end gap-4 overflow-x-auto">
-        <Select
-          value={selectedType}
-          onValueChange={(value) => setSelectedType(value)}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="water">Water</SelectItem>
-            <SelectItem value="electric">Electric</SelectItem>
-          </SelectContent>
-        </Select>
+    <section aria-label="Payment records" className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-medium">Payment records</h2>
+          <p className="text-muted-foreground flex flex-wrap items-baseline gap-x-2 text-sm">
+            <span className="text-foreground font-medium tabular-nums">
+              RM {money(unpaidTotal) ?? '0.00'}
+            </span>
+            <span className="tabular-nums">
+              unpaid across {unpaid.length}{' '}
+              {unpaid.length === 1 ? 'charge' : 'charges'}
+            </span>
+            {isFiltered && <span className={labelClass}>this view</span>}
+          </p>
+        </div>
 
-        <Select
-          value={selectedUser}
-          onValueChange={(value) => setSelectedUser(value)}
-        >
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Select user" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Users</SelectItem>
-            {uniqueUsers.map((userId) => (
-              <SelectItem key={userId} value={userId}>
-                {getUserName(userId)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap gap-2">
+          <Select value={selectedType} onValueChange={setSelectedType}>
+            <SelectTrigger className="w-40" aria-label="Filter by utility type">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All types</SelectItem>
+              <SelectItem value="water">Water</SelectItem>
+              <SelectItem value="electric">Electric</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger className="w-52" aria-label="Filter by tenant">
+              <SelectValue placeholder="Select tenant" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All tenants</SelectItem>
+              {uniqueUsers.map((userId) => (
+                <SelectItem key={userId} value={userId}>
+                  {userName(userId)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <Table>
-        <TableHeader className="sticky top-0">
-          <TableRow>
-            <TableHead>Payment ID</TableHead>
-            <TableHead className="text-center">Stall Number</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead className="text-center">Type</TableHead>
-            <TableHead className="text-center">Status</TableHead>
-            <TableHead>Date</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedPayments?.map((payment) => {
-            const user = usersData?.users.find(
-              (u: { id: string }) => u.id === payment.userId,
-            )
-            return (
-              <TableRow key={payment.paymentId}>
-                <TableCell>{payment.paymentId}</TableCell>
-                <TableCell className="text-center">{payment.stallId}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user?.image || ''}
-                        alt={getUserName(payment.userId)}
-                      />
-                      <AvatarFallback>
-                        {getUserName(payment.userId)
-                          .split(' ')
-                          .map((n: string) => n[0])
-                          .join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{getUserName(payment.userId)}</span>
-                  </div>
-                </TableCell>
-                <TableCell>RM {payment.paymentAmount}</TableCell>
-                <TableCell className="text-center">
-                  <Badge
-                    variant="secondary"
-                    className={
-                      payment.paymentType === 'water'
-                        ? 'bg-cyan-100 text-cyan-800'
-                        : payment.paymentType === 'electric'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : ''
-                    }
-                  >
-                    {payment.paymentType}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge
-                    variant={payment.paymentStatus ? 'default' : 'destructive'}
-                  >
-                    {payment.paymentStatus ? 'Paid' : 'Pending'}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {new Date(payment.paymentDate).toLocaleDateString()}
-                </TableCell>
+      {visible.length === 0 ? (
+        <div className="border-border flex flex-col items-start gap-3 rounded-xl border p-6 text-sm">
+          <p className="text-muted-foreground">
+            No charges match these filters.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSelectedType('all')
+              setSelectedUser('all')
+            }}
+          >
+            Clear filters
+          </Button>
+        </div>
+      ) : (
+        <div className="border-border max-w-full overflow-hidden rounded-xl border">
+          <Table className="xl:min-w-table">
+            <TableCaption className="sr-only">
+              Utility charges with stall, tenant, amount, status and issue date
+            </TableCaption>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className={`h-12 pl-6 ${labelClass}`}>
+                  Stall
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.tenant }}
+                >
+                  Tenant
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.type }}
+                >
+                  Type
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 text-right xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.amount }}
+                >
+                  Amount
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.status }}
+                >
+                  Status
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.date }}
+                >
+                  Charged
+                </TableHead>
+                <TableHead
+                  className={`hidden h-12 pr-6 xl:table-cell ${labelClass}`}
+                  style={{ width: COLUMN_WIDTH.reference }}
+                >
+                  Reference
+                </TableHead>
               </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </div>
+            </TableHeader>
+            <TableBody>
+              {visible.map((payment) => {
+                const user = userById.get(payment.userId)
+                const stall = stallById.get(payment.stallId)
+                const open = daysOpen(payment.paymentDate)
+                const status = payment.paymentStatus ? (
+                  <Badge variant="secondary" className="font-medium">
+                    Paid
+                  </Badge>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Badge variant="outline" className="font-medium">
+                      Pending
+                    </Badge>
+                    {open !== null && (
+                      <span className="text-muted-foreground text-xs tabular-nums">
+                        {open} d open
+                      </span>
+                    )}
+                  </span>
+                )
+
+                return (
+                  <TableRow
+                    key={payment.paymentId}
+                    className="border-border/60 hover:bg-muted/30"
+                  >
+                    <TableCell className="py-4 pl-6 align-top whitespace-normal">
+                      <p className="text-sm leading-none font-medium tabular-nums">
+                        Stall {payment.stallId}
+                      </p>
+                      <p className="text-muted-foreground mt-1.5 text-xs">
+                        {stall?.stallName ?? 'Name not recorded'}
+                      </p>
+                      <div className="mt-2 flex flex-col gap-1 text-xs xl:hidden">
+                        <span>{userName(payment.userId)}</span>
+                        <span className="text-muted-foreground tabular-nums">
+                          {typeLabel(payment.paymentType)} · RM{' '}
+                          {money(payment.paymentAmount) ?? '—'} ·{' '}
+                          {formatDay(payment.paymentDate)}
+                        </span>
+                        <span className="mt-1">{status}</span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 align-top whitespace-normal xl:table-cell">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="size-7">
+                          <AvatarImage src={user?.image ?? ''} alt="" />
+                          <AvatarFallback>
+                            {userName(payment.userId)
+                              .split(' ')
+                              .map((part) => part[0])
+                              .join('')
+                              .slice(0, 2)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm leading-none">
+                          {userName(payment.userId)}
+                        </span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                      <span className="text-sm">
+                        {typeLabel(payment.paymentType)}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 text-right align-top xl:table-cell">
+                      <span className="text-sm font-medium tabular-nums">
+                        RM {money(payment.paymentAmount) ?? '—'}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                      {status}
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                      <span className="text-sm tabular-nums">
+                        {formatDay(payment.paymentDate)}
+                      </span>
+                    </TableCell>
+
+                    <TableCell className="hidden py-4 pr-6 align-top xl:table-cell">
+                      <span
+                        className="text-muted-foreground text-xs tabular-nums"
+                        title={payment.paymentId}
+                      >
+                        {payment.paymentId}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </section>
   )
 }
