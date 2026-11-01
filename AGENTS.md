@@ -6,7 +6,7 @@ Rental management site with two separately installed packages: `fc-back` (Hono/T
 
 # Agent workflow (four beats)
 
-Adapted from the michaelshimeles/skills AGENTS.md (commit 4b72b46).
+Adapted from the michaelshimeles/skills AGENTS.md (commit 4b72f46).
 
 1. **Isolate.** Start every change from a new branch off `origin/main` (or keep the worktree already assigned to the task). Never build on `main`, and never reuse or modify another agent's worktree, branch, or uncommitted work.
 2. **Build.** Follow the existing architecture of the package you change; make the smallest change that meets the goal.
