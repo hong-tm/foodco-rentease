@@ -1,3 +1,5 @@
+import { useCallback, useEffect, useRef } from 'react'
+
 import { useIsMobile } from '@/hooks/use-mobile'
 
 import {
@@ -39,11 +41,38 @@ export function ResponsiveAlertDialog({
   confirmLabel = 'Continue',
 }: ActionFunctionButtonProps) {
   const isMobile = useIsMobile()
+  const openerRef = useRef<HTMLElement | null>(null)
+  const drawerRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (open) openerRef.current = document.activeElement as HTMLElement | null
+  }, [open])
+
+  // The drawer content is rendered by vaul without moving focus into it.
+  useEffect(() => {
+    if (!open || !isMobile) return
+    const frame = requestAnimationFrame(() => {
+      drawerRef.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus()
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [open, isMobile])
+
+  const restoreOpener = useCallback(() => {
+    const opener = openerRef.current
+    openerRef.current = null
+    if (opener?.isConnected) opener.focus()
+  }, [])
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
+      <Drawer
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next)
+          if (!next) requestAnimationFrame(restoreOpener)
+        }}
+      >
+        <DrawerContent ref={drawerRef}>
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
@@ -62,6 +91,7 @@ export function ResponsiveAlertDialog({
             </Button>
             <DrawerClose asChild>
               <Button
+                data-autofocus
                 variant="ghost"
                 size="default"
                 className="w-full"
@@ -78,7 +108,12 @@ export function ResponsiveAlertDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+          restoreOpener()
+        }}
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

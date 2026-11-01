@@ -145,11 +145,11 @@ export default function RentalsTable() {
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
               <TableHead>Tenant</TableHead>
-              <TableHead className="hidden md:table-cell">Stall</TableHead>
-              <TableHead className="hidden md:table-cell">
+              <TableHead className="hidden lg:table-cell">Stall</TableHead>
+              <TableHead className="hidden lg:table-cell">
                 Lease period
               </TableHead>
-              <TableHead className="hidden pr-4 text-right md:table-cell">
+              <TableHead className="hidden pr-4 text-right lg:table-cell">
                 Action
               </TableHead>
             </TableRow>
@@ -182,11 +182,11 @@ export default function RentalsTable() {
                         <p className="text-muted-foreground text-xs">
                           {user.email} · {user.phone ? user.phone : 'N/A'}
                         </p>
-                        <p className="text-muted-foreground mt-1 text-xs md:hidden">
+                        <p className="text-muted-foreground mt-1 text-xs lg:hidden">
                           {stall.stallName} · stall {stall.stallNumber} ·{' '}
                           {stall.stallSize} m²
                         </p>
-                        <p className="mt-1 flex flex-wrap items-center gap-2 text-xs md:hidden">
+                        <p className="mt-1 flex flex-wrap items-center gap-2 text-xs lg:hidden">
                           <span className="text-muted-foreground">
                             {leasePeriod(stall.startAt, stall.endAt)}
                           </span>
@@ -197,18 +197,18 @@ export default function RentalsTable() {
                           )}
                         </p>
                         {action && (
-                          <div className="mt-2 md:hidden">{action}</div>
+                          <div className="mt-2 lg:hidden">{action}</div>
                         )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden py-3 md:table-cell">
+                  <TableCell className="hidden py-3 lg:table-cell">
                     <p className="font-medium">{stall.stallName}</p>
                     <p className="text-muted-foreground text-xs">
                       Stall {stall.stallNumber} · {stall.stallSize} m²
                     </p>
                   </TableCell>
-                  <TableCell className="hidden py-3 whitespace-normal md:table-cell">
+                  <TableCell className="hidden py-3 whitespace-normal lg:table-cell">
                     <p>{leasePeriod(stall.startAt, stall.endAt)}</p>
                     {needsAttention && (
                       <Badge variant="destructive" className="mt-1">
@@ -216,7 +216,7 @@ export default function RentalsTable() {
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="hidden py-3 pr-4 text-right md:table-cell">
+                  <TableCell className="hidden py-3 pr-4 text-right lg:table-cell">
                     {action}
                   </TableCell>
                 </TableRow>
