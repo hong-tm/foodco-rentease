@@ -97,7 +97,7 @@ export default function UsersTable() {
           <span className={labelClass}>Breakdown</span>
           <span className="text-muted-foreground tabular-nums">
             {roleCount('admin')} admin · {roleCount('rental')} rental ·{' '}
-            {roleCount('user')} user · {banned.length} banned
+            {roleCount('user')} user — {banned.length} banned
           </span>
         </p>
       </section>
