@@ -161,13 +161,13 @@ export default function StallUtilitiesPaymentTable() {
   return (
     <section aria-label="Payment records" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-sm font-medium">Payment records</h2>
-          <p className="text-muted-foreground flex flex-wrap items-baseline gap-x-2 text-sm">
-            <span className="text-foreground font-medium tabular-nums">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-base font-medium">Payment records</h2>
+          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
               RM {money(unpaidTotal) ?? '0.00'}
             </span>
-            <span className="tabular-nums">
+            <span className={labelClass}>
               unpaid across {unpaid.length}{' '}
               {unpaid.length === 1 ? 'charge' : 'charges'}
             </span>
