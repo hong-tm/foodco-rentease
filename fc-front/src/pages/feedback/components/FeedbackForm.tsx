@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { createFeedback } from '@/api/feedbackApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFeedbackSchema } from '@server/lib/sharedType'
@@ -10,10 +9,11 @@ import {
   Loader2Icon,
   SmileIcon,
 } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
-import { twMerge } from 'tailwind-merge'
 import { z } from 'zod/v4'
+
+import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -28,12 +28,14 @@ import { Textarea } from '@/components/ui/textarea'
 
 import { StallCombobox } from '../../dashboard/components/StallCombobox'
 
-const feedback = [
-  { happiness: 4, emoji: <LaughIcon size={16} className="stroke-inherit" /> },
-  { happiness: 3, emoji: <SmileIcon size={16} className="stroke-inherit" /> },
-  { happiness: 2, emoji: <FrownIcon size={16} className="stroke-inherit" /> },
-  { happiness: 1, emoji: <AngryIcon size={16} className="stroke-inherit" /> },
-]
+const MESSAGE_LIMIT = 255
+
+const RATINGS = [
+  { value: 4, label: 'Very happy', Icon: LaughIcon },
+  { value: 3, label: 'Happy', Icon: SmileIcon },
+  { value: 2, label: 'Unhappy', Icon: FrownIcon },
+  { value: 1, label: 'Very unhappy', Icon: AngryIcon },
+] as const
 
 export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
   const form = useForm<z.infer<typeof createFeedbackSchema>>({
@@ -45,93 +47,77 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
     },
   })
 
-  const [pending, setPending] = useState(false)
-  const [happiness, setHappiness] = useState<null | number>(null)
-
   const mutation = useMutation({
     mutationFn: createFeedback,
+    onSuccess: () => {
+      toast.success('Feedback submitted successfully')
+      onClose()
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Feedback could not be submitted')
+    },
   })
 
-  async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
-    setPending(true)
-    mutation.mutate(values)
-    toast.success('Feedback submitted successfully')
-    onClose()
+  const message = useWatch({ control: form.control, name: 'feedbackContent' }) ?? ''
 
-    setPending(false)
+  async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
+    await mutation.mutateAsync(values).catch(() => undefined)
   }
 
   return (
-    <div className="flex w-full flex-col px-12 md:px-0">
+    <div className="w-full px-4 pb-4 md:px-0 md:pb-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid gap-4">
-            {/* Happiness emoji */}
+          <div className="grid gap-5">
             <FormField
               control={form.control}
               name="happiness"
               render={({ field }) => (
-                <FormItem className="grid gap-1">
-                  <FormLabel
-                    htmlFor="happiness"
-                    className="select-none"
-                  ></FormLabel>
-                  <FormControl>
-                    <span className="flex h-12 items-center justify-center gap-3">
-                      <div className="flex items-center gap-4 text-neutral-400">
-                        {feedback.map((e) => (
-                          <Button
-                            type="button"
-                            onClick={() => {
-                              const newHappiness =
-                                e.happiness === happiness ? null : e.happiness
-                              setHappiness(newHappiness) // Update local state
-                              field.onChange(newHappiness) // Sync with react-hook-form
-                            }}
-                            variant="ghost"
-                            className={twMerge(
-                              happiness === e.happiness
-                                ? e.happiness === 4
-                                  ? 'bg-green-100 stroke-green-500 hover:scale-125 dark:bg-green-900 dark:stroke-green-400'
-                                  : e.happiness === 3
-                                    ? 'bg-blue-100 stroke-blue-500 hover:scale-125 dark:bg-blue-900 dark:stroke-blue-400'
-                                    : e.happiness === 2
-                                      ? 'bg-yellow-100 stroke-yellow-500 hover:scale-125 dark:bg-yellow-900 dark:stroke-yellow-400'
-                                      : 'bg-red-100 stroke-red-500 hover:scale-125 dark:bg-red-900 dark:stroke-red-400'
-                                : 'stroke-neutral-500 dark:stroke-neutral-400',
-                              'flex h-8 w-8 items-center justify-center rounded-full transition-all',
-                              happiness === e.happiness
-                                ? ''
-                                : e.happiness === 4
-                                  ? 'hover:scale-125 hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400'
-                                  : e.happiness === 3
-                                    ? 'hover:scale-125 hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400'
-                                    : e.happiness === 2
-                                      ? 'hover:scale-125 hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400'
-                                      : 'hover:scale-125 hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400',
+                <FormItem className="gap-2">
+                  <fieldset>
+                    <legend className="mb-2 text-sm font-medium">
+                      How was your visit?
+                    </legend>
+                    <div className="grid grid-cols-4 gap-2">
+                      {RATINGS.map(({ value, label, Icon }) => (
+                        <label key={value} className="cursor-pointer">
+                          <input
+                            type="radio"
+                            name="happiness"
+                            value={value}
+                            checked={field.value === value}
+                            onChange={() => field.onChange(value)}
+                            onBlur={field.onBlur}
+                            className="peer sr-only"
+                          />
+                          <span
+                            className={cn(
+                              'flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-colors',
+                              'border-border text-muted-foreground hover:bg-muted/40',
+                              'peer-checked:border-foreground peer-checked:bg-muted peer-checked:text-foreground',
+                              'peer-focus-visible:ring-ring/50 peer-focus-visible:ring-2',
                             )}
-                            key={e.happiness}
                           >
-                            {e.emoji}
-                          </Button>
-                        ))}
-                      </div>
-                    </span>
-                  </FormControl>
+                            <Icon className="size-5" aria-hidden="true" />
+                            <span className="text-center text-xs leading-tight">
+                              {label}
+                            </span>
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Stall combobox */}
             <FormField
               control={form.control}
               name="stall"
               render={({ field }) => (
-                <FormItem className="grid gap-2">
-                  <FormLabel htmlFor="stall" className="select-none">
-                    Stall
-                  </FormLabel>
+                <FormItem className="gap-2">
+                  <FormLabel htmlFor="stall">Stall</FormLabel>
                   <FormControl>
                     <StallCombobox
                       value={field.value}
@@ -143,35 +129,43 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
               )}
             />
 
-            {/* Feedback content */}
             <FormField
               control={form.control}
               name="feedbackContent"
               render={({ field }) => (
-                <FormItem className="grid gap-2">
-                  <FormLabel htmlFor="feedbackContent" className="select-none">
-                    Message
-                  </FormLabel>
+                <FormItem className="gap-2">
+                  <FormLabel htmlFor="feedbackContent">Message</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="This is awesoooome"
-                      autoComplete="feedbackContent"
+                      placeholder="What happened at this stall?"
+                      autoComplete="off"
+                      rows={4}
+                      maxLength={MESSAGE_LIMIT}
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
+                  <div className="flex items-start justify-between gap-3">
+                    <FormMessage />
+                    <span className="text-muted-foreground ml-auto text-xs tabular-nums">
+                      {message.length}/{MESSAGE_LIMIT}
+                    </span>
+                  </div>
                 </FormItem>
               )}
             />
 
-            <Button disabled={pending} type="submit" className="mb-3 w-full">
-              {pending ? (
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              className="w-full"
+            >
+              {mutation.isPending ? (
                 <>
-                  Submit
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Sending
+                  <Loader2Icon className="size-4 animate-spin" />
                 </>
               ) : (
-                'Submit'
+                'Send feedback'
               )}
             </Button>
           </div>
