@@ -5,21 +5,43 @@ import {
   getAllPaymentRecordsQueryOptions,
 } from '@/api/paymentApi'
 import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
+import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
-import { DropletIcon, HomeIcon, Loader2Icon, ZapIcon } from 'lucide-react'
+
+import { formatDay } from '@/lib/format'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import PaymentModal from '@/components/PaymentModal'
+
+const labelClass =
+  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
+
+type BillState = 'paid' | 'due' | 'none' | 'unset'
+
+type Bill = {
+  type: 'water' | 'electric' | 'rental'
+  label: string
+  amount: number
+  state: BillState
+  meta: string
+  paymentId?: string
+}
+
+function toAmount(value?: string | number | null) {
+  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
+  return amount !== undefined && amount !== null && Number.isFinite(amount)
+    ? amount
+    : 0
+}
+
+function money(value: number) {
+  return value.toLocaleString('en-MY', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
 
 export default function StallUtilitiesDetails() {
   const { data: session, isLoading: isSessionLoading } = useSession()
@@ -38,12 +60,14 @@ export default function StallUtilitiesDetails() {
     data: stallData,
     isLoading: isStallLoading,
     error: stallError,
+    refetch: refetchStalls,
   } = useQuery(fetchStallCurrentQueryOptions(userId || ''))
 
   const {
     data: paymentRecords,
     isLoading: isPaymentLoading,
     error: paymentError,
+    refetch: refetchPayments,
   } = useQuery(getAllPaymentRecordsQueryOptions)
 
   const handlePayment = async (
@@ -66,256 +90,255 @@ export default function StallUtilitiesDetails() {
 
   if (isSessionLoading || isStallLoading || isPaymentLoading) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2Icon className="h-8 w-8 animate-spin" />
+      <div role="status" aria-live="polite" className="flex flex-col gap-6">
+        <span className="sr-only">Loading your stalls…</span>
+        <div className="flex flex-col gap-3" aria-hidden="true">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        {[0, 1].map((card) => (
+          <div
+            key={card}
+            aria-hidden="true"
+            className="border-border flex flex-col gap-4 rounded-xl border p-6"
+          >
+            <Skeleton className="h-5 w-56" />
+            {[0, 1, 2].map((row) => (
+              <div key={row} className="flex items-center gap-4">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="ml-auto h-4 w-20" />
+                <Skeleton className="h-8 w-16" />
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     )
   }
 
   if (!userId) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-muted-foreground">
-          Please log in to view your stalls.
-        </p>
-      </div>
+      <p className="text-muted-foreground text-sm">
+        Sign in to see the utilities for your stalls.
+      </p>
     )
   }
 
   if (stallError || paymentError) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-destructive">
-          Error loading data. Please try again later.
-        </p>
+      <div
+        role="alert"
+        className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
+      >
+        <p>Utilities could not be loaded. Please try again.</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            refetchStalls()
+            refetchPayments()
+          }}
+        >
+          Retry
+        </Button>
       </div>
     )
   }
 
-  if (!stallData?.stalls || stallData.stalls.length === 0) {
+  const stalls = stallData?.stalls ?? []
+
+  if (stalls.length === 0) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-muted-foreground">No stalls found.</p>
-      </div>
+      <p className="text-muted-foreground text-sm">
+        No stall is registered under your account yet.
+      </p>
     )
   }
+
+  const records: PaymentRecord[] = paymentRecords ?? []
+
+  const latestOf = (stallNumber: number, type: Bill['type']) =>
+    records.find(
+      (payment) =>
+        payment.stallId === stallNumber && payment.paymentType === type,
+    )
+
+  const billsFor = (stall: (typeof stalls)[number]): Bill[] => {
+    const bills: Bill[] = []
+
+    for (const type of ['water', 'electric'] as const) {
+      const record = latestOf(stall.stallNumber, type)
+      const label = type === 'water' ? 'Water' : 'Electricity'
+      if (!record) {
+        bills.push({
+          type,
+          label,
+          amount: 0,
+          state: 'none',
+          meta: 'No bill issued yet',
+        })
+        continue
+      }
+      const amount = toAmount(record.paymentAmount)
+      bills.push({
+        type,
+        label,
+        amount,
+        state: record.paymentStatus ? 'paid' : 'due',
+        meta: record.paymentStatus
+          ? `Paid ${formatDay(record.paymentDate)}`
+          : `Charged ${formatDay(record.paymentDate)}`,
+        paymentId: record.paymentId,
+      })
+    }
+
+    const tierPrice = stall.stallTierNumber?.tierPrice
+    const size = stall.stallSize
+    const rentalAmount = tierPrice ? toAmount(tierPrice) * toAmount(size) : 0
+    const rentalRecord = latestOf(stall.stallNumber, 'rental')
+
+    if (!tierPrice || !size) {
+      bills.push({
+        type: 'rental',
+        label: 'Rental',
+        amount: 0,
+        state: 'unset',
+        meta: 'No tier or floor area recorded',
+      })
+    } else {
+      bills.push({
+        type: 'rental',
+        label: 'Rental',
+        amount: rentalAmount,
+        state: rentalRecord?.paymentStatus ? 'paid' : 'due',
+        meta: rentalRecord?.paymentStatus
+          ? `Paid ${formatDay(rentalRecord.paymentDate)}`
+          : `${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`,
+        paymentId: rentalRecord?.paymentId,
+      })
+    }
+
+    return bills
+  }
+
+  const stallBills = stalls.map((stall) => ({
+    stall,
+    bills: billsFor(stall),
+  }))
+
+  const dueBills = stallBills.flatMap(({ stall, bills }) =>
+    bills
+      .filter((bill) => bill.state === 'due')
+      .map((bill) => ({ ...bill, stallNumber: stall.stallNumber })),
+  )
+  const totalDue = dueBills.reduce((sum, bill) => sum + bill.amount, 0)
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {stallData.stalls.map((stall) => {
-          const waterPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'water',
-            ) || []
-          const electricPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'electric',
-            ) || []
-          const rentalPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'rental',
-            ) || []
+    <div className="flex flex-col gap-8">
+      <section aria-label="Amount due" className="flex flex-col gap-3">
+        <div className="flex items-baseline gap-3">
+          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
+            {dueBills.length === 0 ? 'Nothing due' : `RM ${money(totalDue)}`}
+          </span>
+          {dueBills.length > 0 && (
+            <span className={labelClass}>
+              {dueBills.length === 1 ? 'bill due' : 'bills due'}
+            </span>
+          )}
+        </div>
+        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+          <span className={labelClass}>Stalls</span>
+          <span className="tabular-nums">
+            {stalls.length} {stalls.length === 1 ? 'stall' : 'stalls'} on record
+          </span>
+          <span className="text-muted-foreground">
+            {dueBills.length === 0
+              ? 'Every bill is settled.'
+              : `Across ${new Set(dueBills.map((bill) => bill.stallNumber)).size} stalls.`}
+          </span>
+        </p>
+      </section>
 
-          const latestWaterPayment = waterPayments[0]
-          const latestElectricPayment = electricPayments[0]
-          const latestRentalPayment = rentalPayments[0]
-
-          const waterAmount = latestWaterPayment?.paymentAmount
-            ? parseFloat(latestWaterPayment.paymentAmount)
-            : 0
-          const electricAmount = latestElectricPayment?.paymentAmount
-            ? parseFloat(latestElectricPayment.paymentAmount)
-            : 0
-          const rentalAmount =
-            stall.stallTierNumber?.tierPrice && stall.stallSize
-              ? (typeof stall.stallTierNumber.tierPrice === 'string'
-                  ? parseFloat(stall.stallTierNumber.tierPrice)
-                  : stall.stallTierNumber.tierPrice) *
-                (typeof stall.stallSize === 'string'
-                  ? parseFloat(stall.stallSize)
-                  : stall.stallSize)
-              : 0
-
+      <div className="flex flex-col gap-6">
+        {stallBills.map(({ stall, bills }) => {
+          const due = bills.filter((bill) => bill.state === 'due')
           return (
-            <Card
+            <section
               key={stall.stallNumber}
-              className="w-full border-none shadow-none"
+              aria-label={`Stall ${stall.stallNumber}`}
+              className="border-border rounded-xl border"
             >
-              <CardHeader>
-                <CardTitle className="flex">
-                  <CardDescription></CardDescription>
-                  <Badge variant="secondary">Stall #{stall.stallNumber}</Badge>
-                  <span className="text-muted-foreground text-sm font-normal">
+              <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-6 py-5">
+                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 className="text-base font-medium tabular-nums">
+                    Stall {stall.stallNumber}
+                  </h2>
+                  <p className="text-muted-foreground text-sm">
                     {stall.stallName}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-muted/50 space-y-3 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <DropletIcon className="h-4 w-4 text-blue-500" />
-                      <div className="flex flex-col">
-                        <span>Water Bill</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestWaterPayment
-                            ? latestWaterPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestWaterPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : 'No bill yet'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {waterAmount > 0 ? `RM ${waterAmount.toFixed(2)}` : '-'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <ZapIcon className="h-4 w-4 text-yellow-500" />
-                      <div className="flex flex-col">
-                        <span>Electric Bill</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestElectricPayment
-                            ? latestElectricPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestElectricPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : 'No bill yet'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {electricAmount > 0
-                        ? `RM ${electricAmount.toFixed(2)}`
-                        : '-'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <HomeIcon className="h-4 w-4 text-green-500" />
-                      <div className="flex flex-col">
-                        <span>Rental Fee</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestRentalPayment
-                            ? latestRentalPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestRentalPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : `Monthly rental (${stall.stallSize} m²)`}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {stall.stallTierNumber?.tierPrice
-                        ? `RM ${rentalAmount.toFixed(2)}`
-                        : '-'}
-                    </span>
-                  </div>
+                  </p>
                 </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-2">
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'water',
-                      waterAmount,
-                      stall.stallNumber,
-                      latestWaterPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={!waterAmount || latestWaterPayment?.paymentStatus}
-                  variant={
-                    latestWaterPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!waterAmount ? (
-                    'No Water Bill'
-                  ) : latestWaterPayment?.paymentStatus ? (
-                    'Water Bill Paid'
+                <div className="flex flex-wrap items-baseline gap-3">
+                  <p className="text-muted-foreground text-xs tabular-nums">
+                    {stall.stallTierNumber?.tierName ?? 'No tier'} ·{' '}
+                    {stall.stallSize
+                      ? `${toAmount(stall.stallSize)} m²`
+                      : 'area not recorded'}
+                  </p>
+                  {due.length === 0 ? (
+                    <span className={labelClass}>Settled</span>
                   ) : (
-                    <>
-                      Pay
-                      <DropletIcon className="h-4 w-4 text-blue-500" />
-                    </>
+                    <Badge
+                      variant="outline"
+                      className="font-medium tabular-nums"
+                    >
+                      {due.length} due
+                    </Badge>
                   )}
-                </Button>
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'electric',
-                      electricAmount,
-                      stall.stallNumber,
-                      latestElectricPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={
-                    !electricAmount || latestElectricPayment?.paymentStatus
-                  }
-                  variant={
-                    latestElectricPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!electricAmount ? (
-                    'No Electric Bill'
-                  ) : latestElectricPayment?.paymentStatus ? (
-                    'Electric Bill Paid'
-                  ) : (
-                    <>
-                      Pay
-                      <ZapIcon className="h-4 w-4 text-yellow-500" />
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'rental',
-                      rentalAmount,
-                      stall.stallNumber,
-                      latestRentalPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={
-                    !stall.stallTierNumber?.tierPrice ||
-                    latestRentalPayment?.paymentStatus
-                  }
-                  variant={
-                    latestRentalPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!stall.stallTierNumber?.tierPrice ? (
-                    'No Rental Fee Set'
-                  ) : latestRentalPayment?.paymentStatus ? (
-                    'Rental Fee Paid'
-                  ) : (
-                    <>
-                      Pay
-                      <HomeIcon className="h-4 w-4 text-green-500" />
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
+                </div>
+              </header>
+
+              <ul className="divide-border/60 divide-y border-t">
+                {bills.map((bill) => (
+                  <li
+                    key={bill.type}
+                    className="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 py-4"
+                  >
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <span className="text-sm font-medium">{bill.label}</span>
+                      <span className="text-muted-foreground text-xs tabular-nums">
+                        {bill.meta}
+                      </span>
+                    </div>
+
+                    <span className="ml-auto text-sm font-medium tabular-nums">
+                      {bill.state === 'none' || bill.state === 'unset'
+                        ? '—'
+                        : `RM ${money(bill.amount)}`}
+                    </span>
+
+                    <div className="w-16 text-right">
+                      {bill.state === 'due' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          aria-label={`Pay ${bill.label.toLowerCase()} bill, RM ${money(bill.amount)}`}
+                          onClick={() =>
+                            handlePayment(
+                              bill.type,
+                              bill.amount,
+                              stall.stallNumber,
+                              bill.paymentId || '',
+                            )
+                          }
+                        >
+                          Pay
+                        </Button>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )
         })}
       </div>
