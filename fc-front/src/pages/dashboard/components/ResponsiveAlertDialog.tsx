@@ -27,6 +27,7 @@ type ActionFunctionButtonProps = {
   onClick: () => void
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  confirmLabel?: string
 }
 
 export function ResponsiveAlertDialog({
@@ -35,6 +36,7 @@ export function ResponsiveAlertDialog({
   onClick,
   open,
   setOpen,
+  confirmLabel = 'Continue',
 }: ActionFunctionButtonProps) {
   const isMobile = useIsMobile()
 
@@ -56,7 +58,7 @@ export function ResponsiveAlertDialog({
                 setOpen(false)
               }}
             >
-              Continue
+              {confirmLabel}
             </Button>
             <DrawerClose asChild>
               <Button
@@ -86,7 +88,9 @@ export function ResponsiveAlertDialog({
           <AlertDialogCancel onClick={() => setOpen(false)}>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onClick}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={onClick}>
+            {confirmLabel}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
