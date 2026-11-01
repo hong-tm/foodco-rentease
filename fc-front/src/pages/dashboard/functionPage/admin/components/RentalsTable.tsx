@@ -207,7 +207,7 @@ export default function RentalsTable() {
                         <AvatarImage rel="preload" src={user.image} alt="" />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="flex min-w-0 flex-1 flex-col gap-1 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+                      <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
                         <div className="flex min-w-0 flex-col gap-1">
                           <p className="text-sm leading-none font-medium">
                             {user.name}
@@ -234,7 +234,7 @@ export default function RentalsTable() {
                           </p>
                         </div>
                         {action && (
-                          <div className="mt-2 shrink-0 lg:mt-0 xl:hidden">
+                          <div className="mt-2 shrink-0 md:mt-0 xl:hidden">
                             {action}
                           </div>
                         )}
