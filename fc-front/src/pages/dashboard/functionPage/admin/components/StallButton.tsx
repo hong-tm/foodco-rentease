@@ -1,26 +1,37 @@
 import { useSession } from '@/api/adminApi'
 import { type StallButtonProps, stallsQueryKey } from '@/api/stallApi'
+import type { StallUserAttributes } from '@server/db/userModel'
 import { ResponsiveSheetDialog } from '@/pages/dashboard/components/ResponsiveSheetDialog'
 import { useQueryClient } from '@tanstack/react-query'
-import { FishSymbolIcon } from 'lucide-react'
 import { toast } from 'sonner'
+
+import { formatDay } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
 import StallDetailForm from '../../user/components/StallDetailForm'
+import type { StallState } from './StallsTable'
 import UpdateStallForm from './UpdateStallForm'
 
-export const StallButton: React.FC<StallButtonProps> = ({
-  stall,
-  onOpen,
-  isOpen,
-}) => {
+function areaLabel(size?: number | string | null) {
+  const value = typeof size === 'string' ? Number.parseFloat(size) : size
+  return value && Number.isFinite(value) ? `${value} m²` : 'Area not recorded'
+}
+
+function stallName(stall: StallUserAttributes) {
+  if (!stall.stallName || stall.stallName === 'Still Empty...') return null
+  return stall.stallName
+}
+
+export const StallButton: React.FC<
+  StallButtonProps & { state?: StallState }
+> = ({ stall, onOpen, isOpen, state = 'rented' }) => {
   const queryClient = useQueryClient()
   const stallId = `stall-${stall.stallNumber}`
 
@@ -31,11 +42,23 @@ export const StallButton: React.FC<StallButtonProps> = ({
 
   const { data: session, isLoading, error } = useSession()
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return toast.error('An error occurred: ' + error)
+  if (isLoading) {
+    return <div className="border-border h-16 rounded-lg border" />
+  }
+  if (error) {
+    toast.error('An error occurred: ' + error)
+    return <div className="border-border h-16 rounded-lg border" />
+  }
+
+  const name = stallName(stall)
+  const owner = stall.stallOwnerId?.name
+  const lease = stall.endAt ? `Lease ends ${formatDay(stall.endAt)}` : 'No end date set'
+  const stateLabel =
+    state === 'vacant' ? 'vacant' : state === 'ended' ? 'lease ended' : 'rented'
+  const accessibleName = `Stall ${stall.stallNumber}, ${name ?? 'no name'}, ${stateLabel}`
 
   return (
-    <div>
+    <div className="min-w-0">
       <ResponsiveSheetDialog
         isOpen={isOpen}
         setIsOpen={(open) => onOpen(open ? stallId : null)}
@@ -49,29 +72,53 @@ export const StallButton: React.FC<StallButtonProps> = ({
         )}
       </ResponsiveSheetDialog>
 
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={() => onOpen(stallId)}
-              variant={stall.rentStatus ? 'secondary' : 'destructive'}
-              size="lg"
-              className="flex h-16 w-16 flex-col items-center justify-center p-0"
-            >
-              <FishSymbolIcon className="mb-1 size-6" />
-              <span className="text-xs">{stall.stallNumber}</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{stall.stallName || 'Not available'}</p>
-            <p>{stall.description || 'No description'}</p>
-            <p>{stall.stallSize ? `${stall.stallSize} m²` : 'No size'}</p>
-            <p>
-              {stall.stallOwner ? `${stall.stallOwnerId.name}` : 'Not rent yet'}
-            </p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            onClick={() => onOpen(stallId)}
+            variant="ghost"
+            aria-label={accessibleName}
+            className={cn(
+              'h-auto w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
+              state === 'vacant'
+                ? 'border-border bg-transparent hover:bg-muted/40 border-dashed'
+                : 'border-border bg-card hover:bg-muted/40',
+              state === 'ended' && 'border-destructive/40',
+            )}
+          >
+            <span className="flex w-full items-center justify-between gap-2">
+              <span className="text-sm leading-none font-semibold tabular-nums">
+                {stall.stallNumber}
+              </span>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'size-2 shrink-0 rounded-full',
+                  state === 'vacant' && 'border-muted-foreground/60 border',
+                  state === 'rented' && 'bg-foreground',
+                  state === 'ended' && 'bg-destructive dark:bg-destructive-foreground',
+                )}
+              />
+            </span>
+            <span className="text-muted-foreground line-clamp-2 text-xs leading-snug">
+              {name ?? 'No tenant yet'}
+            </span>
+            {state === 'ended' && (
+              <span className="text-destructive text-xs font-medium tabular-nums">
+                Lease ended {formatDay(stall.endAt)}
+              </span>
+            )}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="font-medium">{name ?? `Stall ${stall.stallNumber}`}</p>
+          <p>{stall.description || 'No description'}</p>
+          <p className="tabular-nums">{areaLabel(stall.stallSize)}</p>
+          <p>{owner ?? 'No tenant'}</p>
+          <p className="tabular-nums">{lease}</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
   )
 }
