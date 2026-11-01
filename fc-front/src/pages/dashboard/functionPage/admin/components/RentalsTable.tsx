@@ -27,6 +27,15 @@ const labelClass =
 
 const urgentBadgeClass = 'font-medium tabular-nums'
 
+// The table splits its width 40 / 20 / 22 / 18 across four columns. Only 40% has
+// a scale step (w-2/5); the other three stay explicit and page-scoped here, so no
+// global width token exists for a ratio one table uses.
+const COLUMN_WIDTH = {
+  stall: '20%',
+  lease: '22%',
+  action: '18%',
+} as const
+
 function daysLeft(endAt?: Date | string | null) {
   if (!endAt) return null
   return Math.ceil((new Date(endAt).getTime() - Date.now()) / DAY_MS)
@@ -155,27 +164,30 @@ export default function RentalsTable() {
       </section>
 
       <div className="border-border max-w-full overflow-hidden rounded-xl border">
-        <Table className="xl:min-w-[56rem]">
+        <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className={`h-12 w-[40%] pl-6 ${labelClass}`}>
+              <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
                 Tenant
               </TableHead>
               <TableHead
-                className={`hidden h-12 w-[20%] xl:table-cell ${labelClass}`}
+                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                style={{ width: COLUMN_WIDTH.stall }}
               >
                 Stall
               </TableHead>
               <TableHead
-                className={`hidden h-12 w-[22%] xl:table-cell ${labelClass}`}
+                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                style={{ width: COLUMN_WIDTH.lease }}
               >
                 Lease period
               </TableHead>
               <TableHead
-                className={`hidden h-12 w-[18%] pr-6 text-right xl:table-cell ${labelClass}`}
+                className={`hidden h-12 pr-6 text-right xl:table-cell ${labelClass}`}
+                style={{ width: COLUMN_WIDTH.action }}
               >
                 Action
               </TableHead>
