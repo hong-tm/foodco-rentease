@@ -1,31 +1,15 @@
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 import UserAppointmentTable from './components/UserAppointmentTable'
 
 export function UserAppointmentPage() {
   return (
-    <Card className="bg-muted/10 mx-auto w-full rounded-lg p-4 shadow-md md:p-6 lg:p-8">
-      <CardHeader>
-        <CardTitle>User Appointment</CardTitle>
-        <CardDescription>
-          View your appointment history and status
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <UserAppointmentTable />
-      </CardContent>
-      <VisuallyHidden>
-        <CardFooter></CardFooter>
-      </VisuallyHidden>
-    </Card>
+    <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
+      <PageHeader
+        title="User Appointment"
+        description="Your stall-viewing appointments, their status, and any payment due."
+      />
+      <UserAppointmentTable />
+    </div>
   )
 }
