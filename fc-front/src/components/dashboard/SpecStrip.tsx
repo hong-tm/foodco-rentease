@@ -52,15 +52,11 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
               'sm:[&:not(:first-child)]:border-l max-sm:[&:nth-child(even)]:border-l max-sm:[&:nth-child(n+3)]:border-t',
               // an odd last cell spans the row on phones
               'max-sm:last:odd:col-span-2',
-              cell.anomaly && 'text-foreground',
+              // the anomaly marker is the cell's own left edge, so it never
+              // sits beside a grey divider and blurs into it
+              cell.anomaly && 'border-l-destructive text-foreground border-l',
             )}
           >
-            {cell.anomaly ? (
-              <span
-                aria-hidden="true"
-                className="bg-destructive absolute inset-y-0 left-0 w-px"
-              />
-            ) : null}
             <dt className="text-muted-foreground text-[11px] font-medium tracking-widest uppercase">
               {cell.label}
             </dt>
