@@ -45,7 +45,9 @@ export function ResponsiveSheetDialog({
               <DrawerDescription>{description}</DrawerDescription>
             )}
           </DrawerHeader>
-          <div className="grid flex-1 auto-rows-min gap-6 px-4">{children}</div>
+          <div className="grid min-w-0 flex-1 auto-rows-min gap-6 overflow-x-hidden px-4">
+            {children}
+          </div>
           <DrawerFooter className="pt-2">
             <DrawerClose asChild>
               <Button variant="ghost">Cancel</Button>
@@ -63,7 +65,9 @@ export function ResponsiveSheetDialog({
           <SheetTitle>{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}
         </SheetHeader>
-        <div className="grid flex-1 auto-rows-min gap-6 px-4">{children}</div>
+        <div className="grid min-w-0 flex-1 auto-rows-min gap-6 overflow-x-hidden px-4">
+          {children}
+        </div>
       </SheetContent>
     </Sheet>
   )

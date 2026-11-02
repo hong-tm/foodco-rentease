@@ -125,7 +125,7 @@ export default function StallUtilitiesForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
         >
-          <div className="grid max-w-3xl items-start gap-4 sm:grid-cols-2">
+          <div className="grid w-full items-start gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
             <FormField
               control={form.control}
               name="stallId"
@@ -256,7 +256,7 @@ export default function StallUtilitiesForm() {
             />
           </div>
 
-          <div>
+          <div className="flex justify-end">
             <Button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? (
                 <>
