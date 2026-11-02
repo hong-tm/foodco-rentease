@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
@@ -107,21 +108,16 @@ export default function AdminAppointmentTable({
 
   const toolbar = (
     <div className="flex flex-wrap items-end justify-between gap-4">
-      <div className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {pendingCount}
-          </span>
-          <span className={labelClass}>
-            {pendingCount === 1 ? 'pending request' : 'pending requests'}
-          </span>
-        </div>
-        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-          <span className={labelClass}>Showing</span>
-          <span className="text-muted-foreground tabular-nums">
-            {monthLabel} · {upcoming.length} upcoming
-          </span>
-        </p>
+      <div className="min-w-0 flex-1">
+        <SpecStrip
+          value={String(pendingCount)}
+          unit={pendingCount === 1 ? 'pending request' : 'pending requests'}
+          cells={[
+            { label: 'Showing', value: monthLabel },
+            { label: 'Upcoming', value: upcoming.length },
+            { label: 'Decided', value: upcoming.length - pendingCount },
+          ]}
+        />
       </div>
       <Select value={selectedMonth} onValueChange={onMonthChange}>
         <SelectTrigger className="w-44" aria-label="Filter by month">

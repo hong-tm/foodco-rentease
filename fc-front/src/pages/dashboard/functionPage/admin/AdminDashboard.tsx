@@ -5,6 +5,7 @@ import { startOfDay } from 'date-fns'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/dashboard/PageHeader'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 import FeedbackHapinessLineChart from './components/FeedbackHapinessLineChart'
 import LatestAppointmentScrollArea from './components/LatestAppointmentScrollArea'
@@ -80,22 +81,26 @@ export function AdminDashboard() {
             <Skeleton className="h-4 w-80" />
           </div>
         ) : (
-          <>
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-                {occupancy}%
-              </span>
-              <span className={labelClass}>occupancy</span>
-            </div>
-            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-              <span className={labelClass}>Now</span>
-              <span className="text-muted-foreground tabular-nums">
-                {rentedStalls} of {totalStalls} stalls rented · {expiringSoon}{' '}
-                leases end within 7 days · {pendingAppointments} appointments
-                pending
-              </span>
-            </p>
-          </>
+          <SpecStrip
+            value={`${occupancy}%`}
+            unit="occupancy"
+            cells={[
+              {
+                label: 'Rented',
+                value: `${rentedStalls}/${totalStalls}`,
+              },
+              {
+                label: 'Due within 7 days',
+                value: expiringSoon,
+                anomaly: expiringSoon > 0,
+              },
+              {
+                label: 'Appointments pending',
+                value: pendingAppointments,
+                anomaly: pendingAppointments > 0,
+              },
+            ]}
+          />
         )}
       </section>
 

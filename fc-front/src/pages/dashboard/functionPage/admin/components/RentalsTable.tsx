@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
@@ -127,39 +128,27 @@ export default function RentalsTable() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section aria-label="Reminder summary" className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {endingSoon.length}
-          </span>
-          <span className={labelClass}>
-            {endingSoon.length === 1
-              ? 'lease ending within 7 days'
-              : 'leases ending within 7 days'}
-          </span>
-        </div>
-        {soonest ? (
-          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-            <span className={labelClass}>Soonest</span>
-            <span className="font-medium">{soonest.stall.stallName}</span>
-            <span className="text-muted-foreground tabular-nums">
-              Stall {soonest.stall.stallNumber} · Ends{' '}
-              {formatDay(soonest.stall.endAt)}
-            </span>
-          </p>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            Every lease runs longer than a week.
-          </p>
-        )}
-        {alreadyEnded.length > 0 && (
-          <p className="text-muted-foreground text-sm tabular-nums">
-            {alreadyEnded.length}{' '}
-            {alreadyEnded.length === 1 ? 'lease has' : 'leases have'} already
-            ended without a renewal date.
-          </p>
-        )}
-      </section>
+      <SpecStrip
+        value={String(endingSoon.length)}
+        unit={
+          endingSoon.length === 1
+            ? 'lease ending within 7 days'
+            : 'leases ending within 7 days'
+        }
+        cells={[
+          {
+            label: 'Soonest',
+            value: soonest
+              ? `${soonest.stall.stallName} · ${formatDay(soonest.stall.endAt)}`
+              : 'None this week',
+          },
+          {
+            label: 'Ended',
+            value: `${alreadyEnded.length} without renewal`,
+            anomaly: alreadyEnded.length > 0,
+          },
+        ]}
+      />
 
       <div className="border-border max-w-full overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">

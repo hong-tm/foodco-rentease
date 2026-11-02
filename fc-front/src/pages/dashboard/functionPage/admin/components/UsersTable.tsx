@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { AdminActionButton } from './AdminActionButton'
@@ -86,23 +87,20 @@ export default function UsersTable() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section aria-label="Account summary" className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {users.length}
-          </span>
-          <span className={labelClass}>
-            {users.length === 1 ? 'account' : 'accounts'}
-          </span>
-        </div>
-        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-          <span className={labelClass}>Breakdown</span>
-          <span className="text-muted-foreground tabular-nums">
-            {roleCount('admin')} admin · {roleCount('rental')} rental ·{' '}
-            {roleCount('user')} user — {banned.length} banned
-          </span>
-        </p>
-      </section>
+      <SpecStrip
+        value={String(users.length)}
+        unit={users.length === 1 ? 'account' : 'accounts'}
+        cells={[
+          { label: 'Admins', value: roleCount('admin') },
+          { label: 'Rental', value: roleCount('rental') },
+          { label: 'Users', value: roleCount('user') },
+          {
+            label: 'Banned',
+            value: banned.length,
+            anomaly: banned.length > 0,
+          },
+        ]}
+      />
 
       <div className="border-border max-w-full overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">
