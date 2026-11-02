@@ -86,8 +86,12 @@ export function VacancyChart() {
         <CardDescription>{currentMonth} Overview</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
+        <p className="sr-only">
+          {rentedStalls} of {totalStalls} stalls rented
+        </p>
         <ChartContainer
           config={chartConfig}
+          aria-hidden="true"
           className="mx-auto aspect-square max-h-[250px]"
         >
           <RadialBarChart

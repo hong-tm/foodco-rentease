@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import PaymentModal from '@/components/PaymentModal'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 const labelClass =
   'text-muted-foreground text-xs font-medium tracking-widest uppercase'
@@ -157,11 +158,28 @@ export default function StallUtilitiesDetails() {
 
   const records: PaymentRecord[] = paymentRecords ?? []
 
+  // Most recent record of this type for the stall. Records arrive in no
+  // guaranteed order, so pick by date rather than taking the first match.
   const latestOf = (stallNumber: number, type: Bill['type']) =>
-    records.find(
-      (payment) =>
-        payment.stallId === stallNumber && payment.paymentType === type,
+    records
+      .filter(
+        (payment) =>
+          payment.stallId === stallNumber && payment.paymentType === type,
+      )
+      .reduce<
+        PaymentRecord | undefined
+      >((latest, payment) => (!latest || new Date(payment.paymentDate) > new Date(latest.paymentDate) ? payment : latest), undefined)
+
+  // Rent is monthly: it counts as paid only when this month's rent is in.
+  const now = new Date()
+  const paidThisMonth = (record?: PaymentRecord) => {
+    if (!record?.paymentStatus) return false
+    const date = new Date(record.paymentDate)
+    return (
+      date.getFullYear() === now.getFullYear() &&
+      date.getMonth() === now.getMonth()
     )
+  }
 
   const billsFor = (stall: (typeof stalls)[number]): Bill[] => {
     const bills: Bill[] = []
@@ -210,9 +228,9 @@ export default function StallUtilitiesDetails() {
         type: 'rental',
         label: 'Rental',
         amount: rentalAmount,
-        state: rentalRecord?.paymentStatus ? 'paid' : 'due',
-        meta: rentalRecord?.paymentStatus
-          ? `Paid ${formatDay(rentalRecord.paymentDate)}`
+        state: paidThisMonth(rentalRecord) ? 'paid' : 'due',
+        meta: paidThisMonth(rentalRecord)
+          ? `Paid ${formatDay(rentalRecord!.paymentDate)}`
           : `${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`,
         paymentId: rentalRecord?.paymentId,
       })
@@ -232,31 +250,32 @@ export default function StallUtilitiesDetails() {
       .map((bill) => ({ ...bill, stallNumber: stall.stallNumber })),
   )
   const totalDue = dueBills.reduce((sum, bill) => sum + bill.amount, 0)
+  const stallsWithDue = new Set(dueBills.map((bill) => bill.stallNumber)).size
 
   return (
     <div className="flex flex-col gap-8">
-      <section aria-label="Amount due" className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {dueBills.length === 0 ? 'Nothing due' : `RM ${money(totalDue)}`}
-          </span>
-          {dueBills.length > 0 && (
-            <span className={labelClass}>
-              {dueBills.length === 1 ? 'bill due' : 'bills due'}
-            </span>
-          )}
-        </div>
-        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-          <span className={labelClass}>Stalls</span>
-          <span className="tabular-nums">
-            {stalls.length} {stalls.length === 1 ? 'stall' : 'stalls'} on record
-          </span>
-          <span className="text-muted-foreground">
-            {dueBills.length === 0
-              ? 'Every bill is settled.'
-              : `Across ${new Set(dueBills.map((bill) => bill.stallNumber)).size} stalls.`}
-          </span>
-        </p>
+      <section aria-label="Amount due">
+        <SpecStrip
+          value={
+            dueBills.length === 0 ? 'Nothing due' : `RM ${money(totalDue)}`
+          }
+          unit={
+            dueBills.length === 0
+              ? 'every bill settled'
+              : dueBills.length === 1
+                ? 'bill due'
+                : 'bills due'
+          }
+          cells={[
+            { label: 'Stalls', value: stalls.length },
+            {
+              label: 'Bills due',
+              value: dueBills.length,
+              anomaly: dueBills.length > 0,
+            },
+            { label: 'Stalls with bills due', value: stallsWithDue },
+          ]}
+        />
       </section>
 
       <div className="flex flex-col gap-6">

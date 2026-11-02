@@ -54,7 +54,7 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[180px]" aria-label="Filter by month">
         <SelectValue placeholder="Filter by month" />
       </SelectTrigger>
       <SelectContent>
@@ -232,7 +232,7 @@ export function PaymentRecordsTable({
             />
           )}
           <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px]" aria-label="Filter by type">
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
