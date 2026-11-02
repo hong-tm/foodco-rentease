@@ -144,7 +144,7 @@ export default function UserDashboardSidebar({
         </SidebarContent>
       </Sidebar>
     )
-  if (error) return toast.error('An error occurred: ' + error), null
+  if (error) return (toast.error('An error occurred: ' + error), null)
 
   if (!currentSession || !currentSession.user) {
     return null // Already handle the toast in the effect hook
@@ -172,7 +172,7 @@ export default function UserDashboardSidebar({
     <Button
       onClick={stopImpersonUser}
       variant="destructive"
-      className="my-2 w-full hover:bg-red-600 hover:text-white"
+      className="my-2 w-full"
     >
       Stop Impersonating
     </Button>
@@ -223,7 +223,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/tenant-information',
             },
             {
-              title: 'Stall Utilities Payment',
+              title: 'Stall Payment',
               url: '/dashboard/stall-payment',
             },
           ],
@@ -234,7 +234,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Payments',
               url: '/dashboard/admin-report',
             },
           ],
@@ -242,7 +242,7 @@ export default function UserDashboardSidebar({
       ],
       navSecondary: [
         {
-          title: 'Admin',
+          title: 'Users',
           url: '/dashboard/admin',
           icon: ShieldCheckIcon,
         },
@@ -259,7 +259,7 @@ export default function UserDashboardSidebar({
           icon: BellElectricIcon,
         },
         {
-          title: 'Export Report',
+          title: 'Payments',
           url: '/dashboard/admin-report',
           icon: BookDownIcon,
         },
@@ -284,11 +284,11 @@ export default function UserDashboardSidebar({
           isActive: true,
           items: [
             {
-              title: 'Stall Information',
+              title: 'Rental Dashboard',
               url: '/dashboard/rental-dashboard',
             },
             {
-              title: 'Stall Payment',
+              title: 'Stall Utilities',
               url: '/dashboard/stall-utilities',
             },
           ],
@@ -303,7 +303,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/stall-availability',
             },
             {
-              title: 'Appointment',
+              title: 'User Appointment',
               url: '/dashboard/user-appointment',
             },
           ],
@@ -314,7 +314,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Rental Report',
               url: '/dashboard/rental-report',
             },
           ],
@@ -323,7 +323,7 @@ export default function UserDashboardSidebar({
       navSecondary: [],
       navQuick: [
         {
-          title: 'Payments',
+          title: 'Rental Report',
           url: '/dashboard/rental-report',
           icon: CreditCardIcon,
         },
@@ -352,7 +352,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/stall-availability',
             },
             {
-              title: 'Appointment',
+              title: 'User Appointment',
               url: '/dashboard/user-appointment',
             },
           ],
@@ -363,7 +363,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Payments',
+              title: 'Payment History',
               url: '/dashboard/user-report',
             },
           ],

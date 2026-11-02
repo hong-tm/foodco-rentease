@@ -10,7 +10,7 @@ export function AdminAppointmentPage() {
   return (
     <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
       <PageHeader
-        title="Appointments"
+        title="Stall Appointments"
         description="Stall appointment requests and the decision on each one"
       />
       <AdminAppointmentTable

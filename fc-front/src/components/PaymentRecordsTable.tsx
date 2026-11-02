@@ -191,20 +191,6 @@ export function PaymentRecordsTable({
     )
   }
 
-  if (!records || records.length === 0) {
-    return (
-      <section
-        aria-label={title}
-        className="border-border/80 flex flex-col gap-1 border-y px-4 py-10 text-center"
-      >
-        <p className="text-sm font-medium">No payment records yet</p>
-        <p className="text-muted-foreground text-sm">
-          Payments show up here as soon as one is recorded.
-        </p>
-      </section>
-    )
-  }
-
   return (
     <section aria-label={title} className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -260,6 +246,18 @@ export function PaymentRecordsTable({
           </TableRow>
         </TableHeader>
         <TableBody>
+          {filteredRecords.length === 0 && (
+            <TableRow className="hover:bg-transparent">
+              <TableCell
+                colSpan={7}
+                className="text-muted-foreground py-10 text-center text-sm whitespace-normal"
+              >
+                {records.length === 0
+                  ? 'No payment records yet. Payments show up here as soon as one is recorded.'
+                  : 'No records match these filters.'}
+              </TableCell>
+            </TableRow>
+          )}
           {filteredRecords.map((record) => (
             <TableRow
               key={record.paymentId}

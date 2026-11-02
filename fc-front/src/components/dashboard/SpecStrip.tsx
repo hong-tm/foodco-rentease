@@ -41,12 +41,17 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
           {unit}
         </span>
       </div>
-      <dl className="border-border/80 bg-muted/25 divide-border/80 flex flex-wrap divide-x border-y">
+      {/* Two columns on phones (cells wrap into a grid with hairlines on
+          both axes), one row from sm up. */}
+      <dl className="border-border/80 bg-muted/25 grid grid-cols-2 border-y sm:flex">
         {cells.map((cell) => (
           <div
             key={cell.label}
             className={cn(
-              'relative flex min-w-0 flex-1 flex-col gap-1 px-4 py-3',
+              'border-border/80 relative flex min-w-0 flex-1 flex-col gap-1 px-3 py-3 sm:px-4',
+              'sm:[&:not(:first-child)]:border-l max-sm:[&:nth-child(even)]:border-l max-sm:[&:nth-child(n+3)]:border-t',
+              // an odd last cell spans the row on phones
+              'max-sm:last:odd:col-span-2',
               cell.anomaly && 'text-foreground',
             )}
           >

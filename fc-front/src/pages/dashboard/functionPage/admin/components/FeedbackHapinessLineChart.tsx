@@ -5,7 +5,7 @@ import {
   TrendingDownIcon,
   TrendingUpIcon,
 } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 
 import {
   Card,
@@ -103,7 +103,7 @@ export default function FeedbackHapinessLineChart({
           config={chartConfig}
           className="aspect-auto h-[250px] w-full min-w-[500px]"
         >
-          <LineChart
+          <BarChart
             accessibilityLayer
             data={feedbackHappiness}
             margin={{
@@ -130,25 +130,23 @@ export default function FeedbackHapinessLineChart({
                 />
               }
             />
-            <Line
+            <Bar
               dataKey="totalHappiness"
-              type="monotone"
-              stroke="var(--color-happiness)"
-              strokeWidth={2}
-              dot={false}
+              fill="var(--color-happiness)"
+              radius={3}
             />
-          </LineChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
       {analytics && (
         <CardFooter className="flex flex-row flex-wrap items-center justify-between border-t p-4">
           <div className="flex items-center gap-2">
             {analytics.status === 'Positive' ? (
-              <TrendingUpIcon className="h-3.5 w-3.5 text-green-500" />
+              <TrendingUpIcon className="text-muted-foreground h-3.5 w-3.5" />
             ) : analytics.status === 'Concerning' ? (
-              <AlertTriangleIcon className="h-3.5 w-3.5 text-red-500" />
+              <AlertTriangleIcon className="text-destructive h-3.5 w-3.5" />
             ) : (
-              <TrendingDownIcon className="h-3.5 w-3.5 text-yellow-500" />
+              <TrendingDownIcon className="text-muted-foreground h-3.5 w-3.5" />
             )}
             <span className="text-sm font-medium">{analytics.status}</span>
           </div>

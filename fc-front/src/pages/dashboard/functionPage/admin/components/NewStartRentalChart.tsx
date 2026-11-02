@@ -163,7 +163,7 @@ export function NewStartRentalChart() {
             className={`h-4 w-4 ${
               trendingPercentage < 0
                 ? 'text-destructive rotate-180'
-                : 'text-green-500'
+                : 'text-muted-foreground'
             }`}
           />
         </div>

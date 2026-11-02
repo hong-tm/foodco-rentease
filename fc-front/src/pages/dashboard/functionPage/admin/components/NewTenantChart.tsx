@@ -181,10 +181,8 @@ export default function NewTenantChart() {
             return (
               <>
                 <div className="flex items-center gap-1">
-                  <span>Trend Analysis:</span>
-                  <span
-                    className={change >= 0 ? 'text-green-500' : 'text-red-500'}
-                  >
+                  <span>New users</span>
+                  <span className="text-foreground tabular-nums">
                     {change >= 0 ? (
                       <TrendingUpIcon className="inline h-4 w-4" />
                     ) : (
@@ -193,11 +191,6 @@ export default function NewTenantChart() {
                     {change >= 0 ? '+' : ''}
                     {change.toFixed(1)}% vs previous month
                   </span>
-                </div>
-                <div>
-                  {change >= 0
-                    ? 'Growing user acquisition - consider expanding resources'
-                    : 'Declining registrations - may need marketing attention'}
                 </div>
               </>
             )

@@ -347,7 +347,6 @@ export default function StallUtilitiesDetails() {
                       {bill.state === 'due' && (
                         <Button
                           size="sm"
-                          variant="outline"
                           aria-label={`Pay ${bill.label.toLowerCase()} bill, RM ${money(bill.amount)}`}
                           onClick={() =>
                             handlePayment(
