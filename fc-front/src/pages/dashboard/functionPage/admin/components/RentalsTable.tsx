@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { formatDay } from '@/lib/format'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -16,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
 
@@ -24,8 +24,6 @@ const REMINDER_WINDOW_DAYS = 7
 
 const labelClass =
   'text-muted-foreground text-xs font-medium tracking-widest uppercase'
-
-const urgentBadgeClass = 'font-medium tabular-nums'
 
 // The table splits its width 40 / 20 / 22 / 18 across four columns. Only 40% has
 // a scale step (w-2/5); the other three stay explicit and page-scoped here, so no
@@ -171,7 +169,10 @@ export default function RentalsTable() {
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
-                Tenant
+                <span className="flex items-center gap-3">
+                  <span aria-hidden className="size-9" />
+                  Tenant
+                </span>
               </TableHead>
               <TableHead
                 className={`hidden h-12 xl:table-cell ${labelClass}`}
@@ -236,12 +237,14 @@ export default function RentalsTable() {
                               {leasePeriod(stall.startAt, stall.endAt)}
                             </span>
                             {needsAttention && (
-                              <Badge
-                                variant="destructive"
-                                className={urgentBadgeClass}
-                              >
-                                {expiryBadge(stall.endAt)}
-                              </Badge>
+                              <StatusBadge
+                                label={expiryBadge(stall.endAt)}
+                                tone={
+                                  left !== null && left < 0
+                                    ? 'blocked'
+                                    : 'action'
+                                }
+                              />
                             )}
                           </p>
                         </div>
@@ -266,12 +269,14 @@ export default function RentalsTable() {
                       {leasePeriod(stall.startAt, stall.endAt)}
                     </p>
                     {needsAttention && (
-                      <Badge
-                        variant="destructive"
-                        className={`mt-2 ${urgentBadgeClass}`}
-                      >
-                        {expiryBadge(stall.endAt)}
-                      </Badge>
+                      <div className="mt-2">
+                        <StatusBadge
+                          label={expiryBadge(stall.endAt)}
+                          tone={
+                            left !== null && left < 0 ? 'blocked' : 'action'
+                          }
+                        />
+                      </div>
                     )}
                   </TableCell>
                   <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">

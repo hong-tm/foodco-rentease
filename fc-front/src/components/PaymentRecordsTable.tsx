@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type MonthSelectorProps = {
   value: string
@@ -280,16 +281,11 @@ export function PaymentRecordsTable({
                       {record.paymentAmount}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge
-                        variant="secondary"
-                        className={`${
-                          record.paymentStatus
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {record.paymentStatus ? 'Paid' : 'Pending'}
-                      </Badge>
+                      <StatusBadge
+                        label={record.paymentStatus ? 'Paid' : 'Pending'}
+                        tone={record.paymentStatus ? 'settled' : 'action'}
+                        className="justify-center"
+                      />
                     </TableCell>
                     <TableCell className="text-left">
                       {typeof record.paymentDate === 'object'

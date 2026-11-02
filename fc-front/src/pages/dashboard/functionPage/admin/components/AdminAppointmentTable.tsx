@@ -6,7 +6,6 @@ import { startOfDay } from 'date-fns'
 import { formatDay } from '@/lib/format'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -25,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
 
@@ -206,7 +206,10 @@ export default function AdminAppointmentTable({
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
-                Requester
+                <span className="flex items-center gap-3">
+                  <span aria-hidden className="size-9" />
+                  Requester
+                </span>
               </TableHead>
               <TableHead
                 className={`hidden h-12 xl:table-cell ${labelClass}`}
@@ -272,13 +275,14 @@ export default function AdminAppointmentTable({
                             <span className="text-muted-foreground tabular-nums">
                               {formatDay(notification.appointmentDate)}
                             </span>
-                            {status === 'Pending' ? (
-                              <Badge>{status}</Badge>
-                            ) : (
-                              <span className="text-muted-foreground">
-                                {status}
-                              </span>
-                            )}
+                            <StatusBadge
+                              label={status}
+                              tone={
+                                notification.notificationRead === null
+                                  ? 'action'
+                                  : 'settled'
+                              }
+                            />
                           </p>
                         </div>
                         <div className="mt-2 shrink-0 md:mt-0 xl:hidden">
@@ -311,13 +315,14 @@ export default function AdminAppointmentTable({
                     className="hidden py-5 align-top xl:table-cell"
                     style={{ width: COLUMN_WIDTH.status }}
                   >
-                    {status === 'Pending' ? (
-                      <Badge>{status}</Badge>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">
-                        {status}
-                      </span>
-                    )}
+                    <StatusBadge
+                      label={status}
+                      tone={
+                        notification.notificationRead === null
+                          ? 'action'
+                          : 'settled'
+                      }
+                    />
                   </TableCell>
                   <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">
                     <AdminAppointmentActionButton
