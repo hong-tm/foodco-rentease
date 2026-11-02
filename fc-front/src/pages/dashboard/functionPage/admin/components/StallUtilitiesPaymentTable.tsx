@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -203,13 +203,13 @@ export default function StallUtilitiesPaymentTable() {
           </Button>
         </div>
       ) : (
-        <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
+        <div className="max-w-full min-w-0 overflow-hidden">
           <Table className="xl:min-w-table">
             <TableCaption className="sr-only">
               Utility charges with stall, tenant, amount, status and issue date
             </TableCaption>
             <TableHeader>
-              <TableRow className="hover:bg-transparent">
+              <TableRow className="border-border/80 bg-muted/35 hover:bg-transparent border-b">
                 <TableHead className={`h-12 pl-6 ${labelClass}`}>
                   Stall
                 </TableHead>
@@ -276,7 +276,7 @@ export default function StallUtilitiesPaymentTable() {
                     key={payment.paymentId}
                     className="border-border/60 hover:bg-muted/30"
                   >
-                    <TableCell className="py-4 pl-6 align-top whitespace-normal">
+                    <TableCell className="py-4 pl-6 align-top whitespace-normal relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
                       <p className="text-sm leading-none font-medium tabular-nums">
                         Stall {payment.stallId}
                       </p>
@@ -296,16 +296,10 @@ export default function StallUtilitiesPaymentTable() {
 
                     <TableCell className="hidden py-4 align-top whitespace-normal xl:table-cell">
                       <div className="flex items-center gap-2">
-                        <Avatar className="size-7">
-                          <AvatarImage src={user?.image ?? ''} alt="" />
-                          <AvatarFallback>
-                            {userName(payment.userId)
-                              .split(' ')
-                              .map((part) => part[0])
-                              .join('')
-                              .slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <InitialsAvatar
+                          name={userName(payment.userId)}
+                          image={user?.image}
+                        />
                         <span className="text-sm leading-none">
                           {userName(payment.userId)}
                         </span>

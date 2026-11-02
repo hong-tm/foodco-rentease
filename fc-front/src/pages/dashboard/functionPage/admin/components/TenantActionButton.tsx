@@ -7,6 +7,8 @@ import { toast } from 'sonner'
 
 import { formatDay } from '@/lib/format'
 
+import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 
 type UserAction = {
@@ -15,6 +17,7 @@ type UserAction = {
   userStallId: number
   userStallName: string
   stallEndAt: Date
+  emphasis?: 'outline' | 'ghost'
 }
 
 export function TenantActionButton({
@@ -23,6 +26,7 @@ export function TenantActionButton({
   userStallId,
   userStallName,
   stallEndAt,
+  emphasis = 'outline',
 }: UserAction) {
   const [openSendReminder, setOpenSendReminder] = useState(false)
 
@@ -59,8 +63,13 @@ export function TenantActionButton({
       />
 
       <Button
-        variant="outline"
+        variant={emphasis}
         size="sm"
+        className={cn(
+          'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
+          emphasis === 'ghost' &&
+            'text-muted-foreground opacity-60 transition-opacity group-hover/row:opacity-100 hover:text-foreground focus-visible:opacity-100',
+        )}
         onClick={() => setOpenSendReminder(true)}
         disabled={mutation.isPending}
       >

@@ -181,6 +181,21 @@ code {
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
+
+  html {
+    scrollbar-color: var(--border) transparent;
+    accent-color: var(--primary);
+  }
+
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+
+  input,
+  textarea {
+    caret-color: var(--primary);
+  }
 }
 
 /* Chart series palette: one hue per series in both themes, lightness adjusted

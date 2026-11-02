@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { authClient } from '@/lib/auth-client'
+import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -159,7 +160,14 @@ export function AdminActionButton({
           setOpen={setOpenBanUser}
         />
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={cn(
+              'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
+              'text-muted-foreground opacity-60 transition-opacity group-hover/row:opacity-100 hover:text-foreground focus-visible:opacity-100',
+            )}
+          >
             Manage
             <ChevronDownIcon aria-hidden="true" />
           </Button>

@@ -5,7 +5,7 @@ import { startOfDay } from 'date-fns'
 
 import { formatDay } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -194,13 +194,13 @@ export default function AdminAppointmentTable({
   return (
     <div className="flex flex-col gap-6">
       {toolbar}
-      <div className="border-border max-w-full overflow-hidden rounded-xl border">
+      <div className="max-w-full overflow-hidden">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Upcoming appointment requests with decision status and action
           </TableCaption>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
+            <TableRow className="border-border/80 bg-muted/35 hover:bg-transparent border-b">
               <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
                 <span className="flex items-center gap-3">
                   <span aria-hidden className="size-9" />
@@ -242,20 +242,14 @@ export default function AdminAppointmentTable({
               return (
                 <TableRow
                   key={notification.notificationId}
-                  className="border-border/60 hover:bg-muted/30"
+                  className="group/row border-border/60 hover:bg-muted/20"
                 >
-                  <TableCell className="py-5 pl-6 align-top whitespace-normal">
+                  <TableCell className="py-5 pl-6 align-top whitespace-normal relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
                     <div className="flex items-start gap-3">
-                      <Avatar className="size-9 shrink-0">
-                        <AvatarImage
-                          rel="preload"
-                          src={user?.image ?? undefined}
-                          alt=""
-                        />
-                        <AvatarFallback>
-                          {user?.name?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
+                      <InitialsAvatar
+                        name={user?.name ?? 'Unknown account'}
+                        image={user?.image}
+                      />
                       <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
                         <div className="flex min-w-0 flex-col gap-1">
                           <p className="text-sm leading-none font-medium">

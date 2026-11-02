@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -102,13 +102,13 @@ export default function UsersTable() {
         ]}
       />
 
-      <div className="border-border max-w-full overflow-hidden rounded-xl border">
+      <div className="max-w-full overflow-hidden">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Accounts with role, status, join date and management actions
           </TableCaption>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
+            <TableRow className="border-border/80 bg-muted/35 hover:bg-transparent border-b">
               <TableHead
                 className={`h-12 pl-6 ${labelClass}`}
                 style={{ width: COLUMN_WIDTH.account }}
@@ -157,18 +157,11 @@ export default function UsersTable() {
               return (
                 <TableRow
                   key={user.id}
-                  className="border-border/60 hover:bg-muted/30"
+                  className="group/row border-border/60 hover:bg-muted/20"
                 >
-                  <TableCell className="py-5 pl-6 align-top whitespace-normal">
+                  <TableCell className="py-5 pl-6 align-top whitespace-normal relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
                     <div className="flex items-start gap-3">
-                      <Avatar className="size-9 shrink-0">
-                        <AvatarImage
-                          rel="preload"
-                          src={user.image ?? undefined}
-                          alt=""
-                        />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
+                      <InitialsAvatar name={user.name} image={user.image} />
                       <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
                         <div className="flex min-w-0 flex-col gap-1">
                           <p className="text-sm leading-none font-medium">

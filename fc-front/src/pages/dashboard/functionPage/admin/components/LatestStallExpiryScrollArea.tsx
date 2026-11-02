@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import {
   Card,
   CardContent,
@@ -60,15 +60,10 @@ export default function LatestStallExpiryScrollArea() {
               {stalls?.stall.map((stall) => (
                 <TableRow key={stall.stallNumber}>
                   <TableCell>
-                    <Avatar className="size-8">
-                      <AvatarImage
-                        src={stall.stallOwnerId?.image || ''}
-                        alt=""
-                      />
-                      <AvatarFallback>
-                        {stall.stallOwnerId?.name?.[0] || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <InitialsAvatar
+                      name={stall.stallOwnerId?.name ?? 'Unknown'}
+                      image={stall.stallOwnerId?.image}
+                    />
                   </TableCell>
                   <TableCell className="text-sm font-medium whitespace-nowrap">
                     Stall {stall.stallNumber}

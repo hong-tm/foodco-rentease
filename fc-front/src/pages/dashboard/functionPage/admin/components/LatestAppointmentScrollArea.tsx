@@ -5,7 +5,7 @@ import { startOfDay } from 'date-fns'
 
 import { formatDay } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import {
   Card,
   CardContent,
@@ -86,12 +86,10 @@ export default function LatestAppointmentScrollArea() {
                 return (
                   <TableRow key={notification.notificationId}>
                     <TableCell>
-                      <Avatar className="size-8">
-                        <AvatarImage src={user?.image || ''} alt="" />
-                        <AvatarFallback>
-                          {user?.name?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
+                      <InitialsAvatar
+                        name={user?.name ?? 'Unknown'}
+                        image={user?.image}
+                      />
                     </TableCell>
                     <TableCell className="text-sm font-medium whitespace-nowrap">
                       Stall {notification.stallId}

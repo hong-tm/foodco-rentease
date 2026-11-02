@@ -12,6 +12,8 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -97,7 +99,15 @@ export default function AdminAppointmentActionButton({
         setOpen={setOpenRejectAppointment}
       />
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
+        <Button
+          variant={appointmentStatus === null ? 'outline' : 'ghost'}
+          size="sm"
+          className={cn(
+            'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
+            appointmentStatus !== null &&
+              'text-muted-foreground opacity-60 transition-opacity group-hover/row:opacity-100 hover:text-foreground focus-visible:opacity-100',
+          )}
+        >
           {appointmentStatus === null ? 'Decide' : 'Change'}
           <ChevronDownIcon aria-hidden="true" />
         </Button>
