@@ -28,7 +28,7 @@ export function DashboardLayoutPage() {
     return (
       <SidebarProvider defaultOpen={defaultOpen}>
         <UserDashboardSidebar />
-        <SidebarInset>
+        <SidebarInset className="min-w-0">
           <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
             <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
               <div className="order-2 flex min-w-0 items-center lg:order-1">
@@ -75,7 +75,7 @@ export function DashboardLayoutPage() {
   return (
     <SidebarProvider>
       <UserDashboardSidebar />
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
           <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
             <div className="order-2 flex min-w-0 items-center lg:order-1">

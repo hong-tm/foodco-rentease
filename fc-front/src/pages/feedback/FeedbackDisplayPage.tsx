@@ -271,7 +271,7 @@ function FeedbackRow({
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <TableRow className="border-border/60 hover:bg-muted/30">
         <TableCell className="py-4 pl-6 align-top whitespace-normal">
-          <span className="text-sm tabular-nums">
+          <span className="text-sm whitespace-nowrap tabular-nums">
             {formatDay(feedback.createdAt)}
           </span>
 
