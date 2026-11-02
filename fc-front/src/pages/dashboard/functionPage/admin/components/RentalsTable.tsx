@@ -239,11 +239,7 @@ export default function RentalsTable() {
                             {needsAttention && (
                               <StatusBadge
                                 label={expiryBadge(stall.endAt)}
-                                tone={
-                                  left !== null && left < 0
-                                    ? 'blocked'
-                                    : 'action'
-                                }
+                                tone="blocked"
                               />
                             )}
                           </p>
@@ -272,9 +268,7 @@ export default function RentalsTable() {
                       <div className="mt-2">
                         <StatusBadge
                           label={expiryBadge(stall.endAt)}
-                          tone={
-                            left !== null && left < 0 ? 'blocked' : 'action'
-                          }
+                          tone="blocked"
                         />
                       </div>
                     )}
