@@ -125,7 +125,7 @@ export default function StallUtilitiesForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex flex-col gap-4"
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid max-w-3xl gap-4 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="stallId"

@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { formatDay } from '@/lib/format'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -16,19 +15,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { AdminActionButton } from './AdminActionButton'
 
 const labelClass =
   'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
-// Same 40/16/16/16/12 split used by every list page in this sweep: the first
-// column absorbs slack, the trailing columns hold their content width.
+// 30 / 18 / 18 / 16 / 18. The account cell carries three lines, so it keeps the
+// largest share but no longer takes the slack; the four trailing columns stay
+// near-even so role, status and joined date read as one band.
 const COLUMN_WIDTH = {
-  role: '16%',
-  status: '16%',
+  account: '30%',
+  role: '18%',
+  status: '18%',
   joined: '16%',
-  action: '12%',
+  action: '18%',
 } as const
 
 export default function UsersTable() {
@@ -109,8 +111,14 @@ export default function UsersTable() {
           </TableCaption>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
-                Account
+              <TableHead
+                className={`h-12 pl-6 ${labelClass}`}
+                style={{ width: COLUMN_WIDTH.account }}
+              >
+                <span className="flex items-center gap-3">
+                  <span aria-hidden className="size-9" />
+                  Account
+                </span>
               </TableHead>
               <TableHead
                 className={`hidden h-12 xl:table-cell ${labelClass}`}
@@ -182,7 +190,7 @@ export default function UsersTable() {
                               Joined {formatDay(user.createdAt)}
                             </span>
                             {user.banned && (
-                              <Badge variant="destructive">Banned</Badge>
+                              <StatusBadge label="Banned" tone="blocked" />
                             )}
                           </p>
                         </div>
@@ -204,13 +212,10 @@ export default function UsersTable() {
                     className="hidden py-5 align-top xl:table-cell"
                     style={{ width: COLUMN_WIDTH.status }}
                   >
-                    {user.banned ? (
-                      <Badge variant="destructive">Banned</Badge>
-                    ) : (
-                      <span className="text-muted-foreground text-sm">
-                        Active
-                      </span>
-                    )}
+                    <StatusBadge
+                      label={user.banned ? 'Banned' : 'Active'}
+                      tone={user.banned ? 'blocked' : 'settled'}
+                    />
                   </TableCell>
                   <TableCell
                     className="hidden py-5 align-top xl:table-cell"

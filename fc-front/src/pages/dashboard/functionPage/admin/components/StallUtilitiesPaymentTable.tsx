@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query'
 import { formatDay } from '@/lib/format'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -27,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
@@ -150,33 +150,13 @@ export default function StallUtilitiesPaymentTable() {
         new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime(),
     )
 
-  const unpaid = visible.filter((payment) => !payment.paymentStatus)
-  const unpaidTotal = unpaid.reduce(
-    (sum, payment) =>
-      sum + (Number.parseFloat(payment.paymentAmount ?? '0') || 0),
-    0,
-  )
-  const isFiltered = selectedUser !== 'all' || selectedType !== 'all'
-
   return (
     <section
       aria-label="Payment records"
       className="flex min-w-0 flex-col gap-4"
     >
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <h2 className="text-base font-medium">Payment records</h2>
-          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-              RM {money(unpaidTotal) ?? '0.00'}
-            </span>
-            <span className={labelClass}>
-              unpaid across {unpaid.length}{' '}
-              {unpaid.length === 1 ? 'charge' : 'charges'}
-            </span>
-            {isFiltered && <span className={labelClass}>this view</span>}
-          </p>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className={labelClass}>Payment records</h2>
 
         <div className="flex flex-wrap gap-2">
           <Select value={selectedType} onValueChange={setSelectedType}>
@@ -237,7 +217,10 @@ export default function StallUtilitiesPaymentTable() {
                   className={`hidden h-12 xl:table-cell ${labelClass}`}
                   style={{ width: COLUMN_WIDTH.tenant }}
                 >
-                  Tenant
+                  <span className="flex items-center gap-2">
+                    <span aria-hidden className="size-7" />
+                    Tenant
+                  </span>
                 </TableHead>
                 <TableHead
                   className={`hidden h-12 xl:table-cell ${labelClass}`}
@@ -276,21 +259,16 @@ export default function StallUtilitiesPaymentTable() {
                 const user = userById.get(payment.userId)
                 const stall = stallById.get(payment.stallId)
                 const open = daysOpen(payment.paymentDate)
-                const status = payment.paymentStatus ? (
-                  <Badge variant="secondary" className="font-medium">
-                    Paid
-                  </Badge>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Badge variant="outline" className="font-medium">
-                      Pending
-                    </Badge>
-                    {open !== null && (
-                      <span className="text-muted-foreground text-xs tabular-nums">
-                        {open} d open
-                      </span>
-                    )}
-                  </span>
+                const status = (
+                  <StatusBadge
+                    label={payment.paymentStatus ? 'Paid' : 'Pending'}
+                    tone={payment.paymentStatus ? 'settled' : 'action'}
+                    meta={
+                      !payment.paymentStatus && open !== null
+                        ? `${open} d open`
+                        : undefined
+                    }
+                  />
                 )
 
                 return (
