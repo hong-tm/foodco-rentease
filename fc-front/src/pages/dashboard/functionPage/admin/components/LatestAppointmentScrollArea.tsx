@@ -2,6 +2,7 @@ import { fetchUsersQueryOptions, useSession } from '@/api/adminApi'
 import { getAllNotificationQueryOptions } from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
+import { Link } from 'react-router-dom'
 
 import { formatDay } from '@/lib/format'
 
@@ -12,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 
 export default function LatestAppointmentScrollArea() {
@@ -48,52 +48,65 @@ export default function LatestAppointmentScrollArea() {
       }
     })
 
+  const all = upcoming ?? []
+  const visible = all.slice(0, 5)
+  const rest = all.length - visible.length
+
   return (
     <Card className="flex h-full flex-col shadow-none">
       <CardHeader>
         <CardTitle>Recent appointments</CardTitle>
         <CardDescription>Confirmed appointments coming up</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[320px]">
-          {upcoming?.length ? (
-            <div className="divide-border/60 divide-y">
-              {upcoming.map((notification) => {
-                const user = users?.users.find(
-                  (candidate) => candidate.id === notification.userId,
-                )
-                return (
-                  <div
-                    key={notification.notificationId}
-                    className="flex items-center gap-3 py-3"
-                  >
-                    <InitialsAvatar
-                      name={user?.name ?? 'Unknown'}
-                      image={user?.image}
-                    />
-                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <p className="truncate text-sm leading-none font-medium">
-                        {user?.name ?? 'Unknown account'}
-                      </p>
-                      <p className="text-muted-foreground text-xs">
-                        {notification.stallId
-                          ? `Stall ${notification.stallId}`
-                          : 'Stall not recorded'}
-                      </p>
-                    </div>
-                    <span className="text-muted-foreground text-xs tabular-nums">
-                      {formatDay(notification.appointmentDate)}
-                    </span>
+      <CardContent className="flex flex-1 flex-col gap-3">
+        {visible.length ? (
+          <div className="divide-border/60 divide-y">
+            {visible.map((notification) => {
+              const user = users?.users.find(
+                (candidate) => candidate.id === notification.userId,
+              )
+              return (
+                <div
+                  key={notification.notificationId}
+                  className="flex items-center gap-3 py-3"
+                >
+                  <InitialsAvatar
+                    name={user?.name ?? 'Unknown'}
+                    image={user?.image}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p className="truncate text-sm leading-none font-medium">
+                      {user?.name ?? 'Unknown account'}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {notification.stallId
+                        ? `Stall ${notification.stallId}`
+                        : 'Stall not recorded'}
+                    </p>
                   </div>
-                )
-              })}
-            </div>
-          ) : (
-            <p className="text-muted-foreground py-6 text-sm">
-              No confirmed appointments coming up.
-            </p>
-          )}
-        </ScrollArea>
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {formatDay(notification.appointmentDate)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-muted-foreground py-6 text-sm">
+            No confirmed appointments coming up.
+          </p>
+        )}
+        {rest > 0 ? (
+          <p className="text-muted-foreground text-xs">
+            +{rest} more ·{' '}
+            <Link
+              to="/dashboard/admin-appointment"
+              className="hover:text-foreground underline underline-offset-4"
+            >
+              open the full list
+            </Link>
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   )

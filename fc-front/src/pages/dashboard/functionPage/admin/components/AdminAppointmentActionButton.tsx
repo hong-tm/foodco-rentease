@@ -105,7 +105,7 @@ export default function AdminAppointmentActionButton({
           className={cn(
             'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
             appointmentStatus !== null &&
-              'text-muted-foreground hover:text-foreground opacity-60 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100',
+              'text-muted-foreground hover:bg-muted/60 hover:text-foreground focus-visible:text-foreground transition-colors',
           )}
         >
           {appointmentStatus === null ? 'Decide' : 'Change'}

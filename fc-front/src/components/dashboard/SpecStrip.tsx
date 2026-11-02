@@ -14,6 +14,22 @@ type SpecStripProps = {
   cells: SpecCell[]
 }
 
+// A value like "Curry Mee · 2026-11-04" keeps its date as one unbreakable
+// unit: the tail moves to a second line instead of splitting mid-date.
+function cellValue(value: ReactNode) {
+  if (typeof value !== 'string') return value
+  const at = value.indexOf(' · ')
+  if (at === -1) return value
+  return (
+    <>
+      {value.slice(0, at)}{' '}
+      <span className="inline-block whitespace-nowrap">
+        {value.slice(at + 1)}
+      </span>
+    </>
+  )
+}
+
 export function SpecStrip({ value, unit, cells }: SpecStripProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -43,8 +59,8 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
             <dt className="text-muted-foreground text-[11px] font-medium tracking-widest uppercase">
               {cell.label}
             </dt>
-            <dd className="truncate text-sm font-medium tabular-nums">
-              {cell.value}
+            <dd className="text-sm font-medium break-words tabular-nums">
+              {cellValue(cell.value)}
             </dd>
           </div>
         ))}
