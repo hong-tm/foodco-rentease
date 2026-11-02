@@ -43,6 +43,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 const labelClass =
   'text-muted-foreground text-xs font-medium tracking-widest uppercase'
@@ -154,35 +155,24 @@ export function FeedbackDisplayPage() {
 
   return (
     <Shell>
-      <section aria-label="Rating breakdown" className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {feedbacks.length}
-          </span>
-          <span className={labelClass}>
-            {feedbacks.length === 1 ? 'comment' : 'comments'}
-          </span>
-        </div>
-        <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          {counts.map(({ value, label, count, Icon }) => (
-            <li key={value} className="flex items-center gap-2">
-              <Icon
-                className="text-muted-foreground size-4"
-                aria-hidden="true"
-              />
-              <span className="text-sm font-medium tabular-nums">{count}</span>
-              <span className="text-muted-foreground text-xs">{label}</span>
-            </li>
-          ))}
-        </ul>
+      <section aria-label="Rating breakdown">
+        <SpecStrip
+          value={String(feedbacks.length)}
+          unit={feedbacks.length === 1 ? 'comment' : 'comments'}
+          cells={counts.map(({ value, label, count }) => ({
+            label,
+            value: count,
+            anomaly: value <= 2 && count > 0,
+          }))}
+        />
       </section>
 
-      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
+      <div className="max-w-full min-w-0 overflow-hidden">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Customer feedback with date, stall, rating and comment
           </TableCaption>
-          <TableHeader>
+          <TableHeader className="border-border/80 bg-muted/35 border-b max-xl:sr-only">
             <TableRow className="hover:bg-transparent">
               <TableHead
                 className={`h-12 pl-6 ${labelClass}`}

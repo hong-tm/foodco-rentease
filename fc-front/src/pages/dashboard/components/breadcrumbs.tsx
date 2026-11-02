@@ -28,9 +28,9 @@ export default function Breadcrumbs() {
     'rental-dashboard': 'Rental Dashboard',
     'admin-appointment': 'Admin Appointment',
     'payment-success': 'Payment Success',
-    'admin-report': 'Admin Report',
+    'admin-report': 'Payments',
     'rental-report': 'Rental Report',
-    'user-report': 'User Report',
+    'user-report': 'Payment History',
     'stall-payment': 'Stall Payment',
     'stall-utilities': 'Stall Utilities',
   }

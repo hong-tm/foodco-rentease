@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -81,7 +82,6 @@ type PaymentRecordsTableProps = {
 
 export function PaymentRecordsTable({
   title,
-  description,
   records,
   showMonthFilter = false,
   isLoading,
@@ -184,17 +184,24 @@ export function PaymentRecordsTable({
   const pendingCount = filteredRecords.length - settledCount
 
   if (isLoading) {
-    return <div>Loading payment records...</div>
+    return (
+      <div aria-busy="true" className="flex flex-col gap-4">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
   }
 
   if (!records || records.length === 0) {
     return (
-      <section aria-label={title} className="flex flex-col gap-3">
-        <h2 className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-          {title}
-        </h2>
-        <p className="text-muted-foreground text-sm">{description}</p>
-        <p className="text-muted-foreground text-sm">No records yet.</p>
+      <section
+        aria-label={title}
+        className="border-border/80 flex flex-col gap-1 border-y px-4 py-10 text-center"
+      >
+        <p className="text-sm font-medium">No payment records yet</p>
+        <p className="text-muted-foreground text-sm">
+          Charges appear here once rent, water or electricity is billed.
+        </p>
       </section>
     )
   }
