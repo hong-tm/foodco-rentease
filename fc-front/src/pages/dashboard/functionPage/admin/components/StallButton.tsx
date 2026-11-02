@@ -84,9 +84,9 @@ export const StallButton: React.FC<
             className={cn(
               'h-auto w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
               state === 'vacant'
-                ? 'border-border bg-muted/20 hover:bg-muted/40 border-dashed'
+                ? 'border-muted-foreground/50 bg-muted/20 hover:bg-muted/40 border-dashed'
                 : 'border-border bg-card hover:bg-muted/40',
-              state === 'ended' && 'border-destructive/50',
+              state === 'ended' && 'border-destructive/60',
             )}
           >
             <span className="flex w-full items-center justify-between gap-2">
@@ -97,8 +97,8 @@ export const StallButton: React.FC<
                 aria-hidden="true"
                 className={cn(
                   'size-2 shrink-0 rounded-full',
-                  state === 'vacant' && 'border-muted-foreground/60 border',
-                  state === 'rented' && 'bg-foreground',
+                  state === 'vacant' && 'border-muted-foreground border',
+                  state === 'rented' && 'bg-series-1',
                   state === 'ended' && 'bg-destructive',
                 )}
               />

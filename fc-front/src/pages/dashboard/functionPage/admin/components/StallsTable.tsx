@@ -37,14 +37,14 @@ function Legend() {
       <li className="flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="bg-foreground size-2 rounded-full"
+          className="bg-series-1 size-2 rounded-full"
         />
         Rented
       </li>
       <li className="flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="border-muted-foreground/60 size-2 rounded-full border"
+          className="border-muted-foreground size-2 rounded-full border"
         />
         Vacant
       </li>
@@ -152,11 +152,11 @@ export default function StallsTable() {
                   >
                     {pair[0] ? tile(pair[0]) : <span />}
                     <div className="col-span-5 flex items-center gap-3 max-lg:hidden">
-                      <span className="border-border/70 flex-1 border-t border-dashed" />
-                      <span className="text-muted-foreground text-[10px] tracking-widest uppercase">
+                      <span className="border-border flex-1 border-t border-dashed" />
+                      <span className="text-foreground/70 text-xs font-medium tracking-widest uppercase">
                         Central aisle
                       </span>
-                      <span className="border-border/70 flex-1 border-t border-dashed" />
+                      <span className="border-border flex-1 border-t border-dashed" />
                     </div>
                     {pair[1] ? tile(pair[1]) : <span />}
                   </div>

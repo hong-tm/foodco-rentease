@@ -198,9 +198,9 @@ code {
   }
 }
 
-/* Chart series palette: greyscale steps (Machined Neutral keeps hue for status
-   signals only). Adjacent series differ by enough lightness to tell stacked
-   bars and pie slices apart; each theme orders the ramp from strongest. */
+/* Chart series palette: five hues on the app's chart ramp. The base UI stays
+   neutral, so colour is reserved for data: series, board states and the
+   occupancy ring. Dark theme lifts lightness; hues stay put. */
 @theme {
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
@@ -210,17 +210,17 @@ code {
 }
 
 :root {
-  --series-1: oklch(0.3 0 0);
-  --series-2: oklch(0.62 0 0);
-  --series-3: oklch(0.45 0 0);
-  --series-4: oklch(0.76 0 0);
-  --series-5: oklch(0.86 0 0);
+  --series-1: oklch(0.62 0.19 42);
+  --series-2: oklch(0.62 0.12 190);
+  --series-3: oklch(0.52 0.13 255);
+  --series-4: oklch(0.75 0.15 80);
+  --series-5: oklch(0.58 0.17 330);
 }
 
 .dark {
-  --series-1: oklch(0.9 0 0);
-  --series-2: oklch(0.6 0 0);
-  --series-3: oklch(0.75 0 0);
-  --series-4: oklch(0.48 0 0);
-  --series-5: oklch(0.38 0 0);
+  --series-1: oklch(0.72 0.17 45);
+  --series-2: oklch(0.74 0.12 190);
+  --series-3: oklch(0.66 0.13 255);
+  --series-4: oklch(0.82 0.14 82);
+  --series-5: oklch(0.7 0.16 330);
 }

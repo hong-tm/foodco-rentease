@@ -130,7 +130,7 @@ export function VacancyChart() {
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 22}
-                          className="fill-muted-foreground text-[10px] tracking-widest uppercase"
+                          className="fill-muted-foreground text-xs tracking-widest uppercase"
                         >
                           Rented
                         </tspan>
