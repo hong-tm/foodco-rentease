@@ -5,7 +5,6 @@ import { startOfDay } from 'date-fns'
 
 import { formatDay } from '@/lib/format'
 
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 
 export default function LatestAppointmentScrollArea() {
   const { data: session } = useSession()

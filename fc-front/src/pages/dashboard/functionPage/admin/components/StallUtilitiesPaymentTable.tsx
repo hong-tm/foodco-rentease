@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
 
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -26,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 const DAY_MS = 24 * 60 * 60 * 1000
@@ -209,7 +209,7 @@ export default function StallUtilitiesPaymentTable() {
               Utility charges with stall, tenant, amount, status and issue date
             </TableCaption>
             <TableHeader>
-              <TableRow className="border-border/80 bg-muted/35 hover:bg-transparent border-b">
+              <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
                 <TableHead className={`h-12 pl-6 ${labelClass}`}>
                   Stall
                 </TableHead>
@@ -276,7 +276,7 @@ export default function StallUtilitiesPaymentTable() {
                     key={payment.paymentId}
                     className="border-border/60 hover:bg-muted/30"
                   >
-                    <TableCell className="py-4 pl-6 align-top whitespace-normal relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
+                    <TableCell className="before:bg-foreground relative py-4 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                       <p className="text-sm leading-none font-medium tabular-nums">
                         Stall {payment.stallId}
                       </p>

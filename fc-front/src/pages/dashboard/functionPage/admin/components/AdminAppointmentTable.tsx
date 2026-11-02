@@ -5,7 +5,6 @@ import { startOfDay } from 'date-fns'
 
 import { formatDay } from '@/lib/format'
 
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -24,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
@@ -200,7 +200,7 @@ export default function AdminAppointmentTable({
             Upcoming appointment requests with decision status and action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border/80 bg-muted/35 hover:bg-transparent border-b">
+            <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
               <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
                 <span className="flex items-center gap-3">
                   <span aria-hidden className="size-9" />
@@ -244,7 +244,7 @@ export default function AdminAppointmentTable({
                   key={notification.notificationId}
                   className="group/row border-border/60 hover:bg-muted/20"
                 >
-                  <TableCell className="py-5 pl-6 align-top whitespace-normal relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
+                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                     <div className="flex items-start gap-3">
                       <InitialsAvatar
                         name={user?.name ?? 'Unknown account'}
@@ -293,7 +293,7 @@ export default function AdminAppointmentTable({
                       <span className="text-sm font-medium">
                         {notification.notificationMessage.match(/stall (\d+)/i)
                           ? `Stall ${notification.notificationMessage.match(/stall (\d+)/i)?.[1]}`
-                          : "Appointment"}
+                          : 'Appointment'}
                       </span>
                       <span className="text-muted-foreground text-xs">
                         {notification.notificationMessage}

@@ -1,5 +1,6 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 function initials(name: string) {
   return name
@@ -17,7 +18,11 @@ type InitialsAvatarProps = {
   className?: string
 }
 
-export function InitialsAvatar({ name, image, className }: InitialsAvatarProps) {
+export function InitialsAvatar({
+  name,
+  image,
+  className,
+}: InitialsAvatarProps) {
   return (
     <Avatar className={cn('size-7 shrink-0', className)}>
       <AvatarImage src={image ?? undefined} alt="" />

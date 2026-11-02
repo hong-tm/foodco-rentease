@@ -1,8 +1,8 @@
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import { useQuery } from '@tanstack/react-query'
 
-import { PageHeader } from '@/components/dashboard/PageHeader'
 import { PaymentRecordsTable } from '@/components/PaymentRecordsTable'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 export function AdminReportPage() {
   const { data: records, isLoading } = useQuery(

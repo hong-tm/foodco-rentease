@@ -4,9 +4,9 @@ import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 import { StallButton } from './StallButton'
 import { StallsTableSkeleton } from './StallTableSkeleton'

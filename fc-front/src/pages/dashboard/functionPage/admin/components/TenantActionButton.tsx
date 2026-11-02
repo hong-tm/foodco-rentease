@@ -6,7 +6,6 @@ import { MailIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { formatDay } from '@/lib/format'
-
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -68,7 +67,7 @@ export function TenantActionButton({
         className={cn(
           'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
           emphasis === 'ghost' &&
-            'text-muted-foreground opacity-60 transition-opacity group-hover/row:opacity-100 hover:text-foreground focus-visible:opacity-100',
+            'text-muted-foreground hover:text-foreground opacity-60 transition-opacity group-hover/row:opacity-100 focus-visible:opacity-100',
         )}
         onClick={() => setOpenSendReminder(true)}
         disabled={mutation.isPending}
