@@ -50,7 +50,11 @@ export function VacancyChart() {
 
   const totalStalls = data?.totalStalls || 0
   const rentedStalls =
-    data?.stalls?.filter((stall) => stall.rentStatus === true).length || 0
+    data?.stalls?.filter((stall) => {
+      if (stall.rentStatus !== true) return false
+      if (!stall.endAt) return true
+      return new Date(stall.endAt).getTime() >= Date.now()
+    }).length || 0
   const rentedRate =
     totalStalls > 0 ? ((rentedStalls / totalStalls) * 100).toFixed(1) : '0.0'
   const endAngle = totalStalls > 0 ? (rentedStalls / totalStalls) * 360 : 0

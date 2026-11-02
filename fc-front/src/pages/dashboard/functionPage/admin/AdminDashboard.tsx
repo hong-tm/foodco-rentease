@@ -38,7 +38,15 @@ export function AdminDashboard() {
 
   const stalls = vacancy?.stalls ?? []
   const totalStalls = vacancy?.totalStalls ?? stalls.length
-  const rentedStalls = stalls.filter((stall) => stall.rentStatus).length
+  const isOccupied = (stall: {
+    rentStatus?: boolean
+    endAt?: Date | string | null
+  }) => {
+    if (!stall.rentStatus) return false
+    const left = daysLeft(stall.endAt)
+    return left === null || left >= 0
+  }
+  const rentedStalls = stalls.filter(isOccupied).length
   const occupancy =
     totalStalls > 0 ? Math.round((rentedStalls / totalStalls) * 100) : 0
 
