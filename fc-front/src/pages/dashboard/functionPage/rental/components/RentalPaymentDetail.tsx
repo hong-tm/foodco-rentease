@@ -1,230 +1,153 @@
+import React from 'react'
 import { useSession } from '@/api/adminApi'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
+import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2Icon, TrendingDownIcon, TrendingUpIcon } from 'lucide-react'
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import type { ChartConfig } from '@/components/ui/chart'
 import {
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
+import {
+  monthSummary,
+  monthlyPaidTotals,
+  rm,
+} from '@/components/dashboard/monthlyTotals'
+
+const TYPES = ['rental', 'water', 'electric'] as const
 
 const chartConfig = {
-  electric: {
-    label: 'Electric',
-    color: 'hsl(var(--chart-1))',
-  },
-  water: {
-    label: 'Water',
-    color: 'hsl(var(--chart-2))',
-  },
   rental: {
-    label: 'Rental',
-    color: 'hsl(var(--chart-3))',
+    label: 'Rent',
+    color: 'var(--series-1)',
+  },
+  utilities: {
+    label: 'Utilities',
+    color: 'var(--series-2)',
   },
 } satisfies ChartConfig
 
-export default function RentalPaymentDetail() {
+export type RentalPaymentDetailProps = {
+  records?: PaymentRecord[]
+  isLoading?: boolean
+}
+
+export default function RentalPaymentDetail({
+  records: propRecords,
+  isLoading: propIsLoading,
+}: RentalPaymentDetailProps = {}) {
   const { data: session } = useSession()
   const userId = session?.user?.id
 
-  const { data: payments, isLoading } = useQuery({
+  const { data: queryRecords, isLoading: queryIsLoading } = useQuery({
     ...getAllPaymentRecordsQueryOptions,
-    select: (data) => {
-      if (!data) return []
-
-      // Filter payments by status and type
-      const validPayments = data.filter(
-        (payment) =>
-          payment.paymentStatus &&
-          ['water', 'electric', 'rental'].includes(payment.paymentType) &&
-          payment.userId === userId,
-      )
-
-      // Group payments by month
-      const monthlyPayments = validPayments.reduce(
-        (acc, payment) => {
-          const date = new Date(payment.paymentDate)
-          const monthKey = `${date.getFullYear()}-${String(
-            date.getMonth() + 1,
-          ).padStart(2, '0')}`
-          const monthName = date.toLocaleString('default', { month: 'long' })
-
-          if (!acc[monthKey]) {
-            acc[monthKey] = {
-              month: monthName,
-              monthKey,
-              electric: 0,
-              water: 0,
-              rental: 0,
-              total: 0,
-            }
-          }
-          const amount = parseFloat(payment.paymentAmount)
-          if (payment.paymentType === 'electric') {
-            acc[monthKey].electric += amount
-          } else if (payment.paymentType === 'water') {
-            acc[monthKey].water += amount
-          } else if (payment.paymentType === 'rental') {
-            acc[monthKey].rental += amount
-          }
-          acc[monthKey].total += amount
-
-          return acc
-        },
-        {} as Record<
-          string,
-          {
-            month: string
-            monthKey: string
-            electric: number
-            water: number
-            rental: number
-            total: number
-          }
-        >,
-      )
-
-      // Convert to array and sort by date
-      return Object.values(monthlyPayments)
-        .sort((a, b) => a.monthKey.localeCompare(b.monthKey))
-        .map(({ monthKey, ...rest }) => ({
-          ...rest,
-          monthKey: monthKey.toString(),
-        }))
-    },
+    enabled: propRecords === undefined,
   })
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex min-h-[300px] items-center justify-center">
-          <Loader2Icon className="h-8 w-8 animate-spin" />
-        </CardContent>
-      </Card>
-    )
-  }
+  const isLoading = propIsLoading ?? queryIsLoading
 
-  if (!payments || payments.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex min-h-[300px] items-center justify-center">
-          <p className="text-muted-foreground">No payment records found.</p>
-        </CardContent>
-      </Card>
-    )
-  }
+  const userRecords = React.useMemo(() => {
+    if (propRecords) return propRecords
+    return (queryRecords ?? []).filter((record) => record.userId === userId)
+  }, [propRecords, queryRecords, userId])
+
+  const data = React.useMemo(
+    () =>
+      monthlyPaidTotals(userRecords, TYPES, 6).map((slot) => {
+        const utilities = slot.water + slot.electric
+        const total = slot.rental + utilities
+        return {
+          ...slot,
+          utilities,
+          total,
+        }
+      }),
+    [userRecords],
+  )
+
+  const hasAnyPayments = data.some((month) => month.total > 0)
+  const current = data[data.length - 1]
+  const previous = data[data.length - 2]
+  const footer =
+    current && previous
+      ? monthSummary(current.total, previous.total, [
+          current.month,
+          previous.month,
+        ])
+      : undefined
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle>Payment Details</CardTitle>
-        <CardDescription>
-          onthly payment breakdown for utilities and rental
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-2">
-        <ChartContainer config={chartConfig}>
-          <AreaChart
-            accessibilityLayer
-            data={payments}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 8,
-              bottom: 0,
-            }}
-            stackOffset="expand"
-            height={80}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={4}
-              tickFormatter={(value) => value.slice(0, 3)}
-              height={20}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Area
-              dataKey="rental"
-              type="natural"
-              fill="var(--color-rental)"
-              fillOpacity={0.1}
-              stroke="var(--color-rental)"
-              stackId="a"
-            />
-            <Area
-              dataKey="water"
-              type="natural"
-              fill="var(--color-water)"
-              fillOpacity={0.4}
-              stroke="var(--color-water)"
-              stackId="a"
-            />
-            <Area
-              dataKey="electric"
-              type="natural"
-              fill="var(--color-electric)"
-              fillOpacity={0.4}
-              stroke="var(--color-electric)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              {payments[payments.length - 1]?.total >
-              payments[payments.length - 2]?.total ? (
-                <>
-                  Total expenses increased by{' '}
-                  <TrendingUpIcon className="h-4 w-4" />
-                  {(
-                    ((payments[payments.length - 1]?.total -
-                      payments[payments.length - 2]?.total) /
-                      payments[payments.length - 2]?.total) *
-                    100
-                  ).toFixed(1)}
-                  % this month
-                </>
-              ) : (
-                <>
-                  Total expenses decreased by{' '}
-                  <TrendingDownIcon className="h-4 w-4" />
-                  {(
-                    ((payments[payments.length - 2]?.total -
-                      payments[payments.length - 1]?.total) /
-                      payments[payments.length - 2]?.total) *
-                    100
-                  ).toFixed(1)}
-                  % this month
-                </>
-              )}
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              {payments[0]?.month} - {payments[payments.length - 1]?.month}{' '}
-              {new Date().getFullYear()}
-            </div>
-          </div>
+    <section aria-label="Payments" className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          Payments
+        </h2>
+        <p className="text-muted-foreground text-sm">
+          Settled rent and utilities by record month, last 6 months
+        </p>
+      </div>
+
+      {isLoading ? (
+        <div role="status" aria-busy="true" className="flex flex-col gap-2">
+          <span className="sr-only">Loading payment history…</span>
+          <Skeleton className="h-[220px] w-full" />
+          <Skeleton className="h-4 w-64" />
         </div>
-      </CardFooter>
-    </Card>
+      ) : !hasAnyPayments ? (
+        <ChartEmpty message="No payments recorded in the last 6 months" />
+      ) : (
+        <>
+          <ChartContainer config={chartConfig} className="h-[220px] w-full">
+            <BarChart
+              accessibilityLayer
+              data={data}
+              margin={{ top: 8, right: 0, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="shortMonth"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) =>
+                      `${chartConfig[name as keyof typeof chartConfig]?.label ?? name}: RM ${rm(Number(value))}`
+                    }
+                  />
+                }
+              />
+              <ChartLegend content={<ChartLegendContent />} />
+              <Bar
+                dataKey="rental"
+                stackId="payments"
+                fill="var(--color-rental)"
+              />
+              <Bar
+                dataKey="utilities"
+                stackId="payments"
+                fill="var(--color-utilities)"
+                radius={[3, 3, 0, 0]}
+              />
+            </BarChart>
+          </ChartContainer>
+          {footer ? (
+            <p className="text-muted-foreground text-sm tabular-nums">
+              {footer}
+            </p>
+          ) : null}
+        </>
+      )}
+    </section>
   )
 }
