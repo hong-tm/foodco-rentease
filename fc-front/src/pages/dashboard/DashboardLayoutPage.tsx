@@ -30,12 +30,12 @@ export function DashboardLayoutPage() {
         <UserDashboardSidebar />
         <SidebarInset className="min-w-0">
           <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
-            <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
-              <div className="order-2 flex min-w-0 items-center lg:order-1">
+            <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
+            <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
+              <div className="flex min-w-0 items-center">
                 <Breadcrumbs />
               </div>
-              <div className="flex items-center gap-2 lg:order-2 lg:ml-auto">
-                <SidebarTrigger className="-ml-1" />
+              <div className="ml-auto flex items-center gap-2">
                 <ModeToggle />
                 <Separator orientation="vertical" className="mr-2 h-4" />
               </div>
@@ -77,12 +77,12 @@ export function DashboardLayoutPage() {
       <UserDashboardSidebar />
       <SidebarInset className="min-w-0">
         <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
-          <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
-            <div className="order-2 flex min-w-0 items-center lg:order-1">
+          <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
+          <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
+            <div className="flex min-w-0 items-center">
               <Breadcrumbs />
             </div>
-            <div className="flex items-center gap-2 lg:order-2 lg:ml-auto">
-              <SidebarTrigger className="-ml-1" />
+            <div className="ml-auto flex items-center gap-2">
               <ModeToggle />
               <Separator orientation="vertical" className="mr-2 h-4" />
             </div>
