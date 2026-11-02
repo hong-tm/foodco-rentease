@@ -12,9 +12,9 @@ import {
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 
-import Breadcrumbs from './components/breadcrumbs'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
+import Breadcrumbs from './components/breadcrumbs'
 
 export function DashboardLayoutPage() {
   const location = useLocation()
@@ -29,12 +29,16 @@ export function DashboardLayoutPage() {
       <SidebarProvider defaultOpen={defaultOpen}>
         <UserDashboardSidebar />
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <ModeToggle />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumbs />
+          <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
+            <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
+              <div className="order-2 flex min-w-0 items-center lg:order-1">
+                <Breadcrumbs />
+              </div>
+              <div className="flex items-center gap-2 lg:order-2 lg:ml-auto">
+                <SidebarTrigger className="-ml-1" />
+                <ModeToggle />
+                <Separator orientation="vertical" className="mr-2 h-4" />
+              </div>
             </div>
           </header>
           <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">
@@ -72,12 +76,16 @@ export function DashboardLayoutPage() {
     <SidebarProvider>
       <UserDashboardSidebar />
       <SidebarInset>
-        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 rounded-t-xl">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <ModeToggle />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumbs />
+        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
+          <div className="max-w-page mx-auto flex w-full items-center gap-2 px-2 lg:px-6">
+            <div className="order-2 flex min-w-0 items-center lg:order-1">
+              <Breadcrumbs />
+            </div>
+            <div className="flex items-center gap-2 lg:order-2 lg:ml-auto">
+              <SidebarTrigger className="-ml-1" />
+              <ModeToggle />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+            </div>
           </div>
         </header>
         <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">
