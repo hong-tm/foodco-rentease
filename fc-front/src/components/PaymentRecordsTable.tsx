@@ -74,7 +74,6 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
 
 type PaymentRecordsTableProps = {
   title: string
-  description: string
   records: PaymentRecord[]
   showMonthFilter?: boolean
   isLoading: boolean
@@ -200,7 +199,7 @@ export function PaymentRecordsTable({
       >
         <p className="text-sm font-medium">No payment records yet</p>
         <p className="text-muted-foreground text-sm">
-          Charges appear here once rent, water or electricity is billed.
+          Payments show up here as soon as one is recorded.
         </p>
       </section>
     )

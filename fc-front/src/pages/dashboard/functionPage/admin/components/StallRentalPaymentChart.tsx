@@ -45,7 +45,9 @@ function Shell({
     <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Rent collected</CardTitle>
-        <CardDescription>Paid rent per month, last 6 months</CardDescription>
+        <CardDescription>
+          Settled rent by record month, last 6 months
+        </CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
       {footer ? (

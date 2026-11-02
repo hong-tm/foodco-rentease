@@ -99,8 +99,7 @@ export const StallButton: React.FC<
                   'size-2 shrink-0 rounded-full',
                   state === 'vacant' && 'border-muted-foreground/60 border',
                   state === 'rented' && 'bg-foreground',
-                  state === 'ended' &&
-                    'bg-destructive dark:bg-destructive-foreground',
+                  state === 'ended' && 'bg-destructive',
                 )}
               />
             </span>

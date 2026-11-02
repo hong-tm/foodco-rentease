@@ -51,7 +51,7 @@ function Legend() {
       <li className="flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="bg-destructive dark:bg-destructive-foreground size-2 rounded-full"
+          className="bg-destructive size-2 rounded-full"
         />
         Lease ended
       </li>

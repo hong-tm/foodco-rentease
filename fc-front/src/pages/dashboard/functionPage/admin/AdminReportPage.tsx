@@ -17,7 +17,6 @@ export function AdminReportPage() {
       />
       <PaymentRecordsTable
         title="Records"
-        description="Filter by month or type."
         records={records || []}
         showMonthFilter={true}
         isLoading={isLoading}

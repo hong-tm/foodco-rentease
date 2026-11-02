@@ -231,8 +231,16 @@ export default function StallUtilitiesDetails() {
         state: paidThisMonth(rentalRecord) ? 'paid' : 'due',
         meta: paidThisMonth(rentalRecord)
           ? `Paid ${formatDay(rentalRecord!.paymentDate)}`
-          : `${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`,
-        paymentId: rentalRecord?.paymentId,
+          : rentalRecord?.paymentStatus
+            ? `Last paid ${formatDay(rentalRecord.paymentDate)} · ${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`
+            : `${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`,
+        // Settle an open rent bill in place. When the last rent is already
+        // paid (a previous month), paying must create this month's record:
+        // re-marking the old paid record would charge again and never clear.
+        paymentId:
+          rentalRecord && !rentalRecord.paymentStatus
+            ? rentalRecord.paymentId
+            : undefined,
       })
     }
 

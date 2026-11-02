@@ -52,7 +52,7 @@ function Shell({
       <CardHeader>
         <CardTitle>Utilities collected</CardTitle>
         <CardDescription>
-          Paid water and electricity per month, last 6 months
+          Settled water and electricity by record month, last 6 months
         </CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>

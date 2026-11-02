@@ -22,7 +22,6 @@ export function RentalReportPage() {
       />
       <PaymentRecordsTable
         title="Records"
-        description="Filter by month or type."
         records={userRecords}
         showMonthFilter={true}
         isLoading={isLoading}

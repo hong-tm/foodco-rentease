@@ -22,7 +22,6 @@ export function UserReportPage() {
       />
       <PaymentRecordsTable
         title="Records"
-        description="Filter by type."
         records={userRecords}
         showMonthFilter={false}
         isLoading={isLoading}
