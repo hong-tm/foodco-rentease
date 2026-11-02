@@ -5,11 +5,9 @@ import { useMutation } from '@tanstack/react-query'
 import { FileDownIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { formatDay } from '@/lib/format'
 import { api } from '@/lib/api'
+import { formatDay } from '@/lib/format'
 
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -28,6 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type MonthSelectorProps = {
@@ -176,7 +176,8 @@ export function PaymentRecordsTable({
       maximumFractionDigits: 2,
     })
   const totalAmount = filteredRecords.reduce(
-    (sum, record) => sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
+    (sum, record) =>
+      sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
     0,
   )
   const settledCount = filteredRecords.filter((r) => r.paymentStatus).length
@@ -217,118 +218,118 @@ export function PaymentRecordsTable({
           />
         </div>
         <div className="flex gap-2">
-              {showMonthFilter && (
-                <MonthSelector
-                  value={selectedMonth}
-                  onValueChange={setSelectedMonth}
-                />
-              )}
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Payment Type</SelectLabel>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="rental">Rental</SelectItem>
-                    <SelectItem value="electric">Electric</SelectItem>
-                    <SelectItem value="water">Water</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+          {showMonthFilter && (
+            <MonthSelector
+              value={selectedMonth}
+              onValueChange={setSelectedMonth}
+            />
+          )}
+          <Select value={selectedType} onValueChange={setSelectedType}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Payment Type</SelectLabel>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="rental">Rental</SelectItem>
+                <SelectItem value="electric">Electric</SelectItem>
+                <SelectItem value="water">Water</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Table>
         <TableHeader className="border-border/80 bg-muted/35 border-b">
           <TableRow className="hover:bg-transparent">
-                  <TableHead className="text-left">User</TableHead>
-                  <TableHead className="text-left">Payment ID</TableHead>
-                  <TableHead className="text-center">Stall No.</TableHead>
-                  <TableHead className="text-center">Type</TableHead>
-                  <TableHead className="text-right">Amount (RM)</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-left">Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRecords.map((record) => (
-                  <TableRow
-                    key={record.paymentId}
-                    className="group/row border-border/60 hover:bg-muted/20"
-                  >
-                    <TableCell className="py-4 pl-6 align-top relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
-                      <div className="flex items-center gap-2">
-                        <InitialsAvatar
-                          name={record.paymentUser?.name ?? 'Unknown'}
-                          image={record.paymentUser?.image}
-                        />
-                        <span className="text-sm font-medium">
-                          {record.paymentUser?.name || 'Unknown User'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 align-top">
-                      <span
-                        className="text-muted-foreground font-mono text-xs"
-                        title={record.paymentId}
-                      >
-                        {record.paymentId.length > 8
-                          ? `${record.paymentId.slice(0, 8)}…`
-                          : record.paymentId}
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-4 text-center align-top tabular-nums">
-                      {record.stallId}
-                    </TableCell>
-                    <TableCell className="py-4 align-top">
-                      <span className="text-muted-foreground text-sm capitalize">
-                        {record.paymentType}
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-4 text-right align-top tabular-nums">
-                      {record.paymentAmount}
-                    </TableCell>
-                    <TableCell className="py-4 align-top">
-                      <StatusBadge
-                        label={record.paymentStatus ? 'Paid' : 'Pending'}
-                        tone={record.paymentStatus ? 'settled' : 'action'}
-                      />
-                    </TableCell>
-                    <TableCell className="py-4 align-top whitespace-nowrap tabular-nums">
-                      {formatDay(record.paymentDate as unknown as Date)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+            <TableHead className="text-left">User</TableHead>
+            <TableHead className="text-left">Payment ID</TableHead>
+            <TableHead className="text-center">Stall No.</TableHead>
+            <TableHead className="text-center">Type</TableHead>
+            <TableHead className="text-right">Amount (RM)</TableHead>
+            <TableHead className="text-center">Status</TableHead>
+            <TableHead className="text-left">Date</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredRecords.map((record) => (
+            <TableRow
+              key={record.paymentId}
+              className="group/row border-border/60 hover:bg-muted/20"
+            >
+              <TableCell className="before:bg-foreground relative py-4 pl-6 align-top before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                <div className="flex items-center gap-2">
+                  <InitialsAvatar
+                    name={record.paymentUser?.name ?? 'Unknown'}
+                    image={record.paymentUser?.image}
+                  />
+                  <span className="text-sm font-medium">
+                    {record.paymentUser?.name || 'Unknown User'}
+                  </span>
+                </div>
+              </TableCell>
+              <TableCell className="py-4 align-top">
+                <span
+                  className="text-muted-foreground font-mono text-xs"
+                  title={record.paymentId}
+                >
+                  {record.paymentId.length > 8
+                    ? `${record.paymentId.slice(0, 8)}…`
+                    : record.paymentId}
+                </span>
+              </TableCell>
+              <TableCell className="py-4 text-center align-top tabular-nums">
+                {record.stallId}
+              </TableCell>
+              <TableCell className="py-4 align-top">
+                <span className="text-muted-foreground text-sm capitalize">
+                  {record.paymentType}
+                </span>
+              </TableCell>
+              <TableCell className="py-4 text-right align-top tabular-nums">
+                {record.paymentAmount}
+              </TableCell>
+              <TableCell className="py-4 align-top">
+                <StatusBadge
+                  label={record.paymentStatus ? 'Paid' : 'Pending'}
+                  tone={record.paymentStatus ? 'settled' : 'action'}
+                />
+              </TableCell>
+              <TableCell className="py-4 align-top whitespace-nowrap tabular-nums">
+                {formatDay(record.paymentDate as unknown as Date)}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
 
       <div className="flex justify-end gap-4">
-            {session?.user?.role !== 'user' && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => downloadPdfMutation.mutate()}
-                  disabled={downloadPdfMutation.isPending}
-                >
-                  <FileDownIcon className="mr-2 h-4 w-4" />
-                  {downloadPdfMutation.isPending
-                    ? 'Downloading...'
-                    : 'Download PDF'}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => downloadCsvMutation.mutate()}
-                  disabled={downloadCsvMutation.isPending}
-                >
-                  <FileDownIcon className="mr-2 h-4 w-4" />
-                  {downloadCsvMutation.isPending
-                    ? 'Downloading...'
-                    : 'Download CSV'}
-                </Button>
-              </>
-            )}
+        {session?.user?.role !== 'user' && (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => downloadPdfMutation.mutate()}
+              disabled={downloadPdfMutation.isPending}
+            >
+              <FileDownIcon className="mr-2 h-4 w-4" />
+              {downloadPdfMutation.isPending
+                ? 'Downloading...'
+                : 'Download PDF'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadCsvMutation.mutate()}
+              disabled={downloadCsvMutation.isPending}
+            >
+              <FileDownIcon className="mr-2 h-4 w-4" />
+              {downloadCsvMutation.isPending
+                ? 'Downloading...'
+                : 'Download CSV'}
+            </Button>
+          </>
+        )}
       </div>
     </section>
   )
