@@ -75,7 +75,7 @@ export default function RentalStallsDetail({
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
+              <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
                 <TableHead className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
                   Stall
                 </TableHead>
@@ -100,7 +100,7 @@ export default function RentalStallsDetail({
                 return (
                   <TableRow
                     key={stall.stallNumber}
-                    className="border-border/80"
+                    className="border-border"
                   >
                     <TableCell className="py-3">
                       <div className="flex flex-col">

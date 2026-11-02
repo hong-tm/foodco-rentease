@@ -203,13 +203,13 @@ export default function StallUtilitiesPaymentTable() {
           </Button>
         </div>
       ) : (
-        <div className="max-w-full min-w-0 overflow-hidden">
+        <div className="max-w-full min-w-0 overflow-hidden rounded-xl border border-border">
           <Table className="xl:min-w-table">
             <TableCaption className="sr-only">
               Utility charges with stall, tenant, amount, status and issue date
             </TableCaption>
             <TableHeader>
-              <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
+              <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
                 <TableHead className={`h-12 pl-6 ${labelClass}`}>
                   Stall
                 </TableHead>
@@ -274,7 +274,7 @@ export default function StallUtilitiesPaymentTable() {
                 return (
                   <TableRow
                     key={payment.paymentId}
-                    className="border-border/60 hover:bg-muted/30"
+                    className="border-border hover:bg-muted/30"
                   >
                     <TableCell className="before:bg-foreground relative py-4 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                       <p className="text-sm leading-none font-medium tabular-nums">

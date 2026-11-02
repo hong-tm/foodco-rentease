@@ -194,13 +194,13 @@ export default function AdminAppointmentTable({
   return (
     <div className="flex flex-col gap-6">
       {toolbar}
-      <div className="max-w-full overflow-hidden">
+      <div className="max-w-full overflow-hidden rounded-xl border border-border">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Upcoming appointment requests with decision status and action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
               <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
                 <span className="flex items-center gap-3">
                   <span aria-hidden className="size-9" />
@@ -242,7 +242,7 @@ export default function AdminAppointmentTable({
               return (
                 <TableRow
                   key={notification.notificationId}
-                  className="group/row border-border/60 hover:bg-muted/20"
+                  className="group/row border-border hover:bg-muted/20"
                 >
                   <TableCell className="before:bg-foreground relative py-5 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                     <div className="flex items-start gap-3">

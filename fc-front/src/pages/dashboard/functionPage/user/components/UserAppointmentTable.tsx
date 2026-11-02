@@ -222,7 +222,7 @@ export default function UserAppointmentTable() {
             Your appointment requests with status and payment action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border/80 bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
               <TableHead className={`h-12 w-10 pl-6 ${labelClass}`}>
                 <span className="sr-only">You</span>
               </TableHead>
@@ -260,7 +260,7 @@ export default function UserAppointmentTable() {
               return (
                 <TableRow
                   key={notification.notificationId}
-                  className="border-border/60 hover:bg-muted/20"
+                  className="border-border hover:bg-muted/20"
                 >
                   <TableCell className="py-4 pl-6">
                     <InitialsAvatar

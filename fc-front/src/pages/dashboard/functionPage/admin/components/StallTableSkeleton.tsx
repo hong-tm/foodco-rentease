@@ -27,7 +27,7 @@ export function StallsTableSkeleton() {
             {[0, 1, 2].map((pair) => (
               <div key={pair} className="grid grid-cols-2 gap-3 lg:grid-cols-7">
                 <Skeleton className="h-16 rounded-lg" />
-                <span className="border-border/70 col-span-5 mx-2 border-t border-dashed max-lg:hidden" />
+                <span className="border-border col-span-5 mx-2 border-t border-dashed max-lg:hidden" />
                 <Skeleton className="h-16 rounded-lg" />
               </div>
             ))}

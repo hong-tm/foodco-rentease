@@ -26,7 +26,7 @@ export function InitialsAvatar({
   return (
     <Avatar className={cn('size-7 shrink-0', className)}>
       <AvatarImage src={image ?? undefined} alt="" />
-      <AvatarFallback className="bg-muted text-foreground border-border border font-mono text-xs">
+      <AvatarFallback className="bg-muted text-foreground border-border border text-xs">
         {initials(name)}
       </AvatarFallback>
     </Avatar>
