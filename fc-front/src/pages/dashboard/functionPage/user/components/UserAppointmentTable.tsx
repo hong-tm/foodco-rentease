@@ -126,14 +126,22 @@ export default function UserAppointmentTable() {
     })
   }
 
+  // Paid means this user paid for this stall. Other tenants' payments on the
+  // same stall do not count (they used to, marking strangers' bookings paid).
   const getPaymentStatus = (stallId: number) => {
     return payments?.some(
-      (payment) => payment.stallId === stallId && payment.paymentStatus,
+      (payment) =>
+        payment.stallId === stallId &&
+        payment.userId === session?.user?.id &&
+        payment.paymentStatus,
     )
   }
 
   const appointments = notifications ?? []
+  // Only an approved appointment can be paid, which keeps the strip's
+  // Pending / Awaiting payment / Paid / Rejected counts disjoint.
   const isPaid = (notification: NotificationAttributes) =>
+    notification.notificationRead === true &&
     Boolean(
       notification.stallNumber && getPaymentStatus(notification.stallNumber),
     )
