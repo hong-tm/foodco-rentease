@@ -5,19 +5,12 @@ import { useMutation } from '@tanstack/react-query'
 import { FileDownIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { formatDay } from '@/lib/format'
 import { api } from '@/lib/api'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -177,31 +170,53 @@ export function PaymentRecordsTable({
     },
   })
 
+  const rm = (value: number) =>
+    value.toLocaleString('en-MY', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  const totalAmount = filteredRecords.reduce(
+    (sum, record) => sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
+    0,
+  )
+  const settledCount = filteredRecords.filter((r) => r.paymentStatus).length
+  const pendingCount = filteredRecords.length - settledCount
+
   if (isLoading) {
     return <div>Loading payment records...</div>
   }
 
   if (!records || records.length === 0) {
     return (
-      <Card className="bg-muted/10 mx-auto w-full rounded-lg p-4 shadow-md md:p-6 lg:p-8">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>No record</CardDescription>
-        </CardHeader>
-      </Card>
+      <section aria-label={title} className="flex flex-col gap-3">
+        <h2 className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+          {title}
+        </h2>
+        <p className="text-muted-foreground text-sm">{description}</p>
+        <p className="text-muted-foreground text-sm">No records yet.</p>
+      </section>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
-      <div className="overflow-x-auto">
-        <Card className="bg-muted/10 mx-auto w-full rounded-lg p-4 shadow-md md:p-6 lg:p-8">
-          <CardHeader className="flex flex-col items-center justify-between sm:flex-row">
-            <div>
-              <CardTitle>{title}</CardTitle>
-              <CardDescription>{description}</CardDescription>
-            </div>
-            <div className="flex gap-4">
+    <section aria-label={title} className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <SpecStrip
+            value={`RM ${rm(totalAmount)}`}
+            unit="in this view"
+            cells={[
+              { label: 'Settled', value: settledCount },
+              {
+                label: 'Pending',
+                value: pendingCount,
+                anomaly: pendingCount > 0,
+              },
+              { label: 'Records', value: filteredRecords.length },
+            ]}
+          />
+        </div>
+        <div className="flex gap-2">
               {showMonthFilter && (
                 <MonthSelector
                   value={selectedMonth}
@@ -223,12 +238,11 @@ export function PaymentRecordsTable({
                 </SelectContent>
               </Select>
             </div>
-          </CardHeader>
+      </div>
 
-          <CardContent>
-            <Table>
-              <TableHeader className="bg-background sticky top-0">
-                <TableRow>
+      <Table>
+        <TableHeader className="border-border/80 bg-muted/35 border-b">
+          <TableRow className="hover:bg-transparent">
                   <TableHead className="text-left">User</TableHead>
                   <TableHead className="text-left">Payment ID</TableHead>
                   <TableHead className="text-center">Stall No.</TableHead>
@@ -240,65 +254,57 @@ export function PaymentRecordsTable({
               </TableHeader>
               <TableBody>
                 {filteredRecords.map((record) => (
-                  <TableRow key={record.paymentId}>
-                    <TableCell>
+                  <TableRow
+                    key={record.paymentId}
+                    className="group/row border-border/60 hover:bg-muted/20"
+                  >
+                    <TableCell className="py-4 pl-6 align-top relative before:absolute before:inset-y-0 before:left-0 before:w-px before:bg-foreground before:opacity-0 group-hover/row:before:opacity-100">
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={record.paymentUser?.image || undefined}
-                            alt={record.paymentUser?.name || 'User'}
-                          />
-                          <AvatarFallback>
-                            {record.paymentUser?.name?.[0] || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>
+                        <InitialsAvatar
+                          name={record.paymentUser?.name ?? 'Unknown'}
+                          image={record.paymentUser?.image}
+                        />
+                        <span className="text-sm font-medium">
                           {record.paymentUser?.name || 'Unknown User'}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-left">
-                      {record.paymentId}
+                    <TableCell className="py-4 align-top">
+                      <span
+                        className="text-muted-foreground font-mono text-xs"
+                        title={record.paymentId}
+                      >
+                        {record.paymentId.length > 8
+                          ? `${record.paymentId.slice(0, 8)}…`
+                          : record.paymentId}
+                      </span>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="py-4 text-center align-top tabular-nums">
                       {record.stallId}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant="secondary"
-                        className={`${
-                          record.paymentType === 'rental'
-                            ? 'bg-blue-100 text-blue-800'
-                            : record.paymentType === 'electric'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-cyan-100 text-cyan-800'
-                        }`}
-                      >
+                    <TableCell className="py-4 align-top">
+                      <span className="text-muted-foreground text-sm capitalize">
                         {record.paymentType}
-                      </Badge>
+                      </span>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="py-4 text-right align-top tabular-nums">
                       {record.paymentAmount}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="py-4 align-top">
                       <StatusBadge
                         label={record.paymentStatus ? 'Paid' : 'Pending'}
                         tone={record.paymentStatus ? 'settled' : 'action'}
-                        className="justify-center"
                       />
                     </TableCell>
-                    <TableCell className="text-left">
-                      {typeof record.paymentDate === 'object'
-                        ? record.paymentDate.toLocaleDateString()
-                        : new Date(record.paymentDate).toLocaleDateString()}
+                    <TableCell className="py-4 align-top whitespace-nowrap tabular-nums">
+                      {formatDay(record.paymentDate as unknown as Date)}
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
-          </CardContent>
+      </Table>
 
-          <CardFooter className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4">
             {session?.user?.role !== 'user' && (
               <>
                 <Button
@@ -323,9 +329,7 @@ export function PaymentRecordsTable({
                 </Button>
               </>
             )}
-          </CardFooter>
-        </Card>
       </div>
-    </div>
+    </section>
   )
 }

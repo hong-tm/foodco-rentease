@@ -4,6 +4,7 @@ import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
+import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
@@ -117,28 +118,21 @@ export default function StallsTable() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section aria-label="Occupancy summary" className="flex flex-col gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="text-3xl leading-none font-semibold tracking-tight tabular-nums">
-            {vacant.length}
-          </span>
-          <span className={labelClass}>
-            {vacant.length === 1 ? 'stall vacant' : 'stalls vacant'}
-          </span>
-        </div>
-        <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-          <span className={labelClass}>Occupancy</span>
-          <span className="tabular-nums">
-            {rented} of {stalls.length} rented
-          </span>
-          {ended.length > 0 && (
-            <span className="text-muted-foreground tabular-nums">
-              {ended.length} {ended.length === 1 ? 'lease' : 'leases'} ran out
-              without a renewal date
-            </span>
-          )}
-        </p>
-      </section>
+      <SpecStrip
+        value={String(vacant.length)}
+        unit={vacant.length === 1 ? 'stall vacant' : 'stalls vacant'}
+        cells={[
+          {
+            label: 'Rented',
+            value: `${rented}/${stalls.length}`,
+          },
+          {
+            label: 'Lease ended',
+            value: ended.length,
+            anomaly: ended.length > 0,
+          },
+        ]}
+      />
 
       <section aria-label="Stall board" className="flex flex-col gap-3">
         <div className="flex flex-wrap items-end justify-between gap-3">
@@ -157,10 +151,13 @@ export default function StallsTable() {
                     className="grid grid-cols-2 items-center gap-3 lg:grid-cols-7"
                   >
                     {pair[0] ? tile(pair[0]) : <span />}
-                    <span
-                      aria-hidden="true"
-                      className="border-border/70 col-span-5 border-t border-dashed max-lg:hidden"
-                    />
+                    <div className="col-span-5 flex items-center gap-3 max-lg:hidden">
+                      <span className="border-border/70 flex-1 border-t border-dashed" />
+                      <span className="text-muted-foreground text-[10px] tracking-widest uppercase">
+                        Central aisle
+                      </span>
+                      <span className="border-border/70 flex-1 border-t border-dashed" />
+                    </div>
                     {pair[1] ? tile(pair[1]) : <span />}
                   </div>
                 ))}
