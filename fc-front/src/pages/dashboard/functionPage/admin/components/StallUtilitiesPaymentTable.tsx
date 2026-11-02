@@ -330,10 +330,10 @@ export default function StallUtilitiesPaymentTable() {
 
                     <TableCell className="hidden py-4 pr-6 align-top xl:table-cell">
                       <span
-                        className="text-muted-foreground text-xs tabular-nums"
+                        className="text-muted-foreground font-mono text-xs"
                         title={payment.paymentId}
                       >
-                        {payment.paymentId}
+                        {payment.paymentId.slice(0, 8)}…
                       </span>
                     </TableCell>
                   </TableRow>

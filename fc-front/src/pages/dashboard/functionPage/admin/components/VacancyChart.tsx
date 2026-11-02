@@ -1,6 +1,5 @@
 import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
-import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react'
 import {
   Label,
   PolarGrid,
@@ -73,28 +72,6 @@ export function VacancyChart() {
     )
   }
 
-  // Analyze vacancy status
-  const vacancyStatus = {
-    status:
-      Number(rentedRate) >= 80
-        ? 'High Demand'
-        : Number(rentedRate) <= 40
-          ? 'Low Occupancy'
-          : 'Moderate',
-    suggestion:
-      Number(rentedRate) >= 80
-        ? 'Consider expanding capacity or adjusting rental rates'
-        : Number(rentedRate) <= 40
-          ? 'Review pricing strategy or improve marketing efforts'
-          : 'Maintain current operations while monitoring trends',
-    trend:
-      Number(rentedRate) >= 60 ? (
-        <ThumbsUpIcon className="h-4 w-4 text-green-500" />
-      ) : (
-        <ThumbsDownIcon className="h-4 w-4 text-red-500" />
-      ),
-  }
-
   const chartData = [
     {
       occupiedStalls: rentedStalls || 0,
@@ -103,7 +80,7 @@ export function VacancyChart() {
   ]
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex h-full flex-col shadow-none">
       <CardHeader className="items-center pb-0">
         <CardTitle>Stall Rental Status</CardTitle>
         <CardDescription>{currentMonth} Overview</CardDescription>
@@ -142,9 +119,16 @@ export function VacancyChart() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-muted-foreground text-sm"
+                          className="fill-foreground text-2xl font-semibold tabular-nums"
                         >
-                          {vacancyStatus.status}
+                          {rentedStalls}/{totalStalls}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 22}
+                          className="fill-muted-foreground text-[10px] tracking-widest uppercase"
+                        >
+                          Rented
                         </tspan>
                       </text>
                     )
@@ -155,16 +139,8 @@ export function VacancyChart() {
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium tabular-nums">
-          {rentedStalls} of {totalStalls} stalls rented
-          <span className="flex items-center gap-1 text-balance">
-            {vacancyStatus.trend}
-          </span>
-        </div>
-        <div className="text-muted-foreground mt-2 text-xs">
-          Suggestion: {vacancyStatus.suggestion}
-        </div>
+      <CardFooter className="text-muted-foreground text-xs">
+        {currentMonth} · {rentedRate}% rented
       </CardFooter>
     </Card>
   )

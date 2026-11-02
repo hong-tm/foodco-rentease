@@ -14,17 +14,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 export default function LatestAppointmentScrollArea() {
   const { data: session } = useSession()
@@ -34,9 +23,8 @@ export default function LatestAppointmentScrollArea() {
     queryKey: ['get-notifications', session?.user?.id],
   })
 
-  // Filter out expired appointments, unread notifications and sort by appointment date
   const today = startOfDay(new Date())
-  const sortedNotifications = notifications
+  const upcoming = notifications
     ?.filter((notification) => {
       const appointmentDate = startOfDay(new Date(notification.appointmentDate))
       return (
@@ -44,7 +32,7 @@ export default function LatestAppointmentScrollArea() {
         notification.notificationMessage.includes(
           'I want to make appointment for',
         ) &&
-        notification.notificationRead === true // Only show read notifications
+        notification.notificationRead === true
       )
     })
     .sort(
@@ -53,55 +41,58 @@ export default function LatestAppointmentScrollArea() {
         new Date(b.appointmentDate).getTime(),
     )
     .map((notification) => {
-      // Extract stall ID from message
       const match = notification.notificationMessage.match(/stall (\d+)/i)
-      const stallId = match ? match[1] : 'N/A'
       return {
         ...notification,
-        stallId,
+        stallId: match ? match[1] : null,
       }
     })
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex h-full flex-col shadow-none">
       <CardHeader>
-        <CardTitle>Recent Appointments</CardTitle>
-        <CardDescription>List of recent appointment requests</CardDescription>
+        <CardTitle>Recent appointments</CardTitle>
+        <CardDescription>Confirmed appointments coming up</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[320px]">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={labelClass}>Requester</TableHead>
-                <TableHead className={labelClass}>Stall</TableHead>
-                <TableHead className={labelClass}>Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedNotifications?.map((notification) => {
+          {upcoming?.length ? (
+            <div className="divide-border/60 divide-y">
+              {upcoming.map((notification) => {
                 const user = users?.users.find(
-                  (u) => u.id === notification.userId,
+                  (candidate) => candidate.id === notification.userId,
                 )
                 return (
-                  <TableRow key={notification.notificationId}>
-                    <TableCell>
-                      <InitialsAvatar
-                        name={user?.name ?? 'Unknown'}
-                        image={user?.image}
-                      />
-                    </TableCell>
-                    <TableCell className="text-sm font-medium whitespace-nowrap">
-                      Stall {notification.stallId}
-                    </TableCell>
-                    <TableCell className="text-sm whitespace-nowrap tabular-nums">
+                  <div
+                    key={notification.notificationId}
+                    className="flex items-center gap-3 py-3"
+                  >
+                    <InitialsAvatar
+                      name={user?.name ?? 'Unknown'}
+                      image={user?.image}
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <p className="truncate text-sm leading-none font-medium">
+                        {user?.name ?? 'Unknown account'}
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        {notification.stallId
+                          ? `Stall ${notification.stallId}`
+                          : 'Stall not recorded'}
+                      </p>
+                    </div>
+                    <span className="text-muted-foreground text-xs tabular-nums">
                       {formatDay(notification.appointmentDate)}
-                    </TableCell>
-                  </TableRow>
+                    </span>
+                  </div>
                 )
               })}
-            </TableBody>
-          </Table>
+            </div>
+          ) : (
+            <p className="text-muted-foreground py-6 text-sm">
+              No confirmed appointments coming up.
+            </p>
+          )}
         </ScrollArea>
       </CardContent>
     </Card>

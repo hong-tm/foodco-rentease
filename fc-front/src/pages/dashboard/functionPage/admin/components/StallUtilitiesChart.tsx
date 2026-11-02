@@ -130,7 +130,7 @@ export default function StallUtilitiesChart() {
   }
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Utilities Payment Chart</CardTitle>
         <CardDescription>

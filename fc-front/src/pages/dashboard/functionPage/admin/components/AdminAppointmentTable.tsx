@@ -289,8 +289,15 @@ export default function AdminAppointmentTable({
                     className="hidden py-5 align-top whitespace-normal xl:table-cell"
                     style={{ width: COLUMN_WIDTH.request }}
                   >
-                    <span className="text-sm">
-                      {notification.notificationMessage}
+                    <span className="flex flex-col gap-1">
+                      <span className="text-sm font-medium">
+                        {notification.notificationMessage.match(/stall (\d+)/i)
+                          ? `Stall ${notification.notificationMessage.match(/stall (\d+)/i)?.[1]}`
+                          : "Appointment"}
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        {notification.notificationMessage}
+                      </span>
                     </span>
                   </TableCell>
                   <TableCell

@@ -111,7 +111,7 @@ export default function NewTenantChart() {
   }
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Monthly User Registrations</CardTitle>
         <CardDescription>Registration counts by month</CardDescription>

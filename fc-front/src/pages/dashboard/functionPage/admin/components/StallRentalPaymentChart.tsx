@@ -140,7 +140,7 @@ export default function StallRentalPaymentChart() {
   }
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader className="items-center pb-4">
         <CardTitle>Rental Payment Chart</CardTitle>
         <CardDescription>

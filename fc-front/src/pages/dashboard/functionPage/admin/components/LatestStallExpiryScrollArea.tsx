@@ -12,17 +12,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 export default function LatestStallExpiryScrollArea() {
   const { data: stalls } = useQuery({
@@ -41,40 +30,44 @@ export default function LatestStallExpiryScrollArea() {
   })
 
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex h-full flex-col shadow-none">
       <CardHeader>
-        <CardTitle>Rental Expiry</CardTitle>
-        <CardDescription>List of upcoming rental expiry</CardDescription>
+        <CardTitle>Rental expiry</CardTitle>
+        <CardDescription>Leases ending soonest first</CardDescription>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[320px]">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className={labelClass}>Tenant</TableHead>
-                <TableHead className={labelClass}>Stall</TableHead>
-                <TableHead className={labelClass}>Expiry</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {stalls?.stall.map((stall) => (
-                <TableRow key={stall.stallNumber}>
-                  <TableCell>
-                    <InitialsAvatar
-                      name={stall.stallOwnerId?.name ?? 'Unknown'}
-                      image={stall.stallOwnerId?.image}
-                    />
-                  </TableCell>
-                  <TableCell className="text-sm font-medium whitespace-nowrap">
-                    Stall {stall.stallNumber}
-                  </TableCell>
-                  <TableCell className="text-sm whitespace-nowrap tabular-nums">
+          {stalls?.stall.length ? (
+            <div className="divide-border/60 divide-y">
+              {stalls.stall.map((stall) => (
+                <div
+                  key={stall.stallNumber}
+                  className="flex items-center gap-3 py-3"
+                >
+                  <InitialsAvatar
+                    name={stall.stallOwnerId?.name ?? 'Unknown'}
+                    image={stall.stallOwnerId?.image}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p className="truncate text-sm leading-none font-medium">
+                      {stall.stallOwnerId?.name ?? 'Unknown tenant'}
+                    </p>
+                    <p className="text-muted-foreground text-xs tabular-nums">
+                      Stall {stall.stallNumber}
+                      {stall.stallName ? ` · ${stall.stallName}` : ''}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs tabular-nums">
                     {formatDay(stall.endAt)}
-                  </TableCell>
-                </TableRow>
+                  </span>
+                </div>
               ))}
-            </TableBody>
-          </Table>
+            </div>
+          ) : (
+            <p className="text-muted-foreground py-6 text-sm">
+              No leases ending.
+            </p>
+          )}
         </ScrollArea>
       </CardContent>
     </Card>
