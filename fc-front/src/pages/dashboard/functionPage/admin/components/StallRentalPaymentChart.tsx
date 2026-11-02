@@ -14,16 +14,17 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 const chartConfig = {
   rental: {
     label: 'Rental',
-    color: 'var(--chart-1)',
+    color: 'var(--series-1)',
   },
 } satisfies ChartConfig
 
@@ -120,6 +121,23 @@ export default function StallRentalPaymentChart() {
   }
 
   const trendingPercentage = getTrendingPercentage()
+  const hasData = processedData.some((month) => month.rental > 0)
+
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader className="items-center pb-4">
+          <CardTitle>Rental Payment Chart</CardTitle>
+          <CardDescription>
+            Showing rental payments 3 months back and 2 months ahead
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No rental payments recorded" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>

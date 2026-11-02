@@ -14,11 +14,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 type MonthlyData = {
   month: string
@@ -31,11 +32,11 @@ type MonthlyData = {
 const chartConfig = {
   electric: {
     label: 'Electric',
-    color: 'var(--chart-1)',
+    color: 'var(--series-1)',
   },
   water: {
     label: 'Water',
-    color: 'var(--chart-2)',
+    color: 'var(--series-2)',
   },
 } satisfies ChartConfig
 
@@ -102,6 +103,7 @@ export default function StallUtilitiesChart() {
   }
 
   const trendingPercentage = getTrendingPercentage()
+  const hasData = processedData.length > 0
 
   // Format date range for display
   const getDateRangeText = () => {
@@ -109,6 +111,22 @@ export default function StallUtilitiesChart() {
     const firstMonth = processedData[0]?.displayMonth
     const lastMonth = processedData[processedData.length - 1]?.displayMonth
     return `${firstMonth} - ${lastMonth}`
+  }
+
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Utilities Payment Chart</CardTitle>
+          <CardDescription>
+            Showing total utilities payments for the last 3 months
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No utilities payments recorded" />
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

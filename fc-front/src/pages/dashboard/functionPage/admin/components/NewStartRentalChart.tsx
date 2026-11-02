@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 export function NewStartRentalChart() {
   const { data: stallData } = useQuery(fetchStallsQueryOptions)
@@ -39,7 +40,7 @@ export function NewStartRentalChart() {
       return {
         month: date.toLocaleString('en-US', { month: 'long' }),
         value: 0,
-        fill: `var(--chart-${(i % 5) + 1})`,
+        fill: `var(--series-${(i % 5) + 1})`,
       }
     })
 
@@ -62,6 +63,7 @@ export function NewStartRentalChart() {
   }
 
   const chartData = processStallData()
+  const hasData = chartData.some((item) => item.value > 0)
 
   // Calculate trending percentage
   const calculateTrending = () => {
@@ -109,6 +111,20 @@ export function NewStartRentalChart() {
       ? chartData.reduce((max, item) => (item.value > max.value ? item : max))
       : null
 
+  if (!hasData) {
+    return (
+      <Card className="flex flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>New Rental Starts</CardTitle>
+          <CardDescription>{getDateRange()}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0">
+          <ChartEmpty message="No rental starts in this window" />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
@@ -139,6 +155,7 @@ export function NewStartRentalChart() {
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 leading-none font-medium">
           {peak &&
+            peak.value > 0 &&
             `Most starts in ${peak.month} with ${peak.value} ${
               peak.value === 1 ? 'stall' : 'stalls'
             }`}

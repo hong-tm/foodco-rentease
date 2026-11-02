@@ -182,3 +182,30 @@ code {
     cursor: pointer;
   }
 }
+
+/* Chart series palette: one hue per series in both themes, lightness adjusted
+   for contrast. Charts reference --color-series-N so a series keeps its colour
+   when the theme flips, unlike --chart-N which is themed per mode. */
+@theme {
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
+}
+
+:root {
+  --series-1: oklch(0.646 0.222 41.116);
+  --series-2: oklch(0.6 0.118 184.704);
+  --series-3: oklch(0.398 0.07 227.392);
+  --series-4: oklch(0.828 0.189 84.429);
+  --series-5: oklch(0.769 0.188 70.08);
+}
+
+.dark {
+  --series-1: oklch(0.74 0.17 45);
+  --series-2: oklch(0.72 0.1 185);
+  --series-3: oklch(0.68 0.09 227);
+  --series-4: oklch(0.85 0.16 84);
+  --series-5: oklch(0.8 0.155 70);
+}

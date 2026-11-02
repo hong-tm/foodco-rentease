@@ -17,6 +17,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 export default function NewTenantChart() {
   const { data: usersData, isLoading } = useQuery(fetchUsersQueryOptions)
@@ -69,11 +70,12 @@ export default function NewTenantChart() {
   }
 
   const chartData = processUserData()
+  const hasData = chartData.some((month) => Number(month.users) > 0)
 
   const chartConfig = {
     users: {
       label: 'New Users',
-      color: 'var(--chart-2)',
+      color: 'var(--series-2)',
     },
     label: {
       color: 'var(--background)',
@@ -89,6 +91,20 @@ export default function NewTenantChart() {
         </CardHeader>
         <CardContent className="flex h-[200px] items-center justify-center">
           <div className="animate-pulse">Loading chart data...</div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Monthly User Registrations</CardTitle>
+          <CardDescription>Registration counts by month</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No registrations in the last 3 months" />
         </CardContent>
       </Card>
     )

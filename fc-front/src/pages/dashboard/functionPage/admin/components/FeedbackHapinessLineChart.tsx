@@ -16,11 +16,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 type FeedbackHapinessLineChartProps = {
   className?: string
@@ -34,7 +35,7 @@ export default function FeedbackHapinessLineChart({
   const chartConfig = {
     happiness: {
       label: 'Happiness Score',
-      color: 'var(--chart-1)',
+      color: 'var(--series-1)',
     },
   } satisfies ChartConfig
 
@@ -69,6 +70,23 @@ export default function FeedbackHapinessLineChart({
   }
 
   const analytics = getAnalytics()
+  const hasData = (feedbackHappiness?.length ?? 0) > 0
+
+  if (!hasData) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle>Stall Happiness</CardTitle>
+          <CardDescription>
+            Showing happiness scores across different stalls
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No feedback recorded yet" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className={className}>
@@ -115,7 +133,7 @@ export default function FeedbackHapinessLineChart({
             <Line
               dataKey="totalHappiness"
               type="monotone"
-              stroke="var(--chart-1)"
+              stroke="var(--color-happiness)"
               strokeWidth={2}
               dot={false}
             />

@@ -18,11 +18,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ChartContainer, type ChartConfig } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 const chartConfig = {
   occupiedStalls: {
     label: 'Rented',
-    color: 'var(--chart-1)',
+    color: 'var(--series-1)',
   },
 } satisfies ChartConfig
 
@@ -53,6 +54,20 @@ export function VacancyChart() {
   const rentedRate =
     totalStalls > 0 ? ((rentedStalls / totalStalls) * 100).toFixed(1) : '0.0'
   const endAngle = totalStalls > 0 ? (rentedStalls / totalStalls) * 360 : 0
+
+  if (totalStalls === 0) {
+    return (
+      <Card className="flex h-full flex-col">
+        <CardHeader className="items-center pb-0">
+          <CardTitle>Stall Rental Status</CardTitle>
+          <CardDescription>{currentMonth} Overview</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0">
+          <ChartEmpty message="No stall data yet" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   // Analyze vacancy status
   const vacancyStatus = {
