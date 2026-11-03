@@ -40,6 +40,8 @@ code {
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
+  /* Success: confirmation state. 3.2:1 on white, enough for an icon (WCAG 1.4.11). */
+  --success: oklch(0.627 0.194 149.214);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.871 0.006 286.286);
@@ -77,6 +79,7 @@ code {
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
+  --success: oklch(0.723 0.219 149.579);
   --border: oklch(0.274 0.006 286.033);
   --input: oklch(0.274 0.006 286.033);
   --ring: oklch(0.442 0.017 285.786);
@@ -113,6 +116,13 @@ code {
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-logo-1: var(--logo-1);
+  --color-logo-2: var(--logo-2);
+  --color-logo-3: var(--logo-3);
+  --color-logo-4: var(--logo-4);
+  --color-logo-5: var(--logo-5);
+  --color-logo-6: var(--logo-6);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -275,6 +285,18 @@ code {
       min-height: 44px;
     }
   }
+}
+
+/* Logo palette: the fish mark's six stops. Identity colours, kept apart from
+   --brand so the UI signature can change without redrawing the logo. Used by
+   the fish symbol and the sidebar app mark. */
+:root {
+  --logo-1: #b802d0;
+  --logo-2: #e62652;
+  --logo-3: #eb6f02;
+  --logo-4: #e59a02;
+  --logo-5: #6ba702;
+  --logo-6: #026bc2;
 }
 
 /* Chart series palette: five hues on the app's chart ramp. The base UI stays

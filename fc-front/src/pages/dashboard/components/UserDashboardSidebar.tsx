@@ -394,7 +394,7 @@ export default function UserDashboardSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to="#">
-                <div className="group text-sidebar-primary-foreground hover:animate-gradient-hover flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02]">
+                <div className="group text-sidebar-primary-foreground hover:animate-gradient-hover from-logo-1 via-logo-2 to-logo-6 dark:from-logo-5 dark:via-logo-4 dark:to-logo-3 flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br">
                   <TowerControlIcon className="size-4" />
                 </div>
 
