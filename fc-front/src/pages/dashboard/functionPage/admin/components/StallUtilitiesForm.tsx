@@ -113,7 +113,7 @@ export default function StallUtilitiesForm() {
   return (
     <section aria-label="New utility charge" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 className="text-base font-medium">New charge</h2>
+        <h2 className="type-section-title">New charge</h2>
 
         <p className="text-muted-foreground text-xs">
           Issued unpaid. The tenant pays it from their utilities page.

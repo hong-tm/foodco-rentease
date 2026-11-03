@@ -89,7 +89,9 @@ export default function SignUpPage() {
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
-            <CardTitle className="text-2xl">Create New Account</CardTitle>
+            <CardTitle className="type-page-title">
+              Create New Account
+            </CardTitle>
             <CardDescription>
               Join FoodCo-RentEase to Simplify Your Stall Management Today!
             </CardDescription>

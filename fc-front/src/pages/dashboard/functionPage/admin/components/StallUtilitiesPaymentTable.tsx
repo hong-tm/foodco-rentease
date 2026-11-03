@@ -27,10 +27,8 @@ import {
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
-import { labelClass } from '@/components/dashboard/labelClass'
 
 const DAY_MS = 24 * 60 * 60 * 1000
-
 
 // Seven columns split 12 / 22 / 10 / 11 / 13 / 11 / 21 across one ledger. Only
 // the tenant column takes a scale step (w-1/5 is 20%, close but not equal, so
@@ -155,7 +153,7 @@ export default function StallUtilitiesPaymentTable() {
       className="flex min-w-0 flex-col gap-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className={labelClass}>Payment records</h2>
+        <h2 className="type-label text-muted-foreground">Payment records</h2>
 
         <div className="flex flex-wrap gap-2">
           <Select value={selectedType} onValueChange={setSelectedType}>
@@ -202,18 +200,20 @@ export default function StallUtilitiesPaymentTable() {
           </Button>
         </div>
       ) : (
-        <div className="max-w-full min-w-0 overflow-hidden rounded-xl border border-border">
+        <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
           <Table className="xl:min-w-table">
             <TableCaption className="sr-only">
               Utility charges with stall, tenant, amount, status and issue date
             </TableCaption>
             <TableHeader>
               <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
-                <TableHead className={`h-12 pl-6 ${labelClass}`}>
+                <TableHead
+                  className={`type-label text-muted-foreground h-12 pl-6`}
+                >
                   Stall
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.tenant }}
                 >
                   <span className="flex items-center gap-2">
@@ -222,31 +222,31 @@ export default function StallUtilitiesPaymentTable() {
                   </span>
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.type }}
                 >
                   Type
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 text-right xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 text-right xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.amount }}
                 >
                   Amount
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.status }}
                 >
                   Status
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.date }}
                 >
                   Charged
                 </TableHead>
                 <TableHead
-                  className={`hidden h-12 pr-6 xl:table-cell ${labelClass}`}
+                  className={`type-label text-muted-foreground hidden h-12 pr-6 xl:table-cell`}
                   style={{ width: COLUMN_WIDTH.reference }}
                 >
                   Reference

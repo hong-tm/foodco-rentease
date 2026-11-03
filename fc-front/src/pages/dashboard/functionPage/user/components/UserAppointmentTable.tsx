@@ -33,14 +33,12 @@ import PaymentModal from '@/components/PaymentModal'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
-import { labelClass } from '@/components/dashboard/labelClass'
 
 type PaymentIntentParams = {
   amount: number
   stallId: number
   userId: string
 }
-
 
 export default function UserAppointmentTable() {
   const { data: session } = useSession()
@@ -222,24 +220,28 @@ export default function UserAppointmentTable() {
           </TableCaption>
           <TableHeader>
             <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
-              <TableHead className={`h-12 w-10 pl-6 ${labelClass}`}>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 w-10 pl-6`}
+              >
                 <span className="sr-only">You</span>
               </TableHead>
-              <TableHead className={`h-12 ${labelClass}`}>Message</TableHead>
+              <TableHead className={`type-label text-muted-foreground h-12`}>
+                Message
+              </TableHead>
               <TableHead
-                className={`h-12 ${labelClass}`}
+                className={`type-label text-muted-foreground h-12`}
                 style={{ width: '12%' }}
               >
                 Date
               </TableHead>
               <TableHead
-                className={`h-12 ${labelClass}`}
+                className={`type-label text-muted-foreground h-12`}
                 style={{ width: '14%' }}
               >
                 Status
               </TableHead>
               <TableHead
-                className={`h-12 pr-6 text-right ${labelClass}`}
+                className={`type-label text-muted-foreground h-12 pr-6 text-right`}
                 style={{ width: '20%' }}
               >
                 Action

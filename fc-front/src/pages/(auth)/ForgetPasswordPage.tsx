@@ -67,7 +67,7 @@ export default function ForgetPasswordPage() {
       <BackgroundLines className="-z-15 flex h-full w-full flex-col items-center justify-center px-4">
         <Card className="z-10 mx-auto max-w-sm">
           <CardHeader>
-            <CardTitle className="text-2xl">Forgot Password</CardTitle>
+            <CardTitle className="type-page-title">Forgot Password</CardTitle>
             <CardDescription>
               Enter your email address to receive a password reset link.
             </CardDescription>

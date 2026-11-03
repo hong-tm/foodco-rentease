@@ -60,7 +60,7 @@ export default function UserProfilePage() {
               {getFallback(session.user.name || '')}
             </AvatarFallback>
           </Avatar>
-          <CardTitle className="mt-4 text-center text-2xl font-bold">
+          <CardTitle className="type-page-title mt-4 text-center">
             {`${session.user.name}'s Profile`}
             <CardDescription></CardDescription>
           </CardTitle>
@@ -74,7 +74,7 @@ export default function UserProfilePage() {
                 className="flex items-center justify-between border-b pb-2"
               >
                 <span className="font-medium">{data.label}:</span>
-                <span className="text-neutral-500">{data.value}</span>
+                <span className="text-muted-foreground">{data.value}</span>
               </li>
             ))}
           </ul>
@@ -84,7 +84,7 @@ export default function UserProfilePage() {
           <div className="flex gap-8">
             <UpdateProfileButton onUpdate={() => {}} />
           </div>
-          <p className="mt-3 text-sm text-neutral-400">End of Profile</p>
+          <p className="text-muted-foreground mt-3 text-sm">End of Profile</p>
         </CardFooter>
       </Card>
     </div>

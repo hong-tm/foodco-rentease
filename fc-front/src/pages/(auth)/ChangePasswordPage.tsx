@@ -69,10 +69,10 @@ export default function ChangePasswordPage() {
     <div className="flex min-h-screen w-full items-center justify-center">
       <Card className="w-full max-w-md rounded-2xl border-none shadow-none">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
+          <CardTitle className="type-page-title">
             Change Account Password
           </CardTitle>
-          <CardDescription className="text-gray-500">
+          <CardDescription className="text-muted-foreground">
             Enter your new password to change your password.
           </CardDescription>
         </CardHeader>

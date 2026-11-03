@@ -17,7 +17,7 @@ export function PaymentSuccessPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Your payment has been processed successfully. Thank you for your
             payment!
           </p>

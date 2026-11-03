@@ -26,9 +26,11 @@ code {
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  /* Signature: the series-1 orange, darkened to 5.2:1 under white text.
-     It marks the elements that act (R-VIS-037); structure stays neutral. */
-  --primary: oklch(0.55 0.18 42);
+  /* Brand: the one signature colour. Change it here; primary, the first
+     chart series and focus accents follow. Structure stays neutral (R-VIS-037). */
+  --brand: oklch(0.62 0.19 42);
+  /* Primary darkens the brand to 5.2:1 under white text. */
+  --primary: oklch(from var(--brand) 0.55 c h);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -64,7 +66,8 @@ code {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.141 0.005 285.823);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.72 0.17 45);
+  --brand: oklch(0.72 0.17 45);
+  --primary: var(--brand);
   --primary-foreground: oklch(0.21 0.006 285.885);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -93,6 +96,7 @@ code {
 }
 
 @theme inline {
+  --color-brand: var(--brand);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -170,6 +174,52 @@ code {
   }
 }
 
+/* Type scale. Components use these type-* utilities, never raw text-2xl.
+   type-* (not --text-* theme keys) so cn() never mistakes a size for a colour.
+   The page title anchors the scale; the statistic is bounded to 1.25x of it
+   (R-VIS-014 allows up to ~1.35x), so retuning --type-title keeps the ratio. */
+:root {
+  --type-title: 1.5rem;
+  --type-stat-ratio: 1.25;
+}
+
+@utility type-display {
+  font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+@utility type-page-title {
+  font-size: var(--type-title);
+  line-height: calc(var(--type-title) + 0.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+@utility type-section-title {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+@utility type-stat {
+  font-size: calc(var(--type-title) * var(--type-stat-ratio));
+  line-height: 1;
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Micro-capital structural label: table headers, strip labels, section labels. */
+@utility type-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -203,10 +253,18 @@ code {
      (R-VIS-025). Mouse pointers keep the drawn box. */
   @media (pointer: coarse) {
     /* Radix asChild renames a control's slot (<part>-trigger, form-control), so match those too. */
-    :is([data-slot='button'], [data-slot$='-trigger'], button[data-slot='form-control']):not([data-slot='tooltip-trigger']) {
+    :is(
+      [data-slot='button'],
+      [data-slot$='-trigger'],
+      button[data-slot='form-control']
+    ):not([data-slot='tooltip-trigger']) {
       position: relative;
     }
-    :is([data-slot='button'], [data-slot$='-trigger'], button[data-slot='form-control']):not([data-slot='tooltip-trigger'])::after {
+    :is(
+        [data-slot='button'],
+        [data-slot$='-trigger'],
+        button[data-slot='form-control']
+      ):not([data-slot='tooltip-trigger'])::after {
       content: '';
       position: absolute;
       inset-block: min(0px, calc((100% - 44px) / 2));
@@ -231,7 +289,7 @@ code {
 }
 
 :root {
-  --series-1: oklch(0.62 0.19 42);
+  --series-1: var(--brand);
   --series-2: oklch(0.62 0.12 190);
   --series-3: oklch(0.52 0.13 255);
   --series-4: oklch(0.75 0.15 80);
@@ -239,7 +297,7 @@ code {
 }
 
 .dark {
-  --series-1: oklch(0.72 0.17 45);
+  --series-1: var(--brand);
   --series-2: oklch(0.74 0.12 190);
   --series-3: oklch(0.66 0.13 255);
   --series-4: oklch(0.82 0.14 82);

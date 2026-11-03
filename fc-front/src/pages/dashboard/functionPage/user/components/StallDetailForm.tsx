@@ -106,23 +106,31 @@ export default function StallDetailForm({
         </Badge>
       </CardHeader>
       <CardContent className="pt-6 pb-0">
-        <CardTitle className="mb-2 text-2xl">{stall.stallName}</CardTitle>
+        <CardTitle className="type-page-title mb-2">
+          {stall.stallName}
+        </CardTitle>
         <CardDescription className="mb-6">
           {stall.description || 'No description available'}
         </CardDescription>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Size:</span>
+            <span className="text-muted-foreground text-sm font-medium">
+              Size:
+            </span>
             <span className="text-sm font-semibold">{stall.stallSize} m²</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Status:</span>
+            <span className="text-muted-foreground text-sm font-medium">
+              Status:
+            </span>
             <Badge variant={stall.rentStatus ? 'destructive' : 'secondary'}>
               {stall.rentStatus ? 'Occupied' : 'Available'}
             </Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Owner:</span>
+            <span className="text-muted-foreground text-sm font-medium">
+              Owner:
+            </span>
             <span className="text-sm font-semibold">
               {stall.stallOwnerId?.name || 'No owner'}
             </span>
@@ -134,7 +142,7 @@ export default function StallDetailForm({
           <div className="flex w-full flex-col items-center justify-between gap-4">
             <div className="flex w-full items-center justify-between">
               <span className="text-sm font-medium">Price:</span>
-              <span className="text-2xl font-bold">RM {price.toFixed(2)}</span>
+              <span className="type-stat">RM {price.toFixed(2)}</span>
             </div>
             <Popover>
               <PopoverTrigger asChild>

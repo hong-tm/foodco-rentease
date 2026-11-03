@@ -52,9 +52,7 @@ export default function RentalStallsDetail({
 
   return (
     <section aria-label="Stalls" className="flex flex-col gap-3">
-      <h2 className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-        Stalls
-      </h2>
+      <h2 className="type-label text-muted-foreground">Stalls</h2>
 
       {isLoading ? (
         <div role="status" aria-busy="true" className="flex flex-col gap-2">
@@ -76,16 +74,16 @@ export default function RentalStallsDetail({
           <Table>
             <TableHeader>
               <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
-                <TableHead className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+                <TableHead className="type-label text-muted-foreground">
                   Stall
                 </TableHead>
-                <TableHead className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
+                <TableHead className="type-label text-muted-foreground">
                   Tier · Size
                 </TableHead>
-                <TableHead className="text-muted-foreground text-right text-xs font-medium tracking-widest uppercase">
+                <TableHead className="type-label text-muted-foreground text-right">
                   Monthly Rent
                 </TableHead>
-                <TableHead className="text-muted-foreground text-right text-xs font-medium tracking-widest uppercase">
+                <TableHead className="type-label text-muted-foreground text-right">
                   Lease Period
                 </TableHead>
               </TableRow>
@@ -98,10 +96,7 @@ export default function RentalStallsDetail({
                 const start = formatDay(stall.startAt) ?? 'no start date'
                 const end = formatDay(stall.endAt) ?? 'no end date'
                 return (
-                  <TableRow
-                    key={stall.stallNumber}
-                    className="border-border"
-                  >
+                  <TableRow key={stall.stallNumber} className="border-border">
                     <TableCell className="py-3">
                       <div className="flex flex-col">
                         <span className="text-foreground font-medium">

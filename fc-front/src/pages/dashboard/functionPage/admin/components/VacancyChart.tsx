@@ -123,14 +123,14 @@ export function VacancyChart() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-2xl font-semibold tabular-nums"
+                          className="fill-foreground type-page-title tabular-nums"
                         >
                           {rentedStalls}/{totalStalls}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 22}
-                          className="fill-muted-foreground text-xs tracking-widest uppercase"
+                          className="fill-muted-foreground type-label"
                         >
                           Rented
                         </tspan>

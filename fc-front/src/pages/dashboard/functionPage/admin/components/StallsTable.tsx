@@ -11,7 +11,6 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StallButton } from './StallButton'
 import { StallsTableSkeleton } from './StallTableSkeleton'
 
-
 // The board reproduces the recorded floor plan: seven stalls along the front,
 // three back-to-back pairs across the centre aisle, seven along the rear. These
 // are proportions of one map, so they stay page-scoped instead of becoming
@@ -33,10 +32,7 @@ function Legend() {
   return (
     <ul className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
       <li className="flex items-center gap-1.5">
-        <span
-          aria-hidden="true"
-          className="bg-series-1 size-2 rounded-full"
-        />
+        <span aria-hidden="true" className="bg-series-1 size-2 rounded-full" />
         Rented
       </li>
       <li className="flex items-center gap-1.5">
@@ -151,7 +147,7 @@ export default function StallsTable() {
                     {pair[0] ? tile(pair[0]) : <span />}
                     <div className="col-span-5 flex items-center gap-3 max-lg:hidden">
                       <span className="border-border flex-1 border-t border-dashed" />
-                      <span className="text-foreground/70 text-xs font-medium tracking-widest uppercase">
+                      <span className="type-label text-foreground/70">
                         Central aisle
                       </span>
                       <span className="border-border flex-1 border-t border-dashed" />

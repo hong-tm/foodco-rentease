@@ -28,8 +28,6 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
-import { labelClass } from '@/components/dashboard/labelClass'
-
 
 // First column absorbs slack; 26/12/12/10 keep the request text readable and the
 // decision control at its own width.
@@ -193,39 +191,41 @@ export default function AdminAppointmentTable({
   return (
     <div className="flex flex-col gap-6">
       {toolbar}
-      <div className="max-w-full overflow-hidden rounded-xl border border-border">
+      <div className="border-border max-w-full overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Upcoming appointment requests with decision status and action
           </TableCaption>
           <TableHeader>
             <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
-              <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
+              >
                 <span className="flex items-center gap-3">
                   <span aria-hidden className="size-9" />
                   Requester
                 </span>
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.request }}
               >
                 Request
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.requested }}
               >
                 Requested
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.status }}
               >
                 Status
               </TableHead>
               <TableHead
-                className={`hidden h-12 pr-6 text-right xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.decision }}
               >
                 Decision

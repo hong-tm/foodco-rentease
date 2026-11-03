@@ -15,8 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import PaymentModal from '@/components/PaymentModal'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
-import { labelClass } from '@/components/dashboard/labelClass'
-
 
 type BillState = 'paid' | 'due' | 'none' | 'unset'
 
@@ -296,7 +294,7 @@ export default function StallUtilitiesDetails() {
             >
               <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-6 py-5">
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h2 className="text-base font-medium tabular-nums">
+                  <h2 className="type-section-title tabular-nums">
                     Stall {stall.stallNumber}
                   </h2>
                   <p className="text-muted-foreground text-sm">
@@ -311,7 +309,9 @@ export default function StallUtilitiesDetails() {
                       : 'area not recorded'}
                   </p>
                   {due.length === 0 ? (
-                    <span className={labelClass}>Settled</span>
+                    <span className="type-label text-muted-foreground">
+                      Settled
+                    </span>
                   ) : (
                     <Badge
                       variant="outline"

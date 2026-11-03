@@ -51,7 +51,7 @@ export default function CheckoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="mb-4 text-lg font-semibold">
+      <div className="type-section-title mb-4 tabular-nums">
         Amount to pay: RM{amount.toFixed(2)}
       </div>
       <PaymentElement />

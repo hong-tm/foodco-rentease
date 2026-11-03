@@ -19,11 +19,9 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
-import { labelClass } from '@/components/dashboard/labelClass'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const REMINDER_WINDOW_DAYS = 7
-
 
 // The table splits its width 40 / 20 / 22 / 18 across four columns. Only 40% has
 // a scale step (w-2/5); the other three stay explicit and page-scoped here, so no
@@ -149,33 +147,35 @@ export default function RentalsTable() {
         ]}
       />
 
-      <div className="max-w-full overflow-hidden rounded-xl border border-border">
+      <div className="border-border max-w-full overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
           <TableHeader>
             <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
-              <TableHead className={`h-12 w-2/5 pl-6 ${labelClass}`}>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
+              >
                 <span className="flex items-center gap-3">
                   <span aria-hidden className="size-9" />
                   Tenant
                 </span>
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.stall }}
               >
                 Stall
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.lease }}
               >
                 Lease period
               </TableHead>
               <TableHead
-                className={`hidden h-12 pr-6 text-right xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.action }}
               >
                 Action

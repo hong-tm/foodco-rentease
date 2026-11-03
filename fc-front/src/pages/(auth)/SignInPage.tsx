@@ -136,7 +136,7 @@ export default function SignInPage() {
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
-            <CardTitle className="text-2xl">
+            <CardTitle className="type-page-title">
               Welcome to FoodCo-RentEase
             </CardTitle>
             <CardDescription>
@@ -243,13 +243,13 @@ export default function SignInPage() {
               >
                 {pendingGoogle ? (
                   <>
-                    <FcGoogle className="text-2xl" />
+                    <FcGoogle className="size-6" />
                     <span>Continue with Google</span>
                     <LoaderCircleIcon className="h-4 w-4 animate-spin" />
                   </>
                 ) : (
                   <>
-                    <FcGoogle className="text-2xl" />
+                    <FcGoogle className="size-6" />
                     <span>Continue with Google</span>
                   </>
                 )}
@@ -262,13 +262,13 @@ export default function SignInPage() {
               >
                 {pendingGithub ? (
                   <>
-                    <FaGithub className="text-2xl" />
+                    <FaGithub className="size-6" />
                     <span>Continue with Github</span>
                     <LoaderCircleIcon className="h-4 w-4 animate-spin" />
                   </>
                 ) : (
                   <>
-                    <FaGithub className="text-2xl" />
+                    <FaGithub className="size-6" />
                     <span>Continue with Github</span>
                   </>
                 )}

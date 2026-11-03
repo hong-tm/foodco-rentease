@@ -86,9 +86,7 @@ export default function RentalPaymentDetail({
   return (
     <section aria-label="Payments" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-          Payments
-        </h2>
+        <h2 className="type-label text-muted-foreground">Payments</h2>
         <p className="text-muted-foreground text-sm">
           Settled rent and utilities by record month, last 6 months
         </p>

@@ -15,8 +15,6 @@ import NewTenantChart from './components/NewTenantChart'
 import StallRentalPaymentChart from './components/StallRentalPaymentChart'
 import StallUtilitiesChart from './components/StallUtilitiesChart'
 import { VacancyChart } from './components/VacancyChart'
-import { labelClass } from '@/components/dashboard/labelClass'
-
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const REMINDER_WINDOW_DAYS = 7
@@ -104,7 +102,9 @@ export function AdminDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className={labelClass}>Occupancy and bookings</h2>
+        <h2 className="type-label text-muted-foreground">
+          Occupancy and bookings
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <VacancyChart />
           <LatestStallExpiryScrollArea />
@@ -113,7 +113,7 @@ export function AdminDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className={labelClass}>Payments</h2>
+        <h2 className="type-label text-muted-foreground">Payments</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <StallRentalPaymentChart />
           <StallUtilitiesChart />
@@ -121,7 +121,9 @@ export function AdminDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className={labelClass}>Growth and feedback</h2>
+        <h2 className="type-label text-muted-foreground">
+          Growth and feedback
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <NewTenantChart />
           <NewStartRentalChart />

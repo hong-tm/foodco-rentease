@@ -34,12 +34,8 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-baseline gap-3">
-        <span className="text-3xl leading-none font-light tracking-tighter tabular-nums">
-          {value}
-        </span>
-        <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-          {unit}
-        </span>
+        <span className="type-stat">{value}</span>
+        <span className="type-label text-muted-foreground">{unit}</span>
       </div>
       {/* Two columns on phones (cells wrap into a grid with hairlines on
           both axes), one row from sm up. */}
@@ -57,9 +53,7 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
               cell.anomaly && 'border-l-destructive text-foreground border-l',
             )}
           >
-            <dt className="text-muted-foreground text-xs font-medium tracking-widest uppercase">
-              {cell.label}
-            </dt>
+            <dt className="type-label text-muted-foreground">{cell.label}</dt>
             <dd className="text-sm font-medium break-words tabular-nums">
               {cellValue(cell.value)}
             </dd>

@@ -44,8 +44,6 @@ import {
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
-import { labelClass } from '@/components/dashboard/labelClass'
-
 
 // Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the
 // action share is the delete control plus its cell padding. Ratios belong to
@@ -174,31 +172,31 @@ export function FeedbackDisplayPage() {
           <TableHeader className="border-border/80 bg-muted/35 border-b max-xl:sr-only">
             <TableRow className="hover:bg-transparent">
               <TableHead
-                className={`h-12 pl-6 ${labelClass}`}
+                className={`type-label text-muted-foreground h-12 pl-6`}
                 style={{ width: COLUMN_WIDTH.date }}
               >
                 Date
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.stall }}
               >
                 Stall
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.rating }}
               >
                 Rating
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.comment }}
               >
                 Comment
               </TableHead>
               <TableHead
-                className={`hidden h-12 pr-6 text-right xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.action }}
               >
                 Action

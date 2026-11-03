@@ -30,7 +30,6 @@ import {
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
-import { labelClass } from '@/components/dashboard/labelClass'
 
 type MonthSelectorProps = {
   value: string
@@ -238,13 +237,41 @@ export function PaymentRecordsTable({
         <Table>
           <TableHeader className="border-border bg-muted/35 border-b">
             <TableRow className="hover:bg-transparent">
-              <TableHead className={`h-12 pl-6 text-left ${labelClass}`}>User</TableHead>
-              <TableHead className={`h-12 text-left ${labelClass}`}>Payment ID</TableHead>
-              <TableHead className={`h-12 text-center ${labelClass}`}>Stall No.</TableHead>
-              <TableHead className={`h-12 text-center ${labelClass}`}>Type</TableHead>
-              <TableHead className={`h-12 text-right ${labelClass}`}>Amount (RM)</TableHead>
-              <TableHead className={`h-12 text-center ${labelClass}`}>Status</TableHead>
-              <TableHead className={`h-12 pr-6 text-left ${labelClass}`}>Date</TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 pl-6 text-left`}
+              >
+                User
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-left`}
+              >
+                Payment ID
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-center`}
+              >
+                Stall No.
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-center`}
+              >
+                Type
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-right`}
+              >
+                Amount (RM)
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-center`}
+              >
+                Status
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 pr-6 text-left`}
+              >
+                Date
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

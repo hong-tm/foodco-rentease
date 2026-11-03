@@ -19,8 +19,6 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { AdminActionButton } from './AdminActionButton'
-import { labelClass } from '@/components/dashboard/labelClass'
-
 
 // 30 / 18 / 18 / 16 / 18. The account cell carries three lines, so it keeps the
 // largest share but no longer takes the slack; the four trailing columns stay
@@ -101,7 +99,7 @@ export default function UsersTable() {
         ]}
       />
 
-      <div className="max-w-full overflow-hidden rounded-xl border border-border">
+      <div className="border-border max-w-full overflow-hidden rounded-xl border">
         <Table className="xl:min-w-table">
           <TableCaption className="sr-only">
             Accounts with role, status, join date and management actions
@@ -109,7 +107,7 @@ export default function UsersTable() {
           <TableHeader>
             <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
               <TableHead
-                className={`h-12 pl-6 ${labelClass}`}
+                className={`type-label text-muted-foreground h-12 pl-6`}
                 style={{ width: COLUMN_WIDTH.account }}
               >
                 <span className="flex items-center gap-3">
@@ -118,25 +116,25 @@ export default function UsersTable() {
                 </span>
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.role }}
               >
                 Role
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.status }}
               >
                 Status
               </TableHead>
               <TableHead
-                className={`hidden h-12 xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.joined }}
               >
                 Joined
               </TableHead>
               <TableHead
-                className={`hidden h-12 pr-6 text-right xl:table-cell ${labelClass}`}
+                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.action }}
               >
                 Action
