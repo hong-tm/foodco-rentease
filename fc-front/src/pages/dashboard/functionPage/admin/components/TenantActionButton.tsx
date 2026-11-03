@@ -65,7 +65,9 @@ export function TenantActionButton({
         variant={emphasis}
         size="sm"
         className={cn(
-          'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
+          // The icon is taken out of flow so the label, not the icon, gives the
+          // button its baseline; the row's cells share that line (R-VIS-039).
+          'relative pl-8 focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0 [&>svg]:absolute [&>svg]:top-1/2 [&>svg]:left-2.5 [&>svg]:-translate-y-1/2',
           emphasis === 'ghost' &&
             'text-muted-foreground hover:bg-muted/60 hover:text-foreground focus-visible:text-foreground transition-colors',
         )}

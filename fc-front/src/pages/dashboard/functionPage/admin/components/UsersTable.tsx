@@ -19,9 +19,8 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { AdminActionButton } from './AdminActionButton'
+import { labelClass } from '@/components/dashboard/labelClass'
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // 30 / 18 / 18 / 16 / 18. The account cell carries three lines, so it keeps the
 // largest share but no longer takes the slack; the four trailing columns stay
@@ -159,8 +158,8 @@ export default function UsersTable() {
                   key={user.id}
                   className="group/row border-border hover:bg-muted/20"
                 >
-                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                    <div className="flex items-start gap-3">
+                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <div className="flex items-baseline gap-3">
                       <InitialsAvatar name={user.name} image={user.image} />
                       <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
                         <div className="flex min-w-0 flex-col gap-1">
@@ -194,13 +193,13 @@ export default function UsersTable() {
                     </div>
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top xl:table-cell"
+                    className="hidden py-5 align-baseline xl:table-cell"
                     style={{ width: COLUMN_WIDTH.role }}
                   >
                     <span className="text-sm capitalize">{user.role}</span>
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top xl:table-cell"
+                    className="hidden py-5 align-baseline xl:table-cell"
                     style={{ width: COLUMN_WIDTH.status }}
                   >
                     <StatusBadge
@@ -209,14 +208,14 @@ export default function UsersTable() {
                     />
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top xl:table-cell"
+                    className="hidden py-5 align-baseline xl:table-cell"
                     style={{ width: COLUMN_WIDTH.joined }}
                   >
                     <span className="text-sm tabular-nums">
                       {formatDay(user.createdAt)}
                     </span>
                   </TableCell>
-                  <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">
+                  <TableCell className="hidden py-5 pr-6 text-right align-baseline xl:table-cell">
                     {action}
                   </TableCell>
                 </TableRow>

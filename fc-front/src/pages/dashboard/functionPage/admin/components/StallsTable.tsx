@@ -11,8 +11,6 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StallButton } from './StallButton'
 import { StallsTableSkeleton } from './StallTableSkeleton'
 
-export const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // The board reproduces the recorded floor plan: seven stalls along the front,
 // three back-to-back pairs across the centre aisle, seven along the rear. These

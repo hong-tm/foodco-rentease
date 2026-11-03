@@ -30,6 +30,7 @@ import {
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
+import { labelClass } from '@/components/dashboard/labelClass'
 
 type MonthSelectorProps = {
   value: string
@@ -237,13 +238,13 @@ export function PaymentRecordsTable({
         <Table>
           <TableHeader className="border-border bg-muted/35 border-b">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="text-left">User</TableHead>
-              <TableHead className="text-left">Payment ID</TableHead>
-              <TableHead className="text-center">Stall No.</TableHead>
-              <TableHead className="text-center">Type</TableHead>
-              <TableHead className="text-right">Amount (RM)</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-left">Date</TableHead>
+              <TableHead className={`h-12 pl-6 text-left ${labelClass}`}>User</TableHead>
+              <TableHead className={`h-12 text-left ${labelClass}`}>Payment ID</TableHead>
+              <TableHead className={`h-12 text-center ${labelClass}`}>Stall No.</TableHead>
+              <TableHead className={`h-12 text-center ${labelClass}`}>Type</TableHead>
+              <TableHead className={`h-12 text-right ${labelClass}`}>Amount (RM)</TableHead>
+              <TableHead className={`h-12 text-center ${labelClass}`}>Status</TableHead>
+              <TableHead className={`h-12 pr-6 text-left ${labelClass}`}>Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -264,7 +265,7 @@ export function PaymentRecordsTable({
                 key={record.paymentId}
                 className="group/row border-border hover:bg-muted/20"
               >
-                <TableCell className="before:bg-foreground relative py-4 pl-6 align-top before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                   <div className="flex items-center gap-2">
                     <InitialsAvatar
                       name={record.paymentUser?.name ?? 'Unknown'}
@@ -275,7 +276,7 @@ export function PaymentRecordsTable({
                     </span>
                   </div>
                 </TableCell>
-                <TableCell className="py-4 align-top">
+                <TableCell className="py-4 align-baseline">
                   <span
                     className="text-muted-foreground font-mono text-xs"
                     title={record.paymentId}
@@ -285,24 +286,24 @@ export function PaymentRecordsTable({
                       : record.paymentId}
                   </span>
                 </TableCell>
-                <TableCell className="py-4 text-center align-top tabular-nums">
+                <TableCell className="py-4 text-center align-baseline tabular-nums">
                   {record.stallId}
                 </TableCell>
-                <TableCell className="py-4 align-top">
+                <TableCell className="py-4 align-baseline">
                   <span className="text-muted-foreground text-sm capitalize">
                     {record.paymentType}
                   </span>
                 </TableCell>
-                <TableCell className="py-4 text-right align-top tabular-nums">
+                <TableCell className="py-4 text-right align-baseline tabular-nums">
                   {record.paymentAmount}
                 </TableCell>
-                <TableCell className="py-4 align-top">
+                <TableCell className="py-4 align-baseline">
                   <StatusBadge
                     label={record.paymentStatus ? 'Paid' : 'Pending'}
                     tone={record.paymentStatus ? 'settled' : 'action'}
                   />
                 </TableCell>
-                <TableCell className="py-4 align-top whitespace-nowrap tabular-nums">
+                <TableCell className="py-4 align-baseline whitespace-nowrap tabular-nums">
                   {formatDay(record.paymentDate as unknown as Date)}
                 </TableCell>
               </TableRow>

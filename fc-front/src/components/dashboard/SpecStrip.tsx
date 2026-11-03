@@ -34,7 +34,7 @@ export function SpecStrip({ value, unit, cells }: SpecStripProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-baseline gap-3">
-        <span className="text-4xl leading-none font-light tracking-tighter tabular-nums">
+        <span className="text-3xl leading-none font-light tracking-tighter tabular-nums">
           {value}
         </span>
         <span className="text-muted-foreground text-xs font-medium tracking-widest uppercase">

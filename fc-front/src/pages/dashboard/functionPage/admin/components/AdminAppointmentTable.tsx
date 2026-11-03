@@ -28,9 +28,8 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
+import { labelClass } from '@/components/dashboard/labelClass'
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // First column absorbs slack; 26/12/12/10 keep the request text readable and the
 // decision control at its own width.
@@ -244,8 +243,8 @@ export default function AdminAppointmentTable({
                   key={notification.notificationId}
                   className="group/row border-border hover:bg-muted/20"
                 >
-                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                    <div className="flex items-start gap-3">
+                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <div className="flex items-baseline gap-3">
                       <InitialsAvatar
                         name={user?.name ?? 'Unknown account'}
                         image={user?.image}
@@ -286,7 +285,7 @@ export default function AdminAppointmentTable({
                     </div>
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top whitespace-normal xl:table-cell"
+                    className="hidden py-5 align-baseline whitespace-normal xl:table-cell"
                     style={{ width: COLUMN_WIDTH.request }}
                   >
                     <span className="flex flex-col gap-1">
@@ -301,7 +300,7 @@ export default function AdminAppointmentTable({
                     </span>
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top xl:table-cell"
+                    className="hidden py-5 align-baseline xl:table-cell"
                     style={{ width: COLUMN_WIDTH.requested }}
                   >
                     <span className="text-sm tabular-nums">
@@ -309,7 +308,7 @@ export default function AdminAppointmentTable({
                     </span>
                   </TableCell>
                   <TableCell
-                    className="hidden py-5 align-top xl:table-cell"
+                    className="hidden py-5 align-baseline xl:table-cell"
                     style={{ width: COLUMN_WIDTH.status }}
                   >
                     <StatusBadge
@@ -321,7 +320,7 @@ export default function AdminAppointmentTable({
                       }
                     />
                   </TableCell>
-                  <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">
+                  <TableCell className="hidden py-5 pr-6 text-right align-baseline xl:table-cell">
                     <AdminAppointmentActionButton
                       appointmentId={notification.notificationId}
                       appointmentStatus={notification.notificationRead}

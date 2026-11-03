@@ -15,9 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import PaymentModal from '@/components/PaymentModal'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { labelClass } from '@/components/dashboard/labelClass'
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 type BillState = 'paid' | 'due' | 'none' | 'unset'
 

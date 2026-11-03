@@ -33,6 +33,7 @@ import PaymentModal from '@/components/PaymentModal'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
+import { labelClass } from '@/components/dashboard/labelClass'
 
 type PaymentIntentParams = {
   amount: number
@@ -40,8 +41,6 @@ type PaymentIntentParams = {
   userId: string
 }
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 export default function UserAppointmentTable() {
   const { data: session } = useSession()
@@ -262,23 +261,23 @@ export default function UserAppointmentTable() {
                   key={notification.notificationId}
                   className="border-border hover:bg-muted/20"
                 >
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-4 pl-6 align-baseline">
                     <InitialsAvatar
                       name={session?.user?.name ?? 'You'}
                       image={session?.user?.image}
                     />
                   </TableCell>
-                  <TableCell className="py-4 pr-4 align-top">
+                  <TableCell className="py-4 pr-4 align-baseline">
                     <span className="text-sm font-medium whitespace-normal">
                       {notification.notificationMessage}
                     </span>
                   </TableCell>
-                  <TableCell className="py-4 align-top">
+                  <TableCell className="py-4 align-baseline">
                     <span className="text-muted-foreground text-sm tabular-nums">
                       {formatDay(notification.appointmentDate)}
                     </span>
                   </TableCell>
-                  <TableCell className="py-4 align-top">
+                  <TableCell className="py-4 align-baseline">
                     <StatusBadge
                       label={status}
                       tone={
@@ -290,7 +289,7 @@ export default function UserAppointmentTable() {
                       }
                     />
                   </TableCell>
-                  <TableCell className="py-4 pr-6 text-right align-top">
+                  <TableCell className="py-4 pr-6 text-right align-baseline">
                     {approved && notification.stallNumber ? (
                       paid ? (
                         <StatusBadge label="Payment completed" tone="settled" />

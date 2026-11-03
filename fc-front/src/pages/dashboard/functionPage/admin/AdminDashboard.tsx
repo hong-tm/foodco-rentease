@@ -15,9 +15,8 @@ import NewTenantChart from './components/NewTenantChart'
 import StallRentalPaymentChart from './components/StallRentalPaymentChart'
 import StallUtilitiesChart from './components/StallUtilitiesChart'
 import { VacancyChart } from './components/VacancyChart'
+import { labelClass } from '@/components/dashboard/labelClass'
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const REMINDER_WINDOW_DAYS = 7

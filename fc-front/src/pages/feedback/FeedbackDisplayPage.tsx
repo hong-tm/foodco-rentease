@@ -44,9 +44,8 @@ import {
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { labelClass } from '@/components/dashboard/labelClass'
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the
 // action share is the delete control plus its cell padding. Ratios belong to
@@ -270,7 +269,7 @@ function FeedbackRow({
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <TableRow className="border-border/60 hover:bg-muted/30">
-        <TableCell className="py-4 pl-6 align-top whitespace-normal">
+        <TableCell className="py-4 pl-6 align-baseline whitespace-normal">
           <span className="text-sm whitespace-nowrap tabular-nums">
             {formatDay(feedback.createdAt)}
           </span>
@@ -292,18 +291,18 @@ function FeedbackRow({
           </div>
         </TableCell>
 
-        <TableCell className="hidden py-4 align-top whitespace-normal xl:table-cell">
+        <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
           <p className="text-sm font-medium tabular-nums">
             Stall {feedback.stall}
           </p>
           <p className="text-muted-foreground mt-1 text-xs">{stallName}</p>
         </TableCell>
 
-        <TableCell className="hidden py-4 align-top xl:table-cell">
+        <TableCell className="hidden py-4 align-baseline xl:table-cell">
           <Rating happiness={feedback.happiness} />
         </TableCell>
 
-        <TableCell className="hidden py-4 align-top whitespace-normal xl:table-cell">
+        <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
           <p className="text-sm break-words whitespace-pre-wrap">
             {feedback.feedbackContent || (
               <span className="text-muted-foreground">No message</span>
@@ -311,7 +310,7 @@ function FeedbackRow({
           </p>
         </TableCell>
 
-        <TableCell className="hidden py-4 pr-6 text-right align-top xl:table-cell">
+        <TableCell className="hidden py-4 pr-6 text-right align-baseline xl:table-cell">
           {trigger('hidden xl:inline-flex')}
         </TableCell>
       </TableRow>

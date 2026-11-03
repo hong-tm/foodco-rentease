@@ -19,12 +19,11 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
+import { labelClass } from '@/components/dashboard/labelClass'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const REMINDER_WINDOW_DAYS = 7
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // The table splits its width 40 / 20 / 22 / 18 across four columns. Only 40% has
 // a scale step (w-2/5); the other three stay explicit and page-scoped here, so no
@@ -204,8 +203,8 @@ export default function RentalsTable() {
                   key={`${user.id}-${stall.stallNumber}`}
                   className="group/row border-border hover:bg-muted/20"
                 >
-                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                    <div className="flex items-start gap-3">
+                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <div className="flex items-baseline gap-3">
                       <InitialsAvatar name={user.name} image={user.image} />
                       <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
                         <div className="flex min-w-0 flex-col gap-1">
@@ -239,7 +238,7 @@ export default function RentalsTable() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden py-5 align-top whitespace-normal xl:table-cell">
+                  <TableCell className="hidden py-5 align-baseline whitespace-normal xl:table-cell">
                     <p className="text-sm leading-none font-medium">
                       {stall.stallName}
                     </p>
@@ -247,7 +246,7 @@ export default function RentalsTable() {
                       Stall {stall.stallNumber} · {stall.stallSize} m²
                     </p>
                   </TableCell>
-                  <TableCell className="hidden py-5 align-top whitespace-normal xl:table-cell">
+                  <TableCell className="hidden py-5 align-baseline whitespace-normal xl:table-cell">
                     <p className="text-sm leading-none tabular-nums">
                       {leasePeriod(stall.startAt, stall.endAt)}
                     </p>
@@ -260,7 +259,7 @@ export default function RentalsTable() {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell className="hidden py-5 pr-6 text-right align-top xl:table-cell">
+                  <TableCell className="hidden py-5 pr-6 text-right align-baseline xl:table-cell">
                     {action}
                   </TableCell>
                 </TableRow>

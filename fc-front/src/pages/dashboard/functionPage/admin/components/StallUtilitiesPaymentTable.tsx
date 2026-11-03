@@ -27,11 +27,10 @@ import {
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
+import { labelClass } from '@/components/dashboard/labelClass'
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
-const labelClass =
-  'text-muted-foreground text-xs font-medium tracking-widest uppercase'
 
 // Seven columns split 12 / 22 / 10 / 11 / 13 / 11 / 21 across one ledger. Only
 // the tenant column takes a scale step (w-1/5 is 20%, close but not equal, so
@@ -276,7 +275,7 @@ export default function StallUtilitiesPaymentTable() {
                     key={payment.paymentId}
                     className="border-border hover:bg-muted/30"
                   >
-                    <TableCell className="before:bg-foreground relative py-4 pl-6 align-top whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
                       <p className="text-sm leading-none font-medium tabular-nums">
                         Stall {payment.stallId}
                       </p>
@@ -294,7 +293,7 @@ export default function StallUtilitiesPaymentTable() {
                       </div>
                     </TableCell>
 
-                    <TableCell className="hidden py-4 align-top whitespace-normal xl:table-cell">
+                    <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
                       <div className="flex items-center gap-2">
                         <InitialsAvatar
                           name={userName(payment.userId)}
@@ -306,29 +305,29 @@ export default function StallUtilitiesPaymentTable() {
                       </div>
                     </TableCell>
 
-                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
                       <span className="text-sm">
                         {typeLabel(payment.paymentType)}
                       </span>
                     </TableCell>
 
-                    <TableCell className="hidden py-4 text-right align-top xl:table-cell">
+                    <TableCell className="hidden py-4 text-right align-baseline xl:table-cell">
                       <span className="text-sm font-medium tabular-nums">
                         RM {money(payment.paymentAmount) ?? '—'}
                       </span>
                     </TableCell>
 
-                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
                       {status}
                     </TableCell>
 
-                    <TableCell className="hidden py-4 align-top xl:table-cell">
+                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
                       <span className="text-sm tabular-nums">
                         {formatDay(payment.paymentDate)}
                       </span>
                     </TableCell>
 
-                    <TableCell className="hidden py-4 pr-6 align-top xl:table-cell">
+                    <TableCell className="hidden py-4 pr-6 align-baseline xl:table-cell">
                       <span
                         className="text-muted-foreground font-mono text-xs"
                         title={payment.paymentId}
