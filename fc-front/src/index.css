@@ -196,6 +196,25 @@ code {
   textarea {
     caret-color: var(--primary);
   }
+
+  /* Touch: small controls keep their drawn size but get a 44px hit area
+     (R-VIS-025). Mouse pointers keep the drawn box. */
+  @media (pointer: coarse) {
+    /* Radix asChild renames a control's slot (<part>-trigger, form-control), so match those too. */
+    :is([data-slot='button'], [data-slot$='-trigger'], button[data-slot='form-control']):not([data-slot='tooltip-trigger']) {
+      position: relative;
+    }
+    :is([data-slot='button'], [data-slot$='-trigger'], button[data-slot='form-control']):not([data-slot='tooltip-trigger'])::after {
+      content: '';
+      position: absolute;
+      inset-block: min(0px, calc((100% - 44px) / 2));
+      inset-inline: min(0px, calc((100% - 44px) / 2));
+    }
+    /* Text fields have no pseudo-element; they grow to the touch floor. */
+    input:is([data-slot='input'], [data-slot='form-control']) {
+      min-height: 44px;
+    }
+  }
 }
 
 /* Chart series palette: five hues on the app's chart ramp. The base UI stays
