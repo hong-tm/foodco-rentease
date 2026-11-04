@@ -193,49 +193,79 @@ export function PaymentRecordsTable({
 
   return (
     <section aria-label={title} className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <SpecStrip
-            value={`RM ${rm(totalAmount)}`}
-            unit="in this view"
-            cells={[
-              { label: 'Settled', value: settledCount },
-              {
-                label: 'Pending',
-                value: pendingCount,
-                anomaly: pendingCount > 0,
-              },
-              { label: 'Records', value: filteredRecords.length },
-            ]}
-          />
-        </div>
-        <div className="flex gap-2">
-          {showMonthFilter && (
-            <MonthSelector
-              value={selectedMonth}
-              onValueChange={setSelectedMonth}
-            />
-          )}
-          <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-[180px]" aria-label="Filter by type">
-              <SelectValue placeholder="Filter by type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Payment Type</SelectLabel>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="rental">Rental</SelectItem>
-                <SelectItem value="electric">Electric</SelectItem>
-                <SelectItem value="water">Water</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <SpecStrip
+        value={`RM ${rm(totalAmount)}`}
+        unit="in this view"
+        cells={[
+          { label: 'Settled', value: settledCount },
+          {
+            label: 'Pending',
+            value: pendingCount,
+            attention: pendingCount > 0,
+          },
+          { label: 'Records', value: filteredRecords.length },
+        ]}
+        actions={
+          <>
+            {showMonthFilter && (
+              <MonthSelector
+                value={selectedMonth}
+                onValueChange={setSelectedMonth}
+              />
+            )}
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-[180px]" aria-label="Filter by type">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Payment Type</SelectLabel>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="rental">Rental</SelectItem>
+                  <SelectItem value="electric">Electric</SelectItem>
+                  <SelectItem value="water">Water</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </>
+        }
+      />
 
-      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
+      {/* Phones read one record as two lines; nothing is dropped. */}
+      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
+        {filteredRecords.map((record) => (
+          <li key={record.paymentId} className="flex flex-col gap-1 px-4 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="min-w-0 truncate text-sm font-medium">
+                {record.paymentUser?.name || 'Unknown User'}
+              </span>
+              <span className="text-sm font-medium whitespace-nowrap tabular-nums">
+                RM {record.paymentAmount}
+              </span>
+            </div>
+            <div className="text-muted-foreground flex items-center justify-between gap-3 text-xs tabular-nums">
+              <span className="min-w-0 truncate capitalize">
+                Stall {record.stallId} · {record.paymentType} ·{' '}
+                {formatDay(record.paymentDate as unknown as Date)}
+              </span>
+              <StatusBadge
+                label={record.paymentStatus ? 'Paid' : 'Pending'}
+                tone={record.paymentStatus ? 'settled' : 'action'}
+                className="shrink-0 text-xs"
+              />
+            </div>
+          </li>
+        ))}
+        {filteredRecords.length === 0 && (
+          <li className="text-muted-foreground px-4 py-8 text-center text-sm">
+            No records match these filters.
+          </li>
+        )}
+      </ul>
+
+      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border max-md:hidden">
         <Table>
-          <TableHeader className="border-border bg-muted/35 border-b">
+          <TableHeader className="border-border border-b">
             <TableRow className="hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 pl-6 text-left`}
@@ -253,7 +283,7 @@ export function PaymentRecordsTable({
                 Stall No.
               </TableHead>
               <TableHead
-                className={`type-label text-muted-foreground h-12 text-center`}
+                className={`type-label text-muted-foreground h-12 text-left`}
               >
                 Type
               </TableHead>
@@ -263,7 +293,7 @@ export function PaymentRecordsTable({
                 Amount (RM)
               </TableHead>
               <TableHead
-                className={`type-label text-muted-foreground h-12 text-center`}
+                className={`type-label text-muted-foreground h-12 text-left`}
               >
                 Status
               </TableHead>

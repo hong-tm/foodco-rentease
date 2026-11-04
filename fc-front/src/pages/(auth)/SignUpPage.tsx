@@ -113,7 +113,11 @@ export default function SignUpPage() {
                           Full Name
                         </FormLabel>
                         <FormControl>
-                          <Input id="name" placeholder="John Doe" {...field} />
+                          <Input
+                            id="name"
+                            placeholder="Nurul Aisyah"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

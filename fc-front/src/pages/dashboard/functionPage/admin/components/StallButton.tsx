@@ -60,7 +60,7 @@ export const StallButton: React.FC<
   const accessibleName = `Stall ${stall.stallNumber}, ${name ?? 'no name'}, ${stateLabel}`
 
   return (
-    <div className="min-w-0">
+    <div className="h-full min-w-0">
       <ResponsiveSheetDialog
         isOpen={isOpen}
         setIsOpen={(open) => onOpen(open ? stallId : null)}
@@ -82,33 +82,33 @@ export const StallButton: React.FC<
             variant="ghost"
             aria-label={accessibleName}
             className={cn(
-              'h-auto w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
-              state === 'vacant'
-                ? 'border-muted-foreground/50 bg-muted/20 hover:bg-muted/40 border-dashed'
-                : 'border-border bg-card hover:bg-muted/40',
-              state === 'ended' && 'border-destructive/60',
+              'h-full w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
+              state === 'vacant' &&
+                'border-primary bg-brand-soft hover:bg-brand-muted',
+              state === 'rented' && 'border-border bg-card hover:bg-muted/40',
+              state === 'ended' &&
+                'border-destructive bg-destructive-soft hover:bg-destructive-soft',
             )}
           >
             <span className="flex w-full items-center justify-between gap-2">
               <span className="text-sm leading-none font-semibold tabular-nums">
                 {stall.stallNumber}
               </span>
-              <span
-                aria-hidden="true"
-                className={cn(
-                  'size-2 shrink-0 rounded-full',
-                  state === 'vacant' && 'border-muted-foreground border',
-                  state === 'rented' && 'bg-series-1',
-                  state === 'ended' && 'bg-destructive',
-                )}
-              />
+              {state === 'vacant' ? (
+                <span className="text-brand-ink text-xs leading-none font-medium">
+                  Vacant
+                </span>
+              ) : null}
             </span>
             <span className="text-muted-foreground line-clamp-2 text-xs leading-snug">
               {name ?? 'No tenant yet'}
             </span>
             {state === 'ended' && (
-              <span className="text-destructive text-xs font-medium tabular-nums">
-                Lease ended {formatDay(stall.endAt)}
+              <span className="text-destructive-ink text-xs font-medium tabular-nums">
+                Ended{' '}
+                <span className="whitespace-nowrap">
+                  {formatDay(stall.endAt)}
+                </span>
               </span>
             )}
           </Button>

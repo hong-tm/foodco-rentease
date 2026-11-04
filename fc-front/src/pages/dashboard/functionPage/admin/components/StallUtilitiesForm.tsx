@@ -123,7 +123,7 @@ export default function StallUtilitiesForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
+          className="bg-card flex flex-col gap-4 rounded-xl border p-5"
         >
           <div className="grid w-full items-start gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
             <FormField

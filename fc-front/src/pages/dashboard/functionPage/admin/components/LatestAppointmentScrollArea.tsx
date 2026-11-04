@@ -53,7 +53,7 @@ export default function LatestAppointmentScrollArea() {
   const rest = all.length - visible.length
 
   return (
-    <Card className="flex h-full flex-col shadow-none">
+    <Card className="flex flex-1 flex-col shadow-none">
       <CardHeader>
         <CardTitle>Recent appointments</CardTitle>
         <CardDescription>Confirmed appointments coming up</CardDescription>

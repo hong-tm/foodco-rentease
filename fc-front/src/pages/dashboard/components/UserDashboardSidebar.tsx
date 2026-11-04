@@ -400,10 +400,12 @@ export default function UserDashboardSidebar({
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {userName ? `${userName}` : 'Loading user...'}
+                    FoodCo RentEase
                   </span>
-                  <span className="truncate text-xs">
-                    {userRole ? `${userRole}` : 'Loading role...'}
+                  <span className="text-muted-foreground truncate text-xs capitalize">
+                    {userRole
+                      ? `${userRole} workspace`
+                      : 'Loading workspace...'}
                   </span>
                 </div>
               </NavLink>

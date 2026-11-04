@@ -153,7 +153,7 @@ export default function StallUtilitiesPaymentTable() {
       className="flex min-w-0 flex-col gap-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="type-label text-muted-foreground">Payment records</h2>
+        <h2 className="type-section-title">Payment records</h2>
 
         <div className="flex flex-wrap gap-2">
           <Select value={selectedType} onValueChange={setSelectedType}>
@@ -206,7 +206,7 @@ export default function StallUtilitiesPaymentTable() {
               Utility charges with stall, tenant, amount, status and issue date
             </TableCaption>
             <TableHeader>
-              <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
+              <TableRow className="border-border border-b hover:bg-transparent">
                 <TableHead
                   className={`type-label text-muted-foreground h-12 pl-6`}
                 >

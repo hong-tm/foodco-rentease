@@ -12,6 +12,14 @@ function initials(name: string) {
     .toUpperCase()
 }
 
+// Each person keeps one pale tint of the chart ramp, so a name is recognisable
+// down a long list. Identity only: these never appear in a chart legend.
+function tint(name: string) {
+  let hash = 0
+  for (const char of name) hash = (hash * 31 + char.charCodeAt(0)) >>> 0
+  return `color-mix(in oklch, var(--series-${(hash % 5) + 1}) 22%, var(--card))`
+}
+
 type InitialsAvatarProps = {
   name: string
   image?: string | null
@@ -26,7 +34,10 @@ export function InitialsAvatar({
   return (
     <Avatar className={cn('size-7 shrink-0', className)}>
       <AvatarImage src={image ?? undefined} alt="" />
-      <AvatarFallback className="bg-muted text-foreground border-border border text-xs">
+      <AvatarFallback
+        className="text-foreground text-xs"
+        style={{ backgroundColor: tint(name) }}
+      >
         {initials(name)}
       </AvatarFallback>
     </Avatar>

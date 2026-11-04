@@ -104,32 +104,30 @@ export default function AdminAppointmentTable({
   ).length
 
   const toolbar = (
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div className="min-w-0 flex-1">
-        <SpecStrip
-          value={String(pendingCount)}
-          unit={pendingCount === 1 ? 'pending request' : 'pending requests'}
-          cells={[
-            { label: 'Showing', value: monthLabel },
-            { label: 'Upcoming', value: upcoming.length },
-            { label: 'Decided', value: upcoming.length - pendingCount },
-          ]}
-        />
-      </div>
-      <Select value={selectedMonth} onValueChange={onMonthChange}>
-        <SelectTrigger className="w-44" aria-label="Filter by month">
-          <SelectValue placeholder="Month" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{MONTHS[0].label}</SelectItem>
-          {MONTHS.slice(1).map((month) => (
-            <SelectItem key={month.value} value={month.value}>
-              {month.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <SpecStrip
+      value={String(pendingCount)}
+      unit={pendingCount === 1 ? 'pending request' : 'pending requests'}
+      cells={[
+        { label: 'Showing', value: monthLabel },
+        { label: 'Upcoming', value: upcoming.length },
+        { label: 'Decided', value: upcoming.length - pendingCount },
+      ]}
+      actions={
+        <Select value={selectedMonth} onValueChange={onMonthChange}>
+          <SelectTrigger className="w-44" aria-label="Filter by month">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">{MONTHS[0].label}</SelectItem>
+            {MONTHS.slice(1).map((month) => (
+              <SelectItem key={month.value} value={month.value}>
+                {month.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      }
+    />
   )
 
   if (isLoading) {
@@ -197,7 +195,7 @@ export default function AdminAppointmentTable({
             Upcoming appointment requests with decision status and action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
               >

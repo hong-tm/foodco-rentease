@@ -19,7 +19,7 @@ import Breadcrumbs from './components/breadcrumbs'
 export function DashboardLayoutPage() {
   const location = useLocation()
   const sidebarStateCookie = Cookies.get('sidebar_state')
-  const defaultOpen = sidebarStateCookie === 'true'
+  const defaultOpen = sidebarStateCookie !== 'false'
 
   const { data: session, isLoading, error } = useSession()
 
@@ -79,7 +79,10 @@ export function DashboardLayoutPage() {
         <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
           <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
           <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
-            <div className="flex min-w-0 items-center">
+            <span className="text-sm font-semibold md:hidden">
+              FoodCo RentEase
+            </span>
+            <div className="flex min-w-0 items-center max-md:hidden">
               <Breadcrumbs />
             </div>
             <div className="ml-auto flex items-center gap-2">

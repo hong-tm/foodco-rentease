@@ -11,9 +11,11 @@ type StatusBadgeProps = {
   className?: string
 }
 
-const badgeVariant = {
-  action: 'default',
-  blocked: 'destructive',
+// Pale tint with dark ink of the same hue: a pill marks a row without
+// out-shouting the data beside it.
+const badgeTone = {
+  action: 'bg-brand-muted text-brand-ink',
+  blocked: 'bg-destructive-soft text-destructive-ink',
 } as const
 
 export function StatusBadge({
@@ -35,7 +37,10 @@ export function StatusBadge({
 
   return (
     <span className={cn('flex items-center gap-2', className)}>
-      <Badge variant={badgeVariant[tone]} className="font-medium">
+      <Badge
+        variant="outline"
+        className={cn('border-transparent font-medium', badgeTone[tone])}
+      >
         {label}
       </Badge>
       {meta ? (

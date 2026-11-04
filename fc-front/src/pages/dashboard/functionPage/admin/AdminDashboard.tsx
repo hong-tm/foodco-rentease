@@ -2,7 +2,11 @@ import { getAllNotificationQueryOptions } from '@/api/notificationApi'
 import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
+import { Link } from 'react-router-dom'
 
+import { formatDay } from '@/lib/format'
+
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
@@ -53,6 +57,17 @@ export function AdminDashboard() {
     return left !== null && left >= 0 && left <= REMINDER_WINDOW_DAYS
   }).length
 
+  const soonest = stalls
+    .filter((stall) => {
+      const left = daysLeft(stall.endAt)
+      return left !== null && left >= 0
+    })
+    .sort(
+      (a, b) =>
+        new Date(a.endAt as Date).getTime() -
+        new Date(b.endAt as Date).getTime(),
+    )[0]
+
   const today = startOfDay(new Date())
   const pendingAppointments = (notifications ?? []).filter(
     (notification) =>
@@ -64,7 +79,21 @@ export function AdminDashboard() {
     <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
       <PageHeader
         title="Admin Dashboard"
-        description="Occupancy, payments and registrations across the platform"
+        description={
+          expiringSoon > 0 && soonest
+            ? `${expiringSoon} ${expiringSoon === 1 ? 'lease ends' : 'leases end'} within 7 days. ${soonest.stallName} is first, on ${formatDay(soonest.endAt)}.`
+            : 'Occupancy, payments and registrations across the food court.'
+        }
+        action={
+          expiringSoon > 0 ? (
+            <Button asChild>
+              <Link to="/dashboard/tenant-information">
+                Review {expiringSoon} ending{' '}
+                {expiringSoon === 1 ? 'lease' : 'leases'}
+              </Link>
+            </Button>
+          ) : null
+        }
       />
 
       <section aria-label="Status" className="flex flex-col gap-3">
@@ -94,7 +123,7 @@ export function AdminDashboard() {
               {
                 label: 'Appointments pending',
                 value: pendingAppointments,
-                anomaly: pendingAppointments > 0,
+                attention: pendingAppointments > 0,
               },
             ]}
           />
@@ -102,18 +131,18 @@ export function AdminDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="type-label text-muted-foreground">
-          Occupancy and bookings
-        </h2>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <VacancyChart />
+        <h2 className="type-section-title">Occupancy and bookings</h2>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="flex flex-col gap-4">
+            <VacancyChart />
+            <LatestAppointmentScrollArea />
+          </div>
           <LatestStallExpiryScrollArea />
-          <LatestAppointmentScrollArea />
         </div>
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="type-label text-muted-foreground">Payments</h2>
+        <h2 className="type-section-title">Payments</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <StallRentalPaymentChart />
           <StallUtilitiesChart />
@@ -121,9 +150,7 @@ export function AdminDashboard() {
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="type-label text-muted-foreground">
-          Growth and feedback
-        </h2>
+        <h2 className="type-section-title">Growth and feedback</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <NewTenantChart />
           <NewStartRentalChart />

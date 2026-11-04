@@ -169,7 +169,7 @@ export function FeedbackDisplayPage() {
           <TableCaption className="sr-only">
             Customer feedback with date, stall, rating and comment
           </TableCaption>
-          <TableHeader className="border-border/80 bg-muted/35 border-b max-xl:sr-only">
+          <TableHeader className="border-border border-b max-xl:sr-only">
             <TableRow className="hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 pl-6`}

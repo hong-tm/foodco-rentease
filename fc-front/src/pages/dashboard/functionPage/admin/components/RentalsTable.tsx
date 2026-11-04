@@ -153,7 +153,7 @@ export default function RentalsTable() {
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
               >
@@ -195,7 +195,7 @@ export default function RentalsTable() {
                     userStallId={stall.stallNumber}
                     userStallName={stall.stallName}
                     stallEndAt={stall.endAt}
-                    emphasis={needsAttention ? 'outline' : 'ghost'}
+                    emphasis={needsAttention ? 'default' : 'outline'}
                   />
                 )
               return (

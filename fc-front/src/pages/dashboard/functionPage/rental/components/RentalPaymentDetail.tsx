@@ -3,7 +3,7 @@ import { useSession } from '@/api/adminApi'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   ChartContainer,
@@ -86,7 +86,7 @@ export default function RentalPaymentDetail({
   return (
     <section aria-label="Payments" className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <h2 className="type-label text-muted-foreground">Payments</h2>
+        <h2 className="type-section-title">Payments</h2>
         <p className="text-muted-foreground text-sm">
           Settled rent and utilities by record month, last 6 months
         </p>
@@ -115,6 +115,13 @@ export default function RentalPaymentDetail({
                 axisLine={false}
                 tickMargin={8}
               />
+              <YAxis
+                width={44}
+                tickLine={false}
+                axisLine={false}
+                tickCount={4}
+                allowDecimals={false}
+              />
               <ChartTooltip
                 cursor={false}
                 content={
@@ -130,12 +137,14 @@ export default function RentalPaymentDetail({
                 dataKey="rental"
                 stackId="payments"
                 fill="var(--color-rental)"
+                maxBarSize={56}
               />
               <Bar
                 dataKey="utilities"
                 stackId="payments"
                 fill="var(--color-utilities)"
                 radius={[3, 3, 0, 0]}
+                maxBarSize={56}
               />
             </BarChart>
           </ChartContainer>

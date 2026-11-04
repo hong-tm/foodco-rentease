@@ -2,7 +2,7 @@ import React from 'react'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -103,6 +103,13 @@ export default function StallUtilitiesChart() {
             axisLine={false}
             tickMargin={8}
           />
+          <YAxis
+            width={44}
+            tickLine={false}
+            axisLine={false}
+            tickCount={4}
+            allowDecimals={false}
+          />
           <ChartTooltip
             cursor={false}
             content={
@@ -114,12 +121,18 @@ export default function StallUtilitiesChart() {
             }
           />
           <ChartLegend content={<ChartLegendContent />} />
-          <Bar dataKey="water" stackId="u" fill="var(--color-water)" />
+          <Bar
+            dataKey="water"
+            stackId="u"
+            fill="var(--color-water)"
+            maxBarSize={48}
+          />
           <Bar
             dataKey="electric"
             stackId="u"
             fill="var(--color-electric)"
             radius={[3, 3, 0, 0]}
+            maxBarSize={48}
           />
         </BarChart>
       </ChartContainer>

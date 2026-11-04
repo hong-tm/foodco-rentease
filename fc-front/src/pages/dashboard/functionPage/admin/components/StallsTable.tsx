@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import type { GetStallsResponse } from '@/api/stallApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
@@ -32,20 +32,23 @@ function Legend() {
   return (
     <ul className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
       <li className="flex items-center gap-1.5">
-        <span aria-hidden="true" className="bg-series-1 size-2 rounded-full" />
+        <span
+          aria-hidden="true"
+          className="bg-card border-border size-3 rounded-sm border"
+        />
         Rented
       </li>
       <li className="flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="border-muted-foreground size-2 rounded-full border"
+          className="bg-brand-soft border-primary size-3 rounded-sm border"
         />
         Vacant
       </li>
       <li className="flex items-center gap-1.5">
         <span
           aria-hidden="true"
-          className="bg-destructive size-2 rounded-full"
+          className="bg-destructive-soft border-destructive size-3 rounded-sm border"
         />
         Lease ended
       </li>
@@ -139,22 +142,22 @@ export default function StallsTable() {
             {isFloorPlan ? (
               <div className="flex flex-col gap-4">
                 <div className={rowClass}>{front.map(tile)}</div>
-                {pairs.map((pair, index) => (
-                  <div
-                    key={`pair-${index}`}
-                    className="grid grid-cols-2 items-center gap-3 lg:grid-cols-7"
-                  >
-                    {pair[0] ? tile(pair[0]) : <span />}
-                    <div className="col-span-5 flex items-center gap-3 max-lg:hidden">
-                      <span className="border-border flex-1 border-t border-dashed" />
-                      <span className="type-label text-foreground/70">
-                        Central aisle
-                      </span>
-                      <span className="border-border flex-1 border-t border-dashed" />
-                    </div>
-                    {pair[1] ? tile(pair[1]) : <span />}
+                {/* One aisle running the height of the three pairs. */}
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-7">
+                  <div className="bg-muted/50 text-muted-foreground flex items-center justify-center rounded-lg text-sm max-lg:hidden lg:col-span-5 lg:col-start-2 lg:row-span-3 lg:row-start-1">
+                    Central aisle
                   </div>
-                ))}
+                  {pairs.map((pair, index) => (
+                    <Fragment key={`pair-${index}`}>
+                      <div className="lg:col-start-1">
+                        {pair[0] ? tile(pair[0]) : null}
+                      </div>
+                      <div className="lg:col-start-7">
+                        {pair[1] ? tile(pair[1]) : null}
+                      </div>
+                    </Fragment>
+                  ))}
+                </div>
                 <div className={rowClass}>{back.map(tile)}</div>
               </div>
             ) : (

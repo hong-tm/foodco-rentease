@@ -5,10 +5,26 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/figtree-latin-wght-normal.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/figtree-latin-ext-wght-normal.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0100-02AF, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 body {
   @apply m-0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -31,6 +47,11 @@ code {
   --brand: oklch(0.62 0.19 42);
   /* Primary darkens the brand to 5.2:1 under white text. */
   --primary: oklch(from var(--brand) 0.55 c h);
+  /* Brand ladder: the full hue stays on small marks, these pale steps carry
+     areas (the active nav row, vacant stalls, action pills). */
+  --brand-soft: oklch(from var(--brand) 0.97 0.025 h);
+  --brand-muted: oklch(from var(--brand) 0.92 0.06 h);
+  --brand-ink: oklch(from var(--brand) 0.42 0.12 h);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -42,6 +63,8 @@ code {
   --destructive-foreground: oklch(0.577 0.245 27.325);
   /* Success: confirmation state. 3.2:1 on white, enough for an icon (WCAG 1.4.11). */
   --success: oklch(0.627 0.194 149.214);
+  --destructive-soft: oklch(0.96 0.03 25);
+  --destructive-ink: oklch(0.42 0.16 25);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.871 0.006 286.286);
@@ -51,12 +74,12 @@ code {
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(from var(--brand) 0.985 0.004 h);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
   --sidebar-primary: oklch(0.21 0.006 285.885);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.871 0.006 286.286);
 }
@@ -70,18 +93,23 @@ code {
   --popover-foreground: oklch(0.985 0 0);
   --brand: oklch(0.72 0.17 45);
   --primary: var(--brand);
+  --brand-soft: oklch(from var(--brand) 0.27 0.045 h);
+  --brand-muted: oklch(from var(--brand) 0.34 0.07 h);
+  --brand-ink: oklch(from var(--brand) 0.86 0.09 h);
   --primary-foreground: oklch(0.21 0.006 285.885);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
+  --muted-foreground: oklch(0.76 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.723 0.219 149.579);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
+  --destructive-soft: oklch(0.28 0.06 25);
+  --destructive-ink: oklch(0.85 0.1 25);
+  --border: oklch(0.31 0.006 286.033);
+  --input: oklch(0.31 0.006 286.033);
   --ring: oklch(0.442 0.017 285.786);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -92,14 +120,19 @@ code {
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
 @theme inline {
   --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-ink: var(--brand-ink);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-destructive-ink: var(--destructive-ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -190,7 +223,7 @@ code {
    (R-VIS-014 allows up to ~1.35x), so retuning --type-title keeps the ratio. */
 :root {
   --type-title: 1.5rem;
-  --type-stat-ratio: 1.25;
+  --type-stat-ratio: 1.5;
 }
 
 @utility type-display {
@@ -216,18 +249,16 @@ code {
 @utility type-stat {
   font-size: calc(var(--type-title) * var(--type-stat-ratio));
   line-height: 1;
-  font-weight: 300;
-  letter-spacing: -0.05em;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
-/* Micro-capital structural label: table headers, strip labels, section labels. */
+/* Structural label in sentence case: table headers and strip labels. */
 @utility type-label {
   font-size: 0.75rem;
   line-height: 1rem;
   font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
 }
 
 @layer base {

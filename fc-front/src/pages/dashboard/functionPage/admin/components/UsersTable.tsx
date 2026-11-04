@@ -105,7 +105,7 @@ export default function UsersTable() {
             Accounts with role, status, join date and management actions
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 pl-6`}
                 style={{ width: COLUMN_WIDTH.account }}

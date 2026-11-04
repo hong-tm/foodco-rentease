@@ -30,7 +30,7 @@ export default function LatestStallExpiryScrollArea() {
   })
 
   const all = stalls?.stall ?? []
-  const visible = all.slice(0, 5)
+  const visible = all.slice(0, 8)
   const rest = all.length - visible.length
 
   return (
@@ -72,7 +72,7 @@ export default function LatestStallExpiryScrollArea() {
           </p>
         )}
         {rest > 0 ? (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground mt-auto text-xs">
             +{rest} more ·{' '}
             <Link
               to="/dashboard/tenant-information"

@@ -117,7 +117,7 @@ export default function NewTenantChart() {
         <CardDescription>Registration counts by month</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="h-[220px] w-full">
           <BarChart
             accessibilityLayer
             data={chartData}

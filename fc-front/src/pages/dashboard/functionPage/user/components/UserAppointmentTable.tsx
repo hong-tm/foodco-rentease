@@ -219,7 +219,7 @@ export default function UserAppointmentTable() {
             Your appointment requests with status and payment action
           </TableCaption>
           <TableHeader>
-            <TableRow className="border-border bg-muted/35 border-b hover:bg-transparent">
+            <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-10 pl-6`}
               >

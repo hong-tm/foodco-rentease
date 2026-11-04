@@ -1,7 +1,7 @@
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUpIcon } from 'lucide-react'
-import { LabelList, RadialBar, RadialBarChart } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -40,7 +40,7 @@ export function NewStartRentalChart() {
       return {
         month: date.toLocaleString('en-US', { month: 'long' }),
         value: 0,
-        fill: `var(--series-${(i % 5) + 1})`,
+        shortMonth: date.toLocaleString('en-US', { month: 'short' }),
       }
     })
 
@@ -82,16 +82,9 @@ export function NewStartRentalChart() {
 
   const trendingPercentage = calculateTrending()
 
-  const chartConfig = chartData.reduce(
-    (acc: Record<string, { label: string; color: string }>, item) => {
-      acc[item.month] = {
-        label: item.month,
-        color: item.fill,
-      }
-      return acc
-    },
-    {},
-  ) satisfies ChartConfig
+  const chartConfig = {
+    value: { label: 'New rentals', color: 'var(--series-1)' },
+  } satisfies ChartConfig
 
   const getDateRange = () => {
     const currentDate = new Date()
@@ -114,7 +107,7 @@ export function NewStartRentalChart() {
   if (!hasData) {
     return (
       <Card className="flex flex-col">
-        <CardHeader className="items-center pb-0">
+        <CardHeader>
           <CardTitle>New Rental Starts</CardTitle>
           <CardDescription>{getDateRange()}</CardDescription>
         </CardHeader>
@@ -127,33 +120,39 @@ export function NewStartRentalChart() {
 
   return (
     <Card className="flex flex-col shadow-none">
-      <CardHeader className="items-center pb-0">
+      <CardHeader>
         <CardTitle>New Rental Starts</CardTitle>
         <CardDescription>{getDateRange()}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <RadialBarChart data={chartData} innerRadius={30} outerRadius={100}>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel nameKey="month" />}
+      <CardContent className="flex-1">
+        <ChartContainer config={chartConfig} className="h-[220px] w-full">
+          <BarChart accessibilityLayer data={chartData} margin={{ top: 8 }}>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="shortMonth"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
             />
-            <RadialBar dataKey="value" background>
-              <LabelList
-                position="insideStart"
-                dataKey="month"
-                className="fill-white capitalize mix-blend-luminosity"
-                fontSize={11}
-              />
-            </RadialBar>
-          </RadialBarChart>
+            <YAxis
+              width={28}
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+              tickCount={4}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="value"
+              fill="var(--color-value)"
+              radius={3}
+              maxBarSize={48}
+            />
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
+      <CardFooter className="text-muted-foreground text-sm">
+        <div className="flex items-center gap-2">
           {peak &&
             peak.value > 0 &&
             `Most starts in ${peak.month} with ${peak.value} ${

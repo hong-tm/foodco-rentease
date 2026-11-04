@@ -2,7 +2,7 @@ import React from 'react'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -93,6 +93,13 @@ export default function StallRentalPaymentChart() {
             axisLine={false}
             tickMargin={8}
           />
+          <YAxis
+            width={44}
+            tickLine={false}
+            axisLine={false}
+            tickCount={4}
+            allowDecimals={false}
+          />
           <ChartTooltip
             cursor={false}
             content={
@@ -101,7 +108,12 @@ export default function StallRentalPaymentChart() {
               />
             }
           />
-          <Bar dataKey="rental" fill="var(--color-rental)" radius={3} />
+          <Bar
+            dataKey="rental"
+            fill="var(--color-rental)"
+            radius={3}
+            maxBarSize={48}
+          />
         </BarChart>
       </ChartContainer>
     </Shell>
