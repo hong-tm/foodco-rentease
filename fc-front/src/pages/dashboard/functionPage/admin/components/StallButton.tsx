@@ -84,7 +84,7 @@ export const StallButton: React.FC<
             className={cn(
               'h-full w-full min-w-0 flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left whitespace-normal transition-colors',
               state === 'vacant' &&
-                'border-primary bg-brand-soft hover:bg-brand-muted',
+                'border-border bg-brand-soft hover:bg-brand-muted',
               state === 'rented' && 'border-border bg-card hover:bg-muted/40',
               state === 'ended' &&
                 'border-border bg-muted/40 hover:bg-muted/60',
