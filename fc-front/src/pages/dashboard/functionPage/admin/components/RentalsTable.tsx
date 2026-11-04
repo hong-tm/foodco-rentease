@@ -195,7 +195,9 @@ export default function RentalsTable() {
                     userStallId={stall.stallNumber}
                     userStallName={stall.stallName}
                     stallEndAt={stall.endAt}
-                    emphasis={needsAttention ? 'default' : 'outline'}
+                    emphasis={
+                      left !== null && left <= 0 ? 'default' : 'outline'
+                    }
                   />
                 )
               return (

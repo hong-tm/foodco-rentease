@@ -19,6 +19,7 @@ import {
 import { toast } from 'sonner'
 
 import { formatDay } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
 import {
   AlertDialog,
@@ -159,7 +160,14 @@ export function FeedbackDisplayPage() {
           cells={counts.map(({ value, label, count }) => ({
             label,
             value: count,
-            anomaly: value <= 2 && count > 0,
+            tone:
+              value === 4
+                ? 'success'
+                : value === 3
+                  ? 'muted'
+                  : value === 2
+                    ? 'warning'
+                    : 'destructive',
           }))}
         />
       </section>
@@ -229,12 +237,19 @@ function Rating({ happiness }: { happiness: number }) {
   if (!rating) {
     return <span className="text-muted-foreground text-xs">No rating</span>
   }
+  // The icon carries the band's colour so the column can be scanned by
+  // sentiment; the label stays neutral (chromatic data, neutral chrome).
+  const tone =
+    rating.value === 4
+      ? 'text-success-ink'
+      : rating.value === 3
+        ? 'text-foreground'
+        : rating.value === 2
+          ? 'text-warning-ink'
+          : 'text-destructive'
   return (
     <span className="flex items-center gap-2">
-      <rating.Icon
-        className="text-muted-foreground size-4"
-        aria-hidden="true"
-      />
+      <rating.Icon className={cn('size-4', tone)} aria-hidden="true" />
       <span className="text-sm">{rating.label}</span>
     </span>
   )
@@ -259,7 +274,7 @@ function FeedbackRow({
         className={`text-muted-foreground hover:text-destructive -ml-2 px-2 ${className}`}
       >
         <Trash2Icon className="size-4" aria-hidden="true" />
-        Delete
+        <span className="sr-only">Delete this feedback</span>
       </Button>
     </AlertDialogTrigger>
   )

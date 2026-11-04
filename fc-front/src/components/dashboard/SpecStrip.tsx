@@ -9,6 +9,8 @@ export type SpecCell = {
   anomaly?: boolean
   /** Something waits on the reader: a brand mark on the value. */
   attention?: boolean
+  /** A severity-ordered mark: every cell in the strip gets the same dot. */
+  tone?: 'success' | 'warning' | 'destructive' | 'muted'
 }
 
 type SpecStripProps = {
@@ -59,7 +61,18 @@ export function SpecStrip({ value, unit, cells, actions }: SpecStripProps) {
           >
             <dt className="type-label text-muted-foreground">{cell.label}</dt>
             <dd className="type-section-title flex items-baseline gap-2 tabular-nums max-sm:text-right">
-              {cell.anomaly || cell.attention ? (
+              {cell.tone ? (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'size-2 shrink-0 self-center rounded-full',
+                    cell.tone === 'success' && 'bg-success-ink',
+                    cell.tone === 'warning' && 'bg-warning-ink',
+                    cell.tone === 'destructive' && 'bg-destructive',
+                    cell.tone === 'muted' && 'bg-muted-foreground/60',
+                  )}
+                />
+              ) : cell.anomaly || cell.attention ? (
                 <span
                   aria-hidden="true"
                   className={cn(

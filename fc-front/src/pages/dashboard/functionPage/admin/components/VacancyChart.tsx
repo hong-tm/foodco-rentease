@@ -22,7 +22,7 @@ const FLOOR_PLAN_SIZE = FRONT_ROW * 2 + AISLE_PAIRS * 2
 
 const CELL: Record<StallState, string> = {
   rented: 'bg-muted text-muted-foreground',
-  vacant: 'bg-primary text-primary-foreground',
+  vacant: 'border border-primary bg-brand-soft text-brand-ink',
   ended: 'bg-destructive-soft text-destructive-ink',
 }
 

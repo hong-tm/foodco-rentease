@@ -165,15 +165,21 @@ export default function UsersTable() {
                             {user.name}
                           </p>
                           <p className="text-muted-foreground text-xs">
-                            {user.email} · {user.phone ? user.phone : 'N/A'}
+                            {user.email} ·{' '}
+                            <span className="whitespace-nowrap tabular-nums">
+                              {user.phone ? user.phone : 'N/A'}
+                            </span>
                           </p>
                           {!user.emailVerified && (
                             <p className="text-muted-foreground text-xs">
                               Unverified
                             </p>
                           )}
-                          <p className="mt-1 flex flex-wrap items-center gap-2 text-xs xl:hidden">
+                          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs xl:hidden">
                             <span className="capitalize">{user.role}</span>
+                            <span aria-hidden="true" className="text-border">
+                              |
+                            </span>
                             <span className="text-muted-foreground tabular-nums">
                               Joined {formatDay(user.createdAt)}
                             </span>

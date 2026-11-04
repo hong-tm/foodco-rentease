@@ -116,7 +116,10 @@ export default function RentalPaymentDetail({
                 tickMargin={8}
               />
               <YAxis
-                width={44}
+                width={52}
+                tickFormatter={(v: number) =>
+                  'RM ' + new Intl.NumberFormat('en-MY').format(v)
+                }
                 tickLine={false}
                 axisLine={false}
                 tickCount={4}

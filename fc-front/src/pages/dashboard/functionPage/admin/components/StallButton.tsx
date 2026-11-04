@@ -87,7 +87,7 @@ export const StallButton: React.FC<
                 'border-primary bg-brand-soft hover:bg-brand-muted',
               state === 'rented' && 'border-border bg-card hover:bg-muted/40',
               state === 'ended' &&
-                'border-destructive bg-destructive-soft hover:bg-destructive-soft',
+                'border-border bg-muted/40 hover:bg-muted/60',
             )}
           >
             <span className="flex w-full items-center justify-between gap-2">
@@ -100,11 +100,13 @@ export const StallButton: React.FC<
                 </span>
               ) : null}
             </span>
-            <span className="text-foreground/80 line-clamp-2 text-xs leading-snug">
-              {name ?? 'No tenant yet'}
+            <span className="text-foreground/80 line-clamp-2 text-sm leading-snug">
+              {state === 'vacant' && name
+                ? `Previously ${name}`
+                : (name ?? 'No tenant yet')}
             </span>
             {state === 'ended' && (
-              <span className="text-destructive-ink text-xs font-medium tabular-nums">
+              <span className="border-destructive/30 text-destructive-ink rounded-md border px-1.5 py-0.5 text-xs font-medium tabular-nums">
                 Ended{' '}
                 <span className="whitespace-nowrap">
                   {formatDay(stall.endAt)}

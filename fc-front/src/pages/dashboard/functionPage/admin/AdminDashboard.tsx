@@ -121,10 +121,6 @@ export function AdminDashboard() {
             unit="occupancy"
             cells={[
               {
-                label: 'Rented',
-                value: `${rentedStalls}/${totalStalls}`,
-              },
-              {
                 label: 'Due within 7 days',
                 value: expiringSoon,
                 anomaly: expiringSoon > 0,

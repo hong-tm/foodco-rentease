@@ -155,6 +155,10 @@ export default function UserAppointmentTable() {
     (notification) => notification.notificationRead === false,
   ).length
 
+  const vacantStalls = (stalls?.stall ?? [])
+    .filter((s) => !s.stallOwner)
+    .slice(0, 3)
+
   const hasActions = appointments.some(
     (notification) =>
       notification.notificationRead === true &&
@@ -268,8 +272,10 @@ export default function UserAppointmentTable() {
                   className="border-border hover:bg-muted/20"
                 >
                   <TableCell className="py-4 pr-4 pl-6 align-baseline">
-                    <span className="text-sm font-medium whitespace-normal">
-                      {notification.notificationMessage}
+                    <span className="text-sm font-medium">
+                      {notification.stallNumber
+                        ? `Stall ${notification.stallNumber} · viewing`
+                        : notification.notificationMessage}
                     </span>
                   </TableCell>
                   <TableCell className="py-4 align-baseline">
@@ -325,6 +331,30 @@ export default function UserAppointmentTable() {
           </TableBody>
         </Table>
       </div>
+
+      {vacantStalls.length > 0 && (
+        <div className="border-border flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border p-5">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Looking for a stall?</p>
+            <p className="text-muted-foreground text-sm">
+              {vacantStalls.length} vacant unit
+              {vacantStalls.length === 1 ? '' : 's'} are open for viewing.
+              Message the office to arrange one.
+            </p>
+          </div>
+          <ul className="text-muted-foreground flex flex-wrap gap-2">
+            {vacantStalls.map((s) => (
+              <li
+                key={s.stallNumber}
+                className="border-border bg-muted/40 rounded-lg border px-3 py-1.5 text-sm tabular-nums"
+              >
+                Stall {s.stallNumber}
+                {s.stallSize ? ' · ' + s.stallSize + ' m²' : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {clientSecret && selectedNotification && (
         <PaymentModal
