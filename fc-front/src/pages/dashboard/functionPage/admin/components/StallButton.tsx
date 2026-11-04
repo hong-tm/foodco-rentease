@@ -100,7 +100,7 @@ export const StallButton: React.FC<
                 </span>
               ) : null}
             </span>
-            <span className="text-muted-foreground line-clamp-2 text-xs leading-snug">
+            <span className="text-foreground/80 line-clamp-2 text-xs leading-snug">
               {name ?? 'No tenant yet'}
             </span>
             {state === 'ended' && (

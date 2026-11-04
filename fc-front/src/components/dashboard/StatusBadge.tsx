@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 import { Badge } from '@/components/ui/badge'
 
-type StatusTone = 'action' | 'blocked' | 'settled'
+type StatusTone = 'action' | 'warning' | 'blocked' | 'settled'
 
 type StatusBadgeProps = {
   label: string
@@ -15,6 +15,7 @@ type StatusBadgeProps = {
 // out-shouting the data beside it.
 const badgeTone = {
   action: 'bg-brand-muted text-brand-ink',
+  warning: 'bg-warning-soft text-warning-ink',
   blocked: 'bg-destructive-soft text-destructive-ink',
 } as const
 
@@ -26,10 +27,17 @@ export function StatusBadge({
 }: StatusBadgeProps) {
   if (tone === 'settled') {
     return (
-      <span className={cn('text-muted-foreground text-sm', className)}>
-        {label}
+      <span className={cn('flex items-center gap-2', className)}>
+        <Badge
+          variant="outline"
+          className="bg-success-soft text-success-ink border-transparent font-medium"
+        >
+          {label}
+        </Badge>
         {meta ? (
-          <span className="ml-2 text-xs tabular-nums">{meta}</span>
+          <span className="text-muted-foreground text-xs tabular-nums">
+            {meta}
+          </span>
         ) : null}
       </span>
     )

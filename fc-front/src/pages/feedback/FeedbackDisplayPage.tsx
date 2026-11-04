@@ -43,7 +43,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 
 // Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the
 // action share is the delete control plus its cell padding. Ratios belong to
@@ -153,7 +153,7 @@ export function FeedbackDisplayPage() {
   return (
     <Shell>
       <section aria-label="Rating breakdown">
-        <SpecStrip
+        <SummaryLine
           value={String(feedbacks.length)}
           unit={feedbacks.length === 1 ? 'comment' : 'comments'}
           cells={counts.map(({ value, label, count }) => ({

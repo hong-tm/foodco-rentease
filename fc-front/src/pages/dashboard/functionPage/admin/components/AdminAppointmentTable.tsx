@@ -24,13 +24,17 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import AdminAppointmentActionButton from './AdminAppointmentActionButton'
 
 // First column absorbs slack; 26/12/12/10 keep the request text readable and the
 // decision control at its own width.
+// The booking form writes this sentence itself; it says nothing the stall
+// number does not. A message anyone typed by hand stays visible.
+const GENERATED_REQUEST = /^I want to make (an )?appointment for stall \d+\.?$/i
+
 const COLUMN_WIDTH = {
   request: '26%',
   requested: '12%',
@@ -104,11 +108,10 @@ export default function AdminAppointmentTable({
   ).length
 
   const toolbar = (
-    <SpecStrip
+    <SummaryLine
       value={String(pendingCount)}
       unit={pendingCount === 1 ? 'pending request' : 'pending requests'}
       cells={[
-        { label: 'Showing', value: monthLabel },
         { label: 'Upcoming', value: upcoming.length },
         { label: 'Decided', value: upcoming.length - pendingCount },
       ]}
@@ -194,7 +197,7 @@ export default function AdminAppointmentTable({
           <TableCaption className="sr-only">
             Upcoming appointment requests with decision status and action
           </TableCaption>
-          <TableHeader>
+          <TableHeader className="max-xl:sr-only">
             <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
@@ -256,7 +259,11 @@ export default function AdminAppointmentTable({
                             {user?.email ?? 'No email on file'}
                           </p>
                           <p className="text-muted-foreground mt-1 text-xs xl:hidden">
-                            {notification.notificationMessage}
+                            {GENERATED_REQUEST.test(
+                              notification.notificationMessage,
+                            )
+                              ? `Stall ${notification.notificationMessage.match(/stall (\d+)/i)?.[1]}`
+                              : notification.notificationMessage}
                           </p>
                           <p className="mt-1 flex flex-wrap items-center gap-2 text-xs xl:hidden">
                             <span className="text-muted-foreground tabular-nums">
@@ -292,9 +299,13 @@ export default function AdminAppointmentTable({
                           ? `Stall ${notification.notificationMessage.match(/stall (\d+)/i)?.[1]}`
                           : 'Appointment'}
                       </span>
-                      <span className="text-muted-foreground text-xs">
-                        {notification.notificationMessage}
-                      </span>
+                      {GENERATED_REQUEST.test(
+                        notification.notificationMessage,
+                      ) ? null : (
+                        <span className="text-muted-foreground text-xs">
+                          {notification.notificationMessage}
+                        </span>
+                      )}
                     </span>
                   </TableCell>
                   <TableCell

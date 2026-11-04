@@ -5,7 +5,7 @@ import {
   TrendingDownIcon,
   TrendingUpIcon,
 } from 'lucide-react'
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -74,7 +74,7 @@ export default function FeedbackHapinessLineChart({
 
   if (!hasData) {
     return (
-      <Card className={className}>
+      <Card className={className ? `${className} gap-0` : 'gap-0'}>
         <CardHeader>
           <CardTitle>Stall Happiness</CardTitle>
           <CardDescription>
@@ -98,10 +98,10 @@ export default function FeedbackHapinessLineChart({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="overflow-x-auto px-2 sm:p-6">
+      <CardContent className="flex flex-1 flex-col overflow-x-auto px-2 pt-6 pb-0 sm:px-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full min-w-[500px]"
+          className="aspect-auto h-full min-h-[250px] w-full min-w-[500px]"
         >
           <BarChart
             accessibilityLayer
@@ -122,6 +122,13 @@ export default function FeedbackHapinessLineChart({
               interval={0}
               tickFormatter={(value) => `${value}`}
             />
+            <YAxis
+              width={32}
+              tickLine={false}
+              axisLine={false}
+              tickCount={4}
+              allowDecimals={false}
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -134,6 +141,7 @@ export default function FeedbackHapinessLineChart({
               dataKey="totalHappiness"
               fill="var(--color-happiness)"
               radius={3}
+              maxBarSize={48}
             />
           </BarChart>
         </ChartContainer>

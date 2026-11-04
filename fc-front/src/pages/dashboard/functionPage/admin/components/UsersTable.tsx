@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { AdminActionButton } from './AdminActionButton'
@@ -84,7 +84,7 @@ export default function UsersTable() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SpecStrip
+      <SummaryLine
         value={String(users.length)}
         unit={users.length === 1 ? 'account' : 'accounts'}
         cells={[
@@ -104,7 +104,7 @@ export default function UsersTable() {
           <TableCaption className="sr-only">
             Accounts with role, status, join date and management actions
           </TableCaption>
-          <TableHeader>
+          <TableHeader className="max-xl:sr-only">
             <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 pl-6`}

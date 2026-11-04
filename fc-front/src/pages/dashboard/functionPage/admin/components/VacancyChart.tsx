@@ -32,7 +32,7 @@ function Cell({ stall }: { stall: StallUserAttributes }) {
     <span
       title={`Stall ${stall.stallNumber}: ${state}`}
       className={cn(
-        'flex h-8 items-center justify-center rounded-md text-xs font-medium tabular-nums',
+        'flex h-11 items-center justify-center rounded-md text-sm font-medium tabular-nums',
         CELL[state],
       )}
     >
@@ -99,7 +99,7 @@ export function VacancyChart() {
           {vacant} vacant of {stalls.length} stalls.{' '}
           <Link
             to="/dashboard/stall-availability"
-            className="hover:text-foreground underline underline-offset-4"
+            className="hover:text-foreground -my-3 inline-block py-3 underline underline-offset-4"
           >
             Open the stall board
           </Link>

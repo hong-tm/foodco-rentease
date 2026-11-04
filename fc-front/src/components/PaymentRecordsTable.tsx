@@ -3,6 +3,7 @@ import { useSession } from '@/api/adminApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useMutation } from '@tanstack/react-query'
 import { FileDownIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
@@ -28,7 +29,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type MonthSelectorProps = {
@@ -87,6 +88,9 @@ export function PaymentRecordsTable({
 }: PaymentRecordsTableProps) {
   const { data: session } = useSession()
   const isRental = session?.user?.role === 'rental'
+  // Everyone but an admin sees only their own records: a name column would
+  // repeat them on every row.
+  const showUser = session?.user?.role === 'admin'
 
   const [selectedMonth, setSelectedMonth] = useState<string>('all')
   const [selectedType, setSelectedType] = useState<string>('all')
@@ -191,9 +195,29 @@ export function PaymentRecordsTable({
     )
   }
 
+  if (records.length === 0) {
+    return (
+      <section
+        aria-label={title}
+        className="bg-card flex flex-col items-start gap-3 rounded-xl border p-6"
+      >
+        <h2 className="type-section-title">No payments yet</h2>
+        <p className="text-muted-foreground max-w-prose text-sm">
+          Rent and utility payments appear here once a stall is on your account
+          and its first charge is issued.
+        </p>
+        {session?.user?.role === 'user' ? (
+          <Button asChild>
+            <Link to="/dashboard/stall-availability">See available stalls</Link>
+          </Button>
+        ) : null}
+      </section>
+    )
+  }
+
   return (
     <section aria-label={title} className="flex flex-col gap-6">
-      <SpecStrip
+      <SummaryLine
         value={`RM ${rm(totalAmount)}`}
         unit="in this view"
         cells={[
@@ -236,8 +260,10 @@ export function PaymentRecordsTable({
         {filteredRecords.map((record) => (
           <li key={record.paymentId} className="flex flex-col gap-1 px-4 py-3">
             <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 truncate text-sm font-medium">
-                {record.paymentUser?.name || 'Unknown User'}
+              <span className="min-w-0 truncate text-sm font-medium capitalize">
+                {showUser
+                  ? record.paymentUser?.name || 'Unknown User'
+                  : `${record.paymentType} · stall ${record.stallId}`}
               </span>
               <span className="text-sm font-medium whitespace-nowrap tabular-nums">
                 RM {record.paymentAmount}
@@ -267,13 +293,15 @@ export function PaymentRecordsTable({
         <Table>
           <TableHeader className="border-border border-b">
             <TableRow className="hover:bg-transparent">
+              {showUser ? (
+                <TableHead
+                  className={`type-label text-muted-foreground h-12 pl-6 text-left`}
+                >
+                  User
+                </TableHead>
+              ) : null}
               <TableHead
-                className={`type-label text-muted-foreground h-12 pl-6 text-left`}
-              >
-                User
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-left`}
+                className={`type-label text-muted-foreground h-12 text-left ${showUser ? '' : 'pl-6'}`}
               >
                 Payment ID
               </TableHead>
@@ -308,7 +336,7 @@ export function PaymentRecordsTable({
             {filteredRecords.length === 0 && (
               <TableRow className="hover:bg-transparent">
                 <TableCell
-                  colSpan={7}
+                  colSpan={showUser ? 7 : 6}
                   className="text-muted-foreground py-10 text-center text-sm whitespace-normal"
                 >
                   {records.length === 0
@@ -322,18 +350,22 @@ export function PaymentRecordsTable({
                 key={record.paymentId}
                 className="group/row border-border hover:bg-muted/20"
               >
-                <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                  <div className="flex items-center gap-2">
-                    <InitialsAvatar
-                      name={record.paymentUser?.name ?? 'Unknown'}
-                      image={record.paymentUser?.image}
-                    />
-                    <span className="text-sm font-medium">
-                      {record.paymentUser?.name || 'Unknown User'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="py-4 align-baseline">
+                {showUser ? (
+                  <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <div className="flex items-center gap-2">
+                      <InitialsAvatar
+                        name={record.paymentUser?.name ?? 'Unknown'}
+                        image={record.paymentUser?.image}
+                      />
+                      <span className="text-sm font-medium">
+                        {record.paymentUser?.name || 'Unknown User'}
+                      </span>
+                    </div>
+                  </TableCell>
+                ) : null}
+                <TableCell
+                  className={`py-4 align-baseline ${showUser ? '' : 'pl-6'}`}
+                >
                   <span
                     className="text-muted-foreground font-mono text-xs"
                     title={record.paymentId}

@@ -104,7 +104,7 @@ export default function StallsTable() {
   )
 
   const rowClass = isFloorPlan
-    ? 'grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7'
+    ? 'contents lg:grid lg:grid-cols-7 lg:gap-3'
     : 'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5'
 
   const front = stalls.slice(0, FRONT_ROW)
@@ -140,10 +140,10 @@ export default function StallsTable() {
         <TooltipProvider>
           <div className="border-border rounded-xl border p-4 sm:p-6">
             {isFloorPlan ? (
-              <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:flex lg:flex-col lg:gap-4">
                 <div className={rowClass}>{front.map(tile)}</div>
                 {/* One aisle running the height of the three pairs. */}
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-7">
+                <div className="contents lg:grid lg:grid-cols-7 lg:gap-3">
                   <div className="bg-muted/50 text-muted-foreground flex items-center justify-center rounded-lg text-sm max-lg:hidden lg:col-span-5 lg:col-start-2 lg:row-span-3 lg:row-start-1">
                     Central aisle
                   </div>

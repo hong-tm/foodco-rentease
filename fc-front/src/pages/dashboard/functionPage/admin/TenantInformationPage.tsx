@@ -7,7 +7,7 @@ export function TenantInformationPage() {
     <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
       <PageHeader
         title="Tenant Information"
-        description="Manage rental and send email to tenants"
+        description="Who holds each stall, when the lease ends, and who needs a reminder."
       />
       <RentalsTable />
     </div>

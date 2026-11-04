@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 type PageHeaderProps = {
   title: string
-  description?: string
+  description?: ReactNode
   /** The screen's one primary job, on the title row's right edge. */
   action?: ReactNode
 }

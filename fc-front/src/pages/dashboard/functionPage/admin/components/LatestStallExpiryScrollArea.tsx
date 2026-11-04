@@ -41,11 +41,11 @@ export default function LatestStallExpiryScrollArea() {
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-3">
         {visible.length ? (
-          <div className="divide-border/60 divide-y">
+          <div className="divide-border/60 flex flex-1 flex-col divide-y">
             {visible.map((stall) => (
               <div
                 key={stall.stallNumber}
-                className="flex items-center gap-3 py-3"
+                className="flex flex-1 items-center gap-3 py-3"
               >
                 <InitialsAvatar
                   name={stall.stallOwnerId?.name ?? 'Unknown'}

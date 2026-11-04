@@ -80,9 +80,18 @@ export function AdminDashboard() {
       <PageHeader
         title="Admin Dashboard"
         description={
-          expiringSoon > 0 && soonest
-            ? `${expiringSoon} ${expiringSoon === 1 ? 'lease ends' : 'leases end'} within 7 days. ${soonest.stallName} is first, on ${formatDay(soonest.endAt)}.`
-            : 'Occupancy, payments and registrations across the food court.'
+          expiringSoon > 0 && soonest ? (
+            <>
+              {expiringSoon} {expiringSoon === 1 ? 'lease ends' : 'leases end'}{' '}
+              within 7 days. {soonest.stallName} is first, on{' '}
+              <span className="whitespace-nowrap tabular-nums">
+                {formatDay(soonest.endAt)}
+              </span>
+              .
+            </>
+          ) : (
+            'Occupancy, payments and registrations across the food court.'
+          )
         }
         action={
           expiringSoon > 0 ? (
@@ -132,7 +141,7 @@ export function AdminDashboard() {
 
       <section className="flex flex-col gap-4">
         <h2 className="type-section-title">Occupancy and bookings</h2>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[3fr_2fr]">
           <div className="flex flex-col gap-4">
             <VacancyChart />
             <LatestAppointmentScrollArea />

@@ -95,7 +95,7 @@ export default function StallUtilitiesChart() {
       ])}
     >
       <ChartContainer config={chartConfig} className="h-[220px] w-full">
-        <BarChart accessibilityLayer data={data} margin={{ top: 8 }}>
+        <BarChart accessibilityLayer data={data} margin={{ top: 8, left: 8 }}>
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="shortMonth"

@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
@@ -125,7 +125,7 @@ export default function RentalsTable() {
 
   return (
     <div className="flex flex-col gap-6">
-      <SpecStrip
+      <SummaryLine
         value={String(endingSoon.length)}
         unit={
           endingSoon.length === 1
@@ -152,7 +152,7 @@ export default function RentalsTable() {
           <TableCaption className="sr-only">
             Tenant leases with stall, lease period and reminder action
           </TableCaption>
-          <TableHeader>
+          <TableHeader className="max-xl:sr-only">
             <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
@@ -225,7 +225,11 @@ export default function RentalsTable() {
                             {needsAttention && (
                               <StatusBadge
                                 label={expiryBadge(stall.endAt)}
-                                tone="blocked"
+                                tone={
+                                  left !== null && left < 0
+                                    ? 'blocked'
+                                    : 'warning'
+                                }
                               />
                             )}
                           </p>
@@ -254,7 +258,9 @@ export default function RentalsTable() {
                       <div className="mt-2">
                         <StatusBadge
                           label={expiryBadge(stall.endAt)}
-                          tone="blocked"
+                          tone={
+                            left !== null && left < 0 ? 'blocked' : 'warning'
+                          }
                         />
                       </div>
                     )}

@@ -78,3 +78,42 @@ export function SpecStrip({ value, unit, cells, actions }: SpecStripProps) {
     </div>
   )
 }
+
+// Lists lead with their rows: the count and its parts are one quiet line above
+// the table. The large statistic belongs to screens whose number is the answer.
+export function SummaryLine({ value, unit, cells, actions }: SpecStripProps) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+      <dl className="flex min-w-0 flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
+        <div className="flex items-baseline gap-1.5">
+          <dt className="sr-only">Total</dt>
+          <dd className="type-section-title tabular-nums">
+            {value} <span className="font-normal">{unit}</span>
+          </dd>
+        </div>
+        {cells.map((cell) => (
+          <div key={cell.label} className="flex items-baseline gap-1.5">
+            <dt className="text-muted-foreground">{cell.label}</dt>
+            <dd className="flex items-baseline gap-1.5 font-medium tabular-nums">
+              {cell.anomaly || cell.attention ? (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'size-2 shrink-0 self-center rounded-full',
+                    cell.anomaly ? 'bg-destructive' : 'bg-primary',
+                  )}
+                />
+              ) : null}
+              {cell.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {actions ? (
+        <div className="flex flex-wrap gap-2 max-sm:w-full max-sm:[&>*]:flex-1">
+          {actions}
+        </div>
+      ) : null}
+    </div>
+  )
+}

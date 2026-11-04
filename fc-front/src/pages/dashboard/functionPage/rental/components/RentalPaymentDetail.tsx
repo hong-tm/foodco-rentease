@@ -106,7 +106,7 @@ export default function RentalPaymentDetail({
             <BarChart
               accessibilityLayer
               data={data}
-              margin={{ top: 8, right: 0, left: 0, bottom: 0 }}
+              margin={{ top: 8, right: 0, left: 8, bottom: 0 }}
             >
               <CartesianGrid vertical={false} />
               <XAxis

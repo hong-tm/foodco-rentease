@@ -30,8 +30,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import PaymentModal from '@/components/PaymentModal'
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type PaymentIntentParams = {
@@ -156,8 +155,14 @@ export default function UserAppointmentTable() {
     (notification) => notification.notificationRead === false,
   ).length
 
+  const hasActions = appointments.some(
+    (notification) =>
+      notification.notificationRead === true &&
+      Boolean(notification.stallNumber),
+  )
+
   const specStrip = (
-    <SpecStrip
+    <SummaryLine
       value={String(appointments.length)}
       unit={appointments.length === 1 ? 'appointment' : 'appointments'}
       cells={[
@@ -213,7 +218,7 @@ export default function UserAppointmentTable() {
   return (
     <div className="flex flex-col gap-6">
       {specStrip}
-      <div className="max-w-full overflow-x-auto">
+      <div className="border-border max-w-full overflow-x-auto rounded-xl border">
         <Table className="min-w-table">
           <TableCaption className="sr-only">
             Your appointment requests with status and payment action
@@ -221,12 +226,9 @@ export default function UserAppointmentTable() {
           <TableHeader>
             <TableRow className="border-border border-b hover:bg-transparent">
               <TableHead
-                className={`type-label text-muted-foreground h-12 w-10 pl-6`}
+                className={`type-label text-muted-foreground h-12 pl-6`}
               >
-                <span className="sr-only">You</span>
-              </TableHead>
-              <TableHead className={`type-label text-muted-foreground h-12`}>
-                Message
+                Request
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground h-12`}
@@ -240,12 +242,14 @@ export default function UserAppointmentTable() {
               >
                 Status
               </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 pr-6 text-right`}
-                style={{ width: '20%' }}
-              >
-                Action
-              </TableHead>
+              {hasActions ? (
+                <TableHead
+                  className={`type-label text-muted-foreground h-12 pr-6 text-right`}
+                  style={{ width: '20%' }}
+                >
+                  Action
+                </TableHead>
+              ) : null}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -263,13 +267,7 @@ export default function UserAppointmentTable() {
                   key={notification.notificationId}
                   className="border-border hover:bg-muted/20"
                 >
-                  <TableCell className="py-4 pl-6 align-baseline">
-                    <InitialsAvatar
-                      name={session?.user?.name ?? 'You'}
-                      image={session?.user?.image}
-                    />
-                  </TableCell>
-                  <TableCell className="py-4 pr-4 align-baseline">
+                  <TableCell className="py-4 pr-4 pl-6 align-baseline">
                     <span className="text-sm font-medium whitespace-normal">
                       {notification.notificationMessage}
                     </span>
@@ -291,31 +289,36 @@ export default function UserAppointmentTable() {
                       }
                     />
                   </TableCell>
-                  <TableCell className="py-4 pr-6 text-right align-baseline">
-                    {approved && notification.stallNumber ? (
-                      paid ? (
-                        <StatusBadge label="Payment completed" tone="settled" />
-                      ) : (
-                        <Button
-                          size="sm"
-                          onClick={() =>
-                            handlePaymentClick({
-                              ...notification,
-                              notificationerror: '',
-                            })
-                          }
-                          disabled={paymentMutation.isPending}
-                        >
-                          {paymentMutation.isPending
-                            ? 'Processing...'
-                            : `Pay RM ${calculateAmount({
+                  {hasActions ? (
+                    <TableCell className="py-4 pr-6 text-right align-baseline">
+                      {approved && notification.stallNumber ? (
+                        paid ? (
+                          <StatusBadge
+                            label="Payment completed"
+                            tone="settled"
+                          />
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              handlePaymentClick({
                                 ...notification,
                                 notificationerror: '',
-                              }).toFixed(2)}`}
-                        </Button>
-                      )
-                    ) : null}
-                  </TableCell>
+                              })
+                            }
+                            disabled={paymentMutation.isPending}
+                          >
+                            {paymentMutation.isPending
+                              ? 'Processing...'
+                              : `Pay RM ${calculateAmount({
+                                  ...notification,
+                                  notificationerror: '',
+                                }).toFixed(2)}`}
+                          </Button>
+                        )
+                      ) : null}
+                    </TableCell>
+                  ) : null}
                 </TableRow>
               )
             })}

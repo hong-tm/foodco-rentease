@@ -124,9 +124,16 @@ export function NewStartRentalChart() {
         <CardTitle>New Rental Starts</CardTitle>
         <CardDescription>{getDateRange()}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer config={chartConfig} className="h-[220px] w-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 8 }}>
+      <CardContent className="flex flex-1 flex-col">
+        <ChartContainer
+          config={chartConfig}
+          className="h-full min-h-[220px] w-full"
+        >
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 8, left: 8 }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="shortMonth"
