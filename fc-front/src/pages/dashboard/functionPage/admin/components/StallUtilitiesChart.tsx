@@ -24,8 +24,8 @@ import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 import {
   monthSummary,
   monthlyPaidTotals,
-  rm,
 } from '@/components/dashboard/monthlyTotals'
+import { rm } from '@/lib/format'
 
 const chartConfig = {
   electric: {

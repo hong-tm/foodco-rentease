@@ -7,11 +7,7 @@ import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 import StallUtilitiesForm from './components/StallUtilitiesForm'
 import StallUtilitiesPaymentTable from './components/StallUtilitiesPaymentTable'
-
-function amountOf(value?: string | number | null) {
-  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
-  return Number.isFinite(amount as number) ? (amount as number) : 0
-}
+import { toAmount } from '@/lib/format'
 
 export function AdminStallPayment() {
   const { data: payments, isLoading } = useQuery(
@@ -24,7 +20,7 @@ export function AdminStallPayment() {
   )
   const unpaid = utilityCharges.filter((payment) => !payment.paymentStatus)
   const unpaidTotal = unpaid.reduce(
-    (sum, payment) => sum + amountOf(payment.paymentAmount),
+    (sum, payment) => sum + toAmount(payment.paymentAmount),
     0,
   )
 

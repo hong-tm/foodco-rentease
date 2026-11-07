@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
-import { formatDay } from '@/lib/format'
+import { formatDay, rm } from '@/lib/format'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -173,11 +173,6 @@ export function PaymentRecordsTable({
     },
   })
 
-  const rm = (value: number) =>
-    value.toLocaleString('en-MY', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
   const totalAmount = filteredRecords.reduce(
     (sum, record) =>
       sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),

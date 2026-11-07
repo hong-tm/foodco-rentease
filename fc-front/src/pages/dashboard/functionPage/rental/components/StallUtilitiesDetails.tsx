@@ -8,7 +8,7 @@ import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
 
-import { formatDay } from '@/lib/format'
+import { formatDay, rm, toAmount } from '@/lib/format'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -25,20 +25,6 @@ type Bill = {
   state: BillState
   meta: string
   paymentId?: string
-}
-
-function toAmount(value?: string | number | null) {
-  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
-  return amount !== undefined && amount !== null && Number.isFinite(amount)
-    ? amount
-    : 0
-}
-
-function money(value: number) {
-  return value.toLocaleString('en-MY', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
 }
 
 export default function StallUtilitiesDetails() {
@@ -229,8 +215,8 @@ export default function StallUtilitiesDetails() {
         meta: paidThisMonth(rentalRecord)
           ? `Paid ${formatDay(rentalRecord!.paymentDate)}`
           : rentalRecord?.paymentStatus
-            ? `Last paid ${formatDay(rentalRecord.paymentDate)} · ${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`
-            : `${toAmount(size)} m² × RM ${money(toAmount(tierPrice))} a month`,
+            ? `Last paid ${formatDay(rentalRecord.paymentDate)} · ${toAmount(size)} m² × RM ${rm(toAmount(tierPrice))} a month`
+            : `${toAmount(size)} m² × RM ${rm(toAmount(tierPrice))} a month`,
         // Settle an open rent bill in place. When the last rent is already
         // paid (a previous month), paying must create this month's record:
         // re-marking the old paid record would charge again and never clear.
@@ -262,7 +248,7 @@ export default function StallUtilitiesDetails() {
       <section aria-label="Amount due">
         <SpecStrip
           value={
-            dueBills.length === 0 ? 'Nothing due' : `RM ${money(totalDue)}`
+            dueBills.length === 0 ? 'Nothing due' : `RM ${rm(totalDue)}`
           }
           unit={
             dueBills.length === 0
@@ -339,14 +325,14 @@ export default function StallUtilitiesDetails() {
                     <span className="ml-auto text-sm font-medium tabular-nums">
                       {bill.state === 'none' || bill.state === 'unset'
                         ? '—'
-                        : `RM ${money(bill.amount)}`}
+                        : `RM ${rm(bill.amount)}`}
                     </span>
 
                     <div className="w-16 text-right">
                       {bill.state === 'due' && (
                         <Button
                           size="sm"
-                          aria-label={`Pay ${bill.label.toLowerCase()} bill, RM ${money(bill.amount)}`}
+                          aria-label={`Pay ${bill.label.toLowerCase()} bill, RM ${rm(bill.amount)}`}
                           onClick={() =>
                             handlePayment(
                               bill.type,

@@ -3,7 +3,7 @@ import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
-import { formatDay } from '@/lib/format'
+import { formatDay, rm, toAmount } from '@/lib/format'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -14,14 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { rm } from '@/components/dashboard/monthlyTotals'
-
-function toAmount(value?: string | number | null) {
-  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
-  return amount !== undefined && amount !== null && Number.isFinite(amount)
-    ? amount
-    : 0
-}
 
 export type RentalStallsDetailProps = {
   stalls?: StallUserAttributes[]

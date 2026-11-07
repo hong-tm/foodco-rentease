@@ -5,29 +5,15 @@ import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
 
-import { formatDay } from '@/lib/format'
+import { formatDay, rm, toAmount } from '@/lib/format'
+import { daysLeft } from '@/lib/lease'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
-import { rm } from '@/components/dashboard/monthlyTotals'
 
 import RentalPaymentDetail from './components/RentalPaymentDetail'
 import RentalStallsDetail from './components/RentalStallsDetail'
-
-const DAY_MS = 24 * 60 * 60 * 1000
-
-function toAmount(value?: string | number | null) {
-  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
-  return amount !== undefined && amount !== null && Number.isFinite(amount)
-    ? amount
-    : 0
-}
-
-function daysLeft(endAt?: Date | string | null) {
-  if (!endAt) return null
-  return Math.ceil((new Date(endAt).getTime() - Date.now()) / DAY_MS)
-}
 
 export function RentalDashboard() {
   const { data: session, isLoading: sessionLoading } = useSession()

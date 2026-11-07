@@ -1,6 +1,7 @@
 import type { PaymentRecord } from '@server/lib/sharedType'
+import { rm } from '@/lib/format'
 
-export type MonthSlot<K extends string> = {
+type MonthSlot<K extends string> = {
   key: string
   month: string
   shortMonth: string
@@ -45,12 +46,6 @@ export function monthlyPaidTotals<K extends PaymentRecord['paymentType']>(
 
   return slots
 }
-
-export const rm = (value: number) =>
-  value.toLocaleString('en-MY', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
 
 // "November so far: RM 7,096.00 · October: RM 8,064.00". The current month is
 // still running, so a percentage against a full month would read as a drop.

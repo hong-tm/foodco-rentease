@@ -5,6 +5,7 @@ import { startOfDay } from 'date-fns'
 import { Link } from 'react-router-dom'
 
 import { formatDay } from '@/lib/format'
+import { daysLeft, REMINDER_WINDOW_DAYS } from '@/lib/lease'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,14 +20,6 @@ import NewTenantChart from './components/NewTenantChart'
 import StallRentalPaymentChart from './components/StallRentalPaymentChart'
 import StallUtilitiesChart from './components/StallUtilitiesChart'
 import { VacancyChart } from './components/VacancyChart'
-
-const DAY_MS = 24 * 60 * 60 * 1000
-const REMINDER_WINDOW_DAYS = 7
-
-function daysLeft(endAt?: Date | string | null) {
-  if (!endAt) return null
-  return Math.ceil((new Date(endAt).getTime() - Date.now()) / DAY_MS)
-}
 
 export function AdminDashboard() {
   const {

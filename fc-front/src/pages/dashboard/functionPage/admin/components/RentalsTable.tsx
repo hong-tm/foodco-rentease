@@ -2,6 +2,7 @@ import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
+import { daysLeft, REMINDER_WINDOW_DAYS } from '@/lib/lease'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -20,9 +21,6 @@ import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 import { TenantActionButton } from './TenantActionButton'
 
-const DAY_MS = 24 * 60 * 60 * 1000
-const REMINDER_WINDOW_DAYS = 7
-
 // The table splits its width 40 / 20 / 22 / 18 across four columns. Only 40% has
 // a scale step (w-2/5); the other three stay explicit and page-scoped here, so no
 // global width token exists for a ratio one table uses.
@@ -31,11 +29,6 @@ const COLUMN_WIDTH = {
   lease: '22%',
   action: '18%',
 } as const
-
-function daysLeft(endAt?: Date | string | null) {
-  if (!endAt) return null
-  return Math.ceil((new Date(endAt).getTime() - Date.now()) / DAY_MS)
-}
 
 function expiryBadge(endAt?: Date | string | null) {
   const left = daysLeft(endAt)
