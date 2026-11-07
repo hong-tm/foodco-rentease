@@ -3,21 +3,13 @@ import { useSession } from '@/api/adminApi'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useMutation } from '@tanstack/react-query'
 import { FileDownIcon } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
+import { formatDay, rm } from '@/lib/format'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -27,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
@@ -35,6 +28,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
+import { SummaryLine } from '@/components/dashboard/SpecStrip'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type MonthSelectorProps = {
   value: string
@@ -59,7 +55,7 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[180px]" aria-label="Filter by month">
         <SelectValue placeholder="Filter by month" />
       </SelectTrigger>
       <SelectContent>
@@ -79,7 +75,6 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
 
 type PaymentRecordsTableProps = {
   title: string
-  description: string
   records: PaymentRecord[]
   showMonthFilter?: boolean
   isLoading: boolean
@@ -87,13 +82,15 @@ type PaymentRecordsTableProps = {
 
 export function PaymentRecordsTable({
   title,
-  description,
   records,
   showMonthFilter = false,
   isLoading,
 }: PaymentRecordsTableProps) {
   const { data: session } = useSession()
   const isRental = session?.user?.role === 'rental'
+  // Everyone but an admin sees only their own records: a name column would
+  // repeat them on every row.
+  const showUser = session?.user?.role === 'admin'
 
   const [selectedMonth, setSelectedMonth] = useState<string>('all')
   const [selectedType, setSelectedType] = useState<string>('all')
@@ -176,160 +173,255 @@ export function PaymentRecordsTable({
     },
   })
 
+  const totalAmount = filteredRecords.reduce(
+    (sum, record) =>
+      sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
+    0,
+  )
+  const settledCount = filteredRecords.filter((r) => r.paymentStatus).length
+  const pendingCount = filteredRecords.length - settledCount
+
   if (isLoading) {
-    return <div>Loading payment records...</div>
+    return (
+      <div aria-busy="true" className="flex flex-col gap-4">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
   }
 
-  if (!records || records.length === 0) {
+  if (records.length === 0) {
     return (
-      <Card className="bg-muted/10 mx-auto w-full rounded-lg p-4 shadow-md md:p-6 lg:p-8">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>No record</CardDescription>
-        </CardHeader>
-      </Card>
+      <section
+        aria-label={title}
+        className="bg-card flex flex-col items-start gap-3 rounded-xl border p-6"
+      >
+        <h2 className="type-section-title">No payments yet</h2>
+        <p className="text-muted-foreground max-w-prose text-sm">
+          Rent and utility payments appear here once a stall is on your account
+          and its first charge is issued.
+        </p>
+        {session?.user?.role === 'user' ? (
+          <Button asChild>
+            <Link to="/dashboard/stall-availability">See available stalls</Link>
+          </Button>
+        ) : null}
+      </section>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 gap-4">
-      <div className="overflow-x-auto">
-        <Card className="bg-muted/10 mx-auto w-full rounded-lg p-4 shadow-md md:p-6 lg:p-8">
-          <CardHeader className="flex flex-col items-center justify-between sm:flex-row">
-            <div>
-              <CardTitle>{title}</CardTitle>
-              <CardDescription>{description}</CardDescription>
-            </div>
-            <div className="flex gap-4">
-              {showMonthFilter && (
-                <MonthSelector
-                  value={selectedMonth}
-                  onValueChange={setSelectedMonth}
-                />
-              )}
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Payment Type</SelectLabel>
-                    <SelectItem value="all">All Types</SelectItem>
-                    <SelectItem value="rental">Rental</SelectItem>
-                    <SelectItem value="electric">Electric</SelectItem>
-                    <SelectItem value="water">Water</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-
-          <CardContent>
-            <Table>
-              <TableHeader className="bg-background sticky top-0">
-                <TableRow>
-                  <TableHead className="text-left">User</TableHead>
-                  <TableHead className="text-left">Payment ID</TableHead>
-                  <TableHead className="text-center">Stall No.</TableHead>
-                  <TableHead className="text-center">Type</TableHead>
-                  <TableHead className="text-right">Amount (RM)</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
-                  <TableHead className="text-left">Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRecords.map((record) => (
-                  <TableRow key={record.paymentId}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src={record.paymentUser?.image || undefined}
-                            alt={record.paymentUser?.name || 'User'}
-                          />
-                          <AvatarFallback>
-                            {record.paymentUser?.name?.[0] || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>
-                          {record.paymentUser?.name || 'Unknown User'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-left">
-                      {record.paymentId}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {record.stallId}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant="secondary"
-                        className={`${
-                          record.paymentType === 'rental'
-                            ? 'bg-blue-100 text-blue-800'
-                            : record.paymentType === 'electric'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-cyan-100 text-cyan-800'
-                        }`}
-                      >
-                        {record.paymentType}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {record.paymentAmount}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Badge
-                        variant="secondary"
-                        className={`${
-                          record.paymentStatus
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {record.paymentStatus ? 'Paid' : 'Pending'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-left">
-                      {typeof record.paymentDate === 'object'
-                        ? record.paymentDate.toLocaleDateString()
-                        : new Date(record.paymentDate).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-
-          <CardFooter className="flex justify-end gap-4">
-            {session?.user?.role !== 'user' && (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => downloadPdfMutation.mutate()}
-                  disabled={downloadPdfMutation.isPending}
-                >
-                  <FileDownIcon className="mr-2 h-4 w-4" />
-                  {downloadPdfMutation.isPending
-                    ? 'Downloading...'
-                    : 'Download PDF'}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => downloadCsvMutation.mutate()}
-                  disabled={downloadCsvMutation.isPending}
-                >
-                  <FileDownIcon className="mr-2 h-4 w-4" />
-                  {downloadCsvMutation.isPending
-                    ? 'Downloading...'
-                    : 'Download CSV'}
-                </Button>
-              </>
+    <section aria-label={title} className="flex flex-col gap-6">
+      <SummaryLine
+        value={`RM ${rm(totalAmount)}`}
+        unit="in this view"
+        cells={[
+          { label: 'Settled', value: settledCount },
+          {
+            label: 'Pending',
+            value: pendingCount,
+            attention: pendingCount > 0,
+          },
+          { label: 'Records', value: filteredRecords.length },
+        ]}
+        actions={
+          <>
+            {showMonthFilter && (
+              <MonthSelector
+                value={selectedMonth}
+                onValueChange={setSelectedMonth}
+              />
             )}
-          </CardFooter>
-        </Card>
+            <Select value={selectedType} onValueChange={setSelectedType}>
+              <SelectTrigger className="w-[180px]" aria-label="Filter by type">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Payment Type</SelectLabel>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="rental">Rental</SelectItem>
+                  <SelectItem value="electric">Electric</SelectItem>
+                  <SelectItem value="water">Water</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </>
+        }
+      />
+
+      {/* Phones read one record as two lines; nothing is dropped. */}
+      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
+        {filteredRecords.map((record) => (
+          <li key={record.paymentId} className="flex flex-col gap-1 px-4 py-3">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="min-w-0 truncate text-sm font-medium capitalize">
+                {showUser
+                  ? record.paymentUser?.name || 'Unknown User'
+                  : `${record.paymentType} · stall ${record.stallId}`}
+              </span>
+              <span className="text-sm font-medium whitespace-nowrap tabular-nums">
+                RM {record.paymentAmount}
+              </span>
+            </div>
+            <div className="text-muted-foreground flex items-center justify-between gap-3 text-xs tabular-nums">
+              <span className="min-w-0 truncate capitalize">
+                Stall {record.stallId} · {record.paymentType} ·{' '}
+                {formatDay(record.paymentDate as unknown as Date)}
+              </span>
+              <StatusBadge
+                label={record.paymentStatus ? 'Paid' : 'Pending'}
+                tone={record.paymentStatus ? 'settled' : 'action'}
+                className="shrink-0 text-xs"
+              />
+            </div>
+          </li>
+        ))}
+        {filteredRecords.length === 0 && (
+          <li className="text-muted-foreground px-4 py-8 text-center text-sm">
+            No records match these filters.
+          </li>
+        )}
+      </ul>
+
+      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border max-md:hidden">
+        <Table>
+          <TableHeader className="border-border border-b">
+            <TableRow className="hover:bg-transparent">
+              {showUser ? (
+                <TableHead
+                  className={`type-label text-muted-foreground h-12 pl-6 text-left`}
+                >
+                  User
+                </TableHead>
+              ) : null}
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-left ${showUser ? '' : 'pl-6'}`}
+              >
+                Payment ID
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-center`}
+              >
+                Stall No.
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-left`}
+              >
+                Type
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-right`}
+              >
+                Amount (RM)
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 text-left`}
+              >
+                Status
+              </TableHead>
+              <TableHead
+                className={`type-label text-muted-foreground h-12 pr-6 text-left`}
+              >
+                Date
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredRecords.length === 0 && (
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  colSpan={showUser ? 7 : 6}
+                  className="text-muted-foreground py-10 text-center text-sm whitespace-normal"
+                >
+                  {records.length === 0
+                    ? 'No payment records yet. Payments show up here as soon as one is recorded.'
+                    : 'No records match these filters.'}
+                </TableCell>
+              </TableRow>
+            )}
+            {filteredRecords.map((record) => (
+              <TableRow
+                key={record.paymentId}
+                className="group/row border-border hover:bg-muted/20"
+              >
+                {showUser ? (
+                  <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
+                    <div className="flex items-center gap-2">
+                      <InitialsAvatar
+                        name={record.paymentUser?.name ?? 'Unknown'}
+                        image={record.paymentUser?.image}
+                      />
+                      <span className="text-sm font-medium">
+                        {record.paymentUser?.name || 'Unknown User'}
+                      </span>
+                    </div>
+                  </TableCell>
+                ) : null}
+                <TableCell
+                  className={`py-4 align-baseline ${showUser ? '' : 'pl-6'}`}
+                >
+                  <span
+                    className="text-muted-foreground font-mono text-xs"
+                    title={record.paymentId}
+                  >
+                    {record.paymentId.length > 8
+                      ? `${record.paymentId.slice(0, 8)}…`
+                      : record.paymentId}
+                  </span>
+                </TableCell>
+                <TableCell className="py-4 text-center align-baseline tabular-nums">
+                  {record.stallId}
+                </TableCell>
+                <TableCell className="py-4 align-baseline">
+                  <span className="text-muted-foreground text-sm capitalize">
+                    {record.paymentType}
+                  </span>
+                </TableCell>
+                <TableCell className="py-4 text-right align-baseline tabular-nums">
+                  {record.paymentAmount}
+                </TableCell>
+                <TableCell className="py-4 align-baseline">
+                  <StatusBadge
+                    label={record.paymentStatus ? 'Paid' : 'Pending'}
+                    tone={record.paymentStatus ? 'settled' : 'action'}
+                  />
+                </TableCell>
+                <TableCell className="py-4 align-baseline whitespace-nowrap tabular-nums">
+                  {formatDay(record.paymentDate as unknown as Date)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
-    </div>
+
+      <div className="flex justify-end gap-4">
+        {session?.user?.role !== 'user' && (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => downloadPdfMutation.mutate()}
+              disabled={downloadPdfMutation.isPending}
+            >
+              <FileDownIcon className="mr-2 h-4 w-4" />
+              {downloadPdfMutation.isPending
+                ? 'Downloading...'
+                : 'Download PDF'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => downloadCsvMutation.mutate()}
+              disabled={downloadCsvMutation.isPending}
+            >
+              <FileDownIcon className="mr-2 h-4 w-4" />
+              {downloadCsvMutation.isPending
+                ? 'Downloading...'
+                : 'Download CSV'}
+            </Button>
+          </>
+        )}
+      </div>
+    </section>
   )
 }

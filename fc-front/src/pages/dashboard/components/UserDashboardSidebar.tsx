@@ -43,7 +43,7 @@ import {
 
 type Role = 'admin' | 'user' | 'rental'
 
-export type User = {
+type User = {
   id: string
   name: string
   email: string
@@ -144,7 +144,7 @@ export default function UserDashboardSidebar({
         </SidebarContent>
       </Sidebar>
     )
-  if (error) return toast.error('An error occurred: ' + error), null
+  if (error) return (toast.error('An error occurred: ' + error), null)
 
   if (!currentSession || !currentSession.user) {
     return null // Already handle the toast in the effect hook
@@ -172,7 +172,7 @@ export default function UserDashboardSidebar({
     <Button
       onClick={stopImpersonUser}
       variant="destructive"
-      className="my-2 w-full hover:bg-red-600 hover:text-white"
+      className="my-2 w-full"
     >
       Stop Impersonating
     </Button>
@@ -223,7 +223,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/tenant-information',
             },
             {
-              title: 'Stall Utilities Payment',
+              title: 'Stall Payment',
               url: '/dashboard/stall-payment',
             },
           ],
@@ -234,7 +234,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Payments',
               url: '/dashboard/admin-report',
             },
           ],
@@ -242,7 +242,7 @@ export default function UserDashboardSidebar({
       ],
       navSecondary: [
         {
-          title: 'Admin',
+          title: 'Users',
           url: '/dashboard/admin',
           icon: ShieldCheckIcon,
         },
@@ -259,7 +259,7 @@ export default function UserDashboardSidebar({
           icon: BellElectricIcon,
         },
         {
-          title: 'Export Report',
+          title: 'Payments',
           url: '/dashboard/admin-report',
           icon: BookDownIcon,
         },
@@ -284,11 +284,11 @@ export default function UserDashboardSidebar({
           isActive: true,
           items: [
             {
-              title: 'Stall Information',
+              title: 'Rental Dashboard',
               url: '/dashboard/rental-dashboard',
             },
             {
-              title: 'Stall Payment',
+              title: 'Stall Utilities',
               url: '/dashboard/stall-utilities',
             },
           ],
@@ -303,7 +303,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/stall-availability',
             },
             {
-              title: 'Appointment',
+              title: 'User Appointment',
               url: '/dashboard/user-appointment',
             },
           ],
@@ -314,7 +314,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Rental Report',
               url: '/dashboard/rental-report',
             },
           ],
@@ -323,7 +323,7 @@ export default function UserDashboardSidebar({
       navSecondary: [],
       navQuick: [
         {
-          title: 'Payments',
+          title: 'Rental Report',
           url: '/dashboard/rental-report',
           icon: CreditCardIcon,
         },
@@ -352,7 +352,7 @@ export default function UserDashboardSidebar({
               url: '/dashboard/stall-availability',
             },
             {
-              title: 'Appointment',
+              title: 'User Appointment',
               url: '/dashboard/user-appointment',
             },
           ],
@@ -363,7 +363,7 @@ export default function UserDashboardSidebar({
           icon: BadgeDollarSignIcon,
           items: [
             {
-              title: 'Payments',
+              title: 'Payment History',
               url: '/dashboard/user-report',
             },
           ],
@@ -394,16 +394,18 @@ export default function UserDashboardSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <NavLink to="#">
-                <div className="group text-sidebar-primary-foreground hover:animate-gradient-hover flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br from-[#b802d0] via-[#e62652] to-[#026bc2] dark:from-[#6ba702] dark:via-[#e59a02] dark:to-[#eb6f02]">
+                <div className="group text-sidebar-primary-foreground hover:animate-gradient-hover from-logo-1 via-logo-2 to-logo-6 dark:from-logo-5 dark:via-logo-4 dark:to-logo-3 flex aspect-square size-8 items-center justify-center rounded-lg bg-linear-to-br">
                   <TowerControlIcon className="size-4" />
                 </div>
 
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {userName ? `${userName}` : 'Loading user...'}
+                    FoodCo RentEase
                   </span>
-                  <span className="truncate text-xs">
-                    {userRole ? `${userRole}` : 'Loading role...'}
+                  <span className="text-muted-foreground truncate text-xs capitalize">
+                    {userRole
+                      ? `${userRole} workspace`
+                      : 'Loading workspace...'}
                   </span>
                 </div>
               </NavLink>

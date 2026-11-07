@@ -19,11 +19,7 @@ const FeedbackDisplayPage = lazy(() =>
   })),
 )
 
-const ChangePasswordPage = lazy(() =>
-  import('./pages/(auth)/ChangePasswordPage.tsx').then((module) => ({
-    default: module.default,
-  })),
-)
+const ChangePasswordPage = lazy(() => import('./pages/(auth)/ChangePasswordPage.tsx'))
 
 const TenantInformationPage = lazy(() =>
   import('./pages/dashboard/functionPage/admin/TenantInformationPage.tsx').then(
@@ -39,29 +35,13 @@ const EmailVerifiedPage = lazy(() =>
   })),
 )
 
-const ForgetPasswordPage = lazy(() =>
-  import('./pages/(auth)/ForgetPasswordPage.tsx').then((module) => ({
-    default: module.default,
-  })),
-)
+const ForgetPasswordPage = lazy(() => import('./pages/(auth)/ForgetPasswordPage.tsx'))
 
-const ResetPasswordPage = lazy(() =>
-  import('./pages/(auth)/ResetPasswordPage.tsx').then((module) => ({
-    default: module.default,
-  })),
-)
+const ResetPasswordPage = lazy(() => import('./pages/(auth)/ResetPasswordPage.tsx'))
 
-const UserProfilePage = lazy(() =>
-  import('./pages/(auth)/UserProfilePage.tsx').then((module) => ({
-    default: module.default,
-  })),
-)
+const UserProfilePage = lazy(() => import('./pages/(auth)/UserProfilePage.tsx'))
 
-const NotFoundPage = lazy(() =>
-  import('./pages/NotFoundPage.tsx').then((module) => ({
-    default: module.default,
-  })),
-)
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.tsx'))
 
 const AdminManage = lazy(() =>
   import('./pages/dashboard/functionPage/admin/AdminManage.tsx').then(
@@ -119,7 +99,7 @@ const AdminReportPage = lazy(() =>
   ),
 )
 
-export const PaymentSuccessPage = lazy(() =>
+const PaymentSuccessPage = lazy(() =>
   import('./pages/dashboard/payment-success.tsx').then((module) => ({
     default: module.PaymentSuccessPage,
   })),

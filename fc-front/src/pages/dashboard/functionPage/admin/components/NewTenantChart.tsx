@@ -12,11 +12,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 export default function NewTenantChart() {
   const { data: usersData, isLoading } = useQuery(fetchUsersQueryOptions)
@@ -69,11 +70,12 @@ export default function NewTenantChart() {
   }
 
   const chartData = processUserData()
+  const hasData = chartData.some((month) => Number(month.users) > 0)
 
   const chartConfig = {
     users: {
       label: 'New Users',
-      color: 'var(--chart-2)',
+      color: 'var(--series-2)',
     },
     label: {
       color: 'var(--background)',
@@ -94,14 +96,31 @@ export default function NewTenantChart() {
     )
   }
 
+  if (!hasData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Monthly User Registrations</CardTitle>
+          <CardDescription>Registration counts by month</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No registrations in the last 3 months" />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardHeader>
         <CardTitle>Monthly User Registrations</CardTitle>
         <CardDescription>Registration counts by month</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
+      <CardContent className="flex flex-1 flex-col">
+        <ChartContainer
+          config={chartConfig}
+          className="h-full min-h-[220px] w-full"
+        >
           <BarChart
             accessibilityLayer
             data={chartData}
@@ -127,7 +146,7 @@ export default function NewTenantChart() {
             <Bar
               dataKey="users"
               layout="vertical"
-              fill="hsl(var(--chart-1))"
+              fill="var(--color-users)"
               radius={4}
               stackId="stack"
             >
@@ -151,9 +170,6 @@ export default function NewTenantChart() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="text-muted-foreground leading-none">
-          Monthly registration totals
-        </div>
         <div className="text-muted-foreground flex flex-col gap-1 text-xs">
           {(() => {
             const lastMonth = chartData[chartData.length - 1]
@@ -168,10 +184,8 @@ export default function NewTenantChart() {
             return (
               <>
                 <div className="flex items-center gap-1">
-                  <span>Trend Analysis:</span>
-                  <span
-                    className={change >= 0 ? 'text-green-500' : 'text-red-500'}
-                  >
+                  <span>New users</span>
+                  <span className="text-foreground tabular-nums">
                     {change >= 0 ? (
                       <TrendingUpIcon className="inline h-4 w-4" />
                     ) : (
@@ -180,11 +194,6 @@ export default function NewTenantChart() {
                     {change >= 0 ? '+' : ''}
                     {change.toFixed(1)}% vs previous month
                   </span>
-                </div>
-                <div>
-                  {change >= 0
-                    ? 'Growing user acquisition - consider expanding resources'
-                    : 'Declining registrations - may need marketing attention'}
                 </div>
               </>
             )

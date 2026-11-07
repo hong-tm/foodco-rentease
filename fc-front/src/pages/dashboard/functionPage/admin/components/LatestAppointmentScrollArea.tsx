@@ -2,8 +2,10 @@ import { fetchUsersQueryOptions, useSession } from '@/api/adminApi'
 import { getAllNotificationQueryOptions } from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
+import { Link } from 'react-router-dom'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { formatDay } from '@/lib/format'
+
 import {
   Card,
   CardContent,
@@ -11,15 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 
 export default function LatestAppointmentScrollArea() {
   const { data: session } = useSession()
@@ -29,9 +23,8 @@ export default function LatestAppointmentScrollArea() {
     queryKey: ['get-notifications', session?.user?.id],
   })
 
-  // Filter out expired appointments, unread notifications and sort by appointment date
   const today = startOfDay(new Date())
-  const sortedNotifications = notifications
+  const upcoming = notifications
     ?.filter((notification) => {
       const appointmentDate = startOfDay(new Date(notification.appointmentDate))
       return (
@@ -39,7 +32,7 @@ export default function LatestAppointmentScrollArea() {
         notification.notificationMessage.includes(
           'I want to make appointment for',
         ) &&
-        notification.notificationRead === true // Only show read notifications
+        notification.notificationRead === true
       )
     })
     .sort(
@@ -48,63 +41,72 @@ export default function LatestAppointmentScrollArea() {
         new Date(b.appointmentDate).getTime(),
     )
     .map((notification) => {
-      // Extract stall ID from message
       const match = notification.notificationMessage.match(/stall (\d+)/i)
-      const stallId = match ? match[1] : 'N/A'
       return {
         ...notification,
-        stallId,
+        stallId: match ? match[1] : null,
       }
     })
 
+  const all = upcoming ?? []
+  const visible = all.slice(0, 5)
+  const rest = all.length - visible.length
+
   return (
-    <Card className="flex h-full flex-col">
+    <Card className="flex flex-1 flex-col shadow-none">
       <CardHeader>
-        <CardTitle>Recent Appointments</CardTitle>
-        <CardDescription>List of recent appointment requests</CardDescription>
+        <CardTitle>Recent appointments</CardTitle>
+        <CardDescription>Confirmed appointments coming up</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[320px]">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Stall</TableHead>
-                <TableHead>Date</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedNotifications?.map((notification) => {
-                const user = users?.users.find(
-                  (u) => u.id === notification.userId,
-                )
-                return (
-                  <TableRow key={notification.notificationId}>
-                    <TableCell>
-                      <Avatar>
-                        <AvatarImage
-                          src={user?.image || ''}
-                          alt="User Avatar"
-                        />
-                        <AvatarFallback>
-                          {user?.name?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      Stall {notification.stallId}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(
-                        notification.appointmentDate,
-                      ).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </ScrollArea>
+      <CardContent className="flex flex-1 flex-col gap-3">
+        {visible.length ? (
+          <div className="divide-border/60 divide-y">
+            {visible.map((notification) => {
+              const user = users?.users.find(
+                (candidate) => candidate.id === notification.userId,
+              )
+              return (
+                <div
+                  key={notification.notificationId}
+                  className="flex items-center gap-3 py-3"
+                >
+                  <InitialsAvatar
+                    name={user?.name ?? 'Unknown'}
+                    image={user?.image}
+                  />
+                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <p className="truncate text-sm leading-none font-medium">
+                      {user?.name ?? 'Unknown account'}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {notification.stallId
+                        ? `Stall ${notification.stallId}`
+                        : 'Stall not recorded'}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {formatDay(notification.appointmentDate)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-muted-foreground py-6 text-sm">
+            No confirmed appointments coming up.
+          </p>
+        )}
+        {rest > 0 ? (
+          <p className="text-muted-foreground text-xs">
+            +{rest} more ·{' '}
+            <Link
+              to="/dashboard/admin-appointment"
+              className="hover:text-foreground underline underline-offset-4"
+            >
+              open the full list
+            </Link>
+          </p>
+        ) : null}
       </CardContent>
     </Card>
   )

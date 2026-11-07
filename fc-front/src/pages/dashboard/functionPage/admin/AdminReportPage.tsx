@@ -2,6 +2,7 @@ import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import { useQuery } from '@tanstack/react-query'
 
 import { PaymentRecordsTable } from '@/components/PaymentRecordsTable'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 export function AdminReportPage() {
   const { data: records, isLoading } = useQuery(
@@ -9,12 +10,17 @@ export function AdminReportPage() {
   )
 
   return (
-    <PaymentRecordsTable
-      title="Payment Records"
-      description="Monthly payment records for all stalls"
-      records={records || []}
-      showMonthFilter={true}
-      isLoading={isLoading}
-    />
+    <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
+      <PageHeader
+        title="Payments"
+        description="Rental, water and electricity charges across every stall."
+      />
+      <PaymentRecordsTable
+        title="Records"
+        records={records || []}
+        showMonthFilter={true}
+        isLoading={isLoading}
+      />
+    </div>
   )
 }

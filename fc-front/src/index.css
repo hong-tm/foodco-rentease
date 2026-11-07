@@ -5,10 +5,26 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/figtree-latin-wght-normal.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  src: url('/fonts/figtree-latin-ext-wght-normal.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: swap;
+  unicode-range: U+0100-02AF, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 body {
   @apply m-0;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Figtree', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -26,16 +42,33 @@ code {
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
+  /* Brand: the one signature colour. Change it here; primary, the first
+     chart series and focus accents follow. Structure stays neutral (R-VIS-037). */
+  --brand: oklch(0.62 0.19 42);
+  /* Primary darkens the brand to 5.2:1 under white text. */
+  --primary: oklch(from var(--brand) 0.55 c h);
+  /* Brand ladder: the full hue stays on small marks, these pale steps carry
+     areas (the active nav row, vacant stalls, action pills). */
+  --brand-soft: oklch(from var(--brand) 0.97 0.025 h);
+  --brand-muted: oklch(from var(--brand) 0.92 0.06 h);
+  --brand-ink: oklch(from var(--brand) 0.42 0.12 h);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
+  --muted-foreground: oklch(0.52 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
+  /* Success: confirmation state. 3.2:1 on white, enough for an icon (WCAG 1.4.11). */
+  --success: oklch(0.627 0.194 149.214);
+  --destructive-soft: oklch(0.96 0.03 25);
+  --success-soft: oklch(0.96 0.04 150);
+  --success-ink: oklch(0.38 0.1 150);
+  --warning-soft: oklch(0.96 0.05 85);
+  --warning-ink: oklch(0.42 0.1 70);
+  --destructive-ink: oklch(0.42 0.16 25);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.871 0.006 286.286);
@@ -45,12 +78,12 @@ code {
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(from var(--brand) 0.985 0.004 h);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
   --sidebar-primary: oklch(0.21 0.006 285.885);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.871 0.006 286.286);
 }
@@ -58,22 +91,34 @@ code {
 .dark {
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.141 0.005 285.823);
+  /* Dark depth is a surface step, never an outline alone. */
+  --card: oklch(0.185 0.005 285.823);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.141 0.005 285.823);
+  --popover: oklch(0.185 0.005 285.823);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
+  --brand: oklch(0.72 0.17 45);
+  --primary: var(--brand);
+  --brand-soft: oklch(from var(--brand) 0.27 0.045 h);
+  --brand-muted: oklch(from var(--brand) 0.34 0.07 h);
+  --brand-ink: oklch(from var(--brand) 0.86 0.09 h);
   --primary-foreground: oklch(0.21 0.006 285.885);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
+  --muted-foreground: oklch(0.76 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.274 0.006 286.033);
-  --input: oklch(0.274 0.006 286.033);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --success: oklch(0.723 0.219 149.579);
+  --destructive-soft: oklch(0.28 0.06 25);
+  --success-soft: oklch(0.28 0.05 150);
+  --success-ink: oklch(0.85 0.12 150);
+  --warning-soft: oklch(0.3 0.06 80);
+  --warning-ink: oklch(0.87 0.11 85);
+  --destructive-ink: oklch(0.85 0.1 25);
+  --border: oklch(0.31 0.006 286.033);
+  --input: oklch(0.31 0.006 286.033);
   --ring: oklch(0.442 0.017 285.786);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -84,13 +129,23 @@ code {
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent: var(--brand-soft);
+  --sidebar-accent-foreground: var(--brand-ink);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
 }
 
 @theme inline {
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-muted: var(--brand-muted);
+  --color-brand-ink: var(--brand-ink);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success-soft: var(--success-soft);
+  --color-success-ink: var(--success-ink);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-ink: var(--warning-ink);
+  --color-destructive-ink: var(--destructive-ink);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -107,6 +162,13 @@ code {
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-logo-1: var(--logo-1);
+  --color-logo-2: var(--logo-2);
+  --color-logo-3: var(--logo-3);
+  --color-logo-4: var(--logo-4);
+  --color-logo-5: var(--logo-5);
+  --color-logo-6: var(--logo-6);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -119,6 +181,8 @@ code {
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --container-page: 1400px;
+  --container-table: 56rem;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -166,6 +230,50 @@ code {
   }
 }
 
+/* Type scale. Components use these type-* utilities, never raw text-2xl.
+   type-* (not --text-* theme keys) so cn() never mistakes a size for a colour.
+   The page title anchors the scale; the statistic is bounded to 1.25x of it
+   (R-VIS-014 allows up to ~1.35x), so retuning --type-title keeps the ratio. */
+:root {
+  --type-title: 1.5rem;
+  --type-stat-ratio: 1.5;
+}
+
+@utility type-display {
+  font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+@utility type-page-title {
+  font-size: var(--type-title);
+  line-height: calc(var(--type-title) + 0.5rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+@utility type-section-title {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+@utility type-stat {
+  font-size: calc(var(--type-title) * var(--type-stat-ratio));
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Structural label in sentence case: table headers and strip labels. */
+@utility type-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -179,4 +287,85 @@ code {
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
+
+  html {
+    scrollbar-color: var(--border) transparent;
+    accent-color: var(--primary);
+  }
+
+  ::selection {
+    background: var(--foreground);
+    color: var(--background);
+  }
+
+  input,
+  textarea {
+    caret-color: var(--primary);
+  }
+
+  /* Touch: small controls keep their drawn size but get a 44px hit area
+     (R-VIS-025). Mouse pointers keep the drawn box. */
+  @media (pointer: coarse) {
+    /* Radix asChild renames a control's slot (<part>-trigger, form-control), so match those too. */
+    :is(
+      [data-slot='button'],
+      [data-slot$='-trigger'],
+      button[data-slot='form-control']
+    ):not([data-slot='tooltip-trigger']) {
+      position: relative;
+    }
+    :is(
+        [data-slot='button'],
+        [data-slot$='-trigger'],
+        button[data-slot='form-control']
+      ):not([data-slot='tooltip-trigger'])::after {
+      content: '';
+      position: absolute;
+      inset-block: min(0px, calc((100% - 44px) / 2));
+      inset-inline: min(0px, calc((100% - 44px) / 2));
+    }
+    /* Text fields have no pseudo-element; they grow to the touch floor. */
+    input:is([data-slot='input'], [data-slot='form-control']) {
+      min-height: 44px;
+    }
+  }
+}
+
+/* Logo palette: the fish mark's six stops. Identity colours, kept apart from
+   --brand so the UI signature can change without redrawing the logo. Used by
+   the fish symbol and the sidebar app mark. */
+:root {
+  --logo-1: #b802d0;
+  --logo-2: #e62652;
+  --logo-3: #eb6f02;
+  --logo-4: #e59a02;
+  --logo-5: #6ba702;
+  --logo-6: #026bc2;
+}
+
+/* Chart series palette: five hues on the app's chart ramp. The base UI stays
+   neutral, so colour is reserved for data: series, board states and the
+   occupancy ring. Dark theme lifts lightness; hues stay put. */
+@theme {
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-5: var(--series-5);
+}
+
+:root {
+  --series-1: var(--brand);
+  --series-2: oklch(0.62 0.12 190);
+  --series-3: oklch(0.52 0.13 255);
+  --series-4: oklch(0.75 0.15 80);
+  --series-5: oklch(0.58 0.17 330);
+}
+
+.dark {
+  --series-1: var(--brand);
+  --series-2: oklch(0.74 0.12 190);
+  --series-3: oklch(0.66 0.13 255);
+  --series-4: oklch(0.82 0.14 82);
+  --series-5: oklch(0.7 0.16 330);
 }

@@ -12,14 +12,14 @@ import {
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 
-import Breadcrumbs from './components/breadcrumbs'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
+import Breadcrumbs from './components/breadcrumbs'
 
 export function DashboardLayoutPage() {
   const location = useLocation()
   const sidebarStateCookie = Cookies.get('sidebar_state')
-  const defaultOpen = sidebarStateCookie === 'true'
+  const defaultOpen = sidebarStateCookie !== 'false'
 
   const { data: session, isLoading, error } = useSession()
 
@@ -28,13 +28,17 @@ export function DashboardLayoutPage() {
     return (
       <SidebarProvider defaultOpen={defaultOpen}>
         <UserDashboardSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center justify-between gap-2">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <ModeToggle />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumbs />
+        <SidebarInset className="min-w-0">
+          <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
+            <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
+            <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
+              <div className="flex min-w-0 items-center">
+                <Breadcrumbs />
+              </div>
+              <div className="ml-auto flex items-center gap-2">
+                <ModeToggle />
+                <Separator orientation="vertical" className="mr-2 h-4" />
+              </div>
             </div>
           </header>
           <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">
@@ -71,13 +75,20 @@ export function DashboardLayoutPage() {
   return (
     <SidebarProvider>
       <UserDashboardSidebar />
-      <SidebarInset>
-        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 rounded-t-xl">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <ModeToggle />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumbs />
+      <SidebarInset className="min-w-0">
+        <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
+          <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
+          <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
+            <span className="text-sm font-semibold md:hidden">
+              FoodCo RentEase
+            </span>
+            <div className="flex min-w-0 items-center max-md:hidden">
+              <Breadcrumbs />
+            </div>
+            <div className="ml-auto flex items-center gap-2">
+              <ModeToggle />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+            </div>
           </div>
         </header>
         <main className="flex h-full w-full flex-1 flex-col gap-4 p-4 pt-0">

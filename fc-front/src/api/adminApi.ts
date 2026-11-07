@@ -1,7 +1,4 @@
-import type {
-  UserAttributes,
-  UserStallAttributes,
-} from '@server/db/userModel'
+import type { UserAttributes, UserStallAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 import type { UseQueryOptions } from '@tanstack/react-query'
 import type { UserWithRole } from 'better-auth/client/plugins'
@@ -13,17 +10,17 @@ export type GetUsersResponse = {
   users: (UserWithRole & Partial<Pick<UserAttributes, 'phone'>>)[]
 }
 
-export type GetRentalsResponse = {
+type GetRentalsResponse = {
   user: UserStallAttributes[]
 }
 
-export type SendReminderEmailResponse = {
+type SendReminderEmailResponse = {
   to: string
   subject: string
   text: string
 }
 
-export async function fetchUsers(): Promise<GetUsersResponse> {
+async function fetchUsers(): Promise<GetUsersResponse> {
   const { data } = await authClient.admin.listUsers({
     query: {
       sortBy: 'name',
@@ -40,12 +37,20 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
   return { users: data.users }
 }
 
-export async function fetchRentals(): Promise<GetRentalsResponse> {
+async function fetchRentals(): Promise<GetRentalsResponse> {
   const res = await api.users['rentals'].$get()
 
   if (!res.ok) {
     const data = await res.json()
-    throw new Error(data.error)
+    const message =
+      ('message' in data && typeof data.message === 'string'
+        ? data.message
+        : undefined) ??
+      ('error' in data && typeof data.error === 'string'
+        ? data.error
+        : undefined) ??
+      `Request failed with status ${res.status}`
+    throw new Error(message)
   }
 
   const data = await res.json()

@@ -14,12 +14,12 @@ const FishSymbolIcon = () => {
       >
         <defs>
           <linearGradient id="customGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#b802d0" />
-            <stop offset="20%" stopColor="#e62652" />
-            <stop offset="40%" stopColor="#eb6f02" />
-            <stop offset="60%" stopColor="#e59a02" />
-            <stop offset="80%" stopColor="#6ba702" />
-            <stop offset="100%" stopColor="#026bc2" />
+            <stop offset="0%" style={{ stopColor: 'var(--logo-1)' }} />
+            <stop offset="20%" style={{ stopColor: 'var(--logo-2)' }} />
+            <stop offset="40%" style={{ stopColor: 'var(--logo-3)' }} />
+            <stop offset="60%" style={{ stopColor: 'var(--logo-4)' }} />
+            <stop offset="80%" style={{ stopColor: 'var(--logo-5)' }} />
+            <stop offset="100%" style={{ stopColor: 'var(--logo-6)' }} />
           </linearGradient>
         </defs>
         <path d="M2 16s9-15 20-4C11 23 2 8 2 8" />

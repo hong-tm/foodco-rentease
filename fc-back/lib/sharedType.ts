@@ -1,44 +1,56 @@
 import { z } from 'zod/v4'
 
+const nameField = z
+  .string()
+  .min(2, {
+    error: (iss) => {
+      return `Name must have ${iss.minimum} characters or more`
+    },
+  })
+  .max(32, {
+    error: (iss) => {
+      return `Name must have ${iss.maximum} characters or less`
+    },
+  })
+
+function passwordField({
+  max = true,
+  upper = true,
+}: { max?: boolean; upper?: boolean } = {}) {
+  let field = z.string().min(8, {
+    error: (iss) => {
+      return `Password must have ${iss.minimum} characters or more`
+    },
+  })
+  if (max) {
+    field = field.max(32, {
+      error: (iss) => {
+        return `Password must have ${iss.maximum} characters or less`
+      },
+    })
+  }
+  if (upper) {
+    field = field.regex(/(?=.*[A-Z])/, {
+      error: 'At least one uppercase character',
+    })
+  }
+  return field
+    .regex(/(?=.*[a-z])/, {
+      error: 'At least one lowercase character',
+    })
+    .regex(/(?=.*\d)/, {
+      error: 'At least one digit',
+    })
+    .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
+      error: 'At least one special character',
+    })
+}
+
 export const signupformSchema = z
   .object({
-    name: z
-      .string()
-      .min(2, {
-        error: (iss) => {
-          return `Name must have ${iss.minimum} characters or more`
-        },
-      })
-      .max(32, {
-        error: (iss) => {
-          return `Name must have ${iss.maximum} characters or less`
-        },
-      }),
+    name: nameField,
     email: z.email({ error: 'Invalid email address' }),
-    password: z
-      .string()
-      .min(8, {
-        error: (iss) => {
-          return `Password must have ${iss.minimum} characters or more`
-        },
-      })
-      .max(32, {
-        error: (iss) => {
-          return `Password must have ${iss.maximum} characters or less`
-        },
-      })
-      .regex(/(?=.*[A-Z])/, {
-        error: 'At least one uppercase character',
-      })
-      .regex(/(?=.*[a-z])/, {
-        error: 'At least one lowercase character',
-      })
-      .regex(/(?=.*\d)/, {
-        error: 'At least one digit',
-      })
-      .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
-        error: 'At least one special character',
-      }),
+    password: passwordField(),
     confirmPassword: z.string(),
     token: z.string(),
   })
@@ -49,30 +61,7 @@ export const signupformSchema = z
 
 export const signinFormSchema = z.object({
   email: z.string().email({ error: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(8, {
-      error: (iss) => {
-        return `Password must have ${iss.minimum} characters or more`
-      },
-    })
-    .max(32, {
-      error: (iss) => {
-        return `Password must have ${iss.maximum} characters or less`
-      },
-    })
-    .regex(/(?=.*[A-Z])/, {
-      error: 'At least one uppercase character',
-    })
-    .regex(/(?=.*[a-z])/, {
-      error: 'At least one lowercase character',
-    })
-    .regex(/(?=.*\d)/, {
-      error: 'At least one digit',
-    })
-    .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
-      error: 'At least one special character',
-    }),
+  password: passwordField(),
   rememberMe: z.boolean(),
   token: z.string(),
 })
@@ -83,27 +72,7 @@ export const forgotPasswordFormSchema = z.object({
 
 export const resetPasswordFormSchema = z
   .object({
-    password: z
-      .string()
-      .min(8, {
-        error: (iss) => {
-          return `Password must have ${iss.minimum} characters or more`
-        },
-      })
-      .max(32, {
-        error: (iss) => {
-          return `Password must have ${iss.maximum} characters or less`
-        },
-      })
-      .regex(/(?=.*[a-z])/, {
-        error: 'At least one lowercase character',
-      })
-      .regex(/(?=.*\d)/, {
-        error: 'At least one digit',
-      })
-      .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
-        error: 'At least one special character',
-      }),
+    password: passwordField({ upper: false }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -121,25 +90,7 @@ export const changePasswordFormSchema = z
         },
       })
       .regex(/[a-zA-Z0-9]/, { error: 'Password must be alphanumeric' }),
-    password: z
-      .string()
-      .min(8, {
-        error: (iss) => {
-          return `Password must have ${iss.minimum} characters or more`
-        },
-      })
-      .regex(/(?=.*[A-Z])/, {
-        error: 'At least one uppercase character',
-      })
-      .regex(/(?=.*[a-z])/, {
-        error: 'At least one lowercase character',
-      })
-      .regex(/(?=.*\d)/, {
-        error: 'At least one digit',
-      })
-      .regex(/[$&+,:;=?@#|'<>.^*()%!-]/, {
-        error: 'At least one special character',
-      }),
+    password: passwordField({ max: false }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -148,21 +99,10 @@ export const changePasswordFormSchema = z
   })
 
 export const updateUsernameFormSchema = z.object({
-  name: z
-    .string()
-    .min(2, {
-      error: (iss) => {
-        return `Name must have ${iss.minimum} characters or more`
-      },
-    })
-    .max(32, {
-      error: (iss) => {
-        return `Name must have ${iss.maximum} characters or less`
-      },
-    }),
+  name: nameField,
 })
 
-export const feedbackSchema = z.object({
+const feedbackSchema = z.object({
   id: z.number().int().positive().min(1),
   happiness: z
     .number({ error: 'Must choose a happiness' })
@@ -183,36 +123,6 @@ export const feedbackSchema = z.object({
 })
 
 export const createFeedbackSchema = feedbackSchema.omit({ id: true })
-
-export const userSchema = z.object({
-  id: z.string(),
-  email: z.string(),
-  emailVerified: z.boolean(),
-  name: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  image: z.string().optional(),
-  phone: z.string().optional(),
-  banned: z.boolean().optional(),
-  role: z.string().optional(),
-  banReason: z.string().optional(),
-  banExpires: z.date().optional(),
-})
-
-export const sessionSchema = z.object({
-  id: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  userId: z.string(),
-  expiresAt: z.date(),
-  token: z.string(),
-  ipAddress: z.string().optional(),
-  userAgent: z.string().optional(),
-  impersonatedBy: z.string().optional(),
-  user: userSchema,
-})
-
-export const rentalsSchema = z.object({})
 
 export const updateStallSchema = z
   .object({
@@ -244,7 +154,7 @@ export const emailSchema = z.object({
   text: z.string(),
 })
 
-export const appointmentSchema = z.object({
+const appointmentSchema = z.object({
   notificationId: z.number().int().positive().min(1),
   userId: z.string(),
   notificationMessage: z.string(),
@@ -264,7 +174,7 @@ export const updateAppointmentStatusSchema = z.object({
   stallNumber: z.number().int().positive().min(1),
 })
 
-export const paymentSchema = z.object({
+const paymentSchema = z.object({
   paymentId: z.string(),
   stallId: z.number().int().positive(),
   userId: z.string(),
@@ -284,10 +194,6 @@ export const paymentSchema = z.object({
 
 export type PaymentRecord = z.infer<typeof paymentSchema>
 
-export type CreatePaymentUtilityRequest = z.infer<
-  typeof createPaymentUtilitySchema
->
-
 export type RawPaymentRecord = {
   paymentId: string
   stallId: number
@@ -302,16 +208,6 @@ export type RawPaymentRecord = {
     image: string | null
   } | null
 }
-
-export const createPaymentIntentSchema = z.object({
-  amount: z.number().positive(),
-  stallId: z.number(),
-  userId: z.string(),
-})
-
-export type CreatePaymentIntentRequest = z.infer<
-  typeof createPaymentIntentSchema
->
 
 export const paymentIntentSchema = z.object({
   amount: z.number(),
@@ -332,12 +228,6 @@ export type PaymentNotification = {
   appointmentDate: Date
   stallNumber?: number
   userId?: string | number
-}
-
-export type PaymentIntentParams = {
-  amount: number
-  stallId: number
-  userId: string
 }
 
 export const createPaymentRecordSchema = z.object({
@@ -364,16 +254,6 @@ export type CreatePaymentRecordRequest = z.infer<
   typeof createPaymentRecordSchema
 >
 
-export const createPaymentUtilitySchema = z.object({
-  paymentId: z.string(),
-  stallId: z.number(),
-  userId: z.string(),
-  paymentAmount: z.string(),
-  paymentType: z.string(),
-  paymentStatus: z.boolean(),
-  paymentDate: z.string(),
-})
-
 const utilitiesType = ['water', 'electric', 'rental'] as const
 
 export const stallUtilitiesFormSchema = z.object({
@@ -392,11 +272,3 @@ export const stallUtilitiesFormSchema = z.object({
 })
 
 export type StallUtilitiesFormValues = z.input<typeof stallUtilitiesFormSchema>
-
-export const emailSendSchema = z.object({
-  user: z.object({
-    email: z.email(),
-    id: z.string(),
-  }),
-  url: z.url(),
-})

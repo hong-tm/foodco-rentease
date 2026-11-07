@@ -2,18 +2,13 @@ import { useState } from 'react'
 import { sendReminderEmail } from '@/api/adminApi'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useMutation } from '@tanstack/react-query'
-import { EllipsisVerticalIcon } from 'lucide-react'
+import { MailIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { formatDay } from '@/lib/format'
+import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 
 type UserAction = {
   userName: string
@@ -21,6 +16,7 @@ type UserAction = {
   userStallId: number
   userStallName: string
   stallEndAt: Date
+  emphasis?: 'default' | 'outline'
 }
 
 export function TenantActionButton({
@@ -29,6 +25,7 @@ export function TenantActionButton({
   userStallId,
   userStallName,
   stallEndAt,
+  emphasis = 'outline',
 }: UserAction) {
   const [openSendReminder, setOpenSendReminder] = useState(false)
 
@@ -50,39 +47,34 @@ export function TenantActionButton({
         stallEndAt,
       ).toLocaleDateString()}. \n\nPlease make the payment as soon as possible.\n\nThank you!`,
     }
-    // console.log("Payload being sent:", payload);
-
     mutation.mutate(payload)
   }
 
   return (
     <>
-      <DropdownMenu>
-        <ResponsiveAlertDialog
-          title="Send Reminder Payment Email"
-          description="Are you sure you want to send a reminder email to this tenant?"
-          onClick={handlerReminderEmail}
-          open={openSendReminder}
-          setOpen={setOpenSendReminder}
-        />
+      <ResponsiveAlertDialog
+        title="Send reminder payment email?"
+        description={`Goes to ${userEmail} for ${userStallName} (stall ${userStallId}), ending ${formatDay(stallEndAt)}.`}
+        confirmLabel="Send reminder"
+        onClick={handlerReminderEmail}
+        open={openSendReminder}
+        setOpen={setOpenSendReminder}
+      />
 
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <EllipsisVerticalIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Tenant Action</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={() => setOpenSendReminder(true)}
-            disabled={mutation.isPending}
-          >
-            Send Reminder Email
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button
+        variant={emphasis}
+        size="sm"
+        className={cn(
+          // The icon is taken out of flow so the label, not the icon, gives the
+          // button its baseline; the row's cells share that line (R-VIS-039).
+          'focus-visible:ring-foreground/80 relative focus-visible:ring-1 focus-visible:ring-offset-0 has-[>svg]:pl-8 [&>svg]:absolute [&>svg]:top-1/2 [&>svg]:left-2.5 [&>svg]:-translate-y-1/2',
+        )}
+        onClick={() => setOpenSendReminder(true)}
+        disabled={mutation.isPending}
+      >
+        <MailIcon aria-hidden="true" />
+        {mutation.isPending ? 'Sending…' : 'Send reminder'}
+      </Button>
     </>
   )
 }

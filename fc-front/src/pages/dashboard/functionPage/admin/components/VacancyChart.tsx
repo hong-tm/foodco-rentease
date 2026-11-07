@@ -1,167 +1,151 @@
-import { fetchCurrentVacancyQueryOptions, stallsQueryKey } from '@/api/stallApi'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react'
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from 'recharts'
+import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
+import type { StallUserAttributes } from '@server/db/userModel'
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+
+import { cn } from '@/lib/utils'
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
-const chartConfig = {
-  occupiedStalls: {
-    label: 'Rented',
-    color: 'var(--chart-1)',
-  },
-} satisfies ChartConfig
+import {
+  AISLE_PAIRS,
+  FLOOR_PLAN_SIZE,
+  FRONT_ROW,
+  stallState,
+  type StallState,
+} from '@/lib/floorPlan'
 
+const CELL: Record<StallState, string> = {
+  rented: 'bg-muted text-muted-foreground',
+  vacant: 'border-border bg-brand-soft text-brand-ink',
+  ended: 'bg-destructive-soft text-destructive-ink',
+}
+
+function Cell({ stall }: { stall: StallUserAttributes }) {
+  const state = stallState(stall)
+  return (
+    <span
+      title={`Stall ${stall.stallNumber}: ${state}`}
+      className={cn(
+        'flex h-11 items-center justify-center rounded-md text-sm font-medium tabular-nums',
+        CELL[state],
+      )}
+    >
+      {stall.stallNumber}
+    </span>
+  )
+}
+
+function Key({ tone, label }: { tone: StallState; label: string }) {
+  return (
+    <li className="flex items-center gap-1.5">
+      <span
+        aria-hidden="true"
+        className={cn('size-3 rounded-sm', CELL[tone])}
+      />
+      {label}
+    </li>
+  )
+}
+
+// The food court itself, drawn small: the one picture only this product has.
 export function VacancyChart() {
   const { data, error } = useQuery(fetchCurrentVacancyQueryOptions)
-  const queryClient = useQueryClient()
-
-  queryClient.invalidateQueries({
-    queryKey: stallsQueryKey.getVacancy(),
-  })
 
   if (error) {
     return (
-      <Card className="flex h-full flex-col">
+      <Card>
         <CardHeader>
-          <CardTitle>Error Loading Data</CardTitle>
-          <CardDescription>Unable to fetch stall rental status</CardDescription>
+          <CardTitle>Floor plan</CardTitle>
+          <CardDescription>Stall status could not be loaded.</CardDescription>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  const stalls = [...(data?.stalls ?? [])].sort(
+    (a, b) => a.stallNumber - b.stallNumber,
+  )
+
+  if (stalls.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Floor plan</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Please try again later</p>
+          <ChartEmpty message="No stalls recorded yet" />
         </CardContent>
       </Card>
     )
   }
 
-  const currentMonth = new Date().toLocaleString('en-US', {
-    month: 'long',
-  })
-
-  const totalStalls = data?.totalStalls || 0
-  const rentedStalls =
-    data?.stalls?.filter((stall) => stall.rentStatus === true).length || 0
-  const rentedRate =
-    totalStalls > 0 ? ((rentedStalls / totalStalls) * 100).toFixed(1) : '0.0'
-  const endAngle = totalStalls > 0 ? (rentedStalls / totalStalls) * 360 : 0
-
-  // Analyze vacancy status
-  const vacancyStatus = {
-    status:
-      Number(rentedRate) >= 80
-        ? 'High Demand'
-        : Number(rentedRate) <= 40
-          ? 'Low Occupancy'
-          : 'Moderate',
-    suggestion:
-      Number(rentedRate) >= 80
-        ? 'Consider expanding capacity or adjusting rental rates'
-        : Number(rentedRate) <= 40
-          ? 'Review pricing strategy or improve marketing efforts'
-          : 'Maintain current operations while monitoring trends',
-    trend:
-      Number(rentedRate) >= 60 ? (
-        <ThumbsUpIcon className="h-4 w-4 text-green-500" />
-      ) : (
-        <ThumbsDownIcon className="h-4 w-4 text-red-500" />
-      ),
-  }
-
-  const chartData = [
-    {
-      occupiedStalls: rentedStalls || 0,
-      fill: 'var(--color-occupiedStalls)',
-    },
-  ]
+  const count = (state: StallState) =>
+    stalls.filter((stall) => stallState(stall) === state).length
+  const vacant = count('vacant')
+  const ended = count('ended')
+  const isFloorPlan = stalls.length === FLOOR_PLAN_SIZE
 
   return (
-    <Card className="flex h-full flex-col">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Stall Rental Status</CardTitle>
-        <CardDescription>{currentMonth} Overview</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <RadialBarChart
-            data={chartData}
-            startAngle={0}
-            endAngle={endAngle}
-            innerRadius={80}
-            outerRadius={110}
+    <Card>
+      <CardHeader>
+        <CardTitle>Floor plan</CardTitle>
+        <CardDescription>
+          {vacant} vacant of {stalls.length} stalls.{' '}
+          <Link
+            to="/dashboard/stall-availability"
+            className="hover:text-foreground -my-3 inline-block py-3 underline underline-offset-4"
           >
-            <PolarGrid
-              gridType="circle"
-              radialLines={false}
-              stroke="none"
-              className="first:fill-muted last:fill-background"
-              polarRadius={[86, 74]}
-            />
-            <RadialBar dataKey="occupiedStalls" background cornerRadius={10} />
-            <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                    return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-4xl font-bold"
-                        >
-                          {rentedRate}%
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Rented Rate
-                        </tspan>
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </PolarRadiusAxis>
-          </RadialBarChart>
-        </ChartContainer>
+            Open the stall board
+          </Link>
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="grid grid-cols-7 gap-1.5">
+          {isFloorPlan ? (
+            <>
+              {stalls.slice(0, FRONT_ROW).map((stall) => (
+                <Cell key={stall.stallNumber} stall={stall} />
+              ))}
+              {Array.from({ length: AISLE_PAIRS }, (_, index) => {
+                const left = stalls[FRONT_ROW + index * 2]
+                const right = stalls[FRONT_ROW + index * 2 + 1]
+                return [
+                  <Cell key={left.stallNumber} stall={left} />,
+                  index === 0 ? (
+                    <span
+                      key="aisle"
+                      className="text-muted-foreground col-span-5 row-span-3 flex items-center justify-center text-xs"
+                    >
+                      Central aisle
+                    </span>
+                  ) : null,
+                  <Cell key={right.stallNumber} stall={right} />,
+                ]
+              })}
+              {stalls.slice(FLOOR_PLAN_SIZE - FRONT_ROW).map((stall) => (
+                <Cell key={stall.stallNumber} stall={stall} />
+              ))}
+            </>
+          ) : (
+            stalls.map((stall) => (
+              <Cell key={stall.stallNumber} stall={stall} />
+            ))
+          )}
+        </div>
+        <ul className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
+          <Key tone="vacant" label="Vacant" />
+          <Key tone="rented" label="Rented" />
+          {ended > 0 ? <Key tone="ended" label="Lease ended" /> : null}
+        </ul>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          {currentMonth} rental rate is {rentedRate}%
-          <span className="flex items-center gap-1 text-balance">
-            ({vacancyStatus.status}) {vacancyStatus.trend}
-          </span>
-        </div>
-        <div className="text-muted-foreground leading-none">
-          {rentedStalls} stalls rented out of {totalStalls} total stalls
-        </div>
-        <div className="text-muted-foreground mt-2 text-xs">
-          Suggestion: {vacancyStatus.suggestion}
-        </div>
-      </CardFooter>
     </Card>
   )
 }

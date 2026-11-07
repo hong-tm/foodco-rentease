@@ -43,6 +43,33 @@ export const stallsRoute = new Hono<AuthType>()
 
     return c.json({ tierPrice: validatedTierPrice }, 200)
   })
+  .get('/current-vacancy', async (c) => {
+    const allStalls = await StallTable.findAll({
+      order: ['stallNumber'],
+      include: [
+        {
+          association: 'stallTierNumber',
+        },
+        {
+          association: 'stallOwnerId',
+        },
+      ],
+    })
+
+    const rentedStalls = allStalls.filter((stall) => stall.rentStatus)
+
+    if (!rentedStalls) {
+      return c.json({ message: 'Rented stalls not found!' }, 404)
+    }
+
+    return c.json(
+      {
+        totalStalls: allStalls.length,
+        stalls: rentedStalls,
+      },
+      200,
+    )
+  })
   .get('/:stallOwner', async (c) => {
     const stallOwner = c.req.param('stallOwner')
 
@@ -73,33 +100,6 @@ export const stallsRoute = new Hono<AuthType>()
     }
 
     return c.json({ stalls, user }, 200)
-  })
-  .get('/current-vacancy', async (c) => {
-    const allStalls = await StallTable.findAll({
-      order: ['stallNumber'],
-      include: [
-        {
-          association: 'stallTierNumber',
-        },
-        {
-          association: 'stallOwnerId',
-        },
-      ],
-    })
-
-    const rentedStalls = allStalls.filter((stall) => stall.rentStatus)
-
-    if (!rentedStalls) {
-      return c.json({ message: 'Rented stalls not found!' }, 404)
-    }
-
-    return c.json(
-      {
-        totalStalls: allStalls.length,
-        stalls: rentedStalls,
-      },
-      200,
-    )
   })
   .post(
     '/:stallId',
@@ -137,21 +137,20 @@ export const stallsRoute = new Hono<AuthType>()
       }
 
       // Update stall data
-      await stall.update({
-        stallNumber: body.stallNumber,
-        stallName: body.stallName,
-        description: body.description,
-        stallImage: body.stallImage,
-        stallSize: body.stallSize,
-        stallOwner: user?.id || undefined,
-        rentStatus: body.rentStatus,
-        startAt: body.startAt,
-        endAt: body.endAt,
-        stallTierNo: body.stallTierNumber.tierId,
-      })
-
-      // Save the changes
-      const { data: savedStall, error } = await tryCatch(stall.save())
+      const { data: updatedStall, error } = await tryCatch(
+        stall.update({
+          stallNumber: body.stallNumber,
+          stallName: body.stallName,
+          description: body.description,
+          stallImage: body.stallImage,
+          stallSize: body.stallSize,
+          stallOwner: user?.id || undefined,
+          rentStatus: body.rentStatus,
+          startAt: body.startAt,
+          endAt: body.endAt,
+          stallTierNo: body.stallTierNumber.tierId,
+        }),
+      )
 
       if (error) {
         c.var.logger.error(
@@ -161,6 +160,6 @@ export const stallsRoute = new Hono<AuthType>()
         return c.json({ message: 'Internal Server Error' }, 500)
       }
 
-      return c.json({ stall: savedStall }, 200)
+      return c.json({ stall: updatedStall }, 200)
     },
   )

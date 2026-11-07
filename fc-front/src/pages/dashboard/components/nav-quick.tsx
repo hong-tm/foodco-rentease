@@ -1,5 +1,5 @@
 import { ChevronRightIcon, type LucideIcon } from 'lucide-react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import {
   Collapsible,
@@ -32,6 +32,7 @@ export function NavQuick({
     }[]
   }[]
 }) {
+  const { pathname } = useLocation()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Quick Access</SidebarGroupLabel>
@@ -39,7 +40,11 @@ export function NavQuick({
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.title}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.title}
+                isActive={pathname === item.url}
+              >
                 <NavLink to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
@@ -53,7 +58,7 @@ export function NavQuick({
                       <span className="sr-only">Toggle</span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="overflow-hidden data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up">
+                  <CollapsibleContent className="data-[state=open]:animate-slide-down data-[state=closed]:animate-slide-up overflow-hidden">
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>

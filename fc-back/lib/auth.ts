@@ -10,21 +10,14 @@ import type { PinoLogger } from 'hono-pino'
 import { Pool } from 'pg'
 
 import { sendEmail } from '../action/email/email.js'
-import env from '../env.js'
+import { pgConfig } from '../db/pgConfig.js'
+import env, { allowedOrigins } from '../env.js'
 import { ac, admin, rental, user } from './permissions.js'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
-  // database: new Database("./database.sqlite"),
-  database: new Pool({
-    database: env.PG_DATABASE,
-    host: 'localhost',
-    user: env.PG_USER,
-    password: env.PG_PASSWORD,
-    port: env.PG_PORT,
-    max: 10,
-  }),
+  database: new Pool({ ...pgConfig, max: 10 }),
   user: {
     additionalFields: {
       phone: {
@@ -43,7 +36,6 @@ export const auth = betterAuth({
       adminRoles: 'admin',
       ac,
       roles: { admin, user, rental },
-      // adminUserIds: env.ADMIN_USER_IDS?.split(",") || [],
     }),
     captcha({
       provider: 'cloudflare-turnstile',
@@ -64,7 +56,6 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendOnSignUp: true,
-    // autoSignInAfterVerification: true,
     expiresIn: 3600, // 1 hour
     sendVerificationEmail: async ({ user, url }) => {
       await sendEmail({
@@ -96,7 +87,7 @@ export const auth = betterAuth({
       },
     },
   },
-  trustedOrigins: env.ALLOWED_ORIGINS?.split(',') || [],
+  trustedOrigins: allowedOrigins,
   session: {
     expiresIn: 60 * 60 * 24 * 3, // 3 days
     updateAge: 60 * 60 * 12, // 1 days (every 1 days the session expiration is updated)

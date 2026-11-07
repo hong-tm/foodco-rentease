@@ -30,7 +30,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/passwod-input'
 import { FishSymbolIcon } from '@/components/fish-symbol'
-// import { PhoneInput } from "@/components/ui/phone-input";
 import { ModeToggle } from '@/components/mode-toggle'
 
 export default function SignUpPage() {
@@ -89,7 +88,9 @@ export default function SignUpPage() {
             <div className="motion-preset-wiggle motion-preset-bounce motion-delay-150 flex w-full items-center justify-center">
               <FishSymbolIcon />
             </div>
-            <CardTitle className="text-2xl">Create New Account</CardTitle>
+            <CardTitle className="type-page-title">
+              Create New Account
+            </CardTitle>
             <CardDescription>
               Join FoodCo-RentEase to Simplify Your Stall Management Today!
             </CardDescription>
@@ -111,7 +112,11 @@ export default function SignUpPage() {
                           Full Name
                         </FormLabel>
                         <FormControl>
-                          <Input id="name" placeholder="John Doe" {...field} />
+                          <Input
+                            id="name"
+                            placeholder="Nurul Aisyah"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -140,27 +145,6 @@ export default function SignUpPage() {
                       </FormItem>
                     )}
                   />
-
-                  {/* Phone Field */}
-                  {/* <FormField
-										control={form.control}
-										name="phone"
-										render={({ field }) => (
-											<FormItem className="grid gap-2">
-												<FormLabel htmlFor="phone" className="select-none">
-													Phone Number
-												</FormLabel>
-												<FormControl>
-													<PhoneInput
-														{...field}
-														defaultCountry="MY"
-														placeholder="012-345 6789"
-													/>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/> */}
 
                   {/* Password Field */}
                   <FormField

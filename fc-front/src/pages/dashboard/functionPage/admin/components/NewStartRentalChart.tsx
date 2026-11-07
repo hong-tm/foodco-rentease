@@ -1,7 +1,7 @@
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
 import { TrendingUpIcon } from 'lucide-react'
-import { LabelList, RadialBar, RadialBarChart } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -12,11 +12,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 export function NewStartRentalChart() {
   const { data: stallData } = useQuery(fetchStallsQueryOptions)
@@ -39,7 +40,7 @@ export function NewStartRentalChart() {
       return {
         month: date.toLocaleString('en-US', { month: 'long' }),
         value: 0,
-        fill: `var(--chart-${(i % 5) + 1})`,
+        shortMonth: date.toLocaleString('en-US', { month: 'short' }),
       }
     })
 
@@ -62,6 +63,7 @@ export function NewStartRentalChart() {
   }
 
   const chartData = processStallData()
+  const hasData = chartData.some((item) => item.value > 0)
 
   // Calculate trending percentage
   const calculateTrending = () => {
@@ -80,16 +82,9 @@ export function NewStartRentalChart() {
 
   const trendingPercentage = calculateTrending()
 
-  const chartConfig = chartData.reduce(
-    (acc: Record<string, { label: string; color: string }>, item) => {
-      acc[item.month] = {
-        label: item.month,
-        color: item.fill,
-      }
-      return acc
-    },
-    {},
-  ) satisfies ChartConfig
+  const chartConfig = {
+    value: { label: 'New rentals', color: 'var(--series-1)' },
+  } satisfies ChartConfig
 
   const getDateRange = () => {
     const currentDate = new Date()
@@ -104,55 +99,79 @@ export function NewStartRentalChart() {
     })} ${currentDate.getFullYear()}`
   }
 
+  const peak =
+    chartData.length > 0
+      ? chartData.reduce((max, item) => (item.value > max.value ? item : max))
+      : null
+
+  if (!hasData) {
+    return (
+      <Card className="flex flex-col">
+        <CardHeader>
+          <CardTitle>New Rental Starts</CardTitle>
+          <CardDescription>{getDateRange()}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 pb-0">
+          <ChartEmpty message="No rental starts in this window" />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
+    <Card className="flex flex-col shadow-none">
+      <CardHeader>
         <CardTitle>New Rental Starts</CardTitle>
         <CardDescription>{getDateRange()}</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent className="flex flex-1 flex-col">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="h-full min-h-[220px] w-full"
         >
-          <RadialBarChart data={chartData} innerRadius={30} outerRadius={100}>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel nameKey="month" />}
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 8, left: 8 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="shortMonth"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
             />
-            <RadialBar dataKey="value" background>
-              <LabelList
-                position="insideStart"
-                dataKey="month"
-                className="fill-white capitalize mix-blend-luminosity"
-                fontSize={11}
-              />
-            </RadialBar>
-          </RadialBarChart>
+            <YAxis
+              width={28}
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+              tickCount={4}
+            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <Bar
+              dataKey="value"
+              fill="var(--color-value)"
+              radius={3}
+              maxBarSize={48}
+            />
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 leading-none font-medium">
-          {chartData.length > 0 &&
-            `Most starts in ${
-              chartData.reduce((max, item) =>
-                item.value > max.value ? item : max,
-              ).month
-            } with ${
-              chartData.reduce((max, item) =>
-                item.value > max.value ? item : max,
-              ).value
-            } stalls`}
+      <CardFooter className="text-muted-foreground text-sm">
+        <div className="flex items-center gap-2">
+          {peak &&
+            peak.value > 0 &&
+            `Most starts in ${peak.month} with ${peak.value} ${
+              peak.value === 1 ? 'stall' : 'stalls'
+            }`}
           <TrendingUpIcon
             className={`h-4 w-4 ${
               trendingPercentage < 0
                 ? 'text-destructive rotate-180'
-                : 'text-green-500'
+                : 'text-muted-foreground'
             }`}
           />
-        </div>
-        <div className="text-muted-foreground leading-none">
-          Showing rental starts by month for {getDateRange()}
         </div>
       </CardFooter>
     </Card>

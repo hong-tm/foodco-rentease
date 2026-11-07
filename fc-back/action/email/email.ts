@@ -1,6 +1,8 @@
 import { Resend } from 'resend'
 
-import env from './../../env.js'
+import env from '../../env.js'
+
+const resend = new Resend(env.RESEND_API)
 
 export async function sendEmail({
   to,
@@ -11,21 +13,14 @@ export async function sendEmail({
   subject: string
   text: string
 }) {
-  const resend = new Resend(env.RESEND_API)
-
-  if (!env.RESEND_API) {
-    throw new Error('RESEND_API is not set')
-  }
-
   const { data, error } = await resend.emails.send({
     from: env.RESEND_FROM_EMAIL,
-    to: to,
-    subject: subject,
-    text: text,
+    to,
+    subject,
+    text,
   })
 
   if (error) {
-    console.log(error)
     throw new Error(error.name)
   }
 

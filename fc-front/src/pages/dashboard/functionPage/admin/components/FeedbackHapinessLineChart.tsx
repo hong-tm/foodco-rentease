@@ -5,7 +5,7 @@ import {
   TrendingDownIcon,
   TrendingUpIcon,
 } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, XAxis } from 'recharts'
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
 import {
   Card,
@@ -16,11 +16,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import {
-  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart'
+import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
 type FeedbackHapinessLineChartProps = {
   className?: string
@@ -34,7 +35,7 @@ export default function FeedbackHapinessLineChart({
   const chartConfig = {
     happiness: {
       label: 'Happiness Score',
-      color: 'var(--chart-1)',
+      color: 'var(--series-1)',
     },
   } satisfies ChartConfig
 
@@ -69,6 +70,23 @@ export default function FeedbackHapinessLineChart({
   }
 
   const analytics = getAnalytics()
+  const hasData = (feedbackHappiness?.length ?? 0) > 0
+
+  if (!hasData) {
+    return (
+      <Card className={className ? `${className} gap-0` : 'gap-0'}>
+        <CardHeader>
+          <CardTitle>Stall Happiness</CardTitle>
+          <CardDescription>
+            Showing happiness scores across different stalls
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartEmpty message="No feedback recorded yet" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className={className}>
@@ -80,12 +98,12 @@ export default function FeedbackHapinessLineChart({
           </CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="overflow-x-auto px-2 sm:p-6">
+      <CardContent className="flex flex-1 flex-col overflow-x-auto px-2 pt-6 pb-0 sm:px-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full min-w-[500px]"
+          className="aspect-auto h-full min-h-[250px] w-full min-w-[500px]"
         >
-          <LineChart
+          <BarChart
             accessibilityLayer
             data={feedbackHappiness}
             margin={{
@@ -104,6 +122,13 @@ export default function FeedbackHapinessLineChart({
               interval={0}
               tickFormatter={(value) => `${value}`}
             />
+            <YAxis
+              width={32}
+              tickLine={false}
+              axisLine={false}
+              tickCount={4}
+              allowDecimals={false}
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent
@@ -112,25 +137,24 @@ export default function FeedbackHapinessLineChart({
                 />
               }
             />
-            <Line
+            <Bar
               dataKey="totalHappiness"
-              type="monotone"
-              stroke="var(--chart-1)"
-              strokeWidth={2}
-              dot={false}
+              fill="var(--color-happiness)"
+              radius={3}
+              maxBarSize={48}
             />
-          </LineChart>
+          </BarChart>
         </ChartContainer>
       </CardContent>
       {analytics && (
         <CardFooter className="flex flex-row flex-wrap items-center justify-between border-t p-4">
           <div className="flex items-center gap-2">
             {analytics.status === 'Positive' ? (
-              <TrendingUpIcon className="h-3.5 w-3.5 text-green-500" />
+              <TrendingUpIcon className="text-muted-foreground h-3.5 w-3.5" />
             ) : analytics.status === 'Concerning' ? (
-              <AlertTriangleIcon className="h-3.5 w-3.5 text-red-500" />
+              <AlertTriangleIcon className="text-destructive h-3.5 w-3.5" />
             ) : (
-              <TrendingDownIcon className="h-3.5 w-3.5 text-yellow-500" />
+              <TrendingDownIcon className="text-muted-foreground h-3.5 w-3.5" />
             )}
             <span className="text-sm font-medium">{analytics.status}</span>
           </div>

@@ -1,3 +1,4 @@
+import type { Context } from 'hono'
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Parser } from '@json2csv/plainjs'
@@ -10,9 +11,9 @@ import {
   Stall as StallTable,
   user as UserTable,
 } from '../db/userModel.js'
+import env from '../env.js'
 import {
   createPaymentRecordSchema,
-  createPaymentUtilitySchema,
   paymentIntentSchema,
   updatePaymentStatusSchema,
 } from '../lib/sharedType.js'
@@ -23,17 +24,28 @@ import type {
 import { tryCatch } from '../lib/try-catch.js'
 import { adminVerify } from '../lib/verifyuser.js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const findPayments = (where?: { userId: string }) =>
+  PaymentTable.findAll({
+    where,
+    order: [['paymentDate', 'DESC']],
+    include: ['paymentUser'],
+  })
+
+function logFailure(c: Context<AuthType>, error: any, label: string) {
+  c.var.logger.error(
+    { cause: error.cause, message: error.message },
+    label,
+  )
+}
+
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-02-24.acacia',
 })
 
 export const paymentRoutes = new Hono<AuthType>()
   .get('/records', async (c) => {
     try {
-      const payments = await PaymentTable.findAll({
-        order: [['paymentDate', 'DESC']],
-        include: ['paymentUser'],
-      })
+      const payments = await findPayments()
 
       if (!payments) {
         return c.json({ message: 'Payment not found!' }, 404)
@@ -41,10 +53,7 @@ export const paymentRoutes = new Hono<AuthType>()
 
       return c.json(payments, 200)
     } catch (error: any) {
-      c.var.logger.error(
-        { cause: error.cause, message: error.message },
-        'Get Payment Records Error',
-      )
+      logFailure(c, error, 'Get Payment Records Error')
       return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
@@ -57,7 +66,7 @@ export const paymentRoutes = new Hono<AuthType>()
         const { amount, stallId, userId } = c.req.valid('json')
 
         const paymentIntent = await stripe.paymentIntents.create({
-          amount: amount * 100,
+          amount: Math.round(amount * 100),
           currency: 'myr',
           metadata: {
             stallId: stallId.toString(),
@@ -70,10 +79,7 @@ export const paymentRoutes = new Hono<AuthType>()
         }
         return c.json(response, 201)
       } catch (error: any) {
-        c.var.logger.error(
-          { cause: error.cause, message: error.message },
-          'Create Payment Intent Error',
-        )
+        logFailure(c, error, 'Create Payment Intent Error')
         return c.json({ message: 'Internal Server Error!' }, 500)
       }
     },
@@ -141,10 +147,7 @@ export const paymentRoutes = new Hono<AuthType>()
 
         return c.json(paymentRecord, 201)
       } catch (error: any) {
-        c.var.logger.error(
-          { cause: error.cause, message: error.message },
-          'Create Payment Record Error',
-        )
+        logFailure(c, error, 'Create Payment Record Error')
         return c.json({ message: 'Internal Server Error' }, 500)
       }
     },
@@ -173,17 +176,14 @@ export const paymentRoutes = new Hono<AuthType>()
 
         return c.json(payment, 201)
       } catch (error: any) {
-        c.var.logger.error(
-          { cause: error.cause, message: error.message },
-          'Update Payment Status Error',
-        )
+        logFailure(c, error, 'Update Payment Status Error')
         return c.json({ message: 'Internal Sever Error!' }, 500)
       }
     },
   )
   .post(
     '/create-utility-payment',
-    zValidator('json', createPaymentUtilitySchema, (result, c) => {
+    zValidator('json', createPaymentRecordSchema, (result, c) => {
       if (!result.success) {
         return c.json({ message: 'Invalid payment data!' }, 400)
       }
@@ -204,17 +204,11 @@ export const paymentRoutes = new Hono<AuthType>()
   )
   .get('/download-pdf', adminVerify(), async (c) => {
     const { data: payments, error } = await tryCatch(
-      PaymentTable.findAll({
-        order: [['paymentDate', 'DESC']],
-        include: ['paymentUser'],
-      }),
+      findPayments(),
     )
 
     if (error) {
-      c.var.logger.error(
-        { cause: error.cause, message: error.message },
-        'Download PDF Error',
-      )
+      logFailure(c, error, 'Download PDF Error')
       return c.json({ message: 'Internal Server Error' }, 500)
     }
 
@@ -222,17 +216,11 @@ export const paymentRoutes = new Hono<AuthType>()
   })
   .get('/download-csv', adminVerify(), async (c) => {
     try {
-      const payments = await PaymentTable.findAll({
-        order: [['paymentDate', 'DESC']],
-        include: ['paymentUser'],
-      })
+      const payments = await findPayments()
 
       return await generateCSV(payments)
     } catch (error: any) {
-      c.var.logger.error(
-        { cause: error.cause, message: error.message },
-        'Download CSV Error',
-      )
+      logFailure(c, error, 'Download CSV Error')
       return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
@@ -241,18 +229,11 @@ export const paymentRoutes = new Hono<AuthType>()
       const userId = c.get('user')?.id
       if (!userId) return c.json({ error: 'User not found' }, 401)
 
-      const payments = await PaymentTable.findAll({
-        where: { userId },
-        order: [['paymentDate', 'DESC']],
-        include: ['paymentUser'],
-      })
+      const payments = await findPayments({ userId })
 
       return await generatePDF(payments)
     } catch (error: any) {
-      c.var.logger.error(
-        { cause: error.cause, message: error.message },
-        'Download Rental PDF Error',
-      )
+      logFailure(c, error, 'Download Rental PDF Error')
       return c.json({ message: 'Internal Server Error' }, 500)
     }
   })
@@ -261,18 +242,11 @@ export const paymentRoutes = new Hono<AuthType>()
       const userId = c.get('user')?.id
       if (!userId) return c.json({ error: 'User not found' }, 401)
 
-      const payments = await PaymentTable.findAll({
-        where: { userId },
-        order: [['paymentDate', 'DESC']],
-        include: ['paymentUser'],
-      })
+      const payments = await findPayments({ userId })
 
       return await generateCSV(payments)
     } catch (error: any) {
-      c.var.logger.error(
-        { cause: error.cause, message: error.message },
-        'Download Rental CSV Error',
-      )
+      logFailure(c, error, 'Download Rental CSV Error')
       return c.json({ message: 'Internal Server Error' }, 500)
     }
   })

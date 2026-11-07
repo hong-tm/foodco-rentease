@@ -179,21 +179,19 @@ const CheckoutForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="mb-4 text-lg font-semibold">
+      <div className="type-section-title mb-4 tabular-nums">
         Amount to pay: RM{amount.toFixed(2)}
       </div>
       <PaymentElement />
       {errorMessage && (
-        <div className="mt-2 text-sm text-red-500">{errorMessage}</div>
+        <div role="alert" className="text-destructive mt-2 text-sm">
+          {errorMessage}
+        </div>
       )}
       <div className="mt-4">
         <Button
           type="submit"
-          className={`w-full ${
-            paymentStatus === 'success'
-              ? 'bg-green-500 text-white hover:bg-green-600'
-              : ''
-          }`}
+          className="w-full"
           disabled={
             !stripe ||
             paymentStatus === 'processing' ||
