@@ -1,6 +1,5 @@
 import type {
   CreatePaymentRecordRequest,
-  CreatePaymentUtilityRequest,
   PaymentIntentRequest,
   PaymentIntentResponse,
   PaymentRecord,
@@ -124,7 +123,7 @@ export const updatePaymentStatus = async ({
 }
 
 export async function createUtilityPaymentRecord(
-  data: CreatePaymentUtilityRequest,
+  data: CreatePaymentRecordRequest,
 ): Promise<PaymentRecord> {
   const session = await authClient.getSession()
   const token = session?.data?.session?.token
