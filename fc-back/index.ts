@@ -6,7 +6,6 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import type { TurnstileServerValidationResponse } from '@marsidev/react-turnstile'
 import Sequelize from '@sequelize/core'
-// import { SqliteDialect } from "@sequelize/sqlite3";
 import { PostgresDialect } from '@sequelize/postgres'
 import { pinoLogger } from 'hono-pino'
 import { rateLimiter } from 'hono-rate-limiter'
@@ -25,14 +24,14 @@ import {
   user,
   verification,
 } from './db/userModel.js'
-import env from './env.js'
+import { pgConfig } from './db/pgConfig.js'
+import env, { allowedOrigins } from './env.js'
 import { initSentry } from './instrument.js'
 import { auth, type AuthType } from './lib/auth.js'
 import { expensesRoute } from './routes/expensesRoute.js'
 import { feedbacksRoute } from './routes/feedbacksRoute.js'
 import { notificationsRoutes } from './routes/notificationsRoutes.js'
 import { paymentRoutes } from './routes/paymentRoutes.js'
-// import initDB from "./db/initDB.js";
 import { stallsRoute } from './routes/stallsRoute.js'
 import { usersRoute } from './routes/usersRoute.js'
 
@@ -41,10 +40,6 @@ const app = new Hono<AuthType>()
 if (env.NODE_ENV === 'production') {
   initSentry()
 }
-
-const allowedOrigins = env.ALLOWED_ORIGINS?.split(',') || []
-const verifyEndpoint = env.TURNSTILE_VERIFY_URL
-const secret = env.TURNSTILE_SECRET_KEY
 
 app.use('*', async (c, next) => {
   const session = await auth.api.getSession({ headers: c.req.raw.headers })
@@ -84,26 +79,6 @@ app.get('/api', (c) => {
   return c.text('API is running!')
 })
 
-// app.get("/api/auth/*", (c) => auth.handler(c.req.raw));
-// app.post("/api/auth/*", (c) => auth.handler(c.req.raw));
-
-// app.use(
-//   '/api/auth/*', // or replace with "*" to enable cors for all routes
-//   cors({
-//     origin: (origin, _) => {
-//       if (allowedOrigins.includes(origin)) {
-//         return origin
-//       }
-//       return undefined
-//     },
-//     allowHeaders: ['Content-Type', 'Authorization'],
-//     allowMethods: ['POST', 'GET', 'OPTIONS'],
-//     exposeHeaders: ['Content-Length'],
-//     maxAge: 600,
-//     credentials: true,
-//   }),
-// )
-
 app.get('/session', async (c) => {
   const session = c.get('session')
   const user = c.get('user')
@@ -121,16 +96,14 @@ app.post('/api/auth/verify', async (c) => {
     // Parse the request body (as JSON)
     const { token } = await c.req.json()
 
-    console.log('Token from form:', token)
-
     if (!token) {
       return c.json({ success: false, error: 'Token is required' }, 400)
     }
 
     // Perform the Turnstile validation
-    const response = await fetch(verifyEndpoint, {
+    const response = await fetch(env.TURNSTILE_VERIFY_URL, {
       method: 'POST',
-      body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(
+      body: `secret=${encodeURIComponent(env.TURNSTILE_SECRET_KEY)}&response=${encodeURIComponent(
         token,
       )}`,
       headers: {
@@ -163,7 +136,6 @@ app.post('/api/auth/verify', async (c) => {
 })
 
 app.on(['POST', 'GET'], '/api/auth/*', (c) => {
-  // const subPath = c.req.param("*");
   return auth.handler(c.req.raw)
 })
 
@@ -171,7 +143,7 @@ app.use(
   pinoLogger({
     pino: pino(
       {
-        level: env.LOG_LEVEL || 'info',
+        level: env.LOG_LEVEL,
       },
       env.NODE_ENV === 'production'
         ? undefined
@@ -218,14 +190,8 @@ app.use('*', serveStatic({ path: './webpage/index.html' }))
 
 //sequalize
 const sequelize = new Sequelize({
-  // dialect: SqliteDialect,
-  // storage: "./database.sqlite",
   dialect: PostgresDialect,
-  database: env.PG_DATABASE,
-  user: env.PG_USER,
-  password: env.PG_PASSWORD,
-  host: 'localhost',
-  port: env.PG_PORT,
+  ...pgConfig,
   pool: {
     max: 10,
     min: 0,
@@ -248,48 +214,6 @@ const sequelize = new Sequelize({
   ],
 })
 
-export async function syncModels(log = true) {
-  try {
-    await sequelize.sync({})
-    if (log) {
-      console.log('All models were synchronized successfully.')
-    }
-    return true
-  } catch (error) {
-    console.error('Failed to synchronize models:', error)
-    return false
-  }
-}
-
-// async function dropTables() {
-// 	try {
-// 		await sequelize.drop();
-// 		console.log("All tables dropped!");
-// 	} catch (err) {
-// 		console.error("Failed to drop tables:", err);
-// 	}
-// }
-
-// dropTables();
-
-// Sequential initialization with error handling, need initDB.ts in db file
-// async function initializeDatabase() {
-// 	const modelsSynced = await syncModels();
-// 	if (!modelsSynced) {
-// 		console.error("Database initialization aborted: Model sync failed");
-// 		return;
-// 	}
-
-// 	try {
-// 		await initDB();
-// 		console.log("Database initialized successfully");
-// 	} catch (error) {
-// 		console.error("Failed to initialize database:", error);
-// 	}
-// }
-
-// initializeDatabase();
-
 try {
   await sequelize.authenticate()
   console.log('Connection has been established successfully.')
@@ -297,7 +221,6 @@ try {
   console.error('Unable to connect to the database:', error)
 }
 
-//do route up there
 serve(
   {
     fetch: app.fetch,

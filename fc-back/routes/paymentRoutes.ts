@@ -10,6 +10,7 @@ import {
   Stall as StallTable,
   user as UserTable,
 } from '../db/userModel.js'
+import env from '../env.js'
 import {
   createPaymentRecordSchema,
   createPaymentUtilitySchema,
@@ -23,7 +24,7 @@ import type {
 import { tryCatch } from '../lib/try-catch.js'
 import { adminVerify } from '../lib/verifyuser.js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-02-24.acacia',
 })
 

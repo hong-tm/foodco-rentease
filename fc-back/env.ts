@@ -43,8 +43,6 @@ const EnvSchema = z.object({
   LOG_LEVEL: z.string().min(1),
 })
 
-export type env = z.infer<typeof EnvSchema>
-
 // validate
 const envPath = path.resolve(process.cwd(), '.env')
 let envFileKeys: string[] = []
@@ -89,3 +87,5 @@ if (error) {
 }
 
 export default env!
+
+export const allowedOrigins = env!.ALLOWED_ORIGINS.split(',')
