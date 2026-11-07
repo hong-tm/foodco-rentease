@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { literal } from '@sequelize/core'
+import { literal, type Order } from '@sequelize/core'
 
 import { Notification as NotificationTable } from '../db/userModel.js'
 import type { AuthType } from '../lib/auth.js'
@@ -10,23 +10,27 @@ import {
 } from '../lib/sharedType.js'
 import { tryCatch } from '../lib/try-catch.js'
 
+type ReadRank = { unread: number; read: number; rejected: number }
+
+// notificationRead: null = unread, true = read, false = rejected
+const orderByRead = (rank: ReadRank): Order => [
+  [
+    literal(`
+      CASE
+        WHEN "notificationRead" IS NULL THEN ${rank.unread}
+        WHEN "notificationRead" = true THEN ${rank.read}
+        ELSE ${rank.rejected}
+      END
+    `),
+    'ASC',
+  ],
+  ['appointmentDate', 'ASC'],
+]
+
 export const notificationsRoutes = new Hono<AuthType>()
   .get('/', async (c) => {
     const notifications = await NotificationTable.findAll({
-      order: [
-        [
-          // Custom order: null -> true -> false
-          literal(`
-						CASE 
-							WHEN "notificationRead" IS NULL THEN 1
-							WHEN "notificationRead" = true THEN 2
-							ELSE 3
-						END
-					`),
-          'ASC',
-        ],
-        ['appointmentDate', 'ASC'],
-      ],
+      order: orderByRead({ unread: 1, read: 2, rejected: 3 }),
     })
 
     if (!notifications) {
@@ -39,20 +43,7 @@ export const notificationsRoutes = new Hono<AuthType>()
     const userId = c.req.param('userId')
     const notifications = await NotificationTable.findAll({
       where: { userId },
-      order: [
-        [
-          // Custom order: true -> null -> false
-          literal(`
-						CASE 
-							WHEN "notificationRead" = true THEN 1
-							WHEN "notificationRead" IS NULL THEN 2
-							ELSE 3
-						END
-					`),
-          'ASC',
-        ],
-        ['appointmentDate', 'ASC'],
-      ],
+      order: orderByRead({ read: 1, unread: 2, rejected: 3 }),
     })
 
     if (!notifications) {
