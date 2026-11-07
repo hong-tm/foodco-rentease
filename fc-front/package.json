@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "knip": "knip",
-    "check": "prettier --write ."
+    "check": "prettier --write .",
+    "lint": "oxlint"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",

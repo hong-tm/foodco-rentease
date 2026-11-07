@@ -26,7 +26,16 @@ Step 1 answers: Comments = no, Tests = no (no tests exist in the repo anyway).
 ## Deliberately not changed
 - `if (!result) return 404` branches after Sequelize findAll/create in routes: unreachable, but the front reads `.message` through the Hono client type, so removing them changes the inferred API type. I tried it; fc-front tsc failed; reverted.
 - Unused deps in both package.json and unused shadcn exports in components/ui: removing deps needs lockfile edits; shadcn exports are vendor API surface.
-- Needs owner decision (behaviour/API): `/notifications/:userId` has no ownership check; `/current-vacancy` shadowed by `/:stallOwner`; `amount * 100` float; `expensesRoute` demo route; unused-but-required env keys (EMAIL_VERIFICATION_CALLBACK_URL, DB_FILE_NAME, STRIPE_DOMAIN, STRIPE_WEBHOOK_*); swallowed DB connect failure; `rememberMe` checkbox not bound to the form; CORS falls back to first origin; `SENTRY_DNS` spelling; stall `update` + `save` double write.
+- Resolved flagged owner-decision items (2026-11-07):
+  - Security: Added ownership check on `/notifications/:userId` verifying current authenticated user matches `:userId` or has admin role (returns 401/403).
+  - Route shadowing: Reordered `/current-vacancy` before `/:stallOwner` in `stallsRoute` to prevent `/current-vacancy` being captured as a stall owner ID parameter.
+  - Float precision: Applied `Math.round(amount * 100)` for Stripe payment intent amount conversion in `paymentRoutes`.
+  - Demo route: Unmounted and deleted `expensesRoute` in backend.
+  - Login `rememberMe`: Wrapped `rememberMe` Checkbox in `FormField` in `SignInPage.tsx` so state connects to form submission.
+  - Stall double write: Removed redundant `stall.save()` call after `stall.update(...)` in `stallsRoute`.
+  - Error handling & environment: Added clean `process.exit(1)` upon database connection failure at startup; corrected config typo `SENTRY_DNS` -> `SENTRY_DSN` with backward-compatible fallback in `env.ts` and `instrument.ts`.
+  - Frontend scripts: Added `"lint": "oxlint"` in `fc-front/package.json` for standardized verification.
+  - Temporary files: Cleaned up `.claude/` and added `.claude/` to `.gitignore`.
 - Front, not done (larger or behaviour-affecting): notification/session query-key overrides that skip invalidation (A3), merging fetchStalls/fetchCurrentVacancy (A4), payment type/status label maps, PageShell/QueryError/SubmitButton components, responsive dialog family, `useSession` living in adminApi, toasts fired during render, moving form schemas out of fc-back/lib/sharedType.
 
 ## Final

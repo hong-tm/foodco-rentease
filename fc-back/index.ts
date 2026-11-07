@@ -28,7 +28,6 @@ import { pgConfig } from './db/pgConfig.js'
 import env, { allowedOrigins } from './env.js'
 import { initSentry } from './instrument.js'
 import { auth, type AuthType } from './lib/auth.js'
-import { expensesRoute } from './routes/expensesRoute.js'
 import { feedbacksRoute } from './routes/feedbacksRoute.js'
 import { notificationsRoutes } from './routes/notificationsRoutes.js'
 import { paymentRoutes } from './routes/paymentRoutes.js'
@@ -176,7 +175,6 @@ app.use(
 
 export const apiRoutes = app
   .basePath('/api')
-  .route('/expenses', expensesRoute)
   .route('/feedbacks', feedbacksRoute)
   .route('/users', usersRoute)
   .route('/stalls', stallsRoute)
@@ -219,6 +217,7 @@ try {
   console.log('Connection has been established successfully.')
 } catch (error) {
   console.error('Unable to connect to the database:', error)
+  process.exit(1)
 }
 
 serve(

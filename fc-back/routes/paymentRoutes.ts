@@ -66,7 +66,7 @@ export const paymentRoutes = new Hono<AuthType>()
         const { amount, stallId, userId } = c.req.valid('json')
 
         const paymentIntent = await stripe.paymentIntents.create({
-          amount: amount * 100,
+          amount: Math.round(amount * 100),
           currency: 'myr',
           metadata: {
             stallId: stallId.toString(),

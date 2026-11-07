@@ -41,6 +41,16 @@ export const notificationsRoutes = new Hono<AuthType>()
   })
   .get('/:userId', async (c) => {
     const userId = c.req.param('userId')
+    const user = c.get('user')
+
+    if (!user) {
+      return c.json({ message: 'User not authenticated!' }, 401)
+    }
+
+    if (user.id !== userId && user.role !== 'admin') {
+      return c.json({ message: 'Forbidden' }, 403)
+    }
+
     const notifications = await NotificationTable.findAll({
       where: { userId },
       order: orderByRead({ read: 1, unread: 2, rejected: 3 }),

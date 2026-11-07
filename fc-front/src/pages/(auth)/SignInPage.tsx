@@ -197,10 +197,24 @@ export default function SignInPage() {
                     )}
                   />
 
-                  <div className="flex items-center gap-2">
-                    <Checkbox id="remember" />
-                    <Label htmlFor="remember">Remember me</Label>
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="rememberMe"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            id="remember"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <Label htmlFor="remember" className="cursor-pointer select-none">
+                          Remember me
+                        </Label>
+                      </FormItem>
+                    )}
+                  />
 
                   {/* Turnstile */}
                   <Turnstile

@@ -34,7 +34,11 @@ const EnvSchema = z.object({
 
   NODE_ENV: z.string().default('development'),
   PORT: z.coerce.number().min(1),
-  SENTRY_DNS: z.string().min(1),
+  SENTRY_DSN: z
+    .string()
+    .min(1)
+    .optional()
+    .default(process.env.SENTRY_DNS || ''),
 
   STRIPE_SECRET_KEY: z.string(),
   STRIPE_DOMAIN: z.string(),
@@ -62,7 +66,7 @@ try {
 }
 
 const schemaKeys = Object.keys(EnvSchema.shape)
-const extraKeys = envFileKeys.filter((key) => !schemaKeys.includes(key))
+const extraKeys = envFileKeys.filter((key) => !schemaKeys.includes(key) && key !== "SENTRY_DNS")
 
 const red = (str: string) => `\x1b[31m${str}\x1b[0m`
 
