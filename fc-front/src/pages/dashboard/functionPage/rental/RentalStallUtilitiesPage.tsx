@@ -13,5 +13,3 @@ export function RentalStallUtilitiesPage() {
     </div>
   )
 }
-
-export default RentalStallUtilitiesPage

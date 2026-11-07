@@ -173,5 +173,3 @@ export function RentalDashboard() {
     </div>
   )
 }
-
-export default RentalDashboard

@@ -20,7 +20,7 @@ export const stripePromise = loadStripe(
 )
 
 // API Functions
-export async function getAllPaymentRecords(): Promise<PaymentRecord[]> {
+async function getAllPaymentRecords(): Promise<PaymentRecord[]> {
   const session = await authClient.getSession()
   const token = session?.data?.session?.token
 
@@ -155,11 +155,3 @@ export const getAllPaymentRecordsQueryOptions = queryOptions<PaymentRecord[]>({
   queryFn: getAllPaymentRecords,
   staleTime: 1000 * 60 * 1, // 1 minute
 })
-
-// Helper Functions
-export function removePaymentRecordById(
-  records: PaymentRecord[] | undefined,
-  id: string,
-): PaymentRecord[] {
-  return records ? records.filter((record) => record.paymentId !== id) : []
-}

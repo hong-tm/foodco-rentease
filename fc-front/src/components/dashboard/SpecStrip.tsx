@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
-export type SpecCell = {
+type SpecCell = {
   label: string
   value: ReactNode
   /** Something is wrong here: a red mark on the value. */

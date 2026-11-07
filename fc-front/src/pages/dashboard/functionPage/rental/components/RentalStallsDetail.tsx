@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-export type RentalStallsDetailProps = {
+type RentalStallsDetailProps = {
   stalls?: StallUserAttributes[]
   isLoading?: boolean
   error?: Error | null

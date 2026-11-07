@@ -13,5 +13,3 @@ export function TenantInformationPage() {
     </div>
   )
 }
-
-export default TenantInformationPage

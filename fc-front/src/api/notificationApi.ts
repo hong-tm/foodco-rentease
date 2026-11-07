@@ -1,7 +1,4 @@
-import type {
-  NotificationAttributes,
-  UserAttributes,
-} from '@server/db/userModel'
+import type { NotificationAttributes } from '@server/db/userModel'
 import {
   createAppointmentSchema,
   updateAppointmentStatusSchema,
@@ -10,11 +7,6 @@ import { queryOptions } from '@tanstack/react-query'
 import { z } from 'zod/v4'
 
 import { api } from '@/lib/api'
-
-export type NotificationResponse = {
-  notification: NotificationAttributes[] // Assuming your feedback array is of type 'Feedback'
-  userId: UserAttributes[]
-}
 
 type AppointmentData = z.infer<typeof createAppointmentSchema>
 
@@ -46,7 +38,7 @@ export async function updateAppointmentStatus(
   return data.notification
 }
 
-export async function fetchNotifications() {
+async function fetchNotifications() {
   const res = await api.notifications.$get()
 
   if (!res.ok) {
@@ -58,7 +50,7 @@ export async function fetchNotifications() {
   return data.notification as NotificationAttributes[]
 }
 
-export async function fetchUserNotifications(userId: string) {
+async function fetchUserNotifications(userId: string) {
   const res = await api.notifications[':userId'].$get({
     param: { userId },
   })

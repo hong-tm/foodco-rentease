@@ -13,5 +13,3 @@ export function StallAvailabilityPage() {
     </div>
   )
 }
-
-export default StallAvailabilityPage

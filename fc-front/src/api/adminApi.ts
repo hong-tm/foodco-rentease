@@ -10,17 +10,17 @@ export type GetUsersResponse = {
   users: (UserWithRole & Partial<Pick<UserAttributes, 'phone'>>)[]
 }
 
-export type GetRentalsResponse = {
+type GetRentalsResponse = {
   user: UserStallAttributes[]
 }
 
-export type SendReminderEmailResponse = {
+type SendReminderEmailResponse = {
   to: string
   subject: string
   text: string
 }
 
-export async function fetchUsers(): Promise<GetUsersResponse> {
+async function fetchUsers(): Promise<GetUsersResponse> {
   const { data } = await authClient.admin.listUsers({
     query: {
       sortBy: 'name',
@@ -37,7 +37,7 @@ export async function fetchUsers(): Promise<GetUsersResponse> {
   return { users: data.users }
 }
 
-export async function fetchRentals(): Promise<GetRentalsResponse> {
+async function fetchRentals(): Promise<GetRentalsResponse> {
   const res = await api.users['rentals'].$get()
 
   if (!res.ok) {

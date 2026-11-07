@@ -392,5 +392,3 @@ function FeedbackDeleteButton({
     </Button>
   )
 }
-
-export default FeedbackDisplayPage

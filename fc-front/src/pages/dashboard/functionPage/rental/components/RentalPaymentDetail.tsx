@@ -34,7 +34,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export type RentalPaymentDetailProps = {
+type RentalPaymentDetailProps = {
   records?: PaymentRecord[]
   isLoading?: boolean
 }
