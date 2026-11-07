@@ -4,29 +4,14 @@ import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
+import { AISLE_PAIRS, FLOOR_PLAN_SIZE, FRONT_ROW, stallState } from '@/lib/floorPlan'
+
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 import { StallButton } from './StallButton'
 import { StallsTableSkeleton } from './StallTableSkeleton'
-
-// The board reproduces the recorded floor plan: seven stalls along the front,
-// three back-to-back pairs across the centre aisle, seven along the rear. These
-// are proportions of one map, so they stay page-scoped instead of becoming
-// global tokens. A stall set of any other size falls back to a plain grid.
-const FRONT_ROW = 7
-const AISLE_PAIRS = 3
-const FLOOR_PLAN_SIZE = FRONT_ROW * 2 + AISLE_PAIRS * 2
-
-export type StallState = 'rented' | 'vacant' | 'ended'
-
-export function stallState(stall: StallUserAttributes): StallState {
-  if (!stall.rentStatus) return 'vacant'
-  if (stall.endAt && new Date(stall.endAt).getTime() < Date.now())
-    return 'ended'
-  return 'rented'
-}
 
 function Legend() {
   return (

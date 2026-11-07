@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
 
+import { FLOOR_PLAN_SIZE } from '@/lib/floorPlan'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
 
@@ -28,7 +29,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover'
 
-const stalls = Array.from({ length: 20 }, (_, i) => ({
+const stalls = Array.from({ length: FLOOR_PLAN_SIZE }, (_, i) => ({
   value: `${i + 1}`,
   label: `Stall ${i + 1}`,
 }))

@@ -14,11 +14,13 @@ import {
 } from '@/components/ui/card'
 import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
 
-import { stallState, type StallState } from './StallsTable'
-
-const FRONT_ROW = 7
-const AISLE_PAIRS = 3
-const FLOOR_PLAN_SIZE = FRONT_ROW * 2 + AISLE_PAIRS * 2
+import {
+  AISLE_PAIRS,
+  FLOOR_PLAN_SIZE,
+  FRONT_ROW,
+  stallState,
+  type StallState,
+} from '@/lib/floorPlan'
 
 const CELL: Record<StallState, string> = {
   rented: 'bg-muted text-muted-foreground',

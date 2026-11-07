@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/tooltip'
 
 import StallDetailForm from '../../user/components/StallDetailForm'
-import type { StallState } from './StallsTable'
+import type { StallState } from '@/lib/floorPlan'
 import UpdateStallForm from './UpdateStallForm'
 
 function areaLabel(size?: number | string | null) {
