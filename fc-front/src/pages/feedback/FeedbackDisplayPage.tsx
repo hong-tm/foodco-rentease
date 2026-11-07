@@ -9,11 +9,7 @@ import {
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  AngryIcon,
-  FrownIcon,
-  LaughIcon,
   Loader2Icon,
-  SmileIcon,
   Trash2Icon,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -45,6 +41,7 @@ import {
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SummaryLine } from '@/components/dashboard/SpecStrip'
+import { RATINGS } from './ratings'
 
 // Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the
 // action share is the delete control plus its cell padding. Ratios belong to
@@ -56,13 +53,6 @@ const COLUMN_WIDTH = {
   comment: '50%',
   action: '12%',
 } as const
-
-const RATINGS = [
-  { value: 4, label: 'Very happy', Icon: LaughIcon },
-  { value: 3, label: 'Happy', Icon: SmileIcon },
-  { value: 2, label: 'Unhappy', Icon: FrownIcon },
-  { value: 1, label: 'Very unhappy', Icon: AngryIcon },
-] as const
 
 function ratingOf(value: number) {
   return RATINGS.find((rating) => rating.value === value) ?? null

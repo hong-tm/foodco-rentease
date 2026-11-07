@@ -2,13 +2,7 @@ import { createFeedback } from '@/api/feedbackApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFeedbackSchema } from '@server/lib/sharedType'
 import { useMutation } from '@tanstack/react-query'
-import {
-  AngryIcon,
-  FrownIcon,
-  LaughIcon,
-  Loader2Icon,
-  SmileIcon,
-} from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
@@ -27,15 +21,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 
 import { StallCombobox } from '../../dashboard/components/StallCombobox'
+import { RATINGS } from '../ratings'
 
 const MESSAGE_LIMIT = 255
-
-const RATINGS = [
-  { value: 4, label: 'Very happy', Icon: LaughIcon },
-  { value: 3, label: 'Happy', Icon: SmileIcon },
-  { value: 2, label: 'Unhappy', Icon: FrownIcon },
-  { value: 1, label: 'Very unhappy', Icon: AngryIcon },
-] as const
 
 export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
   const form = useForm<z.infer<typeof createFeedbackSchema>>({
