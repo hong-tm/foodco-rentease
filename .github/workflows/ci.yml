@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-checks:
+    name: Offline checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22"
+
+      # Both packages install with pnpm (each has its own pnpm-lock.yaml);
+      # the version matches the toolchain that produced the lockfiles.
+      - name: Install pnpm
+        run: npm install -g pnpm@11.25.0
+
+      - name: Install backend dependencies
+        run: pnpm -C fc-back install --frozen-lockfile
+
+      - name: Typecheck and build backend
+        run: pnpm -C fc-back build
+
+      - name: Install frontend dependencies
+        run: pnpm -C fc-front install --frozen-lockfile
+
+      - name: Lint frontend
+        run: pnpm -C fc-front lint
+
+      # fc-front builds into fc-back/webpage, so run it after the backend.
+      - name: Build frontend
+        run: pnpm -C fc-front build
