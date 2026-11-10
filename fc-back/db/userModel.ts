@@ -71,7 +71,7 @@ export class user extends Model<
   @Default(false)
   declare emailVerified: CreationOptional<boolean>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare image: CreationOptional<string>
 
   @Attribute(DataTypes.DATE)
@@ -124,11 +124,11 @@ export class account extends Model<
 
   @BelongsTo(() => user, 'userId')
   declare accountUser?: NonAttribute<user>
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   @NotNull
   declare userId: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   @NotNull
   declare providerId: CreationOptional<string>
 
@@ -147,10 +147,10 @@ export class account extends Model<
   @Attribute(DataTypes.DATE)
   declare refreshTokenExpiresAt: CreationOptional<Date>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare scope: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare password: CreationOptional<string>
 
   @Attribute(DataTypes.DATE)
@@ -180,7 +180,7 @@ export class session extends Model<
   @NotNull
   declare expiresAt: CreationOptional<Date>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   @NotNull
   @Unique
   declare token: CreationOptional<string>
@@ -195,18 +195,18 @@ export class session extends Model<
   @NotNull
   declare updatedAt: CreationOptional<Date>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare ipAddress: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare userAgent: CreationOptional<string>
 
   @BelongsTo(() => user, 'userId')
   declare sessionUser?: NonAttribute<user>
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare userId: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   declare impersonatedBy: CreationOptional<string>
 }
 
@@ -222,11 +222,11 @@ export class verification extends Model<
   @NotNull
   declare id: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   @NotNull
   declare identifier: CreationOptional<string>
 
-  @Attribute(DataTypes.STRING)
+  @Attribute(DataTypes.TEXT)
   @NotNull
   declare value: CreationOptional<string>
 
