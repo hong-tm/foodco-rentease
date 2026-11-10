@@ -45,7 +45,7 @@ export function ResponsiveSheetDialog({
               <DrawerDescription>{description}</DrawerDescription>
             )}
           </DrawerHeader>
-          <div className="grid min-w-0 flex-1 auto-rows-min gap-6 overflow-x-hidden px-4">
+          <div className="grid max-h-[75vh] min-w-0 flex-1 auto-rows-min gap-6 overflow-x-hidden overflow-y-auto px-4">
             {children}
           </div>
           <DrawerFooter className="pt-2">

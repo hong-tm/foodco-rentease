@@ -5,6 +5,8 @@ import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
+import { rm } from '@/lib/format'
+
 import {
   ChartContainer,
   ChartLegend,
@@ -19,7 +21,6 @@ import {
   monthSummary,
   monthlyPaidTotals,
 } from '@/components/dashboard/monthlyTotals'
-import { rm } from '@/lib/format'
 
 const TYPES = ['rental', 'water', 'electric'] as const
 
@@ -106,7 +107,7 @@ export default function RentalPaymentDetail({
             <BarChart
               accessibilityLayer
               data={data}
-              margin={{ top: 8, right: 0, left: 8, bottom: 0 }}
+              margin={{ top: 16, right: 0, left: 12, bottom: 0 }}
             >
               <CartesianGrid vertical={false} />
               <XAxis
@@ -116,9 +117,11 @@ export default function RentalPaymentDetail({
                 tickMargin={8}
               />
               <YAxis
-                width={52}
+                width={64}
                 tickFormatter={(v: number) =>
-                  'RM ' + new Intl.NumberFormat('en-MY').format(v)
+                  v >= 1000
+                    ? `RM ${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`
+                    : `RM ${v}`
                 }
                 tickLine={false}
                 axisLine={false}
@@ -141,6 +144,8 @@ export default function RentalPaymentDetail({
                 stackId="payments"
                 fill="var(--color-rental)"
                 maxBarSize={56}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
               <Bar
                 dataKey="utilities"
@@ -148,6 +153,8 @@ export default function RentalPaymentDetail({
                 fill="var(--color-utilities)"
                 radius={[3, 3, 0, 0]}
                 maxBarSize={56}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             </BarChart>
           </ChartContainer>

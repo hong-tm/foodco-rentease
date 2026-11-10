@@ -8,10 +8,7 @@ import {
 } from '@/api/feedbackApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  Loader2Icon,
-  Trash2Icon,
-} from 'lucide-react'
+import { Loader2Icon, Trash2Icon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { formatDay } from '@/lib/format'
@@ -41,6 +38,7 @@ import {
 } from '@/components/ui/table'
 import { PageHeader } from '@/components/dashboard/PageHeader'
 import { SummaryLine } from '@/components/dashboard/SpecStrip'
+
 import { RATINGS } from './ratings'
 
 // Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the

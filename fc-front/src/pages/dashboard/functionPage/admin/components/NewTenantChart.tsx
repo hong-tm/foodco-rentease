@@ -149,6 +149,8 @@ export default function NewTenantChart() {
               fill="var(--color-users)"
               radius={4}
               stackId="stack"
+              animationDuration={400}
+              animationEasing="ease-out"
             >
               <LabelList
                 dataKey="month"

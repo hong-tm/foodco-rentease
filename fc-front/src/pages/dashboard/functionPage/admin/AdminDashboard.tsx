@@ -5,7 +5,7 @@ import { startOfDay } from 'date-fns'
 import { Link } from 'react-router-dom'
 
 import { formatDay } from '@/lib/format'
-import { daysLeft, REMINDER_WINDOW_DAYS } from '@/lib/lease'
+import { REMINDER_WINDOW_DAYS, daysLeft } from '@/lib/lease'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'

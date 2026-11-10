@@ -2,7 +2,7 @@ import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
 
 import { formatDay } from '@/lib/format'
-import { daysLeft, REMINDER_WINDOW_DAYS } from '@/lib/lease'
+import { REMINDER_WINDOW_DAYS, daysLeft } from '@/lib/lease'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'

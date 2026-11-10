@@ -6,24 +6,7 @@ import { NavQuick } from '@/pages/dashboard/components/nav-quick'
 import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
 import { NavUser } from '@/pages/dashboard/components/nav-user'
 import { useQueryClient } from '@tanstack/react-query'
-import {
-  BadgeDollarSignIcon,
-  BellElectricIcon,
-  BookDownIcon,
-  ChartAreaIcon,
-  CommandIcon,
-  CreditCardIcon,
-  FileUserIcon,
-  HistoryIcon,
-  HousePlusIcon,
-  ListOrderedIcon,
-  ScrollIcon,
-  SendIcon,
-  ShieldCheckIcon,
-  SignatureIcon,
-  TowerControlIcon,
-  UsersIcon,
-} from 'lucide-react'
+import { TowerControlIcon } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
@@ -41,13 +24,13 @@ import {
   SidebarMenuSkeleton,
 } from '@/components/ui/sidebar'
 
-type Role = 'admin' | 'user' | 'rental'
+import { getNavData, type NavRole } from './nav-data'
 
 type User = {
   id: string
   name: string
   email: string
-  role: Role
+  role: NavRole
   image?: string
 }
 
@@ -76,7 +59,7 @@ export default function UserDashboardSidebar({
           id: session.user.id,
           name: session.user.name,
           email: session.user.email,
-          role: session.user.role as Role,
+          role: session.user.role as NavRole,
           image: session.user.image === null ? undefined : session.user.image,
         },
         session: {
@@ -156,12 +139,14 @@ export default function UserDashboardSidebar({
 
   const userName = user.name || 'Unknown User'
   const userRole = user.role || 'Unknown Role'
-  const userAvatar = user.image || '/default-avatar.png'
+  const userAvatar = user.image || undefined
   const userEmail = user.email || 'No Email'
   const userImpernate = userSession.impersonatedBy || false
 
-  // Preload user avatar image
-  preloadImage(userAvatar)
+  // Preload user avatar image if present
+  if (userAvatar) {
+    preloadImage(userAvatar)
+  }
 
   function preloadImage(url: string) {
     const img = new Image()
@@ -178,214 +163,8 @@ export default function UserDashboardSidebar({
     </Button>
   ) : null
 
-  const data = {
-    admin: {
-      user: {
-        name: userName,
-        email: userEmail,
-        avatar: userAvatar,
-      },
-      navMain: [
-        {
-          title: 'Dashboard',
-          url: '/dashboard/admin-dashboard',
-          icon: ChartAreaIcon,
-          isActive: true,
-          items: [
-            {
-              title: 'Overview',
-              url: '/dashboard/admin-dashboard',
-            },
-          ],
-        },
-        {
-          title: 'Stall',
-          url: '/dashboard/stall-availability',
-          icon: CommandIcon,
-          items: [
-            {
-              title: 'Stall Availability',
-              url: '/dashboard/stall-availability',
-            },
-            {
-              title: 'Stall Appointments',
-              url: '/dashboard/admin-appointment',
-            },
-          ],
-        },
-        {
-          title: 'Tenant',
-          url: '/dashboard/tenant-information',
-          icon: UsersIcon,
-          items: [
-            {
-              title: 'Tenant Information',
-              url: '/dashboard/tenant-information',
-            },
-            {
-              title: 'Stall Payment',
-              url: '/dashboard/stall-payment',
-            },
-          ],
-        },
-        {
-          title: 'Financial',
-          url: '#',
-          icon: BadgeDollarSignIcon,
-          items: [
-            {
-              title: 'Payments',
-              url: '/dashboard/admin-report',
-            },
-          ],
-        },
-      ],
-      navSecondary: [
-        {
-          title: 'Users',
-          url: '/dashboard/admin',
-          icon: ShieldCheckIcon,
-        },
-        {
-          title: 'Feedback',
-          url: '/dashboard/feedback',
-          icon: SendIcon,
-        },
-      ],
-      navQuick: [
-        {
-          title: 'Tenant Information',
-          url: '/dashboard/tenant-information',
-          icon: BellElectricIcon,
-        },
-        {
-          title: 'Payments',
-          url: '/dashboard/admin-report',
-          icon: BookDownIcon,
-        },
-        {
-          title: 'Stall Appointments',
-          url: '/dashboard/admin-appointment',
-          icon: ScrollIcon,
-        },
-      ],
-    },
-    rental: {
-      user: {
-        name: userName,
-        email: userEmail,
-        avatar: userAvatar,
-      },
-      navMain: [
-        {
-          title: 'Stall',
-          url: '/dashboard/rental-dashboard',
-          icon: CommandIcon,
-          isActive: true,
-          items: [
-            {
-              title: 'Rental Dashboard',
-              url: '/dashboard/rental-dashboard',
-            },
-            {
-              title: 'Stall Utilities',
-              url: '/dashboard/stall-utilities',
-            },
-          ],
-        },
-        {
-          title: 'New Stall',
-          url: '#',
-          icon: SignatureIcon,
-          items: [
-            {
-              title: 'Apply New Stall',
-              url: '/dashboard/stall-availability',
-            },
-            {
-              title: 'User Appointment',
-              url: '/dashboard/user-appointment',
-            },
-          ],
-        },
-        {
-          title: 'Financial',
-          url: '#',
-          icon: BadgeDollarSignIcon,
-          items: [
-            {
-              title: 'Rental Report',
-              url: '/dashboard/rental-report',
-            },
-          ],
-        },
-      ],
-      navSecondary: [],
-      navQuick: [
-        {
-          title: 'Rental Report',
-          url: '/dashboard/rental-report',
-          icon: CreditCardIcon,
-        },
-        {
-          title: 'Apply New Stall',
-          url: '/dashboard/stall-availability',
-          icon: HousePlusIcon,
-        },
-      ],
-    },
-    user: {
-      user: {
-        name: userName,
-        email: userEmail,
-        avatar: userAvatar,
-      },
-      navMain: [
-        {
-          title: 'Main Features',
-          url: '/dashboard/stall-availability',
-          icon: ListOrderedIcon,
-          isActive: true,
-          items: [
-            {
-              title: 'Apply Stall',
-              url: '/dashboard/stall-availability',
-            },
-            {
-              title: 'User Appointment',
-              url: '/dashboard/user-appointment',
-            },
-          ],
-        },
-        {
-          title: 'Financial',
-          url: '#',
-          icon: BadgeDollarSignIcon,
-          items: [
-            {
-              title: 'Payment History',
-              url: '/dashboard/user-report',
-            },
-          ],
-        },
-      ],
-      navSecondary: [],
-      navQuick: [
-        {
-          title: 'Apply Stall',
-          url: '/dashboard/stall-availability',
-          icon: FileUserIcon,
-        },
-        {
-          title: 'Payment History',
-          url: '/dashboard/user-report',
-          icon: HistoryIcon,
-        },
-      ],
-    },
-  }
-
-  const currentRole = (userRole as Role) || 'user'
+  const currentRole = (userRole as NavRole) || 'user'
+  const navData = getNavData(currentRole)
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
@@ -415,15 +194,18 @@ export default function UserDashboardSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="[scrollbar-color:--alpha(var(--foreground)/20)_transparent] [scrollbar-width:thin]">
-        <NavMain items={data[currentRole]?.navMain || []} />
-        <NavQuick items={data[currentRole]?.navQuick} />
-        <NavSecondary
-          items={data[currentRole]?.navSecondary}
-          className="mt-auto"
-        />
+        <NavMain items={navData.navMain} />
+        <NavQuick items={navData.navQuick} />
+        <NavSecondary items={navData.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data[currentRole]?.user} />
+        <NavUser
+          user={{
+            name: userName,
+            email: userEmail,
+            avatar: userAvatar,
+          }}
+        />
       </SidebarFooter>
     </Sidebar>
   )

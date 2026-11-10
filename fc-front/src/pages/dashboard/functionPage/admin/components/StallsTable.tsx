@@ -4,7 +4,12 @@ import { fetchStallsQueryOptions } from '@/api/stallApi'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 
-import { AISLE_PAIRS, FLOOR_PLAN_SIZE, FRONT_ROW, stallState } from '@/lib/floorPlan'
+import {
+  AISLE_PAIRS,
+  FLOOR_PLAN_SIZE,
+  FRONT_ROW,
+  stallState,
+} from '@/lib/floorPlan'
 
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'

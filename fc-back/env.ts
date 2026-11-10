@@ -66,7 +66,9 @@ try {
 }
 
 const schemaKeys = Object.keys(EnvSchema.shape)
-const extraKeys = envFileKeys.filter((key) => !schemaKeys.includes(key) && key !== "SENTRY_DNS")
+const extraKeys = envFileKeys.filter(
+  (key) => !schemaKeys.includes(key) && key !== 'SENTRY_DNS',
+)
 
 const red = (str: string) => `\x1b[31m${str}\x1b[0m`
 

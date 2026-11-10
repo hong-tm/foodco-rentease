@@ -209,7 +209,10 @@ export default function SignInPage() {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <Label htmlFor="remember" className="cursor-pointer select-none">
+                        <Label
+                          htmlFor="remember"
+                          className="cursor-pointer select-none"
+                        >
                           Remember me
                         </Label>
                       </FormItem>

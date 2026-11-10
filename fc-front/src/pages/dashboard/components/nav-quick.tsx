@@ -16,6 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
 
 export function NavQuick({
@@ -33,6 +34,10 @@ export function NavQuick({
   }[]
 }) {
   const { pathname } = useLocation()
+  const { isMobile, setOpenMobile } = useSidebar()
+  const handleNavClick = () => {
+    if (isMobile) setOpenMobile(false)
+  }
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Quick Access</SidebarGroupLabel>
@@ -45,7 +50,7 @@ export function NavQuick({
                 tooltip={item.title}
                 isActive={pathname === item.url}
               >
-                <NavLink to={item.url}>
+                <NavLink to={item.url} onClick={handleNavClick}>
                   <item.icon />
                   <span>{item.title}</span>
                 </NavLink>
@@ -63,7 +68,7 @@ export function NavQuick({
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
-                            <NavLink to={subItem.url}>
+                            <NavLink to={subItem.url} onClick={handleNavClick}>
                               <span>{subItem.title}</span>
                             </NavLink>
                           </SidebarMenuSubButton>

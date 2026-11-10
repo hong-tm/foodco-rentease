@@ -24,6 +24,7 @@
     "@stripe/stripe-js": "^5.10.0",
     "@tabler/icons-react": "^3.34.0",
     "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/react-hotkeys": "^0.22.0",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@types/js-cookie": "^3.0.6",

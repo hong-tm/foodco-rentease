@@ -142,6 +142,8 @@ export default function FeedbackHapinessLineChart({
               fill="var(--color-happiness)"
               radius={3}
               maxBarSize={48}
+              animationDuration={400}
+              animationEasing="ease-out"
             />
           </BarChart>
         </ChartContainer>

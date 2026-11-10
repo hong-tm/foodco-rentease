@@ -10,12 +10,12 @@ import { updateStallSchema } from '@server/lib/sharedType'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { type UseFormReturn, useForm } from 'react-hook-form'
+import { useForm, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod/v4'
 
-import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/hooks/use-mobile'
 
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -466,12 +466,12 @@ export default function UpdateStallForm({
   )
 
   return (
-    <div className="flex w-full flex-col px-12 md:px-0">
+    <div className="flex w-full flex-col px-1 md:px-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <div className="grid gap-4">
             {isMobile ? (
-              <ScrollArea className="h-[600px] gap-4 overflow-x-auto rounded-md">
+              <ScrollArea className="max-h-[min(65vh,520px)] gap-4 overflow-x-auto rounded-md">
                 {formContent}
               </ScrollArea>
             ) : (

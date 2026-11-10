@@ -3,6 +3,13 @@ import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
+import {
+  AISLE_PAIRS,
+  FLOOR_PLAN_SIZE,
+  FRONT_ROW,
+  stallState,
+  type StallState,
+} from '@/lib/floorPlan'
 import { cn } from '@/lib/utils'
 
 import {
@@ -13,14 +20,6 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
-
-import {
-  AISLE_PAIRS,
-  FLOOR_PLAN_SIZE,
-  FRONT_ROW,
-  stallState,
-  type StallState,
-} from '@/lib/floorPlan'
 
 const CELL: Record<StallState, string> = {
   rented: 'bg-muted text-muted-foreground',

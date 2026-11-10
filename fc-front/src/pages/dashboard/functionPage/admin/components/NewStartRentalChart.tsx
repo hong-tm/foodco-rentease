@@ -154,6 +154,8 @@ export function NewStartRentalChart() {
               fill="var(--color-value)"
               radius={3}
               maxBarSize={48}
+              animationDuration={400}
+              animationEasing="ease-out"
             />
           </BarChart>
         </ChartContainer>
