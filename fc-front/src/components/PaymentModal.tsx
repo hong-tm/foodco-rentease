@@ -240,8 +240,8 @@ export default function PaymentModal({
   const isDark =
     theme === 'dark' ||
     (theme === 'system' &&
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches)
+      typeof document !== 'undefined' &&
+      document.documentElement.classList.contains('dark'))
 
   const options: StripeElementsOptions = {
     clientSecret,

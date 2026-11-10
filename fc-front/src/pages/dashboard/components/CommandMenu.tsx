@@ -4,6 +4,7 @@ import { useFormatForDisplay, useHotkey } from '@tanstack/react-hotkeys'
 import { PanelLeftIcon, SearchIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
+import { Button } from '@/components/ui/button'
 import {
   CommandDialog,
   CommandEmpty,
@@ -40,22 +41,22 @@ export function CommandMenu() {
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="outline"
         data-slot="command-menu-trigger"
         aria-haspopup="dialog"
         aria-expanded={open}
+        aria-label="Search"
         onClick={() => setOpen(true)}
-        className="border-input bg-background text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 relative flex h-9 w-28 items-center justify-between rounded-md border px-3 text-sm shadow-xs transition-[color,background-color,border-color,box-shadow,transform] duration-150 outline-none focus-visible:ring-[3px] active:scale-[0.98] sm:w-44 lg:w-56"
+        className="text-muted-foreground hover:text-foreground size-9 p-0 sm:w-44 sm:justify-between sm:px-3 lg:w-56"
       >
-        <span className="flex items-center gap-2 truncate">
-          <SearchIcon className="size-4 shrink-0" />
-          <span className="text-sm">Search...</span>
-        </span>
+        <SearchIcon className="size-4 shrink-0" />
+        <span className="hidden text-sm sm:inline">Search...</span>
         <kbd className="bg-muted text-muted-foreground pointer-events-none hidden h-5 items-center rounded border px-1.5 font-mono text-[10px] font-medium select-none lg:flex">
           {formatShortcut('Mod+K')}
         </kbd>
-      </button>
+      </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
