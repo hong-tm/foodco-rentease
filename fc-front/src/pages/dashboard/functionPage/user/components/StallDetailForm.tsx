@@ -126,7 +126,7 @@ export default function StallDetailForm({
             </span>
             <StatusBadge
               label={stall.rentStatus ? 'Occupied' : 'Available'}
-              tone={stall.rentStatus ? 'blocked' : 'settled'}
+              tone={stall.rentStatus ? 'settled' : 'action'}
             />
           </div>
           <div className="flex items-center justify-between">

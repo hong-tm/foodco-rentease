@@ -49,11 +49,11 @@ export function CommandMenu() {
         aria-expanded={open}
         aria-label="Search"
         onClick={() => setOpen(true)}
-        className="text-muted-foreground hover:text-foreground size-9 p-0 sm:w-44 sm:justify-between sm:px-3 lg:w-56"
+        className="text-muted-foreground hover:text-foreground size-10 p-0 sm:h-9 sm:w-44 sm:justify-between sm:px-3 lg:w-56"
       >
         <SearchIcon className="size-4 shrink-0" />
         <span className="hidden text-sm sm:inline">Search...</span>
-        <kbd className="bg-muted text-muted-foreground pointer-events-none hidden h-5 items-center rounded border px-1.5 font-mono text-[10px] font-medium select-none lg:flex">
+        <kbd className="bg-muted text-muted-foreground pointer-events-none hidden h-5 items-center rounded border px-1.5 text-[10px] font-medium select-none lg:flex">
           {formatShortcut('Mod+K')}
         </kbd>
       </Button>
