@@ -67,6 +67,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.11
         version: 4.1.11(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(esbuild@0.25.5)(jiti@2.4.2)(sass@1.89.2))
+      '@tanstack/react-hotkeys':
+        specifier: ^0.22.0
+        version: 0.22.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/react-query':
         specifier: ^5.83.0
         version: 5.83.0(react@19.2.3)
@@ -2370,11 +2373,22 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
+  '@tanstack/hotkeys@0.26.0':
+    resolution: {integrity: sha512-1b65lc9qkIdTj+jmR2KE5VMbpl0pxja90JrYi5EuPKcsyTss05009yPisn7Ej98MQtXSsYln+EnZNjuX/MV0Hg==}
+    engines: {node: '>=20'}
+
   '@tanstack/query-core@5.83.0':
     resolution: {integrity: sha512-0M8dA+amXUkyz5cVUm/B+zSk3xkQAcuXuz5/Q/LveT4ots2rBpPTZOzd7yJa2Utsf8D2Upl5KyjhHRY+9lB/XA==}
 
   '@tanstack/query-devtools@5.81.2':
     resolution: {integrity: sha512-jCeJcDCwKfoyyBXjXe9+Lo8aTkavygHHsUHAlxQKKaDeyT0qyQNLKl7+UyqYH2dDF6UN/14873IPBHchcsU+Zg==}
+
+  '@tanstack/react-hotkeys@0.22.3':
+    resolution: {integrity: sha512-Feo/cwrByjfvAHJ04JFNopjhHQr5wSAX3wmQrpfXOTEcpztioFe6AB+iRqt6kb2LJgX1XWUSD9ujbvBcIR8LSQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@tanstack/react-query-devtools@5.83.0':
     resolution: {integrity: sha512-yfp8Uqd3I1jgx8gl0lxbSSESu5y4MO2ThOPBnGNTYs0P+ZFu+E9g5IdOngyUGuo6Uz6Qa7p9TLdZEX3ntik2fQ==}
@@ -6054,9 +6068,17 @@ snapshots:
       tailwindcss: 4.1.11
       vite: rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(esbuild@0.25.5)(jiti@2.4.2)(sass@1.89.2)
 
+  '@tanstack/hotkeys@0.26.0': {}
+
   '@tanstack/query-core@5.83.0': {}
 
   '@tanstack/query-devtools@5.81.2': {}
+
+  '@tanstack/react-hotkeys@0.22.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@tanstack/hotkeys': 0.26.0
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
 
   '@tanstack/react-query-devtools@5.83.0(@tanstack/react-query@5.83.0(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -6582,6 +6604,7 @@ snapshots:
       '@stripe/stripe-js': 5.10.0
       '@tabler/icons-react': 3.34.0(react@19.2.3)
       '@tailwindcss/vite': 4.1.11(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(esbuild@0.25.5)(jiti@2.4.2)(sass@1.89.2))
+      '@tanstack/react-hotkeys': 0.22.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/react-query': 5.83.0(react@19.2.3)
       '@tanstack/react-query-devtools': 5.83.0(@tanstack/react-query@5.83.0(react@19.2.3))(react@19.2.3)
       '@types/js-cookie': 3.0.6

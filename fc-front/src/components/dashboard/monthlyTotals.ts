@@ -1,4 +1,5 @@
 import type { PaymentRecord } from '@server/lib/sharedType'
+
 import { rm } from '@/lib/format'
 
 type MonthSlot<K extends string> = {

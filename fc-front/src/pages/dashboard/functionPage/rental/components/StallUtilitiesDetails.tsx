@@ -247,9 +247,7 @@ export default function StallUtilitiesDetails() {
     <div className="flex flex-col gap-8">
       <section aria-label="Amount due">
         <SpecStrip
-          value={
-            dueBills.length === 0 ? 'Nothing due' : `RM ${rm(totalDue)}`
-          }
+          value={dueBills.length === 0 ? 'Nothing due' : `RM ${rm(totalDue)}`}
           unit={
             dueBills.length === 0
               ? 'every bill settled'

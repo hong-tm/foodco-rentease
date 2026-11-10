@@ -2,7 +2,6 @@ import type { Context } from 'hono'
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
 import { Parser } from '@json2csv/plainjs'
-import type { AuthType } from '../lib/auth.js'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import Stripe from 'stripe'
 
@@ -12,6 +11,7 @@ import {
   user as UserTable,
 } from '../db/userModel.js'
 import env from '../env.js'
+import type { AuthType } from '../lib/auth.js'
 import {
   createPaymentRecordSchema,
   paymentIntentSchema,
@@ -32,10 +32,7 @@ const findPayments = (where?: { userId: string }) =>
   })
 
 function logFailure(c: Context<AuthType>, error: any, label: string) {
-  c.var.logger.error(
-    { cause: error.cause, message: error.message },
-    label,
-  )
+  c.var.logger.error({ cause: error.cause, message: error.message }, label)
 }
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
@@ -203,9 +200,7 @@ export const paymentRoutes = new Hono<AuthType>()
     },
   )
   .get('/download-pdf', adminVerify(), async (c) => {
-    const { data: payments, error } = await tryCatch(
-      findPayments(),
-    )
+    const { data: payments, error } = await tryCatch(findPayments())
 
     if (error) {
       logFailure(c, error, 'Download PDF Error')

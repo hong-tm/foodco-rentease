@@ -4,6 +4,8 @@ import type { PaymentRecord } from '@server/lib/sharedType'
 import { useQuery } from '@tanstack/react-query'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 
+import { rm } from '@/lib/format'
+
 import {
   Card,
   CardContent,
@@ -25,7 +27,6 @@ import {
   monthSummary,
   monthlyPaidTotals,
 } from '@/components/dashboard/monthlyTotals'
-import { rm } from '@/lib/format'
 
 const chartConfig = {
   electric: {
@@ -104,7 +105,12 @@ export default function StallUtilitiesChart() {
             tickMargin={8}
           />
           <YAxis
-            width={44}
+            width={54}
+            tickFormatter={(v: number) =>
+              v >= 1000
+                ? `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`
+                : `${v}`
+            }
             tickLine={false}
             axisLine={false}
             tickCount={4}
@@ -126,6 +132,8 @@ export default function StallUtilitiesChart() {
             stackId="u"
             fill="var(--color-water)"
             maxBarSize={48}
+            animationDuration={400}
+            animationEasing="ease-out"
           />
           <Bar
             dataKey="electric"
@@ -133,6 +141,8 @@ export default function StallUtilitiesChart() {
             fill="var(--color-electric)"
             radius={[3, 3, 0, 0]}
             maxBarSize={48}
+            animationDuration={400}
+            animationEasing="ease-out"
           />
         </BarChart>
       </ChartContainer>

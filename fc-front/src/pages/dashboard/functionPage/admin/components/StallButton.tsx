@@ -5,6 +5,7 @@ import type { StallUserAttributes } from '@server/db/userModel'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+import type { StallState } from '@/lib/floorPlan'
 import { formatDay } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -16,7 +17,6 @@ import {
 } from '@/components/ui/tooltip'
 
 import StallDetailForm from '../../user/components/StallDetailForm'
-import type { StallState } from '@/lib/floorPlan'
 import UpdateStallForm from './UpdateStallForm'
 
 function areaLabel(size?: number | string | null) {

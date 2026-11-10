@@ -4,7 +4,6 @@ import { ErrorBoundary } from 'react-error-boundary'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
 
-import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
   SidebarProvider,
@@ -12,6 +11,7 @@ import {
 } from '@/components/ui/sidebar'
 import { ModeToggle } from '@/components/mode-toggle'
 
+import { CommandMenu } from './components/CommandMenu'
 import { DashboardSkeleton } from './components/DashboardSkeleton'
 import UserDashboardSidebar from './components/UserDashboardSidebar'
 import Breadcrumbs from './components/breadcrumbs'
@@ -30,14 +30,16 @@ export function DashboardLayoutPage() {
         <UserDashboardSidebar />
         <SidebarInset className="min-w-0">
           <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
-            <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
-            <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
-              <div className="flex min-w-0 items-center">
+            <SidebarTrigger className="absolute top-1/2 left-3 flex size-10 -translate-y-1/2 touch-manipulation items-center justify-center md:size-7" />
+            <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-11 lg:px-6 lg:pl-6">
+              <span className="shrink-0 text-sm font-semibold md:hidden">
+                FoodCo RentEase
+              </span>
+              <div className="flex min-w-0 items-center max-md:hidden">
                 <Breadcrumbs />
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <ModeToggle />
-                <Separator orientation="vertical" className="mr-2 h-4" />
               </div>
             </div>
           </header>
@@ -77,17 +79,17 @@ export function DashboardLayoutPage() {
       <UserDashboardSidebar />
       <SidebarInset className="min-w-0">
         <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center rounded-t-xl px-4">
-          <SidebarTrigger className="absolute top-1/2 left-4 -translate-y-1/2" />
-          <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-12 lg:px-6 lg:pl-6">
-            <span className="text-sm font-semibold md:hidden">
+          <SidebarTrigger className="absolute top-1/2 left-3 flex size-10 -translate-y-1/2 touch-manipulation items-center justify-center md:size-7" />
+          <div className="max-w-page mx-auto flex w-full min-w-0 items-center gap-2 px-2 pl-11 lg:px-6 lg:pl-6">
+            <span className="shrink-0 text-sm font-semibold md:hidden">
               FoodCo RentEase
             </span>
             <div className="flex min-w-0 items-center max-md:hidden">
               <Breadcrumbs />
             </div>
             <div className="ml-auto flex items-center gap-2">
+              <CommandMenu />
               <ModeToggle />
-              <Separator orientation="vertical" className="mr-2 h-4" />
             </div>
           </div>
         </header>

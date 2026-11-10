@@ -149,6 +149,26 @@ export default function UserAppointmentTable() {
   const pendingCount = appointments.filter(
     (notification) => notification.notificationRead === null,
   ).length
+  // Single source of truth shared by the mobile card list and the desktop
+  // table, so the two views cannot drift on status, tone or pay state.
+  const getAppointmentView = (notification: NotificationAttributes) => {
+    const approved = notification.notificationRead === true
+    const status =
+      notification.notificationRead === null
+        ? 'Pending'
+        : approved
+          ? 'Approved'
+          : 'Rejected'
+    const paid = isPaid(notification)
+    const tone =
+      notification.notificationRead === false
+        ? 'blocked'
+        : approved && paid
+          ? 'settled'
+          : 'action'
+    return { approved, status, paid, tone }
+  }
+
   const awaitingPaymentCount = appointments.filter(isAwaitingPayment).length
   const paidCount = appointments.filter(isPaid).length
   const rejectedCount = appointments.filter(
@@ -222,7 +242,59 @@ export default function UserAppointmentTable() {
   return (
     <div className="flex flex-col gap-6">
       {specStrip}
-      <div className="border-border max-w-full overflow-x-auto rounded-xl border">
+
+      {/* Mobile card list: phone view avoids horizontal table overflow */}
+      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
+        {appointments.map((notification) => {
+          const { approved, status, paid, tone } =
+            getAppointmentView(notification)
+          return (
+            <li
+              key={notification.notificationId}
+              className="flex flex-col gap-2 px-4 py-3"
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="min-w-0 text-sm font-medium">
+                  {notification.stallNumber
+                    ? `Stall ${notification.stallNumber} · viewing`
+                    : notification.notificationMessage}
+                </span>
+                <span className="text-muted-foreground text-xs whitespace-nowrap tabular-nums">
+                  {formatDay(notification.appointmentDate)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <StatusBadge label={status} tone={tone} />
+                {approved && notification.stallNumber && !paid && (
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      handlePaymentClick({
+                        ...notification,
+                        notificationerror: '',
+                      })
+                    }
+                    disabled={paymentMutation.isPending}
+                    className="h-8 text-xs"
+                  >
+                    {paymentMutation.isPending
+                      ? 'Processing...'
+                      : `Pay RM ${calculateAmount({
+                          ...notification,
+                          notificationerror: '',
+                        }).toFixed(2)}`}
+                  </Button>
+                )}
+                {approved && notification.stallNumber && paid && (
+                  <StatusBadge label="Payment completed" tone="settled" />
+                )}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+
+      <div className="border-border max-w-full overflow-x-auto rounded-xl border max-md:hidden">
         <Table className="w-full min-w-[380px]">
           <TableCaption className="sr-only">
             Your appointment requests with status and payment action
@@ -258,14 +330,8 @@ export default function UserAppointmentTable() {
           </TableHeader>
           <TableBody>
             {appointments.map((notification) => {
-              const approved = notification.notificationRead === true
-              const status =
-                notification.notificationRead === null
-                  ? 'Pending'
-                  : approved
-                    ? 'Approved'
-                    : 'Rejected'
-              const paid = isPaid(notification)
+              const { approved, status, paid, tone } =
+                getAppointmentView(notification)
               return (
                 <TableRow
                   key={notification.notificationId}
@@ -284,16 +350,7 @@ export default function UserAppointmentTable() {
                     </span>
                   </TableCell>
                   <TableCell className="py-4 align-baseline">
-                    <StatusBadge
-                      label={status}
-                      tone={
-                        notification.notificationRead === false
-                          ? 'blocked'
-                          : approved && paid
-                            ? 'settled'
-                            : 'action'
-                      }
-                    />
+                    <StatusBadge label={status} tone={tone} />
                   </TableCell>
                   {hasActions ? (
                     <TableCell className="py-4 pr-6 text-right align-baseline">
@@ -336,7 +393,10 @@ export default function UserAppointmentTable() {
         <p className="text-muted-foreground text-sm">
           Also open for viewing:{' '}
           {vacantStalls
-            .map((s) => `Stall ${s.stallNumber}${s.stallSize ? ' · ' + s.stallSize + ' m²' : ''}`)
+            .map(
+              (s) =>
+                `Stall ${s.stallNumber}${s.stallSize ? ' · ' + s.stallSize + ' m²' : ''}`,
+            )
             .join(', ')}
           . Message the office to arrange one.
         </p>

@@ -27,6 +27,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
+import { useTheme } from '@/components/theme-provider'
 
 import { Button } from './ui/button'
 import {
@@ -235,12 +236,23 @@ export default function PaymentModal({
     }
   }, [clientSecret])
 
+  const { theme } = useTheme()
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' &&
+      typeof document !== 'undefined' &&
+      document.documentElement.classList.contains('dark'))
+
   const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
-      theme: 'stripe',
+      theme: isDark ? 'night' : 'stripe',
       variables: {
-        colorPrimary: '#0F172A',
+        colorPrimary: isDark ? '#f97316' : '#ea580c',
+        colorBackground: isDark ? '#18181b' : '#ffffff',
+        colorText: isDark ? '#fafafa' : '#09090b',
+        colorDanger: isDark ? '#ef4444' : '#dc2626',
+        borderRadius: '8px',
       },
     },
   }

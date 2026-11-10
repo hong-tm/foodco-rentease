@@ -12,6 +12,7 @@ import { rateLimiter } from 'hono-rate-limiter'
 import { pino } from 'pino'
 import pretty from 'pino-pretty'
 
+import { pgConfig } from './db/pgConfig.js'
 import {
   Feedback,
   Notification,
@@ -24,7 +25,6 @@ import {
   user,
   verification,
 } from './db/userModel.js'
-import { pgConfig } from './db/pgConfig.js'
 import env, { allowedOrigins } from './env.js'
 import { initSentry } from './instrument.js'
 import { auth, type AuthType } from './lib/auth.js'

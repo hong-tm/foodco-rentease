@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 export default function StallDetailForm({
   stall,
@@ -123,9 +124,10 @@ export default function StallDetailForm({
             <span className="text-muted-foreground text-sm font-medium">
               Status:
             </span>
-            <Badge variant={stall.rentStatus ? 'destructive' : 'secondary'}>
-              {stall.rentStatus ? 'Occupied' : 'Available'}
-            </Badge>
+            <StatusBadge
+              label={stall.rentStatus ? 'Occupied' : 'Available'}
+              tone={stall.rentStatus ? 'settled' : 'action'}
+            />
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-sm font-medium">

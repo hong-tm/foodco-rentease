@@ -90,8 +90,8 @@
 <summary><b>Prerequisites</b></summary>
 <br>
 
-- Node.js (v18+)
-- pnpm (v10+)
+- Node.js (v20.19+ or v22.12+)
+- pnpm (v11+)
 - PostgreSQL (v14+)
 - Stripe account
 - Resend API key
@@ -110,11 +110,11 @@ cd fc-back && pnpm install
 cd ../fc-front && pnpm install
 
 # Configure environment variables
-cp .env.example .env
-# Edit .env with your credentials
+cp ../fc-back/.env.example ../fc-back/.env
+# Edit ../fc-back/.env with your credentials
 
 # Start development servers
-cd fc-back && pnpm dev
+cd ../fc-back && pnpm dev
 
 # In a new terminal
 cd fc-front && pnpm dev

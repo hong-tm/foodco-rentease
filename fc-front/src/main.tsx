@@ -19,7 +19,9 @@ const FeedbackDisplayPage = lazy(() =>
   })),
 )
 
-const ChangePasswordPage = lazy(() => import('./pages/(auth)/ChangePasswordPage.tsx'))
+const ChangePasswordPage = lazy(
+  () => import('./pages/(auth)/ChangePasswordPage.tsx'),
+)
 
 const TenantInformationPage = lazy(() =>
   import('./pages/dashboard/functionPage/admin/TenantInformationPage.tsx').then(
@@ -35,9 +37,13 @@ const EmailVerifiedPage = lazy(() =>
   })),
 )
 
-const ForgetPasswordPage = lazy(() => import('./pages/(auth)/ForgetPasswordPage.tsx'))
+const ForgetPasswordPage = lazy(
+  () => import('./pages/(auth)/ForgetPasswordPage.tsx'),
+)
 
-const ResetPasswordPage = lazy(() => import('./pages/(auth)/ResetPasswordPage.tsx'))
+const ResetPasswordPage = lazy(
+  () => import('./pages/(auth)/ResetPasswordPage.tsx'),
+)
 
 const UserProfilePage = lazy(() => import('./pages/(auth)/UserProfilePage.tsx'))
 
