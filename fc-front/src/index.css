@@ -259,6 +259,7 @@ code {
   --animate-aurora: aurora 60s linear infinite;
   --animate-slide-down: slide-down 0.3s ease-out;
   --animate-slide-up: slide-up 0.3s ease-in;
+  --animate-undo-restore: undo-restore 1.2s ease-out;
 
   @keyframes aurora {
     from {
@@ -281,6 +282,16 @@ code {
 
     to {
       height: var(--radix-collapsible-content-height);
+    }
+  }
+
+  @keyframes undo-restore {
+    0% {
+      background-color: color-mix(in oklab, var(--primary) 22%, transparent);
+    }
+
+    100% {
+      background-color: transparent;
     }
   }
 

@@ -341,7 +341,10 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   const Icon = rating.icon
 
   return (
-    <Item className="items-start rounded-none border-0 px-4 py-3 md:px-5">
+    <Item
+      data-feedback-id={feedback.id}
+      className="items-start rounded-none border-0 px-4 py-3 md:px-5"
+    >
       <ItemMedia
         className={cn('size-8 rounded-full', rating.tone)}
         title={rating.label}
@@ -381,6 +384,25 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   )
 }
 
+// The row is back in the collection the moment Undo rolls the transaction
+// back; flash it so the eye can find what returned, and scroll it into view.
+function revealRestoredRow(id: number) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+  let tries = 30
+  const find = () => {
+    const row = document.querySelector(`[data-feedback-id="${id}"]`)
+    if (!row) {
+      if (--tries > 0) requestAnimationFrame(find)
+      return
+    }
+    row.classList.add('animate-undo-restore')
+    row.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    window.setTimeout(() => row.classList.remove('animate-undo-restore'), 1300)
+  }
+  requestAnimationFrame(find)
+}
+
 // Instant delete with an undo window: the row leaves the collection the
 // moment the trash is clicked, a ring counts down, and only when the ring
 // runs out does the transaction commit and fire the server DELETE.
@@ -400,5 +422,8 @@ function deleteWithUndo(id: number) {
     feedbackCollection.delete(id)
   })
 
-  holdTransactionForUndo(tx, { message: `Feedback ${id} deleted` })
+  holdTransactionForUndo(tx, {
+    message: `Feedback ${id} deleted`,
+    onUndo: () => revealRestoredRow(id),
+  })
 }
