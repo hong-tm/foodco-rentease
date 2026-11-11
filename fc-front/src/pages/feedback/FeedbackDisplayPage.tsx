@@ -1,13 +1,8 @@
-import { useState, type MouseEvent } from 'react'
-import {
-  deleteFeedback,
-  feedbacksQueryKey,
-  getAllFeedbackQueryOptions,
-  removeFeedbackById,
-  type Feedback,
-} from '@/api/feedbackApi'
+import { useState } from 'react'
+import { deleteFeedback, type Feedback } from '@/api/feedbackApi'
+import { feedbackCollection } from '@/db/collections'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { createTransaction, useLiveQuery } from '@tanstack/react-db'
 import {
   AngryIcon,
   FrownIcon,
@@ -20,17 +15,6 @@ import { toast } from 'sonner'
 import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Item,
@@ -62,6 +46,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { UNDO_WINDOW_MS, showUndoToast } from '@/components/undo-delete'
 
 const mood: Record<
   Feedback['happiness'],
@@ -97,9 +82,17 @@ const levels = [4, 3, 2, 1] as const
 type Sort = 'new' | 'low'
 
 export function FeedbackDisplayPage() {
-  const { data, error, isPending, refetch } = useQuery(
-    getAllFeedbackQueryOptions,
-  )
+  const live = useLiveQuery({
+    query: (q) => q.from({ feedback: feedbackCollection }),
+  })
+  const data = live.data
+  // CollectionStatus: idle | loading | ready | error | crashed | cleaned-up
+  const isPending = live.status === 'loading' || live.status === 'idle'
+  const error =
+    live.status === 'error' || live.status === 'crashed'
+      ? new Error('Failed to load feedback')
+      : null
+  const refetch = () => feedbackCollection.utils.refetch()
   const [level, setLevel] = useState('all')
   const [stall, setStall] = useState('all')
   const [sort, setSort] = useState<Sort>('new')
@@ -345,7 +338,6 @@ export function FeedbackDisplayPage() {
 }
 
 function FeedbackRow({ feedback }: { feedback: Feedback }) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const rating = mood[feedback.happiness]
   const Icon = rating.icon
 
@@ -376,111 +368,55 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
         </ItemDescription>
       </ItemContent>
       <ItemActions>
-        <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label={`Delete feedback ${feedback.id}`}
-              className="text-muted-foreground hover:text-destructive size-8 max-md:size-11"
-            >
-              <Trash2Icon className="size-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Delete feedback {feedback.id}?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                This removes it for good. Stall {feedback.stall} loses this
-                rating from its average.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Keep</AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <FeedbackDeleteButton
-                  id={feedback.id}
-                  onSuccess={() => setIsDialogOpen(false)}
-                />
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={`Delete feedback ${feedback.id}`}
+          className="text-muted-foreground hover:text-destructive size-8 max-md:size-11"
+          onClick={() => deleteWithUndo(feedback.id)}
+        >
+          <Trash2Icon className="size-4" />
+        </Button>
       </ItemActions>
     </Item>
   )
 }
 
-// Gmail-style delete: the row disappears immediately, a toast offers
-// Undo for a short window; the server DELETE only fires after the window
-// closes without an undo. Undoing restores the row and cancels the call.
-const UNDO_WINDOW_MS = 5_000
+// Instant delete with an undo window, backed by a TanStack DB transaction:
+// the row leaves the collection immediately (autoCommit stays off), the
+// toast counts down, and only when the window expires does commit() run the
+// DELETE. Undo rolls the transaction back — the row returns and the server
+// is never contacted.
+function deleteWithUndo(id: number) {
+  const tx = createTransaction({
+    autoCommit: false,
+    mutationFn: async () => {
+      try {
+        await deleteFeedback({ id })
+      } finally {
+        await feedbackCollection.utils.refetch()
+      }
+    },
+  })
 
-function FeedbackDeleteButton({
-  id,
-  onSuccess,
-}: {
-  id: number
-  onSuccess: () => void
-}) {
-  const queryClient = useQueryClient()
+  tx.mutate(() => {
+    feedbackCollection.delete(id)
+  })
 
-  function removeOptimistically() {
-    const snapshot = queryClient.getQueryData<Feedback[]>(
-      feedbacksQueryKey.feedbacks(),
-    )
-    queryClient.setQueryData<Feedback[]>(feedbacksQueryKey.feedbacks(), (old) =>
-      removeFeedbackById(old, id),
-    )
-    return snapshot
-  }
+  let undone = false
+  showUndoToast({
+    message: `Feedback ${id} deleted`,
+    onUndo: () => {
+      undone = true
+      void tx.rollback()
+    },
+  })
 
-  function restore(snapshot: Feedback[] | undefined) {
-    queryClient.setQueryData<Feedback[]>(
-      feedbacksQueryKey.feedbacks(),
-      snapshot,
-    )
-  }
-
-  async function persistDelete() {
-    try {
-      await deleteFeedback({ id })
-    } catch {
-      toast.error(`Failed to delete feedback ${id}`)
-    } finally {
-      // Refetch either way: on success to settle the list, on failure to
-      // restore the row the optimistic delete removed.
-      await queryClient.invalidateQueries({ queryKey: feedbacksQueryKey.all })
+  window.setTimeout(() => {
+    if (!undone) {
+      void tx.commit().catch(() => {
+        toast.error(`Failed to delete feedback ${id}`)
+      })
     }
-  }
-
-  function handleDelete(event: MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-    const snapshot = removeOptimistically()
-    onSuccess()
-
-    let undone = false
-    toast('Feedback deleted', {
-      duration: UNDO_WINDOW_MS,
-      action: {
-        label: 'Undo',
-        onClick: () => {
-          undone = true
-          restore(snapshot)
-        },
-      },
-    })
-
-    window.setTimeout(() => {
-      if (!undone) void persistDelete()
-    }, UNDO_WINDOW_MS + 50)
-  }
-
-  return (
-    <Button variant="destructive" onClick={handleDelete}>
-      Delete
-    </Button>
-  )
+  }, UNDO_WINDOW_MS)
 }

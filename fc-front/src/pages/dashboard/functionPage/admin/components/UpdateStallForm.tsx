@@ -6,9 +6,11 @@ import {
   type GetStallsResponse,
   type StallFormProps,
 } from '@/api/stallApi'
+import { stallsCollection } from '@/db/collections'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
+import { createTransaction } from '@tanstack/react-db'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -339,8 +341,21 @@ export default function UpdateStallForm({
 
   const queryClient = useQueryClient()
 
+  // The stall update persists through a TanStack DB transaction and the
+  // stalls collection refetch, which refreshes the shared query cache the
+  // admin tables read from.
   const mutation = useMutation({
-    mutationFn: updateStall,
+    mutationFn: async (values: Parameters<typeof updateStall>[0]) => {
+      const tx = createTransaction({
+        mutationFn: async () => {
+          const updated = await updateStall(values)
+          await stallsCollection.utils.refetch()
+          return updated
+        },
+      })
+      await tx.commit()
+      return updateStall
+    },
     onError: (error: Error) => {
       console.error('Error updating stall:', error)
       toast.error(`${error}`)

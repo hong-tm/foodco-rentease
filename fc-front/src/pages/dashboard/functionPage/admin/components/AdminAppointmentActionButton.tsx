@@ -3,7 +3,9 @@ import {
   notificationsQueryKey,
   updateAppointmentStatus,
 } from '@/api/notificationApi'
+import { notificationsCollection } from '@/db/collections'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
+import { createTransaction } from '@tanstack/react-db'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   CircleCheckBigIcon,
@@ -37,13 +39,28 @@ export default function AdminAppointmentActionButton({
   const [openRejectAppointment, setOpenRejectAppointment] = useState(false)
   const queryClient = useQueryClient()
 
+  // Approve/reject run as TanStack DB transactions: the notification row
+  // flips optimistically in the collection, the API call persists it, and
+  // refetch settles the shared query cache the tables still read from.
   const { mutate: approveAppointment, isPending: isApproving } = useMutation({
-    mutationFn: () =>
-      updateAppointmentStatus({
-        notificationId: appointmentId,
-        notificationRead: true,
-        stallNumber,
-      }),
+    mutationFn: async () => {
+      const tx = createTransaction({
+        mutationFn: async () => {
+          await updateAppointmentStatus({
+            notificationId: appointmentId,
+            notificationRead: true,
+            stallNumber,
+          })
+          await notificationsCollection.utils.refetch()
+        },
+      })
+      tx.mutate(() => {
+        notificationsCollection.update(appointmentId, (draft) => {
+          draft.notificationRead = true
+        })
+      })
+      await tx.commit()
+    },
     onSuccess: () => {
       toast.success('Appointment approved successfully')
       setOpenApproveAppointment(false)
@@ -58,12 +75,24 @@ export default function AdminAppointmentActionButton({
   })
 
   const { mutate: rejectAppointment, isPending: isRejecting } = useMutation({
-    mutationFn: () =>
-      updateAppointmentStatus({
-        notificationId: appointmentId,
-        notificationRead: false,
-        stallNumber,
-      }),
+    mutationFn: async () => {
+      const tx = createTransaction({
+        mutationFn: async () => {
+          await updateAppointmentStatus({
+            notificationId: appointmentId,
+            notificationRead: false,
+            stallNumber,
+          })
+          await notificationsCollection.utils.refetch()
+        },
+      })
+      tx.mutate(() => {
+        notificationsCollection.update(appointmentId, (draft) => {
+          draft.notificationRead = false
+        })
+      })
+      await tx.commit()
+    },
     onSuccess: () => {
       toast.success('Appointment rejected successfully')
       setOpenRejectAppointment(false)
