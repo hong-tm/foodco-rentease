@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [
+    "src/components/ui/**",
+    "src/components/animated/**",
+    "src/components/CheckoutForm.tsx",
+    "src/components/avatar-user.tsx",
+    "src/components/date-picker.tsx",
+    "src/hooks/use-toast.ts",
+    "src/lib/try-catch.ts",
+    "src/pages/dashboard/components/BlurhashComponent.tsx",
+    "src/pages/dashboard/components/nav-projects.tsx"
+  ],
+  "ignoreDependencies": [
+    "fc-front",
+    "@better-fetch/fetch",
+    "@radix-ui/react-icons",
+    "@tabler/icons-react",
+    "blurhash",
+    "embla-carousel-react",
+    "icons-react",
+    "input-otp",
+    "lodash",
+    "mariadb",
+    "motion",
+    "react-blurhash",
+    "react-phone-number-input",
+    "react-resizable-panels",
+    "vite-plugin-oxlint",
+    "rollup-plugin-visualizer"
+  ],
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "enumMembers": "off",
+    "duplicates": "off"
+  }
+}

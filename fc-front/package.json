@@ -11,7 +11,9 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "knip": "knip",
-    "check": "prettier --write ."
+    "check": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "check:keyframes": "node scripts/check-keyframes.mjs"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
