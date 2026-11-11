@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import {
   deleteFeedback,
   feedbacksQueryKey,
@@ -7,7 +7,7 @@ import {
   type Feedback,
 } from '@/api/feedbackApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   AngryIcon,
   FrownIcon,
@@ -61,7 +61,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Spinner } from '@/components/ui/spinner'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 const mood: Record<
@@ -414,6 +413,11 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   )
 }
 
+// Gmail-style delete: the row disappears immediately, a toast offers
+// Undo for a short window; the server DELETE only fires after the window
+// closes without an undo. Undoing restores the row and cancels the call.
+const UNDO_WINDOW_MS = 5_000
+
 function FeedbackDeleteButton({
   id,
   onSuccess,
@@ -423,31 +427,59 @@ function FeedbackDeleteButton({
 }) {
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: deleteFeedback,
-    onError: () => {
-      toast.error(`Failed to delete feedback ${id}`)
-    },
-    onSuccess: () => {
-      queryClient.setQueryData<Feedback[]>(
-        [feedbacksQueryKey.feedbacks],
-        (oldData) => removeFeedbackById(oldData, id),
-      )
+  function removeOptimistically() {
+    const snapshot = queryClient.getQueryData<Feedback[]>(
+      feedbacksQueryKey.feedbacks(),
+    )
+    queryClient.setQueryData<Feedback[]>(feedbacksQueryKey.feedbacks(), (old) =>
+      removeFeedbackById(old, id),
+    )
+    return snapshot
+  }
 
-      toast.success(`Feedback ${id} deleted`)
-      onSuccess()
-    },
-  })
+  function restore(snapshot: Feedback[] | undefined) {
+    queryClient.setQueryData<Feedback[]>(
+      feedbacksQueryKey.feedbacks(),
+      snapshot,
+    )
+  }
+
+  async function persistDelete() {
+    try {
+      await deleteFeedback({ id })
+    } catch {
+      toast.error(`Failed to delete feedback ${id}`)
+    } finally {
+      // Refetch either way: on success to settle the list, on failure to
+      // restore the row the optimistic delete removed.
+      await queryClient.invalidateQueries({ queryKey: feedbacksQueryKey.all })
+    }
+  }
+
+  function handleDelete(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault()
+    const snapshot = removeOptimistically()
+    onSuccess()
+
+    let undone = false
+    toast('Feedback deleted', {
+      duration: UNDO_WINDOW_MS,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          undone = true
+          restore(snapshot)
+        },
+      },
+    })
+
+    window.setTimeout(() => {
+      if (!undone) void persistDelete()
+    }, UNDO_WINDOW_MS + 50)
+  }
+
   return (
-    <Button
-      variant="destructive"
-      onClick={(event) => {
-        event.preventDefault()
-        mutation.mutate({ id })
-      }}
-      disabled={mutation.isPending}
-    >
-      {mutation.isPending ? <Spinner /> : null}
+    <Button variant="destructive" onClick={handleDelete}>
       Delete
     </Button>
   )
