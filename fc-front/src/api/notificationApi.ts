@@ -11,6 +11,8 @@ import { z } from 'zod/v4'
 
 import { api } from '@/lib/api'
 
+export type { NotificationAttributes }
+
 export type NotificationResponse = {
   notification: NotificationAttributes[] // Assuming your feedback array is of type 'Feedback'
   userId: UserAttributes[]

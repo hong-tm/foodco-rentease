@@ -11,6 +11,8 @@ import { queryOptions } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { authClient } from '@/lib/auth-client'
 
+export type { PaymentRecord }
+
 // Stripe initialization
 export const stripePromise = loadStripe(
   'pk_test_51Q0PgoRs6oUNWmV9hY185GXM1BsHqXDjJyvzQVfXtBtc5AFsIyGt4Fm5tDO27Y81CfA0WjfA2jUesfYy6rvvncyi00dzTzDXSX',
