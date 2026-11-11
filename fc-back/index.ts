@@ -1,6 +1,5 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { HTTPException } from 'hono/http-exception'
 import { prettyJSON } from 'hono/pretty-json'
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
@@ -164,10 +163,18 @@ app.use(
     keyGenerator: (c) => {
       const user = c.get('user')
 
-      if (!user)
-        throw new HTTPException(401, { message: 'User Not Authorize!' })
+      // Anonymous callers (public feedback form) are keyed by client IP
+      // instead of being rejected, so public routes stay rate-limited
+      // but usable without a session.
+      if (!user) {
+        return (
+          c.req.header('cf-connecting-ip') ??
+          c.req.header('x-forwarded-for')?.split(',')[0] ??
+          'anonymous'
+        )
+      }
 
-      return user?.id
+      return user.id
     }, // Method to generate custom identifiers for clients.
     // store: ... , // Redis, MemoryStore, etc. See below.
   }),

@@ -191,32 +191,30 @@ export default function RentalPaymentDetail() {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 leading-none font-medium">
-              {payments[payments.length - 1]?.total >
-              payments[payments.length - 2]?.total ? (
-                <>
-                  Total expenses increased by{' '}
-                  <TrendingUpIcon className="h-4 w-4" />
-                  {(
-                    ((payments[payments.length - 1]?.total -
-                      payments[payments.length - 2]?.total) /
-                      payments[payments.length - 2]?.total) *
-                    100
-                  ).toFixed(1)}
-                  % this month
-                </>
-              ) : (
-                <>
-                  Total expenses decreased by{' '}
-                  <TrendingDownIcon className="h-4 w-4" />
-                  {(
-                    ((payments[payments.length - 2]?.total -
-                      payments[payments.length - 1]?.total) /
-                      payments[payments.length - 2]?.total) *
-                    100
-                  ).toFixed(1)}
-                  % this month
-                </>
-              )}
+              {(() => {
+                const curr = payments[payments.length - 1]?.total
+                const prev = payments[payments.length - 2]?.total
+                if (!curr || !prev) {
+                  return <span>No earlier month to compare</span>
+                }
+                const delta = ((curr - prev) / prev) * 100
+                if (delta >= 0) {
+                  return (
+                    <>
+                      Total expenses increased by{' '}
+                      <TrendingUpIcon className="h-4 w-4" />
+                      {delta.toFixed(1)}% this month
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    Total expenses decreased by{' '}
+                    <TrendingDownIcon className="h-4 w-4" />
+                    {Math.abs(delta).toFixed(1)}% this month
+                  </>
+                )
+              })()}
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none">
               {payments[0]?.month} - {payments[payments.length - 1]?.month}{' '}

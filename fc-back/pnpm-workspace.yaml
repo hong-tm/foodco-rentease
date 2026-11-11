@@ -3,13 +3,14 @@ allowBuilds:
   esbuild: true
   sqlite3: false
 overrides:
+  'zod': '4.6.6'
   '@opentelemetry/api': '1.9.1'
   '@tootallnate/once': '2.0.1'
   'brace-expansion': '1.1.21'
   'defu': '6.1.5'
   'diff': '4.0.4'
   'dottie': '2.0.7'
-  'ip-address': '10.7.1'
+  'ip-address': '10.7.4'
   'fast-copy': '3.1.0'
   'source-map-js': '1.2.2'
   'lodash': '4.18.1'
@@ -17,7 +18,7 @@ overrides:
   'nanoid': '3.3.18'
   'picomatch': '2.3.2'
   'postcss': '8.5.23'
-  'qs': '6.16.0'
+  'qs': '6.16.1'
   'rollup': '4.59.0'
   'tar': '7.5.21'
   'tar-fs': '2.1.4'
