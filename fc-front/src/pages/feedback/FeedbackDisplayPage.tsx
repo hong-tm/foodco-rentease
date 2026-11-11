@@ -10,7 +10,6 @@ import {
   SmileIcon,
   Trash2Icon,
 } from 'lucide-react'
-import { toast } from 'sonner'
 
 import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -46,7 +45,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { UNDO_WINDOW_MS, showUndoToast } from '@/components/undo-delete'
+import { holdTransactionForUndo } from '@/components/undo-action'
 
 const mood: Record<
   Feedback['happiness'],
@@ -382,11 +381,9 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   )
 }
 
-// Instant delete with an undo window, backed by a TanStack DB transaction:
-// the row leaves the collection immediately (autoCommit stays off), the
-// toast counts down, and only when the window expires does commit() run the
-// DELETE. Undo rolls the transaction back — the row returns and the server
-// is never contacted.
+// Instant delete with an undo window: the row leaves the collection the
+// moment the trash is clicked, a ring counts down, and only when the ring
+// runs out does the transaction commit and fire the server DELETE.
 function deleteWithUndo(id: number) {
   const tx = createTransaction({
     autoCommit: false,
@@ -403,20 +400,5 @@ function deleteWithUndo(id: number) {
     feedbackCollection.delete(id)
   })
 
-  let undone = false
-  showUndoToast({
-    message: `Feedback ${id} deleted`,
-    onUndo: () => {
-      undone = true
-      void tx.rollback()
-    },
-  })
-
-  window.setTimeout(() => {
-    if (!undone) {
-      void tx.commit().catch(() => {
-        toast.error(`Failed to delete feedback ${id}`)
-      })
-    }
-  }, UNDO_WINDOW_MS)
+  holdTransactionForUndo(tx, { message: `Feedback ${id} deleted` })
 }
