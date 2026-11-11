@@ -198,7 +198,13 @@ export default function SignInPage() {
                   />
 
                   <div className="flex items-center gap-2">
-                    <Checkbox id="remember" />
+                    <Checkbox
+                      id="remember"
+                      checked={Boolean(form.watch('rememberMe'))}
+                      onCheckedChange={(checked) =>
+                        form.setValue('rememberMe', checked === true)
+                      }
+                    />
                     <Label htmlFor="remember">Remember me</Label>
                   </div>
 

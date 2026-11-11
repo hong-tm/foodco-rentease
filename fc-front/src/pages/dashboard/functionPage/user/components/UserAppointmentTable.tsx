@@ -53,6 +53,7 @@ export default function UserAppointmentTable() {
   } = useQuery({
     ...getUserNotificationQueryOptions,
     queryKey: ['get-user-notifications', session?.user?.id],
+    enabled: Boolean(session?.user?.id),
   })
 
   const paymentMutation = useMutation<
@@ -132,7 +133,10 @@ export default function UserAppointmentTable() {
 
   const getPaymentStatus = (stallId: number) => {
     return payments?.some(
-      (payment) => payment.stallId === stallId && payment.paymentStatus,
+      (payment) =>
+        payment.stallId === stallId &&
+        payment.userId === session?.user?.id &&
+        payment.paymentStatus,
     )
   }
 

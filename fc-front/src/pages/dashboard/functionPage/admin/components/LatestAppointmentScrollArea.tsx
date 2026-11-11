@@ -1,5 +1,8 @@
-import { fetchUsersQueryOptions, useSession } from '@/api/adminApi'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { fetchUsersQueryOptions } from '@/api/adminApi'
+import {
+  getAllNotificationQueryOptions,
+  notificationsQueryKey,
+} from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
 import { Link } from 'react-router-dom'
@@ -21,7 +24,6 @@ export default function LatestAppointmentScrollArea({
 }: {
   className?: string
 }) {
-  const { data: session } = useSession()
   const { data: users } = useQuery(fetchUsersQueryOptions)
   const {
     data: notifications,
@@ -30,7 +32,7 @@ export default function LatestAppointmentScrollArea({
     refetch,
   } = useQuery({
     ...getAllNotificationQueryOptions,
-    queryKey: ['get-notifications', session?.user?.id],
+    queryKey: notificationsQueryKey.notifications(),
   })
 
   const today = startOfDay(new Date())

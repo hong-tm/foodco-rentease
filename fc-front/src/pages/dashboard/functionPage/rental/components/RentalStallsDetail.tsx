@@ -13,9 +13,10 @@ import {
 
 export default function RentalStallsDetail() {
   const { data: session } = useSession()
-  const { data, isLoading, error } = useQuery(
-    fetchStallCurrentQueryOptions(session?.user?.id || ''),
-  )
+  const { data, isLoading, error } = useQuery({
+    ...fetchStallCurrentQueryOptions(session?.user?.id || ''),
+    enabled: Boolean(session?.user?.id),
+  })
 
   if (isLoading) {
     return <div>Loading...</div>

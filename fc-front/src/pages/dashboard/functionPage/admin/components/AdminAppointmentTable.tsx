@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import { fetchUsersQueryOptions, useSession } from '@/api/adminApi'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { fetchUsersQueryOptions } from '@/api/adminApi'
+import {
+  getAllNotificationQueryOptions,
+  notificationsQueryKey,
+} from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
 import { format, startOfDay } from 'date-fns'
 
@@ -45,7 +48,6 @@ const monthKey = (date: string | Date) => format(new Date(date), 'yyyy-MM')
 export default function AdminAppointmentTable() {
   const [status, setStatus] = useState<Status>('all')
   const [month, setMonth] = useState('all')
-  const { data: session } = useSession()
   const { data: users } = useQuery(fetchUsersQueryOptions)
   const {
     data: notifications,
@@ -54,7 +56,7 @@ export default function AdminAppointmentTable() {
     refetch,
   } = useQuery({
     ...getAllNotificationQueryOptions,
-    queryKey: ['get-notifications', session?.user?.id],
+    queryKey: notificationsQueryKey.notifications(),
   })
 
   // Past appointments have nothing left to act on, so this list leaves them out.

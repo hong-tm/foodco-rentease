@@ -38,7 +38,10 @@ export default function StallUtilitiesDetails() {
     data: stallData,
     isLoading: isStallLoading,
     error: stallError,
-  } = useQuery(fetchStallCurrentQueryOptions(userId || ''))
+  } = useQuery({
+    ...fetchStallCurrentQueryOptions(userId || ''),
+    enabled: Boolean(userId),
+  })
 
   const {
     data: paymentRecords,
