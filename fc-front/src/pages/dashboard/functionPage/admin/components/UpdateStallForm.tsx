@@ -1,8 +1,10 @@
-import { stallsQueryKey, type GetStallsResponse, type StallFormProps } from '@/api/stallApi'
 import {
   fetchStallTierPricesQueryOptions,
   fetchStallsQueryOptions,
+  stallsQueryKey,
   updateStall,
+  type GetStallsResponse,
+  type StallFormProps,
 } from '@/api/stallApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { StallUserAttributes } from '@server/db/userModel'
