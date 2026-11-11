@@ -2,241 +2,207 @@ import {
   BadgeDollarSignIcon,
   BellElectricIcon,
   BookDownIcon,
-  ChartAreaIcon,
-  CommandIcon,
+  CalendarClockIcon,
   CreditCardIcon,
   FileUserIcon,
+  GaugeIcon,
   HistoryIcon,
   HousePlusIcon,
-  ListOrderedIcon,
+  LayoutGridIcon,
+  ReceiptTextIcon,
   ScrollIcon,
   SendIcon,
   ShieldCheckIcon,
-  SignatureIcon,
+  StoreIcon,
   UsersIcon,
+  ZapIcon,
   type LucideIcon,
 } from 'lucide-react'
 
-export type NavRole = 'admin' | 'user' | 'rental'
+export type Role = 'admin' | 'user' | 'rental'
 
-type NavChildItem = {
-  title: string
-  url: string
+export type NavLinkItem = { title: string; url: string; icon: LucideIcon }
+export type NavSection = { title: string; items: NavLinkItem[] }
+
+export type RoleNav = {
+  main: NavSection[]
+  secondary: NavLinkItem[]
+  quick: NavLinkItem[]
 }
 
-type NavMainItem = {
-  title: string
-  url: string
-  icon: LucideIcon
-  isActive?: boolean
-  items?: NavChildItem[]
-}
-
-type NavLinkItem = {
-  title: string
-  url: string
-  icon: LucideIcon
-}
-
-type NavRoleData = {
-  navMain: NavMainItem[]
-  navQuick: NavLinkItem[]
-  navSecondary: NavLinkItem[]
-}
-
-export function getNavData(role: NavRole): NavRoleData {
-  switch (role) {
-    case 'admin':
-      return {
-        navMain: [
+export const navByRole: Record<Role, RoleNav> = {
+  admin: {
+    main: [
+      {
+        title: 'Dashboard',
+        items: [
           {
-            title: 'Dashboard',
+            title: 'Overview',
             url: '/dashboard/admin-dashboard',
-            icon: ChartAreaIcon,
-            isActive: true,
-            items: [
-              {
-                title: 'Overview',
-                url: '/dashboard/admin-dashboard',
-              },
-            ],
-          },
-          {
-            title: 'Stall',
-            url: '/dashboard/stall-availability',
-            icon: CommandIcon,
-            items: [
-              {
-                title: 'Stall Availability',
-                url: '/dashboard/stall-availability',
-              },
-              {
-                title: 'Stall Appointments',
-                url: '/dashboard/admin-appointment',
-              },
-            ],
-          },
-          {
-            title: 'Tenant',
-            url: '/dashboard/tenant-information',
-            icon: UsersIcon,
-            items: [
-              {
-                title: 'Tenant Information',
-                url: '/dashboard/tenant-information',
-              },
-              {
-                title: 'Stall Payment',
-                url: '/dashboard/stall-payment',
-              },
-            ],
-          },
-          {
-            title: 'Financial',
-            url: '#',
-            icon: BadgeDollarSignIcon,
-            items: [
-              {
-                title: 'Payments',
-                url: '/dashboard/admin-report',
-              },
-            ],
+            icon: GaugeIcon,
           },
         ],
-        navQuick: [
+      },
+      {
+        title: 'Stall',
+        items: [
           {
-            title: 'Tenant Information',
-            url: '/dashboard/tenant-information',
-            icon: BellElectricIcon,
-          },
-          {
-            title: 'Payments',
-            url: '/dashboard/admin-report',
-            icon: BookDownIcon,
+            title: 'Stall Availability',
+            url: '/dashboard/stall-availability',
+            icon: LayoutGridIcon,
           },
           {
             title: 'Stall Appointments',
             url: '/dashboard/admin-appointment',
-            icon: ScrollIcon,
+            icon: CalendarClockIcon,
           },
         ],
-        navSecondary: [
+      },
+      {
+        title: 'Tenant',
+        items: [
           {
-            title: 'Users',
-            url: '/dashboard/admin',
-            icon: ShieldCheckIcon,
+            title: 'Tenant Information',
+            url: '/dashboard/tenant-information',
+            icon: UsersIcon,
           },
           {
-            title: 'Feedback',
-            url: '/dashboard/feedback',
-            icon: SendIcon,
+            title: 'Stall Utilities Payment',
+            url: '/dashboard/stall-payment',
+            icon: ZapIcon,
           },
         ],
-      }
-    case 'rental':
-      return {
-        navMain: [
+      },
+      {
+        title: 'Financial',
+        items: [
           {
-            title: 'Stall',
-            url: '/dashboard/rental-dashboard',
-            icon: CommandIcon,
-            isActive: true,
-            items: [
-              {
-                title: 'Rental Dashboard',
-                url: '/dashboard/rental-dashboard',
-              },
-              {
-                title: 'Stall Utilities',
-                url: '/dashboard/stall-utilities',
-              },
-            ],
-          },
-          {
-            title: 'New Stall',
-            url: '#',
-            icon: SignatureIcon,
-            items: [
-              {
-                title: 'Apply New Stall',
-                url: '/dashboard/stall-availability',
-              },
-              {
-                title: 'User Appointment',
-                url: '/dashboard/user-appointment',
-              },
-            ],
-          },
-          {
-            title: 'Financial',
-            url: '#',
+            title: 'Export Financial Report',
+            url: '/dashboard/admin-report',
             icon: BadgeDollarSignIcon,
-            items: [
-              {
-                title: 'Rental Report',
-                url: '/dashboard/rental-report',
-              },
-            ],
           },
         ],
-        navQuick: [
+      },
+    ],
+    secondary: [
+      { title: 'Admin', url: '/dashboard/admin', icon: ShieldCheckIcon },
+      { title: 'Feedback', url: '/dashboard/feedback', icon: SendIcon },
+    ],
+    quick: [
+      {
+        title: 'Tenant Information',
+        url: '/dashboard/tenant-information',
+        icon: BellElectricIcon,
+      },
+      {
+        title: 'Export Report',
+        url: '/dashboard/admin-report',
+        icon: BookDownIcon,
+      },
+      {
+        title: 'Stall Appointments',
+        url: '/dashboard/admin-appointment',
+        icon: ScrollIcon,
+      },
+    ],
+  },
+  rental: {
+    main: [
+      {
+        title: 'Stall',
+        items: [
           {
-            title: 'Rental Report',
-            url: '/dashboard/rental-report',
-            icon: CreditCardIcon,
+            title: 'Stall Information',
+            url: '/dashboard/rental-dashboard',
+            icon: StoreIcon,
           },
+          {
+            title: 'Stall Payment',
+            url: '/dashboard/stall-utilities',
+            icon: ZapIcon,
+          },
+        ],
+      },
+      {
+        title: 'New Stall',
+        items: [
           {
             title: 'Apply New Stall',
             url: '/dashboard/stall-availability',
-            icon: HousePlusIcon,
+            icon: LayoutGridIcon,
+          },
+          {
+            title: 'Appointment',
+            url: '/dashboard/user-appointment',
+            icon: CalendarClockIcon,
           },
         ],
-        navSecondary: [],
-      }
-    default:
-      return {
-        navMain: [
+      },
+      {
+        title: 'Financial',
+        items: [
           {
-            title: 'Main Features',
-            url: '/dashboard/stall-availability',
-            icon: ListOrderedIcon,
-            isActive: true,
-            items: [
-              {
-                title: 'Apply Stall',
-                url: '/dashboard/stall-availability',
-              },
-              {
-                title: 'User Appointment',
-                url: '/dashboard/user-appointment',
-              },
-            ],
-          },
-          {
-            title: 'Financial',
-            url: '#',
+            title: 'Export Financial Report',
+            url: '/dashboard/rental-report',
             icon: BadgeDollarSignIcon,
-            items: [
-              {
-                title: 'Payment History',
-                url: '/dashboard/user-report',
-              },
-            ],
           },
         ],
-        navQuick: [
+      },
+    ],
+    secondary: [],
+    quick: [
+      {
+        title: 'Payments',
+        url: '/dashboard/rental-report',
+        icon: CreditCardIcon,
+      },
+      {
+        title: 'Apply New Stall',
+        url: '/dashboard/stall-availability',
+        icon: HousePlusIcon,
+      },
+    ],
+  },
+  user: {
+    main: [
+      {
+        title: 'Main Features',
+        items: [
           {
             title: 'Apply Stall',
             url: '/dashboard/stall-availability',
-            icon: FileUserIcon,
+            icon: LayoutGridIcon,
           },
           {
-            title: 'Payment History',
-            url: '/dashboard/user-report',
-            icon: HistoryIcon,
+            title: 'Appointment',
+            url: '/dashboard/user-appointment',
+            icon: CalendarClockIcon,
           },
         ],
-        navSecondary: [],
-      }
-  }
+      },
+      {
+        title: 'Financial',
+        items: [
+          {
+            title: 'Payments',
+            url: '/dashboard/user-report',
+            icon: ReceiptTextIcon,
+          },
+        ],
+      },
+    ],
+    secondary: [],
+    quick: [
+      {
+        title: 'Apply Stall',
+        url: '/dashboard/stall-availability',
+        icon: FileUserIcon,
+      },
+      {
+        title: 'Payment History',
+        url: '/dashboard/user-report',
+        icon: HistoryIcon,
+      },
+    ],
+  },
 }

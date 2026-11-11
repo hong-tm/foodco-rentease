@@ -12,12 +12,12 @@ export function PaymentSuccessPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CheckCircleIcon className="text-success h-6 w-6" />
+            <CheckCircleIcon className="h-6 w-6 text-green-500" />
             Payment Successful
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
+          <p className="text-gray-600">
             Your payment has been processed successfully. Thank you for your
             payment!
           </p>

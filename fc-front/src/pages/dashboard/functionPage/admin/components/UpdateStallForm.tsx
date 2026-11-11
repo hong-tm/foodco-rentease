@@ -8,18 +8,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
-import { useForm, type UseFormReturn } from 'react-hook-form'
+import { useForm, useWatch, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod/v4'
 
-import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import { Checkbox } from '@/components/ui/checkbox'
+import { DateField } from '@/components/ui/date-field'
 import {
   Form,
   FormControl,
@@ -30,11 +27,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
@@ -46,18 +38,36 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
+/** Rent for the selected tier and size, so the figure follows both fields. */
+function PricePreview({
+  form,
+  tierData,
+}: {
+  form: UseFormReturn<z.input<typeof updateStallSchema>>
+  tierData: { id: number; name: string; price: number }[]
+}) {
+  const tier = useWatch({ control: form.control, name: 'stallTierNumber' })
+  const size = useWatch({ control: form.control, name: 'stallSize' })
+  const rate = tierData.find((item) => item.id === tier?.tierId)?.price
+  const price = rate ? Number((rate * (Number(size) || 0)).toFixed(2)) : 0
+
+  return (
+    <Label htmlFor="stallPrice" className="text-muted-foreground text-xs">
+      Price: RM {price}
+    </Label>
+  )
+}
+
 function StallFormFields({
   form,
   data,
   stall,
-  totalPrice,
   handleTierSelect,
   tierData,
 }: {
   form: UseFormReturn<z.input<typeof updateStallSchema>>
   data: GetStallsResponse
   stall: StallUserAttributes
-  totalPrice: number
   handleTierSelect: (
     value: string,
     field: { onChange: (value: unknown) => void },
@@ -77,278 +87,198 @@ function StallFormFields({
 
   return (
     <div className="grid gap-4">
-      {/* Stall Name Field */}
-      <FormField
-        control={form.control}
-        name="stallName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Stall Name</FormLabel>
-            <FormControl>
-              <Input placeholder="Stall Name" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <fieldset className="grid gap-4">
+        <legend className="type-strong mb-3">Stall</legend>
+        {/* Stall Name Field */}
+        <FormField
+          control={form.control}
+          name="stallName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="select-none">Stall Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Stall Name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      {/* Description Field */}
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Description</FormLabel>
-            <FormControl>
-              <Input placeholder="Description" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Description Field */}
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="select-none">Description</FormLabel>
+              <FormControl>
+                <Input placeholder="Description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      {/* Stall Image Field */}
-      <FormField
-        control={form.control}
-        name="stallImage"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Stall Image URL</FormLabel>
-            <FormControl>
-              <Input placeholder="Stall Image URL" {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="stallSize"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Stall Size</FormLabel>
-            <FormControl>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="Stall Size"
-                {...field}
-                onChange={(e) => field.onChange(e.target.valueAsNumber)}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Stall Owner Field */}
-      <FormField
-        control={form.control}
-        name="stallOwner"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Stall Owner Email</FormLabel>
-            <FormControl>
-              <Select
-                defaultValue={stall.stallOwnerId?.email}
-                onValueChange={field.onChange}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select owner email" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Owner Emails</SelectLabel>
-                    {uniqueOwners.map((owner) => (
-                      <SelectItem key={owner.email} value={owner.email}>
-                        {owner.email}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Rent Status Field */}
-      <FormField
-        control={form.control}
-        name="rentStatus"
-        render={({ field }) => (
-          <FormItem className="flex flex-row items-start space-y-0 space-x-3">
-            <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
-            </FormControl>
-            <FormLabel className="font-normal select-none">
-              Rent Status
-            </FormLabel>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Start Date Field */}
-      <FormField
-        control={form.control}
-        name="startAt"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Start Date</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !field.value && 'text-muted-foreground',
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value instanceof Date &&
-                    !isNaN(field.value.getTime()) ? (
-                      format(field.value, 'PPP')
-                    ) : typeof field.value === 'string' &&
-                      !isNaN(new Date(field.value).getTime()) ? (
-                      format(new Date(field.value), 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={(() => {
-                      if (
-                        field.value instanceof Date &&
-                        !isNaN(field.value.getTime())
-                      )
-                        return field.value
-                      if (
-                        field.value instanceof Date &&
-                        !isNaN(field.value.getTime())
-                      )
-                        return field.value
-                      const v = field.value
-                      if (typeof v === 'string' || typeof v === 'number') {
-                        const d = new Date(v)
-                        return !isNaN(d.getTime()) ? d : undefined
-                      }
-                      return undefined
-                    })()}
-                    onSelect={field.onChange}
-                    autoFocus
-                    className="rounded-md border shadow"
+        <div className="grid grid-cols-2 items-start gap-3">
+          <FormField
+            control={form.control}
+            name="stallSize"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="select-none">Stall Size</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="Stall Size"
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
                   />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      {/* End Date Field */}
-      <FormField
-        control={form.control}
-        name="endAt"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">End Date</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      'w-full justify-start text-left font-normal',
-                      !field.value && 'text-muted-foreground',
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value instanceof Date &&
-                    !isNaN(field.value.getTime()) ? (
-                      format(field.value, 'PPP')
-                    ) : typeof field.value === 'string' &&
-                      !isNaN(new Date(field.value).getTime()) ? (
-                      format(new Date(field.value), 'PPP')
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={(() => {
-                      if (
-                        field.value instanceof Date &&
-                        !isNaN(field.value.getTime())
-                      )
-                        return field.value
-                      const v = field.value
-                      if (typeof v === 'string' || typeof v === 'number') {
-                        const d = new Date(v)
-                        return !isNaN(d.getTime()) ? d : undefined
+          {/* Updated Stall Tier Field */}
+          <FormField
+            control={form.control}
+            name="stallTierNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="select-none">Stall Tier</FormLabel>
+                <FormControl>
+                  <div className="space-y-2">
+                    <Select
+                      value={
+                        field.value.tierId ? field.value.tierId.toString() : ''
                       }
-                      return undefined
-                    })()}
-                    onSelect={field.onChange}
-                    autoFocus
-                    className="rounded-md border shadow"
-                  />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Updated Stall Tier Field */}
-      <FormField
-        control={form.control}
-        name="stallTierNumber"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="select-none">Stall Tier</FormLabel>
-            <FormControl>
-              <div className="space-y-2">
+                      onValueChange={(value) => handleTierSelect(value, field)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select tier" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {tierData.map((tier) => (
+                          <SelectItem key={tier.id} value={tier.id.toString()}>
+                            {tier.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <PricePreview form={form} tierData={tierData} />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        {/* Stall Image Field */}
+        <FormField
+          control={form.control}
+          name="stallImage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="select-none">Stall Image URL</FormLabel>
+              <FormControl>
+                <Input placeholder="Stall Image URL" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </fieldset>
+      <fieldset className="grid gap-4 border-t pt-5">
+        <legend className="type-strong mb-3">Lease</legend>
+        {/* Stall Owner Field */}
+        <FormField
+          control={form.control}
+          name="stallOwner"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="select-none">Stall Owner Email</FormLabel>
+              <FormControl>
                 <Select
-                  value={field.value.tierId.toString()}
-                  onValueChange={(value) => handleTierSelect(value, field)}
+                  defaultValue={stall.stallOwnerId?.email}
+                  onValueChange={field.onChange}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select tier" />
+                    <SelectValue placeholder="Select owner email" />
                   </SelectTrigger>
                   <SelectContent>
-                    {tierData.map((tier) => (
-                      <SelectItem key={tier.id} value={tier.id.toString()}>
-                        {tier.name}
-                      </SelectItem>
-                    ))}
+                    <SelectGroup>
+                      <SelectLabel>Owner Emails</SelectLabel>
+                      {uniqueOwners.map((owner) => (
+                        <SelectItem key={owner.email} value={owner.email}>
+                          {owner.email}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
-                <Label
-                  htmlFor="stallPrice"
-                  className="text-muted-foreground text-xs"
-                >
-                  Price: RM {totalPrice}
-                </Label>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Rent Status Field */}
+        <FormField
+          control={form.control}
+          name="rentStatus"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel className="font-normal select-none">
+                Rent Status
+              </FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="grid grid-cols-2 items-start gap-3">
+          {/* Start Date Field */}
+          <FormField
+            control={form.control}
+            name="startAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="select-none">Start Date</FormLabel>
+                <DateField
+                  value={field.value as Date | string | undefined}
+                  onChange={field.onChange}
+                  calendarClassName="rounded-md border shadow"
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* End Date Field */}
+          <FormField
+            control={form.control}
+            name="endAt"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="select-none">End Date</FormLabel>
+                <DateField
+                  value={field.value as Date | string | undefined}
+                  onChange={field.onChange}
+                  calendarClassName="rounded-md border shadow"
+                />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </fieldset>
     </div>
   )
 }
@@ -375,7 +305,7 @@ export default function UpdateStallForm({
       stallNumber: stall.stallNumber ?? 0,
       stallName: stall.stallName ?? '',
       description: stall.description ?? '',
-      stallImage: stall.stallImage || '',
+      stallImage: stall.stallImage || undefined,
       stallSize:
         typeof stall.stallSize === 'number'
           ? stall.stallSize
@@ -385,7 +315,7 @@ export default function UpdateStallForm({
       startAt: stall.startAt,
       endAt: stall.endAt,
       stallTierNumber: {
-        tierId: stall.stallTierNumber?.tierId || 1,
+        tierId: stall.stallTierNumber?.tierId ?? 0,
       },
     },
   })
@@ -404,15 +334,6 @@ export default function UpdateStallForm({
       })
     }
   }
-
-  const calculateTotalPrice = (tierPrice: number, stallSize: number) => {
-    return (tierPrice * stallSize).toFixed(2)
-  }
-
-  const price = stall.stallTierNumber?.tierPrice
-  const totalPrice = price
-    ? calculateTotalPrice(price, form.getValues('stallSize'))
-    : 0
 
   const mutation = useMutation({
     mutationFn: updateStall,
@@ -459,19 +380,18 @@ export default function UpdateStallForm({
       form={form}
       data={data}
       stall={stall}
-      totalPrice={Number(totalPrice)}
       handleTierSelect={handleTierSelect}
       tierData={tierData}
     />
   )
 
   return (
-    <div className="flex w-full flex-col px-1 md:px-0">
+    <div className="flex w-full flex-col px-12 md:px-0">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <div className="grid gap-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <div className="grid gap-5">
             {isMobile ? (
-              <ScrollArea className="max-h-[min(65vh,520px)] gap-4 overflow-x-auto rounded-md">
+              <ScrollArea className="h-[600px] gap-4 overflow-x-auto rounded-md">
                 {formContent}
               </ScrollArea>
             ) : (

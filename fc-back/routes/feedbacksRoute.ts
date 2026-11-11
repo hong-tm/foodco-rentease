@@ -49,7 +49,7 @@ export const feedbacksRoute = new Hono<AuthType>()
   )
   .delete(
     '/:id',
-    zValidator('param', z.object({ id: z.number() }), (result, c) => {
+    zValidator('param', z.object({ id: z.coerce.number() }), (result, c) => {
       if (!result.success) {
         return c.json({ message: 'Invalid feedback id!' }, 400)
       }

@@ -11,7 +11,9 @@ export default function NotFoundPage() {
     <div>
       <AuroraBackground className="-z-15">
         <div className="z-10 flex h-screen w-full flex-col items-center justify-center gap-4 text-center">
-          <h1 className="type-display scroll-m-20">(；´д｀)ゞ 404</h1>
+          <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-6xl">
+            (；´д｀)ゞ 404
+          </h1>
           <p className="leading-7 not-first:mt-6">
             Sorry, the page you are looking for does not exist.
           </p>

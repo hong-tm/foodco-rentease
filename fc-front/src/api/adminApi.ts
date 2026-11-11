@@ -10,17 +10,17 @@ export type GetUsersResponse = {
   users: (UserWithRole & Partial<Pick<UserAttributes, 'phone'>>)[]
 }
 
-type GetRentalsResponse = {
+export type GetRentalsResponse = {
   user: UserStallAttributes[]
 }
 
-type SendReminderEmailResponse = {
+export type SendReminderEmailResponse = {
   to: string
   subject: string
   text: string
 }
 
-async function fetchUsers(): Promise<GetUsersResponse> {
+export async function fetchUsers(): Promise<GetUsersResponse> {
   const { data } = await authClient.admin.listUsers({
     query: {
       sortBy: 'name',
@@ -37,20 +37,12 @@ async function fetchUsers(): Promise<GetUsersResponse> {
   return { users: data.users }
 }
 
-async function fetchRentals(): Promise<GetRentalsResponse> {
+export async function fetchRentals(): Promise<GetRentalsResponse> {
   const res = await api.users['rentals'].$get()
 
   if (!res.ok) {
     const data = await res.json()
-    const message =
-      ('message' in data && typeof data.message === 'string'
-        ? data.message
-        : undefined) ??
-      ('error' in data && typeof data.error === 'string'
-        ? data.error
-        : undefined) ??
-      `Request failed with status ${res.status}`
-    throw new Error(message)
+    throw new Error(data.error)
   }
 
   const data = await res.json()

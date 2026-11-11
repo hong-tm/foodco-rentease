@@ -1,65 +1,95 @@
+import { useState } from 'react'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useQuery } from '@tanstack/react-query'
+import { isSameMonth } from 'date-fns'
+import { PlusIcon } from 'lucide-react'
 
-import { toAmount } from '@/lib/format'
+import { formatRM } from '@/lib/format'
 
-import { Skeleton } from '@/components/ui/skeleton'
-import { PageHeader } from '@/components/dashboard/PageHeader'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
+import { Button } from '@/components/ui/button'
+import { StatStrip } from '@/components/ui/panel-parts'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 
 import StallUtilitiesForm from './components/StallUtilitiesForm'
 import StallUtilitiesPaymentTable from './components/StallUtilitiesPaymentTable'
 
 export function AdminStallPayment() {
-  const { data: payments, isLoading } = useQuery(
-    getAllPaymentRecordsQueryOptions,
-  )
-
-  const utilityCharges = (payments ?? []).filter(
+  const [open, setOpen] = useState(false)
+  const { data } = useQuery(getAllPaymentRecordsQueryOptions)
+  const bills = (data ?? []).filter(
     (payment) =>
       payment.paymentType === 'water' || payment.paymentType === 'electric',
   )
-  const unpaid = utilityCharges.filter((payment) => !payment.paymentStatus)
-  const unpaidTotal = unpaid.reduce(
-    (sum, payment) => sum + toAmount(payment.paymentAmount),
-    0,
-  )
+  const total = (items: typeof bills) =>
+    items.reduce((sum, payment) => sum + Number(payment.paymentAmount), 0)
+  const unpaid = bills.filter((payment) => !payment.paymentStatus)
+  const paid = bills.filter((payment) => payment.paymentStatus)
+  const latest = paid.reduce<Date | null>((newest, payment) => {
+    const date = new Date(payment.paymentDate)
+    return !newest || date > newest ? date : newest
+  }, null)
+  const paidLatest = latest
+    ? paid.filter((payment) =>
+        isSameMonth(new Date(payment.paymentDate), latest),
+      )
+    : []
 
   return (
-    <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
+    <div className="flex flex-col gap-4 md:gap-5">
       <PageHeader
-        title="Stall Payment"
-        description="Charge water or electricity to a stall, and see which charges are still unpaid."
+        title="Utilities"
+        actions={
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button className="max-md:h-11 max-md:w-full">
+                <PlusIcon />
+                New bill
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>New bill</SheetTitle>
+                <SheetDescription>
+                  The stall's tenant sees it as a pending payment.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="px-4 pb-4">
+                <StallUtilitiesForm onDone={() => setOpen(false)} />
+              </div>
+            </SheetContent>
+          </Sheet>
+        }
+      >
+        Water and electric bills for each stall.
+      </PageHeader>
+      <StatStrip
+        stats={[
+          {
+            label: 'Unpaid',
+            value: formatRM(total(unpaid)),
+            note: `${unpaid.length} bill${unpaid.length === 1 ? '' : 's'} waiting`,
+            tone: unpaid.length ? 'negative' : undefined,
+          },
+          {
+            label: 'Paid, latest month',
+            value: formatRM(total(paidLatest)),
+            note: `${paidLatest.length} bill${paidLatest.length === 1 ? '' : 's'}`,
+          },
+          {
+            label: 'All bills',
+            value: bills.length,
+            note: `${paid.length} paid`,
+          },
+        ]}
       />
-
-      {isLoading ? (
-        <Skeleton className="h-20 w-full" />
-      ) : (
-        <SpecStrip
-          value={`RM ${unpaidTotal.toLocaleString('en-MY', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`}
-          unit="unpaid"
-          cells={[
-            {
-              label: 'Charges',
-              value: `${unpaid.length} open`,
-              anomaly: unpaid.length > 0,
-            },
-            {
-              label: 'Water',
-              value: unpaid.filter((p) => p.paymentType === 'water').length,
-            },
-            {
-              label: 'Electric',
-              value: unpaid.filter((p) => p.paymentType === 'electric').length,
-            },
-          ]}
-        />
-      )}
-
-      <StallUtilitiesForm />
       <StallUtilitiesPaymentTable />
     </div>
   )

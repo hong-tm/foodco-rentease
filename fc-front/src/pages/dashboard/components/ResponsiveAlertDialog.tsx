@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useRef } from 'react'
-
 import { useIsMobile } from '@/hooks/use-mobile'
 
 import {
@@ -26,53 +24,27 @@ import {
 type ActionFunctionButtonProps = {
   title: string
   description?: string
+  /** Names the verb on the confirm button. Generic "Continue" when omitted. */
+  confirmLabel?: string
   onClick: () => void
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-  confirmLabel?: string
 }
 
 export function ResponsiveAlertDialog({
   title,
   description,
+  confirmLabel = 'Continue',
   onClick,
   open,
   setOpen,
-  confirmLabel = 'Continue',
 }: ActionFunctionButtonProps) {
   const isMobile = useIsMobile()
-  const openerRef = useRef<HTMLElement | null>(null)
-  const drawerRef = useRef<HTMLDivElement | null>(null)
-
-  useEffect(() => {
-    if (open) openerRef.current = document.activeElement as HTMLElement | null
-  }, [open])
-
-  // The drawer content is rendered by vaul without moving focus into it.
-  useEffect(() => {
-    if (!open || !isMobile) return
-    const frame = requestAnimationFrame(() => {
-      drawerRef.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus()
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [open, isMobile])
-
-  const restoreOpener = useCallback(() => {
-    const opener = openerRef.current
-    openerRef.current = null
-    if (opener?.isConnected) opener.focus()
-  }, [])
 
   if (isMobile) {
     return (
-      <Drawer
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next)
-          if (!next) requestAnimationFrame(restoreOpener)
-        }}
-      >
-        <DrawerContent ref={drawerRef}>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
@@ -91,7 +63,6 @@ export function ResponsiveAlertDialog({
             </Button>
             <DrawerClose asChild>
               <Button
-                data-autofocus
                 variant="ghost"
                 size="default"
                 className="w-full"
@@ -102,19 +73,14 @@ export function ResponsiveAlertDialog({
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>
+        <DrawerClose />
       </Drawer>
     )
   }
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent
-        className="sm:max-w-md"
-        onCloseAutoFocus={(event) => {
-          event.preventDefault()
-          restoreOpener()
-        }}
-      >
+      <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>

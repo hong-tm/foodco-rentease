@@ -3,7 +3,7 @@ import { useSession, usersQueryKey } from '@/api/adminApi'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import {
-  ChevronDownIcon,
+  EllipsisVerticalIcon,
   UserPenIcon,
   UserRoundCheckIcon,
   UserRoundCogIcon,
@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { authClient } from '@/lib/auth-client'
-import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -43,12 +42,11 @@ export function AdminActionButton({
 
   const { refetch } = useSession()
 
-  const nextRole = userRole === 'rental' ? 'user' : 'rental'
-
   const handleChangeRole = async () => {
+    const newRole = userRole === 'rental' ? 'user' : 'rental'
     await authClient.admin.setRole({
       userId,
-      role: nextRole,
+      role: newRole,
       fetchOptions: {
         onSuccess: () => {
           toast.success('Role changed successfully')
@@ -128,8 +126,12 @@ export function AdminActionButton({
     <>
       <DropdownMenu>
         <ResponsiveAlertDialog
-          title={`Change this account to ${nextRole}?`}
-          description={`The account keeps its data. Permissions change to the ${nextRole} role.`}
+          title={`Change this account to ${
+            userRole === 'rental' ? 'applicant' : 'tenant'
+          }?`}
+          description={`A ${
+            userRole === 'rental' ? 'applicant' : 'tenant'
+          } sees different pages and has different permissions.`}
           confirmLabel="Change role"
           onClick={handleChangeRole}
           open={openChangeRole}
@@ -137,24 +139,20 @@ export function AdminActionButton({
         />
         <ResponsiveAlertDialog
           title="Sign in as this account?"
-          description="Your admin session ends and this account's dashboard opens. Sign out afterwards to return."
-          confirmLabel="Impersonate"
+          description="You leave your admin session and see the app as this account. You may need to refresh the page to see the change."
+          confirmLabel="Sign in as"
           onClick={handleImpersonateUser}
           open={openImpersonate}
           setOpen={setOpenImpersonate}
         />
         <ResponsiveAlertDialog
-          title={
-            userBanned
-              ? 'Remove the ban on this account?'
-              : 'Ban this account for 1 day?'
-          }
+          title={`${userBanned ? 'Unban' : 'Ban'} this account?`}
           description={
             userBanned
-              ? 'The account can sign in again immediately.'
-              : 'The account cannot sign in until the ban expires.'
+              ? 'This account can sign in again straight away.'
+              : 'This account cannot sign in for 1 day.'
           }
-          confirmLabel={userBanned ? 'Unban account' : 'Ban account'}
+          confirmLabel={userBanned ? 'Unban' : 'Ban'}
           onClick={handleBanUser}
           open={openBanUser}
           setOpen={setOpenBanUser}
@@ -162,30 +160,27 @@ export function AdminActionButton({
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            size="sm"
-            className={cn(
-              'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
-              'text-muted-foreground hover:bg-muted/60 hover:text-foreground focus-visible:text-foreground transition-colors',
-            )}
+            size="icon"
+            aria-label="Account actions"
+            className="size-8 max-md:size-11"
           >
-            Manage
-            <ChevronDownIcon aria-hidden="true" />
+            <EllipsisVerticalIcon />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Account action</DropdownMenuLabel>
+          <DropdownMenuLabel>Admin Action</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setOpenChangeRole(true)}>
             <UserPenIcon />
-            Change role
+            Change Role
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenImpersonate(true)}>
             <UserRoundCogIcon />
-            Impersonate user
+            Impersonate User
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenBanUser(true)}>
             {userBanned ? <UserRoundCheckIcon /> : <UserXIcon />}
-            {userBanned ? 'Unban user' : 'Ban user'}
+            {userBanned ? 'Unban User' : 'Ban User'}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
         </DropdownMenuContent>

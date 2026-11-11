@@ -13,12 +13,12 @@ export type GetStallsResponse = {
   stall: StallUserAttributes[]
 }
 
-type GetCurrentVacancyResponse = {
+export type GetCurrentVacancyResponse = {
   totalStalls: number
   stalls: StallUserAttributes[]
 }
 
-type GetStallCurrentResponse = {
+export type GetStallCurrentResponse = {
   stalls: StallUserAttributes[]
   user: UserAttributes
 }
@@ -37,7 +37,7 @@ export type StallButtonProps = {
 
 // Function
 
-async function fetchStalls(): Promise<GetStallsResponse> {
+export async function fetchStalls(): Promise<GetStallsResponse> {
   const res = await api.stalls.$get()
 
   if (!res.ok) {
@@ -51,7 +51,7 @@ async function fetchStalls(): Promise<GetStallsResponse> {
   }
 }
 
-async function fetchStallCurrent(
+export async function fetchStallCurrent(
   stallId: string,
 ): Promise<GetStallCurrentResponse> {
   const res = await api.stalls[':stallOwner'].$get({
@@ -70,7 +70,7 @@ async function fetchStallCurrent(
   }
 }
 
-async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
+export async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
   const res = await api.stalls.$get()
 
   if (!res.ok) {
@@ -89,7 +89,7 @@ async function fetchCurrentVacancy(): Promise<GetCurrentVacancyResponse> {
   } as GetCurrentVacancyResponse
 }
 
-async function fetchStallTierPrices(): Promise<StallTierAttributes[]> {
+export async function fetchStallTierPrices(): Promise<StallTierAttributes[]> {
   const res = await api.stalls.tierPrices.$get()
 
   if (!res.ok) {

@@ -1,150 +1,116 @@
-import { fetchCurrentVacancyQueryOptions } from '@/api/stallApi'
+import { useState } from 'react'
+import { fetchStallsQueryOptions } from '@/api/stallApi'
+import { StallDialog } from '@/pages/dashboard/components/StallDialog'
+import {
+  StallFloorPlan,
+  StateSwatch,
+} from '@/pages/dashboard/components/StallFloorPlan'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
-import {
-  AISLE_PAIRS,
-  FLOOR_PLAN_SIZE,
-  FRONT_ROW,
-  stallState,
-  type StallState,
-} from '@/lib/floorPlan'
-import { cn } from '@/lib/utils'
+import { boardState, boardStateLabel, type BoardState } from '@/lib/stall-lease'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { ChartEmpty } from '@/components/dashboard/ChartEmpty'
+import { Badge } from '@/components/ui/badge'
+import { Panel, PanelError, PanelHeader } from '@/components/ui/panel'
+import { Skeleton } from '@/components/ui/skeleton'
 
-const CELL: Record<StallState, string> = {
-  rented: 'bg-muted text-muted-foreground',
-  vacant: 'border-border bg-brand-soft text-brand-ink',
-  ended: 'bg-destructive-soft text-destructive-ink',
+const legend: { state: BoardState; to: string }[] = [
+  { state: 'followup', to: '/dashboard/tenant-information?view=attention' },
+  { state: 'free', to: '/dashboard/stall-availability' },
+  { state: 'let', to: '/dashboard/stall-availability?state=let' },
+]
+
+function occupancyStatus(rate: number) {
+  if (rate >= 80)
+    return {
+      label: 'High Demand',
+      variant: 'positive' as const,
+    }
+  if (rate <= 40)
+    return {
+      label: 'Low Occupancy',
+      variant: 'negative' as const,
+    }
+  return {
+    label: 'Moderate',
+    variant: 'warning' as const,
+  }
 }
 
-function Cell({ stall }: { stall: StallUserAttributes }) {
-  const state = stallState(stall)
-  return (
-    <span
-      title={`Stall ${stall.stallNumber}: ${state}`}
-      className={cn(
-        'flex h-11 items-center justify-center rounded-md text-sm font-medium tabular-nums',
-        CELL[state],
-      )}
-    >
-      {stall.stallNumber}
-    </span>
-  )
-}
+export function VacancyChart({ className }: { className?: string }) {
+  const { data, isLoading, error, refetch } = useQuery(fetchStallsQueryOptions)
+  const [open, setOpen] = useState<StallUserAttributes | null>(null)
+  const month = new Date().toLocaleString('en-US', { month: 'long' })
 
-function Key({ tone, label }: { tone: StallState; label: string }) {
+  if (isLoading) {
+    return (
+      <Panel className={className}>
+        <PanelHeader title="Occupancy" meta={`${month} overview`} />
+        <Skeleton className="h-60 flex-1" />
+      </Panel>
+    )
+  }
+
+  if (error || !data) {
+    return (
+      <Panel className={className}>
+        <PanelHeader title="Occupancy" meta={`${month} overview`} />
+        <PanelError what="occupancy" onRetry={() => refetch()} />
+      </Panel>
+    )
+  }
+
+  const stalls = data.stall
+  const total = stalls.length
+  const rented = stalls.filter((stall) => stall.rentStatus).length
+  const rate = total > 0 ? (rented / total) * 100 : 0
+  const status = occupancyStatus(rate)
+  const counts: Record<BoardState, number> = { free: 0, followup: 0, let: 0 }
+  stalls.forEach((stall) => {
+    counts[boardState(stall)] += 1
+  })
+
   return (
-    <li className="flex items-center gap-1.5">
-      <span
-        aria-hidden="true"
-        className={cn('size-3 rounded-sm', CELL[tone])}
+    <Panel className={className}>
+      <PanelHeader title="Occupancy" meta={`${month} overview`} />
+      <StallFloorPlan
+        stalls={stalls}
+        size="compact"
+        onOpen={setOpen}
+        matches={(stall) => boardState(stall) === 'followup'}
+        className="min-h-60 flex-1"
+        centre={
+          <>
+            <div className="flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1">
+              <p className="type-figure-lead">{rate.toFixed(1)}%</p>
+              <Badge variant={status.variant}>{status.label}</Badge>
+            </div>
+            <p className="type-body text-muted-foreground mt-1">
+              {rented} of {total} let, {counts.followup} need follow-up
+            </p>
+          </>
+        }
       />
-      {label}
-    </li>
-  )
-}
-
-// The food court itself, drawn small: the one picture only this product has.
-export function VacancyChart() {
-  const { data, error } = useQuery(fetchCurrentVacancyQueryOptions)
-
-  if (error) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Floor plan</CardTitle>
-          <CardDescription>Stall status could not be loaded.</CardDescription>
-        </CardHeader>
-      </Card>
-    )
-  }
-
-  const stalls = [...(data?.stalls ?? [])].sort(
-    (a, b) => a.stallNumber - b.stallNumber,
-  )
-
-  if (stalls.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Floor plan</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ChartEmpty message="No stalls recorded yet" />
-        </CardContent>
-      </Card>
-    )
-  }
-
-  const count = (state: StallState) =>
-    stalls.filter((stall) => stallState(stall) === state).length
-  const vacant = count('vacant')
-  const ended = count('ended')
-  const isFloorPlan = stalls.length === FLOOR_PLAN_SIZE
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Floor plan</CardTitle>
-        <CardDescription>
-          {vacant} vacant of {stalls.length} stalls.{' '}
-          <Link
-            to="/dashboard/stall-availability"
-            className="hover:text-foreground -my-3 inline-block py-3 underline underline-offset-4"
-          >
-            Open the stall board
-          </Link>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <div className="grid grid-cols-7 gap-1.5">
-          {isFloorPlan ? (
-            <>
-              {stalls.slice(0, FRONT_ROW).map((stall) => (
-                <Cell key={stall.stallNumber} stall={stall} />
-              ))}
-              {Array.from({ length: AISLE_PAIRS }, (_, index) => {
-                const left = stalls[FRONT_ROW + index * 2]
-                const right = stalls[FRONT_ROW + index * 2 + 1]
-                return [
-                  <Cell key={left.stallNumber} stall={left} />,
-                  index === 0 ? (
-                    <span
-                      key="aisle"
-                      className="text-muted-foreground col-span-5 row-span-3 flex items-center justify-center text-xs"
-                    >
-                      Central aisle
-                    </span>
-                  ) : null,
-                  <Cell key={right.stallNumber} stall={right} />,
-                ]
-              })}
-              {stalls.slice(FLOOR_PLAN_SIZE - FRONT_ROW).map((stall) => (
-                <Cell key={stall.stallNumber} stall={stall} />
-              ))}
-            </>
-          ) : (
-            stalls.map((stall) => (
-              <Cell key={stall.stallNumber} stall={stall} />
-            ))
-          )}
-        </div>
-        <ul className="text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-xs">
-          <Key tone="vacant" label="Vacant" />
-          <Key tone="rented" label="Rented" />
-          {ended > 0 ? <Key tone="ended" label="Lease ended" /> : null}
-        </ul>
-      </CardContent>
-    </Card>
+      <ul className="grid grid-cols-1 gap-x-4 gap-y-1 md:flex md:flex-wrap md:gap-x-5">
+        {legend.map((item) => (
+          <li key={item.state}>
+            <Link
+              to={item.to}
+              className="type-body hover:bg-accent focus-visible:ring-ring -mx-1 flex min-h-11 items-center gap-2 rounded-md px-1 outline-none focus-visible:ring-2 md:min-h-8"
+            >
+              <StateSwatch state={item.state} />
+              <span className="text-muted-foreground">
+                {boardStateLabel[item.state]}
+              </span>
+              <span className="font-medium max-md:ml-auto">
+                {counts[item.state]}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <StallDialog stall={open} onClose={() => setOpen(null)} />
+    </Panel>
   )
 }

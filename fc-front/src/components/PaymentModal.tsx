@@ -27,7 +27,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { useTheme } from '@/components/theme-provider'
 
 import { Button } from './ui/button'
 import {
@@ -180,19 +179,21 @@ const CheckoutForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="type-section-title mb-4 tabular-nums">
+      <div className="mb-4 text-lg font-semibold">
         Amount to pay: RM{amount.toFixed(2)}
       </div>
       <PaymentElement />
       {errorMessage && (
-        <div role="alert" className="text-destructive mt-2 text-sm">
-          {errorMessage}
-        </div>
+        <div className="mt-2 text-sm text-red-500">{errorMessage}</div>
       )}
       <div className="mt-4">
         <Button
           type="submit"
-          className="w-full"
+          className={`w-full ${
+            paymentStatus === 'success'
+              ? 'bg-green-500 text-white hover:bg-green-600'
+              : ''
+          }`}
           disabled={
             !stripe ||
             paymentStatus === 'processing' ||
@@ -236,23 +237,12 @@ export default function PaymentModal({
     }
   }, [clientSecret])
 
-  const { theme } = useTheme()
-  const isDark =
-    theme === 'dark' ||
-    (theme === 'system' &&
-      typeof document !== 'undefined' &&
-      document.documentElement.classList.contains('dark'))
-
   const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
-      theme: isDark ? 'night' : 'stripe',
+      theme: 'stripe',
       variables: {
-        colorPrimary: isDark ? '#f97316' : '#ea580c',
-        colorBackground: isDark ? '#18181b' : '#ffffff',
-        colorText: isDark ? '#fafafa' : '#09090b',
-        colorDanger: isDark ? '#ef4444' : '#dc2626',
-        borderRadius: '8px',
+        colorPrimary: '#0F172A',
       },
     },
   }

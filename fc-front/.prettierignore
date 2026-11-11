@@ -7,6 +7,3 @@ public/
 dist/
 *.md
 routeTree.gen.ts
-
-# generated visualizer artifact, not hand-edited
-stats.html

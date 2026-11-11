@@ -6,12 +6,18 @@ import {
   removeFeedbackById,
   type Feedback,
 } from '@/api/feedbackApi'
-import { fetchStallsQueryOptions } from '@/api/stallApi'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader2Icon, Trash2Icon } from 'lucide-react'
+import {
+  AngryIcon,
+  FrownIcon,
+  LaughIcon,
+  SmileIcon,
+  Trash2Icon,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
-import { formatDay } from '@/lib/format'
+import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 import {
@@ -26,322 +32,385 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { PageHeader } from '@/components/dashboard/PageHeader'
-import { SummaryLine } from '@/components/dashboard/SpecStrip'
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
+import {
+  Panel,
+  PanelEmpty,
+  PanelError,
+  PanelHeader,
+  PanelRowsSkeleton,
+} from '@/components/ui/panel'
+import {
+  PanelToolbar,
+  SearchField,
+  TablePager,
+  TablePanel,
+  usePager,
+} from '@/components/ui/panel-parts'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
-import { RATINGS } from './ratings'
-
-// Five columns split 10 / 14 / 14 / 50 / 12. The comment takes the slack; the
-// action share is the delete control plus its cell padding. Ratios belong to
-// this table, so they stay page-scoped instead of becoming theme tokens.
-const COLUMN_WIDTH = {
-  date: '10%',
-  stall: '14%',
-  rating: '14%',
-  comment: '50%',
-  action: '12%',
-} as const
-
-function ratingOf(value: number) {
-  return RATINGS.find((rating) => rating.value === value) ?? null
+const mood: Record<
+  Feedback['happiness'],
+  { label: string; icon: typeof LaughIcon; tone: string; bar: string }
+> = {
+  4: {
+    label: 'Very happy',
+    icon: LaughIcon,
+    tone: 'bg-positive-soft text-positive-ink',
+    bar: 'var(--positive)',
+  },
+  3: {
+    label: 'Happy',
+    icon: SmileIcon,
+    tone: 'bg-muted text-muted-foreground',
+    bar: 'var(--chart-1-soft)',
+  },
+  2: {
+    label: 'Unhappy',
+    icon: FrownIcon,
+    tone: 'bg-warning-soft text-warning-ink',
+    bar: 'var(--chart-3)',
+  },
+  1: {
+    label: 'Angry',
+    icon: AngryIcon,
+    tone: 'bg-negative-soft text-negative-ink',
+    bar: 'var(--destructive)',
+  },
 }
+const levels = [4, 3, 2, 1] as const
 
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="max-w-page mx-auto flex w-full min-w-0 flex-col gap-8 px-2 lg:px-6">
-      <PageHeader
-        title="Feedback"
-        description="What customers said about each stall. Delete entries that are spam or abuse."
-      />
-      {children}
-    </div>
-  )
-}
+type Sort = 'new' | 'low'
 
 export function FeedbackDisplayPage() {
   const { data, error, isPending, refetch } = useQuery(
     getAllFeedbackQueryOptions,
   )
-  const { data: stallsData } = useQuery(fetchStallsQueryOptions)
-  const queryClient = useQueryClient()
+  const [level, setLevel] = useState('all')
+  const [stall, setStall] = useState('all')
+  const [sort, setSort] = useState<Sort>('new')
+  const [search, setSearch] = useState('')
 
-  const stallName = (stallNumber: number) =>
-    stallsData?.stall.find((stall) => stall.stallNumber === stallNumber)
-      ?.stallName ?? 'Name not recorded'
+  const all = data ?? []
+  const countOf = (happiness: number) =>
+    all.filter((feedback) => feedback.happiness === happiness).length
+  const average = all.length
+    ? all.reduce((sum, feedback) => sum + feedback.happiness, 0) / all.length
+    : 0
+  const unhappy = countOf(1) + countOf(2)
 
-  if (isPending) {
-    return (
-      <Shell>
-        <div
-          role="status"
-          aria-live="polite"
-          className="border-border flex flex-col gap-5 rounded-xl border p-6"
-        >
-          <span className="sr-only">Loading feedback…</span>
-          {[0, 1, 2, 3, 4].map((row) => (
-            <div
-              key={row}
-              className="flex items-center gap-4"
-              aria-hidden="true"
-            >
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-4 flex-1" />
-              <Skeleton className="h-8 w-16" />
-            </div>
-          ))}
-        </div>
-      </Shell>
+  const stalls = [...new Set(all.map((feedback) => feedback.stall))].sort(
+    (a, b) => a - b,
+  )
+  const ranking = stalls
+    .map((number) => {
+      const own = all.filter((feedback) => feedback.stall === number)
+      return {
+        number,
+        count: own.length,
+        average: own.reduce((sum, f) => sum + f.happiness, 0) / own.length,
+      }
+    })
+    .sort((a, b) => a.average - b.average || a.number - b.number)
+
+  const query = search.trim().toLowerCase()
+  const rows = all
+    .filter(
+      (feedback) =>
+        (level === 'all' || String(feedback.happiness) === level) &&
+        (stall === 'all' || String(feedback.stall) === stall) &&
+        (!query || feedback.feedbackContent?.toLowerCase().includes(query)),
     )
-  }
-
-  if (error) {
-    return (
-      <Shell>
-        <div
-          role="alert"
-          className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
-        >
-          <p>Feedback could not be loaded: {error.message}</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
-      </Shell>
+    .sort((a, b) =>
+      sort === 'low' && a.happiness !== b.happiness
+        ? a.happiness - b.happiness
+        : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     )
-  }
-
-  const feedbacks = data ?? []
-
-  if (feedbacks.length === 0) {
-    return (
-      <Shell>
-        <p className="text-muted-foreground text-sm">
-          No feedback has been submitted yet.
-        </p>
-      </Shell>
-    )
-  }
-
-  const counts = RATINGS.map((rating) => ({
-    ...rating,
-    count: feedbacks.filter((feedback) => feedback.happiness === rating.value)
-      .length,
-  }))
+  const pager = usePager(rows, 12, `${level}|${stall}|${sort}|${query}`)
 
   return (
-    <Shell>
-      <section aria-label="Rating breakdown">
-        <SummaryLine
-          value={String(feedbacks.length)}
-          unit={feedbacks.length === 1 ? 'comment' : 'comments'}
-          cells={counts.map(({ value, label, count }) => ({
-            label,
-            value: count,
-            tone:
-              value === 4
-                ? 'success'
-                : value === 3
-                  ? 'muted'
-                  : value === 2
-                    ? 'warning'
-                    : 'destructive',
-          }))}
-        />
-      </section>
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader title="Feedback">
+        {data
+          ? `${all.length} responses across ${stalls.length} stalls, averaging ${average.toFixed(1)} out of 4. ${unhappy} ${unhappy === 1 ? 'is' : 'are'} unhappy.`
+          : 'What customers say about each stall.'}
+      </PageHeader>
 
-      <div className="max-w-full min-w-0 overflow-hidden">
-        <Table className="xl:min-w-table">
-          <TableCaption className="sr-only">
-            Customer feedback with date, stall, rating and comment
-          </TableCaption>
-          <TableHeader className="border-border border-b max-xl:sr-only">
-            <TableRow className="hover:bg-transparent">
-              <TableHead
-                className={`type-label text-muted-foreground h-12 pl-6`}
-                style={{ width: COLUMN_WIDTH.date }}
+      {error ? (
+        <Panel>
+          <PanelError what="feedback" onRetry={() => refetch()} />
+        </Panel>
+      ) : null}
+
+      {!error ? (
+        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <TablePanel>
+            <PanelToolbar>
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                value={level}
+                onValueChange={(next) => setLevel(next || 'all')}
+                aria-label="Filter by rating"
+                className="max-md:w-full"
               >
-                Date
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.stall }}
-              >
-                Stall
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.rating }}
-              >
-                Rating
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.comment }}
-              >
-                Comment
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.action }}
-              >
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {feedbacks.map((feedback) => (
-              <FeedbackRow
-                key={feedback.id}
-                feedback={feedback}
-                stallName={stallName(feedback.stall)}
-                onDeleted={() => {
-                  queryClient.setQueryData<Feedback[]>(
-                    feedbacksQueryKey.feedbacks(),
-                    (oldData) => removeFeedbackById(oldData, feedback.id),
+                <ToggleGroupItem value="all" className="px-3 max-md:h-11">
+                  All
+                </ToggleGroupItem>
+                {levels.map((value) => {
+                  const Icon = mood[value].icon
+                  return (
+                    <ToggleGroupItem
+                      key={value}
+                      value={String(value)}
+                      aria-label={`${mood[value].label}, ${countOf(value)}`}
+                      title={mood[value].label}
+                      className="gap-1.5 px-2.5 max-md:h-11"
+                    >
+                      <Icon />
+                      <span className="tabular-nums">{countOf(value)}</span>
+                    </ToggleGroupItem>
                   )
-                }}
+                })}
+              </ToggleGroup>
+              <SearchField
+                value={search}
+                onChange={setSearch}
+                placeholder="Search comments"
+                label="Search comments"
+                className="md:w-52"
               />
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Shell>
-  )
-}
+              <div className="flex gap-2 max-md:w-full md:ml-auto">
+                <Select value={stall} onValueChange={setStall}>
+                  <SelectTrigger
+                    aria-label="Filter by stall"
+                    className="w-32 max-md:h-11 max-md:flex-1"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All stalls</SelectItem>
+                    {stalls.map((number) => (
+                      <SelectItem key={number} value={String(number)}>
+                        Stall {number}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={sort}
+                  onValueChange={(value) => setSort(value as Sort)}
+                >
+                  <SelectTrigger
+                    aria-label="Sort feedback"
+                    className="w-36 max-md:h-11 max-md:flex-1"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">Newest first</SelectItem>
+                    <SelectItem value="low">Lowest rating</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </PanelToolbar>
+            {isPending ? (
+              <div className="p-4 md:p-5">
+                <PanelRowsSkeleton rows={6} />
+              </div>
+            ) : null}
+            {data && pager.total === 0 ? (
+              <p className="type-body text-muted-foreground px-4 py-8 text-center">
+                No feedback matches these filters.
+              </p>
+            ) : null}
+            {pager.total > 0 ? (
+              <ul className="divide-y">
+                {pager.rows.map((feedback) => (
+                  <li key={feedback.id}>
+                    <FeedbackRow feedback={feedback} />
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {data ? <TablePager pager={pager} noun="responses" /> : null}
+          </TablePanel>
 
-function Rating({ happiness }: { happiness: number }) {
-  const rating = ratingOf(happiness)
-  if (!rating) {
-    return <span className="text-muted-foreground text-xs">No rating</span>
-  }
-  // The icon carries the band's colour so the column can be scanned by
-  // sentiment; the label stays neutral (chromatic data, neutral chrome).
-  const tone =
-    rating.value === 4
-      ? 'text-success-ink'
-      : rating.value === 3
-        ? 'text-foreground'
-        : rating.value === 2
-          ? 'text-warning-ink'
-          : 'text-destructive'
-  return (
-    <span className="flex items-center gap-2">
-      <rating.Icon className={cn('size-4', tone)} aria-hidden="true" />
-      <span className="text-sm">{rating.label}</span>
-    </span>
-  )
-}
-
-function FeedbackRow({
-  feedback,
-  stallName,
-  onDeleted,
-}: {
-  feedback: Feedback
-  stallName: string
-  onDeleted: () => void
-}) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-  const trigger = (className: string) => (
-    <AlertDialogTrigger asChild>
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`text-muted-foreground hover:text-destructive -ml-2 px-2 ${className}`}
-      >
-        <Trash2Icon className="size-4" aria-hidden="true" />
-        <span className="sr-only">Delete this feedback</span>
-      </Button>
-    </AlertDialogTrigger>
-  )
-
-  return (
-    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <TableRow className="border-border/60 hover:bg-muted/30">
-        <TableCell className="py-4 pl-6 align-baseline whitespace-normal">
-          <span className="text-sm whitespace-nowrap tabular-nums">
-            {formatDay(feedback.createdAt)}
-          </span>
-
-          <div className="mt-2 flex flex-col gap-2 xl:hidden">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="text-sm font-medium tabular-nums">
-                Stall {feedback.stall}
-              </span>
-              <span className="text-muted-foreground text-xs">{stallName}</span>
-              <Rating happiness={feedback.happiness} />
-            </div>
-            <p className="text-sm break-words whitespace-pre-wrap">
-              {feedback.feedbackContent || (
-                <span className="text-muted-foreground">No message</span>
-              )}
-            </p>
-            <div>{trigger('xl:hidden')}</div>
+          <div className="flex flex-col gap-4 xl:sticky xl:top-16 xl:max-h-[calc(100svh-5rem)] xl:overflow-y-auto xl:overscroll-contain xl:[scrollbar-width:thin]">
+            <Panel>
+              <PanelHeader title="Ratings" meta="Share of all responses" />
+              {all.length === 0 && data ? (
+                <PanelEmpty>No feedback yet.</PanelEmpty>
+              ) : null}
+              <div
+                aria-hidden="true"
+                className="flex h-2 gap-0.5 overflow-hidden rounded-full"
+              >
+                {levels.map((value) =>
+                  countOf(value) ? (
+                    <span
+                      key={value}
+                      style={{
+                        flexGrow: countOf(value),
+                        background: mood[value].bar,
+                      }}
+                    />
+                  ) : null,
+                )}
+              </div>
+              <ul className="flex flex-col gap-1">
+                {levels.map((value) => (
+                  <li key={value} className="type-body flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className="size-2 rounded-full"
+                      style={{ background: mood[value].bar }}
+                    />
+                    <span className="text-muted-foreground flex-1">
+                      {mood[value].label}
+                    </span>
+                    <span className="font-medium tabular-nums">
+                      {countOf(value)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+            <Panel>
+              <PanelHeader title="By stall" meta="Lowest average first" />
+              <ul className="-mx-2 flex flex-col">
+                {ranking.map((row) => {
+                  const selected = stall === String(row.number)
+                  return (
+                    <li key={row.number}>
+                      <button
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() =>
+                          setStall(selected ? 'all' : String(row.number))
+                        }
+                        className={cn(
+                          'type-body focus-visible:ring-ring grid min-h-11 w-full cursor-pointer grid-cols-[56px_minmax(0,1fr)_28px] items-center gap-2 rounded-md px-2 text-left outline-none focus-visible:ring-2 md:min-h-8',
+                          selected ? 'bg-brand-soft' : 'hover:bg-accent',
+                        )}
+                      >
+                        <span className="text-muted-foreground">
+                          Stall {row.number}
+                        </span>
+                        <span className="bg-muted h-1.5 overflow-hidden rounded-full">
+                          <span
+                            className="block h-full rounded-full"
+                            style={{
+                              width: `${(row.average / 4) * 100}%`,
+                              background:
+                                row.average < 2.5
+                                  ? 'var(--destructive)'
+                                  : 'var(--chart-1)',
+                            }}
+                          />
+                        </span>
+                        <span
+                          className={cn(
+                            'text-right font-medium tabular-nums',
+                            row.average < 2.5 && 'text-negative-ink',
+                          )}
+                        >
+                          {row.average.toFixed(1)}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </Panel>
           </div>
-        </TableCell>
+        </div>
+      ) : null}
+    </div>
+  )
+}
 
-        <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
-          <p className="text-sm font-medium tabular-nums">
+function FeedbackRow({ feedback }: { feedback: Feedback }) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const rating = mood[feedback.happiness]
+  const Icon = rating.icon
+
+  return (
+    <Item className="items-start rounded-none border-0 px-4 py-3 md:px-5">
+      <ItemMedia
+        className={cn('size-8 rounded-full', rating.tone)}
+        title={rating.label}
+        aria-label={rating.label}
+      >
+        <Icon className="size-4" />
+      </ItemMedia>
+      <ItemContent className="min-w-0 gap-1">
+        <ItemTitle className="type-meta text-muted-foreground w-full font-normal">
+          <span className="text-foreground font-medium">
             Stall {feedback.stall}
-          </p>
-          <p className="text-muted-foreground mt-1 text-xs">{stallName}</p>
-        </TableCell>
-
-        <TableCell className="hidden py-4 align-baseline xl:table-cell">
-          <Rating happiness={feedback.happiness} />
-        </TableCell>
-
-        <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
-          <p className="text-sm break-words whitespace-pre-wrap">
-            {feedback.feedbackContent || (
-              <span className="text-muted-foreground">No message</span>
-            )}
-          </p>
-        </TableCell>
-
-        <TableCell className="hidden py-4 pr-6 text-right align-baseline xl:table-cell">
-          {trigger('hidden xl:inline-flex')}
-        </TableCell>
-      </TableRow>
-
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete feedback #{feedback.id}?</AlertDialogTitle>
-          <AlertDialogDescription>
-            {feedback.feedbackContent
-              ? `"${feedback.feedbackContent.slice(0, 120)}${
-                  feedback.feedbackContent.length > 120 ? '…' : ''
-                }"`
-              : 'This entry has no message.'}{' '}
-            It is removed for good and cannot be restored.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <FeedbackDeleteButton
-              id={feedback.id}
-              onSuccess={() => {
-                setIsDialogOpen(false)
-                onDeleted()
-              }}
-            />
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </span>
+          <span>{formatDate(feedback.createdAt)}</span>
+          <span className="type-id">#{feedback.id}</span>
+        </ItemTitle>
+        <ItemDescription
+          className={cn(
+            'type-body line-clamp-none break-words',
+            feedback.feedbackContent ? 'text-foreground' : 'italic',
+          )}
+        >
+          {feedback.feedbackContent || 'No comment left.'}
+        </ItemDescription>
+      </ItemContent>
+      <ItemActions>
+        <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={`Delete feedback ${feedback.id}`}
+              className="text-muted-foreground hover:text-destructive size-8 max-md:size-11"
+            >
+              <Trash2Icon className="size-4" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Delete feedback {feedback.id}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This removes it for good. Stall {feedback.stall} loses this
+                rating from its average.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep</AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <FeedbackDeleteButton
+                  id={feedback.id}
+                  onSuccess={() => setIsDialogOpen(false)}
+                />
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </ItemActions>
+    </Item>
   )
 }
 
@@ -352,31 +421,34 @@ function FeedbackDeleteButton({
   id: number
   onSuccess: () => void
 }) {
+  const queryClient = useQueryClient()
+
   const mutation = useMutation({
     mutationFn: deleteFeedback,
     onError: () => {
       toast.error(`Failed to delete feedback ${id}`)
     },
     onSuccess: () => {
+      queryClient.setQueryData<Feedback[]>(
+        [feedbacksQueryKey.feedbacks],
+        (oldData) => removeFeedbackById(oldData, id),
+      )
+
       toast.success(`Feedback ${id} deleted`)
       onSuccess()
     },
   })
-
   return (
     <Button
-      onClick={() => mutation.mutate({ id })}
-      disabled={mutation.isPending}
       variant="destructive"
+      onClick={(event) => {
+        event.preventDefault()
+        mutation.mutate({ id })
+      }}
+      disabled={mutation.isPending}
     >
-      {mutation.isPending ? (
-        <>
-          Deleting
-          <Loader2Icon className="size-4 animate-spin" />
-        </>
-      ) : (
-        'Delete'
-      )}
+      {mutation.isPending ? <Spinner /> : null}
+      Delete
     </Button>
   )
 }
