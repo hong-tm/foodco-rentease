@@ -34,6 +34,8 @@ code {
    selected, what can be acted on and what the data says, never the surfaces.
    Every call site reads these tokens. */
 :root {
+  /* Undo-restore flash: one quiet wash derived from the accent. */
+  --undo-restore: color-mix(in oklab, var(--primary) 18%, transparent);
   --background: oklch(0.985 0.002 265);
   --foreground: oklch(0.21 0.008 265);
   --card: oklch(1 0 0);
@@ -286,11 +288,11 @@ code {
   }
 
   @keyframes undo-restore {
-    0% {
-      background-color: color-mix(in oklab, var(--primary) 22%, transparent);
+    from {
+      background-color: var(--undo-restore);
     }
 
-    100% {
+    to {
       background-color: transparent;
     }
   }
