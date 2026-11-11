@@ -46,6 +46,19 @@ jobs:
       - name: Lint frontend
         run: pnpm -C fc-front lint
 
+      # vite build does not typecheck; keep TS out of the merge path's blind spot.
+      - name: Typecheck frontend
+        run: pnpm -C fc-front typecheck
+
+      - name: Dead-code and dependency check
+        run: pnpm -C fc-front knip
+
       # fc-front builds into fc-back/webpage, so run it after the backend.
       - name: Build frontend
         run: pnpm -C fc-front build
+
+      # The minifier can drop keyframes declarations it cannot compute
+      # (color-mix with var() lost a from-frame and shipped an invisible
+      # animation); this compares built css against src/index.css.
+      - name: Verify animate keyframes survive the build
+        run: pnpm -C fc-front check:keyframes
