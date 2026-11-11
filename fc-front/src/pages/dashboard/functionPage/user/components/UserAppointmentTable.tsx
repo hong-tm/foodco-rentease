@@ -8,7 +8,6 @@ import {
 } from '@/api/paymentApi'
 import type { GetStallsResponse } from '@/api/stallApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
-import type { NotificationAttributes } from '@server/db/userModel'
 import type {
   PaymentIntentResponse,
   PaymentNotification,
@@ -16,22 +15,20 @@ import type {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import { formatDay } from '@/lib/format'
-
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
   TableCaption,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
 import PaymentModal from '@/components/PaymentModal'
-import { SummaryLine } from '@/components/dashboard/SpecStrip'
-import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
 type PaymentIntentParams = {
   amount: number
@@ -53,7 +50,6 @@ export default function UserAppointmentTable() {
     data: notifications,
     error,
     isLoading,
-    refetch,
   } = useQuery({
     ...getUserNotificationQueryOptions,
     queryKey: ['get-user-notifications', session?.user?.id],
@@ -122,285 +118,121 @@ export default function UserAppointmentTable() {
     })
   }
 
-  // Paid means this user paid for this stall. Other tenants' payments on the
-  // same stall do not count (they used to, marking strangers' bookings paid).
-  const getPaymentStatus = (stallId: number) => {
-    return payments?.some(
-      (payment) =>
-        payment.stallId === stallId &&
-        payment.userId === session?.user?.id &&
-        payment.paymentStatus,
-    )
-  }
-
-  const appointments = notifications ?? []
-  // Only an approved appointment can be paid, which keeps the strip's
-  // Pending / Awaiting payment / Paid / Rejected counts disjoint.
-  const isPaid = (notification: NotificationAttributes) =>
-    notification.notificationRead === true &&
-    Boolean(
-      notification.stallNumber && getPaymentStatus(notification.stallNumber),
-    )
-  const isAwaitingPayment = (notification: NotificationAttributes) =>
-    notification.notificationRead === true &&
-    Boolean(notification.stallNumber) &&
-    !isPaid(notification)
-
-  const pendingCount = appointments.filter(
-    (notification) => notification.notificationRead === null,
-  ).length
-  // Single source of truth shared by the mobile card list and the desktop
-  // table, so the two views cannot drift on status, tone or pay state.
-  const getAppointmentView = (notification: NotificationAttributes) => {
-    const approved = notification.notificationRead === true
-    const status =
-      notification.notificationRead === null
-        ? 'Pending'
-        : approved
-          ? 'Approved'
-          : 'Rejected'
-    const paid = isPaid(notification)
-    const tone =
-      notification.notificationRead === false
-        ? 'blocked'
-        : approved && paid
-          ? 'settled'
-          : 'action'
-    return { approved, status, paid, tone }
-  }
-
-  const awaitingPaymentCount = appointments.filter(isAwaitingPayment).length
-  const paidCount = appointments.filter(isPaid).length
-  const rejectedCount = appointments.filter(
-    (notification) => notification.notificationRead === false,
-  ).length
-
-  const vacantStalls = (stalls?.stall ?? [])
-    .filter((s) => !s.stallOwner)
-    .slice(0, 3)
-
-  const hasActions = appointments.some(
-    (notification) =>
-      notification.notificationRead === true &&
-      Boolean(notification.stallNumber),
-  )
-
-  const specStrip = (
-    <SummaryLine
-      value={String(appointments.length)}
-      unit={appointments.length === 1 ? 'appointment' : 'appointments'}
-      cells={[
-        { label: 'Pending', value: pendingCount },
-        {
-          label: 'Awaiting payment',
-          value: awaitingPaymentCount,
-          anomaly: awaitingPaymentCount > 0,
-        },
-        { label: 'Paid', value: paidCount },
-        { label: 'Rejected', value: rejectedCount },
-      ]}
-    />
-  )
-
   if (isLoading) {
-    return (
-      <div role="status" aria-live="polite" className="flex flex-col gap-6">
-        <span className="sr-only">Loading your appointments…</span>
-        <Skeleton className="h-24 w-full" aria-hidden="true" />
-        {[0, 1, 2].map((row) => (
-          <Skeleton key={row} className="h-12 w-full" aria-hidden="true" />
-        ))}
-      </div>
-    )
+    return <div className="justify-center p-4">Loading...</div>
   }
 
   if (error) {
-    return (
-      <div
-        role="alert"
-        className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
-      >
-        <p>Your appointments could not be loaded.</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
-          Retry
-        </Button>
-      </div>
-    )
+    return <div className="justify-center p-4">Error: {error.message}</div>
   }
 
-  if (appointments.length === 0) {
-    return (
-      <div className="flex flex-col gap-6">
-        {specStrip}
-        <p className="text-muted-foreground text-sm">
-          You have no appointments yet.
-        </p>
-      </div>
+  if (!notifications || notifications.length === 0) {
+    return <div className="justify-center p-4">No notifications found</div>
+  }
+
+  const getPaymentStatus = (stallId: number) => {
+    return payments?.some(
+      (payment) => payment.stallId === stallId && payment.paymentStatus,
     )
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {specStrip}
-
-      {/* Mobile card list: phone view avoids horizontal table overflow */}
-      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
-        {appointments.map((notification) => {
-          const { approved, status, paid, tone } =
-            getAppointmentView(notification)
-          return (
-            <li
-              key={notification.notificationId}
-              className="flex flex-col gap-2 px-4 py-3"
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="min-w-0 text-sm font-medium">
-                  {notification.stallNumber
-                    ? `Stall ${notification.stallNumber} · viewing`
-                    : notification.notificationMessage}
-                </span>
-                <span className="text-muted-foreground text-xs whitespace-nowrap tabular-nums">
-                  {formatDay(notification.appointmentDate)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <StatusBadge label={status} tone={tone} />
-                {approved && notification.stallNumber && !paid && (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      handlePaymentClick({
-                        ...notification,
-                        notificationerror: '',
-                      })
-                    }
-                    disabled={paymentMutation.isPending}
-                    className="h-8 text-xs"
-                  >
-                    {paymentMutation.isPending
-                      ? 'Processing...'
-                      : `Pay RM ${calculateAmount({
-                          ...notification,
-                          notificationerror: '',
-                        }).toFixed(2)}`}
-                  </Button>
-                )}
-                {approved && notification.stallNumber && paid && (
-                  <StatusBadge label="Payment completed" tone="settled" />
-                )}
-              </div>
-            </li>
-          )
-        })}
-      </ul>
-
-      <div className="border-border max-w-full overflow-x-auto rounded-xl border max-md:hidden">
-        <Table className="w-full min-w-[380px]">
-          <TableCaption className="sr-only">
-            Your appointment requests with status and payment action
-          </TableCaption>
+    <div className="grid grid-cols-1 gap-4">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableCaption>A list of your notifications.</TableCaption>
           <TableHeader>
-            <TableRow className="border-border border-b hover:bg-transparent">
-              <TableHead
-                className={`type-label text-muted-foreground h-12 pl-6`}
-              >
-                Request
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12`}
-                style={{ width: '12%' }}
-              >
-                Date
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12`}
-                style={{ width: '14%' }}
-              >
-                Status
-              </TableHead>
-              {hasActions ? (
-                <TableHead
-                  className={`type-label text-muted-foreground h-12 pr-6 text-right`}
-                  style={{ width: '20%' }}
-                >
-                  Action
-                </TableHead>
-              ) : null}
+            <TableRow>
+              <TableHead></TableHead>
+              <TableHead>Message</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {appointments.map((notification) => {
-              const { approved, status, paid, tone } =
-                getAppointmentView(notification)
-              return (
-                <TableRow
-                  key={notification.notificationId}
-                  className="border-border hover:bg-muted/20"
-                >
-                  <TableCell className="py-4 pr-4 pl-6 align-baseline">
-                    <span className="text-sm font-medium">
-                      {notification.stallNumber
-                        ? `Stall ${notification.stallNumber} · viewing`
-                        : notification.notificationMessage}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4 align-baseline">
-                    <span className="text-muted-foreground text-sm tabular-nums">
-                      {formatDay(notification.appointmentDate)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-4 align-baseline">
-                    <StatusBadge label={status} tone={tone} />
-                  </TableCell>
-                  {hasActions ? (
-                    <TableCell className="py-4 pr-6 text-right align-baseline">
-                      {approved && notification.stallNumber ? (
-                        paid ? (
-                          <StatusBadge
-                            label="Payment completed"
-                            tone="settled"
-                          />
-                        ) : (
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              handlePaymentClick({
-                                ...notification,
-                                notificationerror: '',
-                              })
-                            }
-                            disabled={paymentMutation.isPending}
-                          >
-                            {paymentMutation.isPending
-                              ? 'Processing...'
-                              : `Pay RM ${calculateAmount({
-                                  ...notification,
-                                  notificationerror: '',
-                                }).toFixed(2)}`}
-                          </Button>
-                        )
-                      ) : null}
-                    </TableCell>
-                  ) : null}
-                </TableRow>
-              )
-            })}
+            {notifications.map((notification) => (
+              <TableRow key={notification.notificationId}>
+                <TableCell>
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      rel="preload"
+                      src={session?.user?.image || ''}
+                      alt="User Avatar"
+                    />
+                    <AvatarFallback>
+                      {session?.user?.name?.[0] || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                </TableCell>
+                <TableCell className="font-medium">
+                  {notification.notificationMessage}
+                </TableCell>
+                <TableCell>
+                  {new Date(notification.appointmentDate).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      notification.notificationRead === null
+                        ? 'secondary'
+                        : notification.notificationRead
+                          ? 'default'
+                          : 'destructive'
+                    }
+                  >
+                    {notification.notificationRead === null
+                      ? 'Pending'
+                      : notification.notificationRead
+                        ? 'Approved'
+                        : 'Rejected'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  {notification.notificationRead && notification.stallNumber ? (
+                    getPaymentStatus(notification.stallNumber) ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-green-100 text-green-800"
+                        onClick={() =>
+                          toast.info(
+                            'You have already made the payment for this stall.',
+                          )
+                        }
+                      >
+                        Payment Completed
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handlePaymentClick({
+                            ...notification,
+                            notificationerror: '',
+                          })
+                        }
+                        disabled={paymentMutation.isPending}
+                      >
+                        {paymentMutation.isPending
+                          ? 'Processing...'
+                          : `Make Payment (RM${calculateAmount({
+                              ...notification,
+                              notificationerror: '',
+                            })})`}
+                      </Button>
+                    )
+                  ) : (
+                    ''
+                  )}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
+          <TableFooter></TableFooter>
         </Table>
       </div>
-
-      {vacantStalls.length > 0 && (
-        <p className="text-muted-foreground text-sm">
-          Also open for viewing:{' '}
-          {vacantStalls
-            .map(
-              (s) =>
-                `Stall ${s.stallNumber}${s.stallSize ? ' · ' + s.stallSize + ' m²' : ''}`,
-            )
-            .join(', ')}
-          . Message the office to arrange one.
-        </p>
-      )}
 
       {clientSecret && selectedNotification && (
         <PaymentModal

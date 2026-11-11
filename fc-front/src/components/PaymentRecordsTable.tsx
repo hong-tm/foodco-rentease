@@ -1,25 +1,43 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useSession } from '@/api/adminApi'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
+import { PaymentType } from '@/pages/dashboard/components/PaymentType'
+import { ColumnChart } from '@/pages/dashboard/functionPage/admin/components/ColumnChart'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useMutation } from '@tanstack/react-query'
+import { format, parse } from 'date-fns'
 import { FileDownIcon } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
-import { formatDay, rm } from '@/lib/format'
+import { formatDate, formatRM } from '@/lib/format'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup } from '@/components/ui/button-group'
+import {
+  Panel,
+  PanelEmpty,
+  PanelHeader,
+  PanelRowsSkeleton,
+} from '@/components/ui/panel'
+import {
+  CountTabs,
+  PanelToolbar,
+  SearchField,
+  StatStrip,
+  TablePager,
+  TablePanel,
+  usePager,
+} from '@/components/ui/panel-parts'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Spinner } from '@/components/ui/spinner'
 import {
   Table,
   TableBody,
@@ -28,102 +46,105 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SummaryLine } from '@/components/dashboard/SpecStrip'
-import { StatusBadge } from '@/components/dashboard/StatusBadge'
-
-type MonthSelectorProps = {
-  value: string
-  onValueChange: (value: string) => void
-}
-
-function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
-  const months = [
-    { value: '0', label: 'January' },
-    { value: '1', label: 'February' },
-    { value: '2', label: 'March' },
-    { value: '3', label: 'April' },
-    { value: '4', label: 'May' },
-    { value: '5', label: 'June' },
-    { value: '6', label: 'July' },
-    { value: '7', label: 'August' },
-    { value: '8', label: 'September' },
-    { value: '9', label: 'October' },
-    { value: '10', label: 'November' },
-    { value: '11', label: 'December' },
-  ]
-
-  return (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[180px]" aria-label="Filter by month">
-        <SelectValue placeholder="Filter by month" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Months</SelectLabel>
-          <SelectItem value="all">All Months</SelectItem>
-          {months.map((month) => (
-            <SelectItem key={month.value} value={month.value}>
-              {month.label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-  )
-}
+import { PersonAvatar } from '@/components/person-avatar'
 
 type PaymentRecordsTableProps = {
   title: string
+  description: string
   records: PaymentRecord[]
   showMonthFilter?: boolean
   isLoading: boolean
 }
 
+const monthKey = (date: string | Date) => format(new Date(date), 'yyyy-MM')
+const amountOf = (record: PaymentRecord) => Number(record.paymentAmount)
+const sumOf = (items: PaymentRecord[]) =>
+  items.reduce((sum, record) => sum + amountOf(record), 0)
+
+function saveBlob(blob: Blob, name: string) {
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', name)
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(url)
+}
+
 export function PaymentRecordsTable({
   title,
+  description,
   records,
   showMonthFilter = false,
   isLoading,
 }: PaymentRecordsTableProps) {
   const { data: session } = useSession()
   const isRental = session?.user?.role === 'rental'
-  // Everyone but an admin sees only their own records: a name column would
-  // repeat them on every row.
-  const showUser = session?.user?.role === 'admin'
 
-  const [selectedMonth, setSelectedMonth] = useState<string>('all')
-  const [selectedType, setSelectedType] = useState<string>('all')
-  const [filteredRecords, setFilteredRecords] = useState<PaymentRecord[]>([])
+  const [selectedMonth, setSelectedMonth] = useState('all')
+  const [selectedType, setSelectedType] = useState('all')
+  const [search, setSearch] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState<
+    'all' | 'unpaid' | 'paid'
+  >('all')
 
-  useEffect(() => {
-    let filtered = [...records]
+  const months = useMemo(
+    () => [...new Set(records.map((r) => monthKey(r.paymentDate)))].sort(),
+    [records],
+  )
+  const query = search.trim().toLowerCase()
+  const matchesSearch = (record: (typeof records)[number]) =>
+    !query ||
+    Boolean(record.paymentUser?.name?.toLowerCase().includes(query)) ||
+    String(record.stallId).includes(query) ||
+    record.paymentId.toLowerCase().includes(query)
+  const ofType = records.filter(
+    (record) => selectedType === 'all' || record.paymentType === selectedType,
+  )
+  const inScope = ofType.filter(
+    (record) =>
+      selectedMonth === 'all' || monthKey(record.paymentDate) === selectedMonth,
+  )
+  // Tab counts answer "what is in this view right now": month and search apply.
+  const inView = records.filter(
+    (record) =>
+      (selectedMonth === 'all' ||
+        monthKey(record.paymentDate) === selectedMonth) &&
+      (selectedStatus === 'all' ||
+        record.paymentStatus === (selectedStatus === 'paid')) &&
+      matchesSearch(record),
+  )
+  const rows = inView
+    .filter(
+      (record) => selectedType === 'all' || record.paymentType === selectedType,
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime(),
+    )
+  const pager = usePager(
+    rows,
+    15,
+    `${selectedMonth}|${selectedType}|${selectedStatus}|${query}`,
+  )
 
-    // Filter by month if selected
-    if (selectedMonth !== 'all') {
-      filtered = filtered.filter((record) => {
-        const date = new Date(record.paymentDate)
-        return date.getMonth() === parseInt(selectedMonth)
-      })
-    }
-
-    // Filter by payment type if selected
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(
-        (record) => record.paymentType === selectedType,
-      )
-    }
-
-    // Sort records: rental first, then electric, then water
-    filtered.sort((a, b) => {
-      const typeOrder = { rental: 0, electric: 1, water: 2 }
-      const aOrder = typeOrder[a.paymentType as keyof typeof typeOrder] ?? 3
-      const bOrder = typeOrder[b.paymentType as keyof typeof typeOrder] ?? 3
-      return aOrder - bOrder
-    })
-
-    setFilteredRecords(filtered)
-  }, [selectedMonth, selectedType, records])
+  const paid = inScope.filter((record) => record.paymentStatus)
+  const pending = inScope.filter((record) => !record.paymentStatus)
+  const chart = months.map((key) => ({
+    label: format(parse(key, 'yyyy-MM', new Date()), 'MMM'),
+    key,
+    paid: sumOf(
+      ofType.filter(
+        (record) =>
+          record.paymentStatus && monthKey(record.paymentDate) === key,
+      ),
+    ),
+  }))
+  const scopeLabel =
+    selectedMonth === 'all'
+      ? 'all months'
+      : format(parse(selectedMonth, 'yyyy-MM', new Date()), 'MMMM yyyy')
 
   const downloadPdfMutation = useMutation({
     mutationFn: async () => {
@@ -134,14 +155,7 @@ export function PaymentRecordsTable({
       return new Blob([arrayBuffer], { type: 'application/pdf' })
     },
     onSuccess: (data) => {
-      const url = window.URL.createObjectURL(data)
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'payment-records.pdf')
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
+      saveBlob(data, 'payment-records.pdf')
       toast.success('PDF downloaded successfully')
     },
     onError: () => {
@@ -158,14 +172,7 @@ export function PaymentRecordsTable({
       return new Blob([arrayBuffer], { type: 'text/csv' })
     },
     onSuccess: (data) => {
-      const url = window.URL.createObjectURL(data)
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', 'payment-records.csv')
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
+      saveBlob(data, 'payment-records.csv')
       toast.success('CSV downloaded successfully')
     },
     onError: () => {
@@ -173,255 +180,304 @@ export function PaymentRecordsTable({
     },
   })
 
-  const totalAmount = filteredRecords.reduce(
-    (sum, record) =>
-      sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
-    0,
-  )
-  const settledCount = filteredRecords.filter((r) => r.paymentStatus).length
-  const pendingCount = filteredRecords.length - settledCount
-
-  if (isLoading) {
-    return (
-      <div aria-busy="true" className="flex flex-col gap-4">
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    )
-  }
-
-  if (records.length === 0) {
-    return (
-      <section
-        aria-label={title}
-        className="bg-card flex flex-col items-start gap-3 rounded-xl border p-6"
-      >
-        <h2 className="type-section-title">No payments yet</h2>
-        <p className="text-muted-foreground max-w-prose text-sm">
-          Rent and utility payments appear here once a stall is on your account
-          and its first charge is issued.
-        </p>
-        {session?.user?.role === 'user' ? (
-          <Button asChild>
-            <Link to="/dashboard/stall-availability">See available stalls</Link>
-          </Button>
-        ) : null}
-      </section>
-    )
-  }
+  const canExport = session?.user?.role !== 'user' && records.length > 0
 
   return (
-    <section aria-label={title} className="flex flex-col gap-6">
-      <SummaryLine
-        value={`RM ${rm(totalAmount)}`}
-        unit="in this view"
-        cells={[
-          { label: 'Settled', value: settledCount },
-          {
-            label: 'Pending',
-            value: pendingCount,
-            attention: pendingCount > 0,
-          },
-          { label: 'Records', value: filteredRecords.length },
-        ]}
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader
+        title={title}
         actions={
-          <>
-            {showMonthFilter && (
-              <MonthSelector
-                value={selectedMonth}
-                onValueChange={setSelectedMonth}
-              />
-            )}
-            <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-[180px]" aria-label="Filter by type">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Payment Type</SelectLabel>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="rental">Rental</SelectItem>
-                  <SelectItem value="electric">Electric</SelectItem>
-                  <SelectItem value="water">Water</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </>
+          canExport ? (
+            <ButtonGroup
+              aria-label="Export all records"
+              className="max-md:w-full"
+            >
+              <Button
+                variant="outline"
+                title="Downloads every record as a PDF"
+                className="max-md:h-11 max-md:flex-1"
+                onClick={() => downloadPdfMutation.mutate()}
+                disabled={downloadPdfMutation.isPending}
+              >
+                {downloadPdfMutation.isPending ? <Spinner /> : <FileDownIcon />}
+                Export PDF
+              </Button>
+              <Button
+                variant="outline"
+                title="Downloads every record as a CSV"
+                className="max-md:h-11 max-md:flex-1"
+                onClick={() => downloadCsvMutation.mutate()}
+                disabled={downloadCsvMutation.isPending}
+              >
+                {downloadCsvMutation.isPending ? <Spinner /> : <FileDownIcon />}
+                Export CSV
+              </Button>
+            </ButtonGroup>
+          ) : null
         }
-      />
+      >
+        {description}
+      </PageHeader>
 
-      {/* Phones read one record as two lines; nothing is dropped. */}
-      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
-        {filteredRecords.map((record) => (
-          <li key={record.paymentId} className="flex flex-col gap-1 px-4 py-3">
-            <div className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0 truncate text-sm font-medium capitalize">
-                {showUser
-                  ? record.paymentUser?.name || 'Unknown User'
-                  : `${record.paymentType} · stall ${record.stallId}`}
-              </span>
-              <span className="text-sm font-medium whitespace-nowrap tabular-nums">
-                RM {record.paymentAmount}
-              </span>
-            </div>
-            <div className="text-muted-foreground flex items-center justify-between gap-3 text-xs tabular-nums">
-              <span className="min-w-0 truncate capitalize">
-                Stall {record.stallId} · {record.paymentType} ·{' '}
-                {formatDay(record.paymentDate as unknown as Date)}
-              </span>
-              <StatusBadge
-                label={record.paymentStatus ? 'Paid' : 'Pending'}
-                tone={record.paymentStatus ? 'settled' : 'action'}
-                className="shrink-0 text-xs"
+      {isLoading ? (
+        <Panel>
+          <PanelRowsSkeleton rows={6} />
+        </Panel>
+      ) : null}
+
+      {!isLoading && records.length === 0 ? (
+        <Panel>
+          <PanelEmpty>No payment records yet.</PanelEmpty>
+        </Panel>
+      ) : null}
+
+      {!isLoading && records.length > 0 ? (
+        <>
+          <StatStrip
+            stats={[
+              {
+                label: 'Collected',
+                value: formatRM(sumOf(paid)),
+                note: `${paid.length} payments, ${scopeLabel}`,
+              },
+              {
+                label: 'Outstanding',
+                value: formatRM(sumOf(pending)),
+                note: `${pending.length} unpaid, ${scopeLabel}`,
+                tone: pending.length ? 'negative' : undefined,
+                selected: selectedStatus === 'unpaid',
+                onSelect: pending.length
+                  ? () => {
+                      setSelectedStatus(
+                        selectedStatus === 'unpaid' ? 'all' : 'unpaid',
+                      )
+                      document
+                        .getElementById('payment-records')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                  : undefined,
+              },
+              {
+                label: 'Rent',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType === 'rental')),
+                ),
+                note: 'Collected',
+              },
+              {
+                label: 'Utilities',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType !== 'rental')),
+                ),
+                note: 'Collected, electric and water',
+              },
+            ]}
+          />
+
+          {chart.length > 1 ? (
+            <Panel>
+              <PanelHeader
+                title="Collected by month"
+                meta={
+                  showMonthFilter
+                    ? 'Select a month to filter the figures and the records'
+                    : 'Paid records'
+                }
+                action={
+                  selectedMonth !== 'all' ? (
+                    <Button
+                      variant="quiet"
+                      onClick={() => setSelectedMonth('all')}
+                    >
+                      Show all months
+                    </Button>
+                  ) : null
+                }
               />
-            </div>
-          </li>
-        ))}
-        {filteredRecords.length === 0 && (
-          <li className="text-muted-foreground px-4 py-8 text-center text-sm">
-            No records match these filters.
-          </li>
-        )}
-      </ul>
+              <ColumnChart
+                data={chart}
+                series={[
+                  { key: 'paid', label: 'Collected', color: 'var(--chart-1)' },
+                ]}
+                colorOf={(point) =>
+                  selectedMonth === 'all' || point.key === selectedMonth
+                    ? 'var(--chart-1)'
+                    : 'var(--chart-1-soft)'
+                }
+                onSelect={
+                  showMonthFilter
+                    ? (point) =>
+                        setSelectedMonth(
+                          point.key === selectedMonth ? 'all' : point.key,
+                        )
+                    : undefined
+                }
+                formatTick={(value) =>
+                  value >= 1000 ? `${value / 1000}k` : String(value)
+                }
+                formatValue={formatRM}
+                height={176}
+              />
+            </Panel>
+          ) : null}
 
-      <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border max-md:hidden">
-        <Table>
-          <TableHeader className="border-border border-b">
-            <TableRow className="hover:bg-transparent">
-              {showUser ? (
-                <TableHead
-                  className={`type-label text-muted-foreground h-12 pl-6 text-left`}
-                >
-                  User
-                </TableHead>
-              ) : null}
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-left ${showUser ? '' : 'pl-6'}`}
-              >
-                Payment ID
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-center`}
-              >
-                Stall No.
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-left`}
-              >
-                Type
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-right`}
-              >
-                Amount (RM)
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-left`}
-              >
-                Status
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 pr-6 text-left`}
-              >
-                Date
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredRecords.length === 0 && (
-              <TableRow className="hover:bg-transparent">
-                <TableCell
-                  colSpan={showUser ? 7 : 6}
-                  className="text-muted-foreground py-10 text-center text-sm whitespace-normal"
-                >
-                  {records.length === 0
-                    ? 'No payment records yet. Payments show up here as soon as one is recorded.'
-                    : 'No records match these filters.'}
-                </TableCell>
-              </TableRow>
-            )}
-            {filteredRecords.map((record) => (
-              <TableRow
-                key={record.paymentId}
-                className="group/row border-border hover:bg-muted/20"
-              >
-                {showUser ? (
-                  <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                    <div className="flex items-center gap-2">
-                      <InitialsAvatar
-                        name={record.paymentUser?.name ?? 'Unknown'}
-                        image={record.paymentUser?.image}
-                      />
-                      <span className="text-sm font-medium">
-                        {record.paymentUser?.name || 'Unknown User'}
-                      </span>
-                    </div>
-                  </TableCell>
-                ) : null}
-                <TableCell
-                  className={`py-4 align-baseline ${showUser ? '' : 'pl-6'}`}
-                >
-                  <span
-                    className="text-muted-foreground font-mono text-xs"
-                    title={record.paymentId}
+          <TablePanel id="payment-records" className="scroll-mt-16">
+            <PanelToolbar>
+              <CountTabs
+                label="Filter by payment type"
+                value={selectedType}
+                onChange={setSelectedType}
+                tabs={[
+                  { value: 'all', label: 'All', count: inView.length },
+                  ...['rental', 'electric', 'water'].map((type) => ({
+                    value: type,
+                    label:
+                      type === 'rental'
+                        ? 'Rent'
+                        : type === 'electric'
+                          ? 'Electric'
+                          : 'Water',
+                    count: inView.filter((r) => r.paymentType === type).length,
+                  })),
+                ]}
+              />
+              <div className="flex flex-wrap items-center gap-2 max-md:w-full md:ml-auto">
+                {showMonthFilter ? (
+                  <Select
+                    value={selectedMonth}
+                    onValueChange={setSelectedMonth}
                   >
-                    {record.paymentId.length > 8
-                      ? `${record.paymentId.slice(0, 8)}…`
-                      : record.paymentId}
-                  </span>
-                </TableCell>
-                <TableCell className="py-4 text-center align-baseline tabular-nums">
-                  {record.stallId}
-                </TableCell>
-                <TableCell className="py-4 align-baseline">
-                  <span className="text-muted-foreground text-sm capitalize">
-                    {record.paymentType}
-                  </span>
-                </TableCell>
-                <TableCell className="py-4 text-right align-baseline tabular-nums">
-                  {record.paymentAmount}
-                </TableCell>
-                <TableCell className="py-4 align-baseline">
-                  <StatusBadge
-                    label={record.paymentStatus ? 'Paid' : 'Pending'}
-                    tone={record.paymentStatus ? 'settled' : 'action'}
-                  />
-                </TableCell>
-                <TableCell className="py-4 align-baseline whitespace-nowrap tabular-nums">
-                  {formatDay(record.paymentDate as unknown as Date)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="flex justify-end gap-4">
-        {session?.user?.role !== 'user' && (
-          <>
-            <Button
-              variant="outline"
-              onClick={() => downloadPdfMutation.mutate()}
-              disabled={downloadPdfMutation.isPending}
-            >
-              <FileDownIcon className="mr-2 h-4 w-4" />
-              {downloadPdfMutation.isPending
-                ? 'Downloading...'
-                : 'Download PDF'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => downloadCsvMutation.mutate()}
-              disabled={downloadCsvMutation.isPending}
-            >
-              <FileDownIcon className="mr-2 h-4 w-4" />
-              {downloadCsvMutation.isPending
-                ? 'Downloading...'
-                : 'Download CSV'}
-            </Button>
-          </>
-        )}
-      </div>
-    </section>
+                    <SelectTrigger
+                      aria-label="Filter by month"
+                      className="w-40 max-md:h-11 max-md:w-full"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All months</SelectItem>
+                      {[...months].reverse().map((key) => (
+                        <SelectItem key={key} value={key}>
+                          {format(
+                            parse(key, 'yyyy-MM', new Date()),
+                            'MMMM yyyy',
+                          )}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : null}
+                <Select
+                  value={selectedStatus}
+                  onValueChange={(value) =>
+                    setSelectedStatus(value as typeof selectedStatus)
+                  }
+                >
+                  <SelectTrigger
+                    aria-label="Filter by status"
+                    className="w-32 max-md:h-11 max-md:w-full"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Any status</SelectItem>
+                    <SelectItem value="unpaid">Unpaid</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                  </SelectContent>
+                </Select>
+                <SearchField
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search name, stall or ID"
+                  label="Search records"
+                  className="md:w-56"
+                />
+              </div>
+            </PanelToolbar>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="max-md:hidden">Date</TableHead>
+                  <TableHead>Tenant</TableHead>
+                  <TableHead className="max-md:hidden">Stall</TableHead>
+                  <TableHead className="max-md:hidden">Type</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead className="max-md:hidden">Status</TableHead>
+                  <TableHead className="max-md:hidden">Payment ID</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pager.rows.map((record) => (
+                  <TableRow key={record.paymentId}>
+                    <TableCell className="text-muted-foreground whitespace-nowrap max-md:hidden">
+                      {formatDate(record.paymentDate)}
+                    </TableCell>
+                    <TableCell className="max-md:w-full max-md:max-w-0">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <PersonAvatar
+                          id={record.userId}
+                          name={record.paymentUser?.name}
+                          image={record.paymentUser?.image}
+                          className="size-6"
+                        />
+                        <span className="truncate">
+                          {record.paymentUser?.name || 'Unknown user'}
+                        </span>
+                      </div>
+                      <p className="type-meta text-muted-foreground mt-1 truncate md:hidden">
+                        {formatDate(record.paymentDate)} · Stall{' '}
+                        {record.stallId} ·{' '}
+                        {record.paymentType === 'rental' ? (
+                          'Rent'
+                        ) : (
+                          <PaymentType type={record.paymentType} />
+                        )}
+                      </p>
+                    </TableCell>
+                    <TableCell className="tabular-nums max-md:hidden">
+                      {record.stallId}
+                    </TableCell>
+                    <TableCell className="max-md:hidden">
+                      <PaymentType type={record.paymentType} />
+                    </TableCell>
+                    <TableCell className="text-right font-medium tabular-nums">
+                      {formatRM(amountOf(record))}
+                      {record.paymentStatus ? null : (
+                        <div className="mt-1 md:hidden">
+                          <Badge variant="warning">Unpaid</Badge>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell className="max-md:hidden">
+                      {record.paymentStatus ? (
+                        <span className="text-muted-foreground">Paid</span>
+                      ) : (
+                        <Badge variant="warning">Unpaid</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      className="type-id text-muted-foreground max-w-40 truncate max-md:hidden"
+                      title={record.paymentId}
+                    >
+                      {record.paymentId}
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {pager.total === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="type-body text-muted-foreground py-8 text-center"
+                    >
+                      No records match these filters.
+                    </TableCell>
+                  </TableRow>
+                ) : null}
+              </TableBody>
+            </Table>
+            <TablePager pager={pager} noun="records" />
+          </TablePanel>
+        </>
+      ) : null}
+    </div>
   )
 }

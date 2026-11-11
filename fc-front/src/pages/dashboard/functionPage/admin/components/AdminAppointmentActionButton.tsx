@@ -6,13 +6,11 @@ import {
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  ChevronDownIcon,
   CircleCheckBigIcon,
   CircleOffIcon,
+  EllipsisVerticalIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
-
-import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -80,10 +78,10 @@ export default function AdminAppointmentActionButton({
   })
 
   return (
-    <DropdownMenu>
+    <>
       <ResponsiveAlertDialog
         title="Approve this appointment?"
-        description={`The tenant for stall ${stallNumber} can then attend the requested slot.`}
+        description="The applicant is told the visit can go ahead."
         confirmLabel="Approve"
         onClick={approveAppointment}
         open={openApproveAppointment}
@@ -92,46 +90,70 @@ export default function AdminAppointmentActionButton({
 
       <ResponsiveAlertDialog
         title="Reject this appointment?"
-        description={`The tenant for stall ${stallNumber} keeps their request but cannot attend the slot.`}
+        description="The applicant is told the visit cannot go ahead."
         confirmLabel="Reject"
         onClick={rejectAppointment}
         open={openRejectAppointment}
         setOpen={setOpenRejectAppointment}
       />
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant={appointmentStatus === null ? 'outline' : 'ghost'}
-          size="sm"
-          className={cn(
-            'focus-visible:ring-foreground/80 focus-visible:ring-1 focus-visible:ring-offset-0',
-            appointmentStatus !== null &&
-              'text-muted-foreground hover:bg-muted/60 hover:text-foreground focus-visible:text-foreground transition-colors',
-          )}
-        >
-          {appointmentStatus === null ? 'Decide' : 'Change'}
-          <ChevronDownIcon aria-hidden="true" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Appointment decision</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => setOpenApproveAppointment(true)}
-          disabled={appointmentStatus === true || isApproving}
-          className="flex items-center"
-        >
-          <CircleCheckBigIcon className="mr-2 h-4 w-4" />
-          {isApproving ? 'Approving…' : 'Approve'}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setOpenRejectAppointment(true)}
-          disabled={appointmentStatus === false || isRejecting}
-          className="flex items-center"
-        >
-          <CircleOffIcon className="mr-2 h-4 w-4" />
-          {isRejecting ? 'Rejecting…' : 'Reject'}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      {/* A pending row answers inline; a decided row keeps the compact menu. */}
+      {appointmentStatus === null ? (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            className="max-md:h-11"
+            disabled={isApproving}
+            onClick={() => setOpenApproveAppointment(true)}
+          >
+            <CircleCheckBigIcon />
+            {isApproving ? 'Approving…' : 'Approve'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive max-md:h-11"
+            disabled={isRejecting}
+            onClick={() => setOpenRejectAppointment(true)}
+          >
+            <CircleOffIcon />
+            {isRejecting ? 'Rejecting…' : 'Reject'}
+          </Button>
+        </>
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Appointment actions"
+              className="size-8 max-md:size-11"
+            >
+              <EllipsisVerticalIcon className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Appointment actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => setOpenApproveAppointment(true)}
+              disabled={appointmentStatus === true || isApproving}
+              className="flex items-center"
+            >
+              <CircleCheckBigIcon className="mr-2 h-4 w-4" />
+              {isApproving ? 'Approving…' : 'Approve'}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setOpenRejectAppointment(true)}
+              disabled={appointmentStatus === false || isRejecting}
+              className="flex items-center"
+            >
+              <CircleOffIcon className="mr-2 h-4 w-4" />
+              {isRejecting ? 'Rejecting…' : 'Reject'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </>
   )
 }

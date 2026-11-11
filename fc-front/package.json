@@ -8,10 +8,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "lint": "oxlint",
     "preview": "vite preview",
     "knip": "knip",
-    "check": "prettier --write .",
-    "lint": "oxlint"
+    "check": "prettier --write ."
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
@@ -24,7 +24,6 @@
     "@stripe/stripe-js": "^5.10.0",
     "@tabler/icons-react": "^3.34.0",
     "@tailwindcss/vite": "^4.1.11",
-    "@tanstack/react-hotkeys": "^0.22.0",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@types/js-cookie": "^3.0.6",
@@ -37,7 +36,7 @@
     "embla-carousel-react": "^8.6.0",
     "fc-front": "file:",
     "framer-motion": "^11.18.2",
-    "hono": "^4.13.11",
+    "hono": "^4.13.9",
     "icons-react": "^3.7.1",
     "input-otp": "^1.4.2",
     "js-cookie": "^3.0.8",
@@ -47,7 +46,7 @@
     "motion": "^11.18.2",
     "next-themes": "^0.4.6",
     "oxlint": "^1.6.0",
-    "radix-ui": "1.6.7",
+    "radix-ui": "latest",
     "react": "^19.2.3",
     "react-blurhash": "^0.3.0",
     "react-day-picker": "9.7.0",

@@ -1,233 +1,194 @@
+import { useState } from 'react'
+import type { GetUsersResponse } from '@/api/adminApi'
 import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
 
-import { formatDay } from '@/lib/format'
+import { formatDate } from '@/lib/format'
 
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Badge } from '@/components/ui/badge'
+import { PanelError, PanelRowsSkeleton } from '@/components/ui/panel'
+import {
+  CountTabs,
+  PanelToolbar,
+  SearchField,
+  TablePager,
+  TablePanel,
+  usePager,
+} from '@/components/ui/panel-parts'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { SummaryLine } from '@/components/dashboard/SpecStrip'
-import { StatusBadge } from '@/components/dashboard/StatusBadge'
+import { PersonAvatar } from '@/components/person-avatar'
 
 import { AdminActionButton } from './AdminActionButton'
 
-// 30 / 18 / 18 / 16 / 18. The account cell carries three lines, so it keeps the
-// largest share but no longer takes the slack; the four trailing columns stay
-// near-even so role, status and joined date read as one band.
-const COLUMN_WIDTH = {
-  account: '30%',
-  role: '18%',
-  status: '18%',
-  joined: '16%',
-  action: '18%',
-} as const
+type View = 'all' | 'admin' | 'rental' | 'user' | 'banned'
+
+const roleLabel: Record<string, string> = {
+  admin: 'Admin',
+  rental: 'Tenant',
+  user: 'Applicant',
+}
 
 export default function UsersTable() {
-  const { data, error, isLoading, refetch } = useQuery(fetchUsersQueryOptions)
-
-  if (isLoading) {
-    return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="border-border flex flex-col gap-5 rounded-xl border p-6"
-      >
-        <span className="sr-only">Loading accounts…</span>
-        {[0, 1, 2, 3].map((row) => (
-          <div key={row} className="flex items-center gap-3" aria-hidden="true">
-            <Skeleton className="size-9 rounded-full" />
-            <div className="flex flex-1 flex-col gap-2">
-              <Skeleton className="h-3 w-40" />
-              <Skeleton className="h-3 w-64" />
-            </div>
-            <Skeleton className="h-8 w-24" />
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div
-        role="alert"
-        className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
-      >
-        <p>Accounts could not be loaded: {error.message}</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
-          Retry
-        </Button>
-      </div>
-    )
-  }
+  const { data, error, isLoading, refetch } = useQuery<GetUsersResponse>(
+    fetchUsersQueryOptions,
+  )
+  const [view, setView] = useState<View>('all')
+  const [search, setSearch] = useState('')
 
   const users = data?.users ?? []
-
-  if (users.length === 0) {
-    return (
-      <p className="text-muted-foreground text-sm">No accounts recorded yet.</p>
-    )
-  }
-
-  const banned = users.filter((user) => user.banned)
-  const roleCount = (role: string) =>
+  const countRole = (role: string) =>
     users.filter((user) => user.role === role).length
+  const query = search.trim().toLowerCase()
+  const rows = users.filter((user) => {
+    const inView =
+      view === 'all' || (view === 'banned' ? user.banned : user.role === view)
+    const inSearch =
+      !query ||
+      [user.name, user.email, user.phone].some((field) =>
+        field?.toLowerCase().includes(query),
+      )
+    return inView && inSearch
+  })
+  const pager = usePager(rows, 20)
 
   return (
-    <div className="flex flex-col gap-6">
-      <SummaryLine
-        value={String(users.length)}
-        unit={users.length === 1 ? 'account' : 'accounts'}
-        cells={[
-          { label: 'Admins', value: roleCount('admin') },
-          { label: 'Rental', value: roleCount('rental') },
-          { label: 'Users', value: roleCount('user') },
-          {
-            label: 'Banned',
-            value: banned.length,
-            anomaly: banned.length > 0,
-          },
-        ]}
-      />
-
-      <div className="border-border max-w-full overflow-hidden rounded-xl border">
-        <Table className="xl:min-w-table">
-          <TableCaption className="sr-only">
-            Accounts with role, status, join date and management actions
-          </TableCaption>
-          <TableHeader className="max-xl:sr-only">
-            <TableRow className="border-border border-b hover:bg-transparent">
-              <TableHead
-                className={`type-label text-muted-foreground h-12 pl-6`}
-                style={{ width: COLUMN_WIDTH.account }}
-              >
-                <span className="flex items-center gap-3">
-                  <span aria-hidden className="size-9" />
-                  Account
-                </span>
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.role }}
-              >
-                Role
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.status }}
-              >
-                Status
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.joined }}
-              >
-                Joined
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
-                style={{ width: COLUMN_WIDTH.action }}
-              >
-                Action
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => {
-              const action =
-                user.role === 'admin' ? null : (
-                  <AdminActionButton
-                    userId={user.id}
-                    userRole={user.role}
-                    userBanned={user.banned}
-                  />
-                )
-              return (
-                <TableRow
-                  key={user.id}
-                  className="group/row border-border hover:bg-muted/20"
-                >
-                  <TableCell className="before:bg-foreground relative py-5 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                    <div className="flex items-baseline gap-3">
-                      <InitialsAvatar name={user.name} image={user.image} />
-                      <div className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-6">
-                        <div className="flex min-w-0 flex-col gap-1">
-                          <p className="text-sm leading-none font-medium">
-                            {user.name}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {user.email} ·{' '}
-                            <span className="whitespace-nowrap tabular-nums">
-                              {user.phone ? user.phone : 'N/A'}
-                            </span>
-                          </p>
-                          {!user.emailVerified && (
-                            <p className="text-muted-foreground text-xs">
-                              Unverified
-                            </p>
+    <TablePanel>
+      <PanelToolbar className="justify-between">
+        <CountTabs
+          label="Filter accounts"
+          value={view}
+          onChange={setView}
+          tabs={[
+            { value: 'all', label: 'All', count: users.length },
+            { value: 'rental', label: 'Tenants', count: countRole('rental') },
+            { value: 'user', label: 'Applicants', count: countRole('user') },
+            { value: 'admin', label: 'Admins', count: countRole('admin') },
+            {
+              value: 'banned',
+              label: 'Banned',
+              count: users.filter((user) => user.banned).length,
+            },
+          ]}
+        />
+        <SearchField
+          value={search}
+          onChange={setSearch}
+          placeholder="Search name, email or phone"
+          label="Search accounts"
+        />
+      </PanelToolbar>
+      {isLoading ? (
+        <div className="p-4 md:p-5">
+          <PanelRowsSkeleton rows={6} />
+        </div>
+      ) : null}
+      {error ? (
+        <div className="p-4 md:p-5">
+          <PanelError what="accounts" onRetry={() => refetch()} />
+        </div>
+      ) : null}
+      {data ? (
+        <>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account</TableHead>
+                <TableHead className="max-md:hidden">Role</TableHead>
+                <TableHead className="max-md:hidden">Phone</TableHead>
+                <TableHead className="max-md:hidden">Status</TableHead>
+                <TableHead className="max-md:hidden">Joined</TableHead>
+                <TableHead className="w-12">
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {pager.rows.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="max-md:w-full max-md:max-w-0">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <PersonAvatar
+                        id={user.id}
+                        name={user.name}
+                        image={user.image}
+                      />
+                      <div className="min-w-0">
+                        <p className="type-body truncate font-medium">
+                          {user.name}
+                        </p>
+                        <p className="type-meta text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                        <div className="type-meta text-muted-foreground mt-1 flex flex-wrap items-center gap-1.5 md:hidden">
+                          <span>
+                            {(user.role && roleLabel[user.role]) || user.role}
+                          </span>
+                          {user.banned ? (
+                            <Badge variant="negative">Banned</Badge>
+                          ) : null}
+                          {user.emailVerified ? null : (
+                            <Badge variant="warning">Unverified</Badge>
                           )}
-                          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs xl:hidden">
-                            <span className="capitalize">{user.role}</span>
-                            <span aria-hidden="true" className="text-border">
-                              |
-                            </span>
-                            <span className="text-muted-foreground tabular-nums">
-                              Joined {formatDay(user.createdAt)}
-                            </span>
-                            {user.banned && (
-                              <StatusBadge label="Banned" tone="blocked" />
-                            )}
-                          </p>
                         </div>
-                        {action && (
-                          <div className="mt-2 shrink-0 md:mt-0 xl:hidden">
-                            {action}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell
-                    className="hidden py-5 align-baseline xl:table-cell"
-                    style={{ width: COLUMN_WIDTH.role }}
-                  >
-                    <span className="text-sm capitalize">{user.role}</span>
+                  <TableCell className="max-md:hidden">
+                    {(user.role && roleLabel[user.role]) || user.role}
                   </TableCell>
-                  <TableCell
-                    className="hidden py-5 align-baseline xl:table-cell"
-                    style={{ width: COLUMN_WIDTH.status }}
-                  >
-                    <StatusBadge
-                      label={user.banned ? 'Banned' : 'Active'}
-                      tone={user.banned ? 'blocked' : 'settled'}
-                    />
+                  <TableCell className="text-muted-foreground max-md:hidden">
+                    {user.phone || '—'}
                   </TableCell>
-                  <TableCell
-                    className="hidden py-5 align-baseline xl:table-cell"
-                    style={{ width: COLUMN_WIDTH.joined }}
-                  >
-                    <span className="text-sm tabular-nums">
-                      {formatDay(user.createdAt)}
-                    </span>
+                  <TableCell className="max-md:hidden">
+                    <div className="flex items-center gap-1.5">
+                      {user.banned ? (
+                        <Badge variant="negative">Banned</Badge>
+                      ) : (
+                        <span className="type-body text-muted-foreground">
+                          Active
+                        </span>
+                      )}
+                      {user.emailVerified ? null : (
+                        <Badge variant="warning">Unverified</Badge>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell className="hidden py-5 pr-6 text-right align-baseline xl:table-cell">
-                    {action}
+                  <TableCell className="text-muted-foreground max-md:hidden">
+                    {formatDate(user.createdAt)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {user.role === 'admin' ? null : (
+                      <AdminActionButton
+                        userId={user.id}
+                        userRole={user.role}
+                        userBanned={user.banned}
+                      />
+                    )}
                   </TableCell>
                 </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+              ))}
+              {pager.total === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="type-body text-muted-foreground py-8 text-center"
+                  >
+                    No account matches this filter.
+                  </TableCell>
+                </TableRow>
+              ) : null}
+            </TableBody>
+          </Table>
+          <TablePager pager={pager} noun="accounts" />
+        </>
+      ) : null}
+    </TablePanel>
   )
 }

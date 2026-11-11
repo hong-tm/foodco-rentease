@@ -5,9 +5,6 @@ import { useMutation } from '@tanstack/react-query'
 import { MailIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { formatDay } from '@/lib/format'
-import { cn } from '@/lib/utils'
-
 import { Button } from '@/components/ui/button'
 
 type UserAction = {
@@ -15,8 +12,10 @@ type UserAction = {
   userEmail: string
   userStallId: number
   userStallName: string
-  stallEndAt: Date
-  emphasis?: 'default' | 'outline'
+  stallEndAt?: Date | string | null
+  /** Overrides the lease reminder, e.g. for one unpaid utility bill. */
+  email?: { subject: string; text: string; description: string }
+  className?: string
 }
 
 export function TenantActionButton({
@@ -25,7 +24,8 @@ export function TenantActionButton({
   userStallId,
   userStallName,
   stallEndAt,
-  emphasis = 'outline',
+  email,
+  className,
 }: UserAction) {
   const [openSendReminder, setOpenSendReminder] = useState(false)
 
@@ -39,41 +39,48 @@ export function TenantActionButton({
     },
   })
 
-  async function handlerReminderEmail() {
-    const payload = {
+  function handlerReminderEmail() {
+    const endLine = stallEndAt
+      ? `Your stall will end on ${new Date(stallEndAt).toLocaleDateString()}.`
+      : 'Your stall has no end date set.'
+    if (email) {
+      mutation.mutate({
+        to: userEmail,
+        subject: email.subject,
+        text: email.text,
+      })
+      return
+    }
+    mutation.mutate({
       to: userEmail,
       subject: `Payment Reminder for ${userName}`,
-      text: `Dear ${userName},\n\nThis is a reminder that your payment is due soon for:\n\nStall Number: ${userStallId}\nStall Name: ${userStallName}\n\nYour stall will end on ${new Date(
-        stallEndAt,
-      ).toLocaleDateString()}. \n\nPlease make the payment as soon as possible.\n\nThank you!`,
-    }
-    mutation.mutate(payload)
+      text: `Dear ${userName},\n\nThis is a reminder that your payment is due soon for:\n\nStall Number: ${userStallId}\nStall Name: ${userStallName}\n\n${endLine} \n\nPlease make the payment as soon as possible.\n\nThank you!`,
+    })
   }
 
   return (
     <>
       <ResponsiveAlertDialog
-        title="Send reminder payment email?"
-        description={`Goes to ${userEmail} for ${userStallName} (stall ${userStallId}), ending ${formatDay(stallEndAt)}.`}
+        title="Send this reminder email?"
+        description={
+          email?.description ??
+          `A payment reminder goes to ${userName} for stall ${userStallId}.`
+        }
         confirmLabel="Send reminder"
         onClick={handlerReminderEmail}
         open={openSendReminder}
         setOpen={setOpenSendReminder}
       />
-
       <Button
-        variant={emphasis}
+        variant="outline"
         size="sm"
-        className={cn(
-          // The icon is taken out of flow so the label, not the icon, gives the
-          // button its baseline; the row's cells share that line (R-VIS-039).
-          'focus-visible:ring-foreground/80 relative focus-visible:ring-1 focus-visible:ring-offset-0 has-[>svg]:pl-8 [&>svg]:absolute [&>svg]:top-1/2 [&>svg]:left-2.5 [&>svg]:-translate-y-1/2',
-        )}
-        onClick={() => setOpenSendReminder(true)}
+        className={className}
         disabled={mutation.isPending}
+        aria-label={`Send reminder email to ${userName} for stall ${userStallId}`}
+        onClick={() => setOpenSendReminder(true)}
       >
-        <MailIcon aria-hidden="true" />
-        {mutation.isPending ? 'Sending…' : 'Send reminder'}
+        <MailIcon />
+        Remind
       </Button>
     </>
   )

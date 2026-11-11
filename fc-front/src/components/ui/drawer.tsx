@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Drawer as DrawerPrimitive } from 'vaul'
 
+import { returnFocus } from '@/lib/return-focus'
 import { cn } from '@/lib/utils'
 
 function Drawer({
@@ -52,6 +53,7 @@ function DrawerContent({
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
       <DrawerPrimitive.Content
+        onCloseAutoFocus={returnFocus}
         data-slot="drawer-content"
         className={cn(
           'group/drawer-content bg-background fixed z-50 flex h-auto flex-col',

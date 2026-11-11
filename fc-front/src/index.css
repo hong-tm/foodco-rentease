@@ -6,171 +6,220 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-  font-family: 'Figtree';
-  src: url('/fonts/figtree-latin-wght-normal.woff2') format('woff2');
-  font-weight: 300 900;
+  font-family: 'Hanken Grotesk';
+  src: url('./assets/fonts/hanken-grotesk.woff2') format('woff2');
+  font-weight: 100 900;
   font-display: swap;
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
-    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Figtree';
-  src: url('/fonts/figtree-latin-ext-wght-normal.woff2') format('woff2');
-  font-weight: 300 900;
+  font-family: 'Geist Mono';
+  src: url('./assets/fonts/geist-mono.woff2') format('woff2');
+  font-weight: 100 900;
   font-display: swap;
-  unicode-range:
-    U+0100-02AF, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113,
-    U+2C60-2C7F, U+A720-A7FF;
 }
 
 body {
   @apply m-0;
-  font-family:
-    'Figtree',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'Roboto',
-    'Oxygen',
-    'Ubuntu',
-    'Cantarell',
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
+/* RentEase theme. Neutral chrome with one quiet indigo: colour marks what is
+   selected, what can be acted on and what the data says, never the surfaces.
+   Every call site reads these tokens. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
+  --background: oklch(0.985 0.002 265);
+  --foreground: oklch(0.21 0.008 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.21 0.008 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  /* Brand: the one signature colour. Change it here; primary, the first
-     chart series and focus accents follow. Structure stays neutral (R-VIS-037). */
-  --brand: oklch(0.62 0.19 42);
-  /* Primary darkens the brand to 5.2:1 under white text. */
-  --primary: oklch(from var(--brand) 0.55 c h);
-  /* Brand ladder: the full hue stays on small marks, these pale steps carry
-     areas (the active nav row, vacant stalls, action pills). */
-  --brand-soft: oklch(from var(--brand) 0.97 0.025 h);
-  --brand-muted: oklch(from var(--brand) 0.92 0.06 h);
-  --brand-ink: oklch(from var(--brand) 0.42 0.12 h);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.52 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  /* Success: confirmation state. 3.2:1 on white, enough for an icon (WCAG 1.4.11). */
-  --success: oklch(0.627 0.194 149.214);
-  --destructive-soft: oklch(0.96 0.03 25);
-  --success-soft: oklch(0.96 0.04 150);
-  --success-ink: oklch(0.38 0.1 150);
-  --warning-soft: oklch(0.96 0.05 85);
-  --warning-ink: oklch(0.42 0.1 70);
-  --destructive-ink: oklch(0.42 0.16 25);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.871 0.006 286.286);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --popover-foreground: oklch(0.21 0.008 265);
+  --primary: oklch(0.5 0.13 268);
+  --primary-foreground: oklch(0.985 0.003 268);
+  --secondary: oklch(0.955 0.003 265);
+  --secondary-foreground: oklch(0.27 0.008 265);
+  --muted: oklch(0.955 0.003 265);
+  --muted-foreground: oklch(0.49 0.012 265);
+  --accent: oklch(0.955 0.004 265);
+  --accent-foreground: oklch(0.27 0.008 265);
+  --destructive: oklch(0.55 0.19 25);
+  --destructive-foreground: oklch(0.47 0.17 25);
+  --border: oklch(0.92 0.004 265);
+  --input: oklch(0.88 0.006 265);
+  --ring: oklch(0.58 0.12 268);
+
+  --brand-ink: oklch(0.42 0.12 268);
+  --brand-soft: oklch(0.93 0.025 268);
+  --brand-softer: oklch(0.965 0.012 268);
+  --positive: oklch(0.55 0.11 160);
+  --positive-soft: oklch(0.95 0.03 160);
+  --positive-ink: oklch(0.38 0.08 160);
+  --warning-soft: oklch(0.955 0.045 85);
+  --warning-ink: oklch(0.43 0.09 70);
+  --negative-soft: oklch(0.945 0.03 25);
+  --negative-ink: oklch(0.46 0.16 25);
+
+  --chart-1: oklch(0.55 0.13 268); /* rent, let stalls */
+  --chart-1-soft: oklch(0.8 0.06 268); /* rent, earlier months */
+  --chart-2: oklch(0.62 0.09 215); /* water */
+  --chart-3: oklch(0.74 0.11 75); /* electric */
+  --chart-4: oklch(0.62 0.09 165); /* tenants */
+  --chart-5: oklch(0.47 0.1 285); /* lease starts */
+
+  --person-1-bg: oklch(0.94 0.02 30);
+  --person-1-ink: oklch(0.42 0.07 30);
+  --person-2-bg: oklch(0.94 0.025 95);
+  --person-2-ink: oklch(0.42 0.06 95);
+  --person-3-bg: oklch(0.94 0.025 150);
+  --person-3-ink: oklch(0.4 0.06 150);
+  --person-4-bg: oklch(0.94 0.02 205);
+  --person-4-ink: oklch(0.4 0.05 205);
+  --person-5-bg: oklch(0.94 0.02 265);
+  --person-5-ink: oklch(0.42 0.07 265);
+  --person-6-bg: oklch(0.94 0.02 340);
+  --person-6-ink: oklch(0.42 0.07 340);
+
   --radius: 0.625rem;
-  --sidebar: oklch(from var(--brand) 0.985 0.004 h);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: var(--brand-soft);
-  --sidebar-accent-foreground: var(--brand-ink);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.871 0.006 286.286);
+  --sidebar: oklch(0.975 0.002 265);
+  --sidebar-foreground: oklch(0.36 0.008 265);
+  --sidebar-primary: oklch(0.5 0.13 268);
+  --sidebar-primary-foreground: oklch(0.985 0.003 268);
+  --sidebar-accent: oklch(0.935 0.004 265);
+  --sidebar-accent-foreground: oklch(0.21 0.008 265);
+  --sidebar-border: oklch(0.92 0.004 265);
+  --sidebar-ring: oklch(0.58 0.12 268);
 }
 
 .dark {
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  /* Dark depth is a surface step, never an outline alone. */
-  --card: oklch(0.185 0.005 285.823);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.185 0.005 285.823);
-  --popover-foreground: oklch(0.985 0 0);
-  --brand: oklch(0.72 0.17 45);
-  --primary: var(--brand);
-  --brand-soft: oklch(from var(--brand) 0.27 0.045 h);
-  --brand-muted: oklch(from var(--brand) 0.34 0.07 h);
-  --brand-ink: oklch(from var(--brand) 0.86 0.09 h);
-  --primary-foreground: oklch(0.21 0.006 285.885);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.76 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.723 0.219 149.579);
-  --destructive-soft: oklch(0.28 0.06 25);
-  --success-soft: oklch(0.28 0.05 150);
-  --success-ink: oklch(0.85 0.12 150);
-  --warning-soft: oklch(0.3 0.06 80);
-  --warning-ink: oklch(0.87 0.11 85);
-  --destructive-ink: oklch(0.85 0.1 25);
-  --border: oklch(0.31 0.006 286.033);
-  --input: oklch(0.31 0.006 286.033);
-  --ring: oklch(0.442 0.017 285.786);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: var(--brand-soft);
-  --sidebar-accent-foreground: var(--brand-ink);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.442 0.017 285.786);
+  --background: oklch(0.15 0.004 265);
+  --foreground: oklch(0.96 0.002 265);
+  --card: oklch(0.18 0.004 265);
+  --card-foreground: oklch(0.96 0.002 265);
+  --popover: oklch(0.21 0.005 265);
+  --popover-foreground: oklch(0.96 0.002 265);
+  --primary: oklch(0.72 0.11 268);
+  --primary-foreground: oklch(0.16 0.02 268);
+  --secondary: oklch(0.235 0.005 265);
+  --secondary-foreground: oklch(0.96 0.002 265);
+  --muted: oklch(0.235 0.005 265);
+  --muted-foreground: oklch(0.72 0.008 265);
+  --accent: oklch(0.25 0.006 265);
+  --accent-foreground: oklch(0.96 0.002 265);
+  --destructive: oklch(0.6 0.18 25);
+  --destructive-foreground: oklch(0.8 0.12 25);
+  --border: oklch(0.27 0.005 265);
+  --input: oklch(0.34 0.006 265);
+  --ring: oklch(0.7 0.1 268);
+
+  --brand-ink: oklch(0.84 0.08 268);
+  --brand-soft: oklch(0.31 0.05 268);
+  --brand-softer: oklch(0.245 0.025 268);
+  --positive: oklch(0.74 0.11 160);
+  --positive-soft: oklch(0.29 0.045 160);
+  --positive-ink: oklch(0.86 0.09 160);
+  --warning-soft: oklch(0.3 0.05 80);
+  --warning-ink: oklch(0.87 0.1 85);
+  --negative-soft: oklch(0.32 0.08 25);
+  --negative-ink: oklch(0.84 0.09 25);
+
+  --chart-1: oklch(0.7 0.12 268);
+  --chart-1-soft: oklch(0.45 0.07 268);
+  --chart-2: oklch(0.72 0.09 215);
+  --chart-3: oklch(0.82 0.11 80);
+  --chart-4: oklch(0.73 0.09 165);
+  --chart-5: oklch(0.62 0.11 285);
+
+  --person-1-bg: oklch(0.31 0.03 30);
+  --person-1-ink: oklch(0.88 0.04 30);
+  --person-2-bg: oklch(0.31 0.03 95);
+  --person-2-ink: oklch(0.88 0.05 95);
+  --person-3-bg: oklch(0.31 0.03 150);
+  --person-3-ink: oklch(0.88 0.05 150);
+  --person-4-bg: oklch(0.31 0.03 205);
+  --person-4-ink: oklch(0.88 0.04 205);
+  --person-5-bg: oklch(0.31 0.03 265);
+  --person-5-ink: oklch(0.88 0.04 265);
+  --person-6-bg: oklch(0.31 0.03 340);
+  --person-6-ink: oklch(0.88 0.04 340);
+
+  --sidebar: oklch(0.135 0.004 265);
+  --sidebar-foreground: oklch(0.78 0.006 265);
+  --sidebar-primary: oklch(0.72 0.11 268);
+  --sidebar-primary-foreground: oklch(0.16 0.02 268);
+  --sidebar-accent: oklch(0.235 0.005 265);
+  --sidebar-accent-foreground: oklch(0.96 0.002 265);
+  --sidebar-border: oklch(0.27 0.005 265);
+  --sidebar-ring: oklch(0.7 0.1 268);
+}
+
+/* Type roles. Sizes and weights change here, never at a call site. */
+@utility type-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+@utility type-section {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+@utility type-figure-lead {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-figure {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+@utility type-body {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+@utility type-strong {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+@utility type-meta {
+  font-size: 0.8125rem;
+  line-height: 1.125rem;
+}
+@utility type-id {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 @theme inline {
-  --color-brand: var(--brand);
-  --color-brand-soft: var(--brand-soft);
-  --color-brand-muted: var(--brand-muted);
+  --font-sans: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, Consolas, monospace;
   --color-brand-ink: var(--brand-ink);
-  --color-destructive-soft: var(--destructive-soft);
-  --color-success-soft: var(--success-soft);
-  --color-success-ink: var(--success-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-softer: var(--brand-softer);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-positive-ink: var(--positive-ink);
   --color-warning-soft: var(--warning-soft);
   --color-warning-ink: var(--warning-ink);
-  --color-destructive-ink: var(--destructive-ink);
+  --color-negative-soft: var(--negative-soft);
+  --color-negative-ink: var(--negative-ink);
+  --color-chart-1-soft: var(--chart-1-soft);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -187,13 +236,6 @@ code {
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  --color-success: var(--success);
-  --color-logo-1: var(--logo-1);
-  --color-logo-2: var(--logo-2);
-  --color-logo-3: var(--logo-3);
-  --color-logo-4: var(--logo-4);
-  --color-logo-5: var(--logo-5);
-  --color-logo-6: var(--logo-6);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -206,8 +248,6 @@ code {
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --container-page: 1400px;
-  --container-table: 56rem;
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -255,142 +295,22 @@ code {
   }
 }
 
-/* Type scale. Components use these type-* utilities, never raw text-2xl.
-   type-* (not --text-* theme keys) so cn() never mistakes a size for a colour.
-   The page title anchors the scale; the statistic is bounded to 1.25x of it
-   (R-VIS-014 allows up to ~1.35x), so retuning --type-title keeps the ratio. */
-:root {
-  --type-title: 1.5rem;
-  --type-stat-ratio: 1.5;
-}
-
-@utility type-display {
-  font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-}
-
-@utility type-page-title {
-  font-size: var(--type-title);
-  line-height: calc(var(--type-title) + 0.5rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-}
-
-@utility type-section-title {
-  font-size: 1rem;
-  line-height: 1.5;
-  font-weight: 500;
-}
-
-@utility type-stat {
-  font-size: calc(var(--type-title) * var(--type-stat-ratio));
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Structural label in sentence case: table headers and strip labels. */
-@utility type-label {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 500;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-variant-numeric: tabular-nums;
   }
 
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
-
-  html {
-    scrollbar-color: var(--border) transparent;
-    accent-color: var(--primary);
-  }
-
-  ::selection {
-    background: var(--foreground);
-    color: var(--background);
-  }
-
-  input,
-  textarea {
-    caret-color: var(--primary);
-  }
-
-  /* Touch: small controls keep their drawn size but get a 44px hit area
-     (R-VIS-025). Mouse pointers keep the drawn box. */
-  @media (pointer: coarse) {
-    /* Radix asChild renames a control's slot (<part>-trigger, form-control), so match those too. */
-    :is(
-      [data-slot='button'],
-      [data-slot$='-trigger'],
-      button[data-slot='form-control']
-    ):not([data-slot='tooltip-trigger']) {
-      position: relative;
-    }
-    :is(
-        [data-slot='button'],
-        [data-slot$='-trigger'],
-        button[data-slot='form-control']
-      ):not([data-slot='tooltip-trigger'])::after {
-      content: '';
-      position: absolute;
-      inset-block: min(0px, calc((100% - 44px) / 2));
-      inset-inline: min(0px, calc((100% - 44px) / 2));
-    }
-    /* Text fields have no pseudo-element; they grow to the touch floor. */
-    input:is([data-slot='input'], [data-slot='form-control']) {
-      min-height: 44px;
-    }
-  }
-}
-
-/* Logo palette: the fish mark's six stops. Identity colours, kept apart from
-   --brand so the UI signature can change without redrawing the logo. Used by
-   the fish symbol and the sidebar app mark. */
-:root {
-  --logo-1: #b802d0;
-  --logo-2: #e62652;
-  --logo-3: #eb6f02;
-  --logo-4: #e59a02;
-  --logo-5: #6ba702;
-  --logo-6: #026bc2;
-}
-
-/* Chart series palette: five hues on the app's chart ramp. The base UI stays
-   neutral, so colour is reserved for data: series, board states and the
-   occupancy ring. Dark theme lifts lightness; hues stay put. */
-@theme {
-  --color-series-1: var(--series-1);
-  --color-series-2: var(--series-2);
-  --color-series-3: var(--series-3);
-  --color-series-4: var(--series-4);
-  --color-series-5: var(--series-5);
-}
-
-:root {
-  --series-1: var(--brand);
-  --series-2: oklch(0.62 0.12 190);
-  --series-3: oklch(0.52 0.13 255);
-  --series-4: oklch(0.75 0.15 80);
-  --series-5: oklch(0.58 0.17 330);
-}
-
-.dark {
-  --series-1: var(--brand);
-  --series-2: oklch(0.74 0.12 190);
-  --series-3: oklch(0.66 0.13 255);
-  --series-4: oklch(0.82 0.14 82);
-  --series-5: oklch(0.7 0.16 330);
 }

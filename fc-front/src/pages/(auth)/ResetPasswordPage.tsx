@@ -66,7 +66,7 @@ export default function ResetPasswordPage() {
       <BackgroundLines className="-z-15 flex h-full w-full flex-col items-center justify-center px-4">
         <Card className="z-10 mx-auto max-w-sm">
           <CardHeader>
-            <CardTitle className="type-page-title">Reset Password</CardTitle>
+            <CardTitle className="text-2xl">Reset Password</CardTitle>
             <CardDescription>
               Enter your new password to reset your password.
             </CardDescription>

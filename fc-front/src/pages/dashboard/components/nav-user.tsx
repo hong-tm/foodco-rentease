@@ -36,7 +36,7 @@ export function NavUser({
   user: {
     name: string
     email: string
-    avatar?: string
+    avatar: string
   }
 }) {
   const { isMobile } = useSidebar()
@@ -78,8 +78,9 @@ export function NavUser({
     <SidebarMenu>
       <SidebarMenuItem>
         <ResponsiveAlertDialog
-          title="Are you want to Logout?"
-          description="Logout will clear all your session and data."
+          title="Sign out?"
+          description="This clears your session on this device."
+          confirmLabel="Sign out"
           onClick={handlerSignOut}
           open={dialogOpen}
           setOpen={setDialogOpen}
@@ -90,9 +91,9 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage rel="preload" src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
+                <AvatarFallback className="rounded-full">
                   {getFallback(user.name)}
                 </AvatarFallback>
               </Avatar>
@@ -112,13 +113,13 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-full">
                   <AvatarImage
                     rel="preload"
                     src={user.avatar}
                     alt={user.name}
                   />
-                  <AvatarFallback className="rounded-lg">
+                  <AvatarFallback className="rounded-full">
                     {getFallback(user.name)}
                   </AvatarFallback>
                 </Avatar>

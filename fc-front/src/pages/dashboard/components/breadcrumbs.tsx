@@ -19,19 +19,19 @@ export default function Breadcrumbs() {
     'change-password': 'Change Password',
     feedback: 'Feedback',
     account: 'Account',
-    admin: 'Users',
-    'tenant-information': 'Tenant Information',
-    'stall-availability': 'Stall Availability',
-    'admin-dashboard': 'Admin Dashboard',
+    admin: 'Admin',
+    'tenant-information': 'Tenants',
+    'stall-availability': 'Stall availability',
+    'admin-dashboard': 'Overview',
     'user-appointment': 'User Appointment',
     'user-dashboard': 'User Dashboard',
     'rental-dashboard': 'Rental Dashboard',
-    'admin-appointment': 'Stall Appointments',
+    'admin-appointment': 'Stall appointments',
     'payment-success': 'Payment Success',
-    'admin-report': 'Payments',
+    'admin-report': 'Financial report',
     'rental-report': 'Rental Report',
-    'user-report': 'Payment History',
-    'stall-payment': 'Stall Payment',
+    'user-report': 'User Report',
+    'stall-payment': 'Utilities',
     'stall-utilities': 'Stall Utilities',
   }
 
@@ -45,7 +45,7 @@ export default function Breadcrumbs() {
 
     return (
       <React.Fragment key={crumb}>
-        <BreadcrumbItem className="hidden md:block">
+        <BreadcrumbItem className={isLast ? undefined : 'hidden md:block'}>
           {isLast ? (
             <BreadcrumbPage>{crumbName}</BreadcrumbPage>
           ) : (

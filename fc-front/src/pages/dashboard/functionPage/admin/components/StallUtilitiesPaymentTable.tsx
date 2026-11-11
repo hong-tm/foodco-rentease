@@ -1,13 +1,21 @@
 import { useState } from 'react'
-import type { GetUsersResponse } from '@/api/adminApi'
 import { fetchUsersQueryOptions } from '@/api/adminApi'
+import type { GetUsersResponse } from '@/api/adminApi'
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
-import { fetchStallsQueryOptions } from '@/api/stallApi'
+import { PaymentType } from '@/pages/dashboard/components/PaymentType'
 import { useQuery } from '@tanstack/react-query'
 
-import { formatDay } from '@/lib/format'
+import { formatDate, formatRM } from '@/lib/format'
 
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { PanelError, PanelRowsSkeleton } from '@/components/ui/panel'
+import {
+  CountTabs,
+  PanelToolbar,
+  TablePager,
+  TablePanel,
+  usePager,
+} from '@/components/ui/panel-parts'
 import {
   Select,
   SelectContent,
@@ -15,62 +23,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
-import { StatusBadge } from '@/components/dashboard/StatusBadge'
+import { PersonAvatar } from '@/components/person-avatar'
 
-const DAY_MS = 24 * 60 * 60 * 1000
-
-// Seven columns split 12 / 22 / 10 / 11 / 13 / 11 / 21 across one ledger. Only
-// the tenant column takes a scale step (w-1/5 is 20%, close but not equal, so
-// every share stays explicit and page-scoped here).
-const COLUMN_WIDTH = {
-  stall: '12%',
-  tenant: '22%',
-  type: '10%',
-  amount: '11%',
-  status: '13%',
-  date: '11%',
-  reference: '21%',
-} as const
-
-function money(value?: string | number | null) {
-  const amount = typeof value === 'string' ? Number.parseFloat(value) : value
-  if (amount === undefined || amount === null || !Number.isFinite(amount)) {
-    return null
-  }
-  return amount.toLocaleString('en-MY', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-}
-
-function daysOpen(paymentDate: Date | string) {
-  const days = Math.floor(
-    (Date.now() - new Date(paymentDate).getTime()) / DAY_MS,
-  )
-  return Number.isFinite(days) && days >= 0 ? days : null
-}
-
-function typeLabel(type: string) {
-  if (type === 'water') return 'Water'
-  if (type === 'electric') return 'Electric'
-  if (type === 'rental') return 'Rental'
-  return type
-}
+import { TenantActionButton } from './TenantActionButton'
 
 export default function StallUtilitiesPaymentTable() {
-  const [selectedUser, setSelectedUser] = useState<string>('all')
-  const [selectedType, setSelectedType] = useState<string>('all')
+  const [status, setStatus] = useState('all')
+  const [selectedUser, setSelectedUser] = useState('all')
+  const [selectedType, setSelectedType] = useState('all')
   const {
     data: payments,
     isLoading,
@@ -78,87 +46,63 @@ export default function StallUtilitiesPaymentTable() {
     refetch,
   } = useQuery(getAllPaymentRecordsQueryOptions)
   const { data: usersData } = useQuery<GetUsersResponse>(fetchUsersQueryOptions)
-  const { data: stallsData } = useQuery(fetchStallsQueryOptions)
-
-  if (isLoading) {
-    return (
-      <section
-        role="status"
-        aria-live="polite"
-        aria-label="Payment records"
-        className="flex flex-col gap-4"
-      >
-        <span className="sr-only">Loading utility charges…</span>
-        <div className="flex items-center justify-between gap-3">
-          <Skeleton className="h-6 w-56" />
-          <Skeleton className="h-9 w-64" />
-        </div>
-        <div className="border-border flex flex-col gap-4 rounded-xl border p-6">
-          {[0, 1, 2, 3, 4].map((row) => (
-            <div key={row} className="flex items-center gap-4">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-4 flex-1" />
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-6 w-24" />
-            </div>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section aria-label="Payment records" className="flex flex-col gap-4">
-        <h2 className="text-sm font-medium">Payment records</h2>
-        <div
-          role="alert"
-          className="border-destructive/40 bg-destructive/5 flex flex-col items-start gap-3 rounded-xl border p-5 text-sm"
-        >
-          <p>Utility charges could not be loaded: {error.message}</p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
-      </section>
-    )
-  }
-
-  const userById = new Map(
-    (usersData?.users ?? []).map((user) => [user.id, user]),
-  )
-  const stallById = new Map(
-    (stallsData?.stall ?? []).map((stall) => [stall.stallNumber, stall]),
-  )
-  const userName = (userId: string) => userById.get(userId)?.name ?? userId
 
   const utilityPayments = (payments ?? []).filter(
     (payment) =>
       payment.paymentType === 'water' || payment.paymentType === 'electric',
   )
+  const uniqueUsers = [
+    ...new Set(utilityPayments.map((payment) => payment.userId)),
+  ]
+  const getUser = (userId: string) =>
+    usersData?.users.find((user: { id: string }) => user.id === userId)
+  const getUserName = (userId: string) => getUser(userId)?.name || userId
 
-  const uniqueUsers = [...new Set(utilityPayments.map((p) => p.userId))]
-
-  const visible = utilityPayments
-    .filter((p) => selectedUser === 'all' || p.userId === selectedUser)
-    .filter((p) => selectedType === 'all' || p.paymentType === selectedType)
+  const scoped = utilityPayments.filter(
+    (payment) =>
+      (selectedUser === 'all' || payment.userId === selectedUser) &&
+      (selectedType === 'all' || payment.paymentType === selectedType),
+  )
+  const rows = scoped
+    .filter(
+      (payment) =>
+        status === 'all' ||
+        (status === 'unpaid' ? !payment.paymentStatus : payment.paymentStatus),
+    )
     .sort(
       (a, b) =>
         new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime(),
     )
+  const pager = usePager(rows, 15, `${status}|${selectedType}|${selectedUser}`)
 
   return (
-    <section
-      aria-label="Payment records"
-      className="flex min-w-0 flex-col gap-4"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="type-section-title">Payment records</h2>
-
-        <div className="flex flex-wrap gap-2">
+    <TablePanel>
+      <PanelToolbar>
+        <CountTabs
+          label="Filter by payment status"
+          value={status}
+          onChange={setStatus}
+          tabs={[
+            { value: 'all', label: 'All', count: scoped.length },
+            {
+              value: 'unpaid',
+              label: 'Unpaid',
+              count: scoped.filter((p) => !p.paymentStatus).length,
+            },
+            {
+              value: 'paid',
+              label: 'Paid',
+              count: scoped.filter((p) => p.paymentStatus).length,
+            },
+          ]}
+        />
+        <div className="flex gap-2 max-md:w-full md:ml-auto">
           <Select value={selectedType} onValueChange={setSelectedType}>
-            <SelectTrigger className="w-40" aria-label="Filter by utility type">
-              <SelectValue placeholder="Select type" />
+            <SelectTrigger
+              aria-label="Filter by type"
+              className="w-32 max-md:h-11 max-md:flex-1"
+            >
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All types</SelectItem>
@@ -166,182 +110,151 @@ export default function StallUtilitiesPaymentTable() {
               <SelectItem value="electric">Electric</SelectItem>
             </SelectContent>
           </Select>
-
           <Select value={selectedUser} onValueChange={setSelectedUser}>
-            <SelectTrigger className="w-52" aria-label="Filter by tenant">
-              <SelectValue placeholder="Select tenant" />
+            <SelectTrigger
+              aria-label="Filter by tenant"
+              className="w-48 max-md:h-11 max-md:flex-1"
+            >
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All tenants</SelectItem>
               {uniqueUsers.map((userId) => (
                 <SelectItem key={userId} value={userId}>
-                  {userName(userId)}
+                  {getUserName(userId)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-      </div>
-
-      {visible.length === 0 ? (
-        <div className="border-border flex flex-col items-start gap-3 rounded-xl border p-6 text-sm">
-          <p className="text-muted-foreground">
-            No charges match these filters.
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSelectedType('all')
-              setSelectedUser('all')
-            }}
-          >
-            Clear filters
-          </Button>
+      </PanelToolbar>
+      {isLoading ? (
+        <div className="p-4 md:p-5">
+          <PanelRowsSkeleton rows={6} />
         </div>
-      ) : (
-        <div className="border-border max-w-full min-w-0 overflow-hidden rounded-xl border">
-          <Table className="xl:min-w-table">
-            <TableCaption className="sr-only">
-              Utility charges with stall, tenant, amount, status and issue date
-            </TableCaption>
+      ) : null}
+      {error ? (
+        <div className="p-4 md:p-5">
+          <PanelError what="utility bills" onRetry={() => refetch()} />
+        </div>
+      ) : null}
+      {payments ? (
+        <>
+          <Table>
             <TableHeader>
-              <TableRow className="border-border border-b hover:bg-transparent">
-                <TableHead
-                  className={`type-label text-muted-foreground h-12 pl-6`}
-                >
-                  Stall
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.tenant }}
-                >
-                  <span className="flex items-center gap-2">
-                    <span aria-hidden className="size-7" />
-                    Tenant
-                  </span>
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.type }}
-                >
-                  Type
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 text-right xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.amount }}
-                >
-                  Amount
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.status }}
-                >
-                  Status
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.date }}
-                >
-                  Charged
-                </TableHead>
-                <TableHead
-                  className={`type-label text-muted-foreground hidden h-12 pr-6 xl:table-cell`}
-                  style={{ width: COLUMN_WIDTH.reference }}
-                >
-                  Reference
+              <TableRow>
+                <TableHead className="max-md:hidden">Date</TableHead>
+                <TableHead>Tenant</TableHead>
+                <TableHead className="max-md:hidden">Stall</TableHead>
+                <TableHead className="max-md:hidden">Type</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="max-md:hidden">Status</TableHead>
+                <TableHead className="max-md:hidden">Payment ID</TableHead>
+                <TableHead className="max-md:hidden">
+                  <span className="sr-only">Actions</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {visible.map((payment) => {
-                const user = userById.get(payment.userId)
-                const stall = stallById.get(payment.stallId)
-                const open = daysOpen(payment.paymentDate)
-                const status = (
-                  <StatusBadge
-                    label={payment.paymentStatus ? 'Paid' : 'Pending'}
-                    tone={payment.paymentStatus ? 'settled' : 'action'}
-                    meta={
-                      !payment.paymentStatus && open !== null
-                        ? `${open} d open`
-                        : undefined
-                    }
-                  />
-                )
-
+              {pager.rows.map((payment) => {
+                const name = getUserName(payment.userId)
+                const user = getUser(payment.userId)
+                const kind =
+                  payment.paymentType === 'water' ? 'water' : 'electricity'
+                const amount = formatRM(Number(payment.paymentAmount))
+                const date = formatDate(payment.paymentDate)
+                // Admins cannot mark a bill paid (no API), so the action is a reminder email.
+                const remind =
+                  payment.paymentStatus || !user?.email ? null : (
+                    <TenantActionButton
+                      userName={name}
+                      userEmail={user.email}
+                      userStallId={payment.stallId}
+                      userStallName=""
+                      className="max-md:h-11"
+                      email={{
+                        subject: `Unpaid ${kind} bill for stall ${payment.stallId}`,
+                        text: `Dear ${name},\n\nYour ${kind} bill for stall ${payment.stallId} is still unpaid.\n\nAmount: ${amount}\nBill date: ${date}\n\nPlease pay it in FoodCo RentEase.\n\nThank you!`,
+                        description: `${name} gets an email about the unpaid ${kind} bill of ${amount} for stall ${payment.stallId}.`,
+                      }}
+                    />
+                  )
                 return (
-                  <TableRow
-                    key={payment.paymentId}
-                    className="border-border hover:bg-muted/30"
-                  >
-                    <TableCell className="before:bg-foreground relative py-4 pl-6 align-baseline whitespace-normal before:absolute before:inset-y-0 before:left-0 before:w-px before:opacity-0 group-hover/row:before:opacity-100">
-                      <p className="text-sm leading-none font-medium tabular-nums">
-                        Stall {payment.stallId}
-                      </p>
-                      <p className="text-muted-foreground mt-1.5 text-xs">
-                        {stall?.stallName ?? 'Name not recorded'}
-                      </p>
-                      <div className="mt-2 flex flex-col gap-1 text-xs xl:hidden">
-                        <span>{userName(payment.userId)}</span>
-                        <span className="text-muted-foreground tabular-nums">
-                          {typeLabel(payment.paymentType)} · RM{' '}
-                          {money(payment.paymentAmount) ?? '—'} ·{' '}
-                          {formatDay(payment.paymentDate)}
-                        </span>
-                        <span className="mt-1">{status}</span>
-                      </div>
+                  <TableRow key={payment.paymentId}>
+                    <TableCell className="text-muted-foreground whitespace-nowrap max-md:hidden">
+                      {formatDate(payment.paymentDate)}
                     </TableCell>
-
-                    <TableCell className="hidden py-4 align-baseline whitespace-normal xl:table-cell">
-                      <div className="flex items-center gap-2">
-                        <InitialsAvatar
-                          name={userName(payment.userId)}
-                          image={user?.image}
+                    <TableCell className="max-md:w-full max-md:max-w-0">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <PersonAvatar
+                          id={payment.userId}
+                          name={name}
+                          image={getUser(payment.userId)?.image}
+                          className="size-6"
                         />
-                        <span className="text-sm leading-none">
-                          {userName(payment.userId)}
-                        </span>
+                        <span className="truncate">{name}</span>
                       </div>
+                      <p className="type-meta text-muted-foreground mt-1 truncate md:hidden">
+                        {formatDate(payment.paymentDate)} · Stall{' '}
+                        {payment.stallId} ·{' '}
+                        {payment.paymentType === 'rental' ? (
+                          'Rent'
+                        ) : (
+                          <PaymentType type={payment.paymentType} />
+                        )}
+                      </p>
+                      {remind ? (
+                        <div className="mt-2 md:hidden">{remind}</div>
+                      ) : null}
                     </TableCell>
-
-                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
-                      <span className="text-sm">
-                        {typeLabel(payment.paymentType)}
-                      </span>
+                    <TableCell className="tabular-nums max-md:hidden">
+                      {payment.stallId}
                     </TableCell>
-
-                    <TableCell className="hidden py-4 text-right align-baseline xl:table-cell">
-                      <span className="text-sm font-medium tabular-nums">
-                        RM {money(payment.paymentAmount) ?? '—'}
-                      </span>
+                    <TableCell className="max-md:hidden">
+                      <PaymentType type={payment.paymentType} />
                     </TableCell>
-
-                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
-                      {status}
+                    <TableCell className="text-right font-medium tabular-nums">
+                      {formatRM(Number(payment.paymentAmount))}
+                      {payment.paymentStatus ? null : (
+                        <div className="mt-1 md:hidden">
+                          <Badge variant="warning">Unpaid</Badge>
+                        </div>
+                      )}
                     </TableCell>
-
-                    <TableCell className="hidden py-4 align-baseline xl:table-cell">
-                      <span className="text-sm tabular-nums">
-                        {formatDay(payment.paymentDate)}
-                      </span>
+                    <TableCell className="max-md:hidden">
+                      {payment.paymentStatus ? (
+                        <span className="text-muted-foreground">Paid</span>
+                      ) : (
+                        <Badge variant="warning">Unpaid</Badge>
+                      )}
                     </TableCell>
-
-                    <TableCell className="hidden py-4 pr-6 align-baseline xl:table-cell">
-                      <span
-                        className="text-muted-foreground font-mono text-xs"
-                        title={payment.paymentId}
-                      >
-                        {payment.paymentId.slice(0, 8)}…
-                      </span>
+                    <TableCell
+                      className="type-id text-muted-foreground max-w-40 truncate max-md:hidden"
+                      title={payment.paymentId}
+                    >
+                      {payment.paymentId}
+                    </TableCell>
+                    <TableCell className="text-right max-md:hidden">
+                      {remind}
                     </TableCell>
                   </TableRow>
                 )
               })}
+              {pager.total === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="type-body text-muted-foreground py-8 text-center"
+                  >
+                    No bills match these filters.
+                  </TableCell>
+                </TableRow>
+              ) : null}
             </TableBody>
           </Table>
-        </div>
-      )}
-    </section>
+          <TablePager pager={pager} noun="bills" />
+        </>
+      ) : null}
+    </TablePanel>
   )
 }

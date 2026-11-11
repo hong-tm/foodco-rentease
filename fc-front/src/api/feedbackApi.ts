@@ -13,11 +13,11 @@ export type Feedback = {
   createdAt: string // Date of creation
 }
 
-type FeedbackResponse = {
+export type FeedbackResponse = {
   feedback: Feedback[] // Assuming your feedback array is of type 'Feedback'
 }
 
-type FeedbackHappinessResponse = {
+export type FeedbackHappinessResponse = {
   stallHappiness: {
     stallId: number
     totalHappiness: number
@@ -25,7 +25,7 @@ type FeedbackHappinessResponse = {
   }[]
 }
 
-async function getAllFeedback(): Promise<Feedback[]> {
+export async function getAllFeedback(): Promise<Feedback[]> {
   const session = await authClient.getSession()
 
   const token = session?.data?.session?.token
@@ -55,7 +55,7 @@ async function getAllFeedback(): Promise<Feedback[]> {
   return feedback
 }
 
-async function getFeedbackHappiness(): Promise<
+export async function getFeedbackHappiness(): Promise<
   FeedbackHappinessResponse['stallHappiness']
 > {
   const res = await api.feedbacks['get-feedbackHappiness'].$get()

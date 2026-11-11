@@ -86,6 +86,5 @@ fc-front/public/sitemap.xml
 fc-back/.cursorrules
 fc-front/.env
 fc-back/webpage/index.html
-
-# Claude temporary skills
-.claude/
+node_modules
+.taste-skill

@@ -7,19 +7,14 @@ import {
   type StallUtilitiesFormValues,
 } from '@server/lib/sharedType'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { format } from 'date-fns'
-import { CalendarIcon, Loader2Icon } from 'lucide-react'
-import { useForm, useWatch } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
-import { cn } from '@/lib/utils'
-
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
+import { DateField } from '@/components/ui/date-field'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,19 +22,19 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
 
-export default function StallUtilitiesForm() {
+export default function StallUtilitiesForm({
+  onDone,
+}: {
+  onDone?: () => void
+}) {
   const { data: stallsData } = useQuery({
     ...fetchStallsQueryOptions,
     select: (data: GetStallsResponse) =>
@@ -83,8 +78,12 @@ export default function StallUtilitiesForm() {
     onError: (error: Error) => {
       toast.error(error.message)
     },
-    onSuccess: () => {
-      toast.success('Utility payment record created successfully')
+    onSuccess: (record) => {
+      toast.success(
+        record.paymentType === 'rental'
+          ? 'Rent bill created. Find it in Financial report.'
+          : 'Bill created',
+      )
       form.reset({
         stallId: undefined,
         paymentType: undefined,
@@ -92,6 +91,7 @@ export default function StallUtilitiesForm() {
         paymentDate: undefined,
       })
       queryClient.invalidateQueries({ queryKey: paymentsQueryKey.record() })
+      onDone?.()
     },
   })
 
@@ -99,177 +99,113 @@ export default function StallUtilitiesForm() {
     mutation.mutate(data)
   }
 
-  const selectedStallId = useWatch({ control: form.control, name: 'stallId' })
-  const selectedStall = stallsData?.find(
-    (stall) => stall.stallNumber === selectedStallId,
-  )
-  const selectedOwner = selectedStall?.stallOwnerId?.name
-  const stallHint = selectedStall
-    ? selectedOwner
-      ? `Billed to ${selectedOwner}`
-      : 'No tenant holds this stall, so it cannot be charged'
-    : 'Only rented stalls can be charged'
-
   return (
-    <section aria-label="New utility charge" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 className="type-section-title">New charge</h2>
-
-        <p className="text-muted-foreground text-xs">
-          Issued unpaid. The tenant pays it from their utilities page.
-        </p>
-      </div>
-
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="bg-card flex flex-col gap-4 rounded-xl border p-5"
-        >
-          <div className="grid w-full items-start gap-x-6 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
-            <FormField
-              control={form.control}
-              name="stallId"
-              render={({ field: { onChange, value, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Stall</FormLabel>
-                  <Select
-                    onValueChange={(val) => {
-                      onChange(val ? parseInt(val) : undefined)
-                    }}
-                    value={value?.toString() || ''}
-                    {...field}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a stall" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {stallsData?.map((stall) => (
-                        <SelectItem
-                          key={stall.stallNumber}
-                          value={stall.stallNumber.toString()}
-                        >
-                          Stall {stall.stallNumber} - {stall.stallName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>{stallHint}</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="paymentType"
-              render={({ field: { onChange, value, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Utility type</FormLabel>
-                  <Select
-                    onValueChange={onChange}
-                    value={value || ''}
-                    {...field}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select utility type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="water">Water</SelectItem>
-                      <SelectItem value="electric">Electric</SelectItem>
-                      <SelectItem value="rental">Rental</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="paymentAmount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount (RM)</FormLabel>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 gap-4">
+          <FormField
+            control={form.control}
+            name="stallId"
+            render={({ field: { onChange, value, ...field } }) => (
+              <FormItem>
+                <FormLabel>Stall</FormLabel>
+                <Select
+                  onValueChange={(val) => {
+                    onChange(val ? parseInt(val) : undefined)
+                  }}
+                  value={value?.toString() || ''}
+                  {...field}
+                >
                   <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      inputMode="decimal"
-                      placeholder="0.00"
-                      className="tabular-nums"
-                      value={field.value || ''}
-                      onChange={(e) => {
-                        const value = e.target.value
-                        field.onChange(
-                          value === '' ? undefined : parseFloat(value),
-                        )
-                      }}
-                    />
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a stall" />
+                    </SelectTrigger>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  <SelectContent>
+                    {stallsData?.map((stall) => (
+                      <SelectItem
+                        key={stall.stallNumber}
+                        value={stall.stallNumber.toString()}
+                      >
+                        Stall {stall.stallNumber} - {stall.stallName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="paymentDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Charge date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'w-full justify-start pl-3 text-left font-normal tabular-nums',
-                            !field.value && 'text-muted-foreground',
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        autoFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="paymentType"
+            render={({ field: { onChange, value, ...field } }) => (
+              <FormItem>
+                <FormLabel>Type</FormLabel>
+                <Select onValueChange={onChange} value={value || ''} {...field}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select utility type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="water">Water</SelectItem>
+                    <SelectItem value="electric">Electric</SelectItem>
+                    <SelectItem value="rental">
+                      Rent (listed in Financial report)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <div className="flex justify-end">
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? (
-                <>
-                  Creating charge
-                  <Loader2Icon className="size-4 animate-spin" />
-                </>
-              ) : (
-                'Create charge'
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </section>
+          <FormField
+            control={form.control}
+            name="paymentAmount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Amount (RM)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="Enter amount"
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      field.onChange(
+                        value === '' ? undefined : parseFloat(value),
+                      )
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="paymentDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Bill date</FormLabel>
+                <DateField value={field.value} onChange={field.onChange} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <Button type="submit" disabled={mutation.isPending} className="w-full">
+          {mutation.isPending ? <Spinner /> : null}
+          Create bill
+        </Button>
+      </form>
+    </Form>
   )
 }
