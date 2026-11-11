@@ -311,4 +311,3 @@ export function StallAvailabilityPage() {
   )
 }
 
-export default StallAvailabilityPage
