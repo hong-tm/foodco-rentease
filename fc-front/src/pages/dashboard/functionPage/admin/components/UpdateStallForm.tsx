@@ -1,4 +1,4 @@
-import type { GetStallsResponse, StallFormProps } from '@/api/stallApi'
+import { stallsQueryKey, type GetStallsResponse, type StallFormProps } from '@/api/stallApi'
 import {
   fetchStallTierPricesQueryOptions,
   fetchStallsQueryOptions,
@@ -7,7 +7,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { updateStallSchema } from '@server/lib/sharedType'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch, type UseFormReturn } from 'react-hook-form'
 import { toast } from 'sonner'
 import * as z from 'zod/v4'
@@ -335,6 +335,8 @@ export default function UpdateStallForm({
     }
   }
 
+  const queryClient = useQueryClient()
+
   const mutation = useMutation({
     mutationFn: updateStall,
     onError: (error: Error) => {
@@ -344,6 +346,7 @@ export default function UpdateStallForm({
     onSuccess: (data) => {
       toast.success('Stall updated successfully')
       form.reset()
+      queryClient.invalidateQueries({ queryKey: stallsQueryKey.all })
       if (onSubmit) onSubmit(data)
       if (setOpenDialog) setOpenDialog(false)
     },

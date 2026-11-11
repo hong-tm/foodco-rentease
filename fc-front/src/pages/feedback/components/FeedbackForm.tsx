@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { createFeedback } from '@/api/feedbackApi'
+import { createFeedback, feedbacksQueryKey } from '@/api/feedbackApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createFeedbackSchema } from '@server/lib/sharedType'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AngryIcon,
   FrownIcon,
@@ -48,17 +48,24 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
   const [pending, setPending] = useState(false)
   const [happiness, setHappiness] = useState<null | number>(null)
 
+  const queryClient = useQueryClient()
+
   const mutation = useMutation({
     mutationFn: createFeedback,
+    onSuccess: () => {
+      toast.success('Feedback submitted successfully')
+      queryClient.invalidateQueries({ queryKey: feedbacksQueryKey.all })
+      onClose()
+    },
+    onError: (error: Error) => {
+      toast.error(error?.message || 'Failed to submit feedback')
+    },
+    onSettled: () => setPending(false),
   })
 
   async function onSubmit(values: z.infer<typeof createFeedbackSchema>) {
     setPending(true)
     mutation.mutate(values)
-    toast.success('Feedback submitted successfully')
-    onClose()
-
-    setPending(false)
   }
 
   return (
