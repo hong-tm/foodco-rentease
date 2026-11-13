@@ -1,5 +1,12 @@
 import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
+import {
+  CalendarDaysIcon,
+  FileTextIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+  UserIcon,
+} from 'lucide-react'
 
 import { formatDay } from '@/lib/format'
 
@@ -110,8 +117,8 @@ export default function UsersTable() {
                 className={`type-label text-muted-foreground h-12 pl-6`}
                 style={{ width: COLUMN_WIDTH.account }}
               >
-                <span className="flex items-center gap-3">
-                  <span aria-hidden className="size-9" />
+                <span className="flex items-center gap-2">
+                  <UserIcon aria-hidden="true" className="size-3.5 shrink-0" />
                   Account
                 </span>
               </TableHead>
@@ -119,25 +126,49 @@ export default function UsersTable() {
                 className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.role }}
               >
-                Role
+                <span className="flex items-center gap-2">
+                  <ShieldCheckIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Role
+                </span>
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.status }}
               >
-                Status
+                <span className="flex items-center gap-2">
+                  <FileTextIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Status
+                </span>
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.joined }}
               >
-                Joined
+                <span className="flex items-center gap-2">
+                  <CalendarDaysIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Joined
+                </span>
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.action }}
               >
-                Action
+                <span className="flex items-center justify-end gap-2">
+                  <SettingsIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Action
+                </span>
               </TableHead>
             </TableRow>
           </TableHeader>

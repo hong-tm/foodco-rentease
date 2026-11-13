@@ -77,6 +77,7 @@ code {
   --destructive-soft: oklch(0.96 0.03 25);
   --success-soft: oklch(0.96 0.04 150);
   --success-ink: oklch(0.38 0.1 150);
+  --warning: oklch(0.7 0.15 70);
   --warning-soft: oklch(0.96 0.05 85);
   --warning-ink: oklch(0.42 0.1 70);
   --destructive-ink: oklch(0.42 0.16 25);
@@ -125,6 +126,7 @@ code {
   --destructive-soft: oklch(0.28 0.06 25);
   --success-soft: oklch(0.28 0.05 150);
   --success-ink: oklch(0.85 0.12 150);
+  --warning: oklch(0.79 0.14 80);
   --warning-soft: oklch(0.3 0.06 80);
   --warning-ink: oklch(0.87 0.11 85);
   --destructive-ink: oklch(0.85 0.1 25);
@@ -174,6 +176,7 @@ code {
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-logo-1: var(--logo-1);
   --color-logo-2: var(--logo-2);
   --color-logo-3: var(--logo-3);

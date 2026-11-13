@@ -71,7 +71,7 @@ const RATINGS: RatingMeta[] = [
     label: 'Happy',
     Icon: SmileIcon,
     text: 'text-foreground hover:text-foreground',
-    bar: 'bg-success-ink',
+    bar: 'bg-success/55',
   },
   {
     value: 2,
