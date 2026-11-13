@@ -136,7 +136,7 @@ export default function AdminAppointmentTable() {
             <TableHeader>
               <TableRow>
                 <TableHead className="max-md:hidden">Date</TableHead>
-                <TableHead>Applicant</TableHead>
+                <TableHead className="max-md:pl-4">Applicant</TableHead>
                 <TableHead className="max-md:hidden">Stall</TableHead>
                 <TableHead className="max-md:hidden">Request</TableHead>
                 <TableHead className="max-md:hidden">Status</TableHead>
@@ -171,7 +171,7 @@ export default function AdminAppointmentTable() {
                     <TableCell className="font-medium whitespace-nowrap max-md:hidden">
                       {formatDate(item.appointmentDate)}
                     </TableCell>
-                    <TableCell className="max-md:w-full max-md:max-w-0">
+                    <TableCell className="max-md:w-full max-md:max-w-0 max-md:pl-4">
                       <div className="flex min-w-0 items-center gap-2">
                         <PersonAvatar
                           id={item.userId}

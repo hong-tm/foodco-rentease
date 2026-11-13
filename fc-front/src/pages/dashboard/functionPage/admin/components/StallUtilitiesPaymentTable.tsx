@@ -144,7 +144,7 @@ export default function StallUtilitiesPaymentTable() {
             <TableHeader>
               <TableRow>
                 <TableHead className="max-md:hidden">Date</TableHead>
-                <TableHead>Tenant</TableHead>
+                <TableHead className="max-md:pl-4">Tenant</TableHead>
                 <TableHead className="max-md:hidden">Stall</TableHead>
                 <TableHead className="max-md:hidden">Type</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
@@ -184,7 +184,7 @@ export default function StallUtilitiesPaymentTable() {
                     <TableCell className="text-muted-foreground whitespace-nowrap max-md:hidden">
                       {formatDate(payment.paymentDate)}
                     </TableCell>
-                    <TableCell className="max-md:w-full max-md:max-w-0">
+                    <TableCell className="max-md:w-full max-md:max-w-0 max-md:pl-4">
                       <div className="flex min-w-0 items-center gap-2">
                         <PersonAvatar
                           id={payment.userId}
