@@ -137,6 +137,7 @@ export default function AdminAppointmentTable() {
               <TableRow>
                 <TableHead className="max-md:hidden">Date</TableHead>
                 <TableHead>Applicant</TableHead>
+                <TableHead className="max-md:hidden">Stall</TableHead>
                 <TableHead className="max-md:hidden">Request</TableHead>
                 <TableHead className="max-md:hidden">Status</TableHead>
                 <TableHead className="text-right">
@@ -185,6 +186,9 @@ export default function AdminAppointmentTable() {
                       <div className="mt-1.5 flex flex-col items-start gap-1 md:hidden">
                         <p className="type-meta text-muted-foreground">
                           {formatDate(item.appointmentDate)}
+                          {item.stallNumber
+                            ? ` · Stall ${item.stallNumber}`
+                            : ''}
                         </p>
                         <p className="type-meta text-muted-foreground whitespace-normal">
                           {item.notificationMessage}
@@ -200,6 +204,9 @@ export default function AdminAppointmentTable() {
                           </div>
                         ) : null}
                       </div>
+                    </TableCell>
+                    <TableCell className="type-id max-md:hidden">
+                      {item.stallNumber ?? '—'}
                     </TableCell>
                     <TableCell className="text-muted-foreground min-w-56 whitespace-normal max-md:hidden">
                       {item.notificationMessage}
@@ -227,7 +234,7 @@ export default function AdminAppointmentTable() {
               {pager.total === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="type-body text-muted-foreground py-8 text-center"
                   >
                     No appointments match these filters.

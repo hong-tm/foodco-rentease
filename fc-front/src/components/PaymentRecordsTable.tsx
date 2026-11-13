@@ -446,11 +446,13 @@ export function PaymentRecordsTable({
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">
                       {formatRM(amountOf(record))}
-                      {record.paymentStatus ? null : (
-                        <div className="mt-1 md:hidden">
+                      <div className="mt-1 md:hidden">
+                        {record.paymentStatus ? (
+                          <Badge variant="neutral">Paid</Badge>
+                        ) : (
                           <Badge variant="warning">Unpaid</Badge>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="max-md:hidden">
                       {record.paymentStatus ? (

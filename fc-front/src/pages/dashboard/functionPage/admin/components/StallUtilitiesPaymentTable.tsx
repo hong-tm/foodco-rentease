@@ -203,12 +203,14 @@ export default function StallUtilitiesPaymentTable() {
                           <PaymentType type={payment.paymentType} />
                         )}
                       </p>
-                      {payment.paymentStatus ? null : (
-                        <div className="mt-2 flex items-center gap-2 md:hidden">
+                      <div className="mt-2 flex items-center gap-2 md:hidden">
+                        {payment.paymentStatus ? (
+                          <Badge variant="neutral">Paid</Badge>
+                        ) : (
                           <Badge variant="warning">Unpaid</Badge>
-                          {remind}
-                        </div>
-                      )}
+                        )}
+                        {remind}
+                      </div>
                     </TableCell>
                     <TableCell className="tabular-nums max-md:hidden">
                       {payment.stallId}

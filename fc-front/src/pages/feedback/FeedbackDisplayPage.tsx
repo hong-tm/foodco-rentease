@@ -184,14 +184,15 @@ export function FeedbackDisplayPage() {
                   )
                 })}
               </ToggleGroup>
-              <SearchField
-                value={search}
-                onChange={setSearch}
-                placeholder="Search comments"
-                label="Search comments"
-                className="md:w-52"
-              />
-              <div className="flex gap-2 max-md:w-full md:ml-auto">
+              {/* Second row: search grows, the two selects close it on one right edge. */}
+              <div className="flex w-full flex-wrap gap-2">
+                <SearchField
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search comments"
+                  label="Search comments"
+                  className="md:w-auto md:flex-1"
+                />
                 <Select value={stall} onValueChange={setStall}>
                   <SelectTrigger
                     aria-label="Filter by stall"

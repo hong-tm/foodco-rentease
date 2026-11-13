@@ -64,6 +64,9 @@ export function ColumnChart<T extends { label: string }>({
             tickLine={false}
             axisLine={false}
             tickMargin={8}
+            // Every bar keeps its month; a long year steps the label down to fit a phone.
+            interval={0}
+            tick={{ fontSize: data.length > 8 ? 10 : 12 }}
           />
           <YAxis
             hide={bare}

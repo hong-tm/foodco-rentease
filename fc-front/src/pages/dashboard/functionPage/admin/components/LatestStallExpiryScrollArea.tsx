@@ -76,7 +76,7 @@ export default function LatestStallExpiryScrollArea({
                     {stall.stallName}
                   </span>
                 </p>
-                <p className="type-meta text-muted-foreground truncate">
+                <p className="type-meta text-muted-foreground">
                   {stall.stallOwnerId?.name} ·{' '}
                   <span
                     className={cn(
