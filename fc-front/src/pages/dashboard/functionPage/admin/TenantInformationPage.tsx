@@ -10,7 +10,6 @@ import {
   leaseState,
   type LeaseState,
 } from '@/lib/stall-lease'
-import { cn } from '@/lib/utils'
 
 import {
   Panel,
@@ -31,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { PersonAvatar } from '@/components/person-avatar'
 
 import RentalsTable, { type RentalRow } from './components/RentalsTable'
 
@@ -59,7 +57,6 @@ export function TenantInformationPage() {
   const { data, isLoading, error, refetch } = useQuery(fetchRentalsQueryOptions)
   const [params, setParams] = useSearchParams()
   const [search, setSearch] = useState('')
-  const [tenant, setTenant] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('end')
 
   const requested = params.get('view') as View | null
@@ -80,20 +77,18 @@ export function TenantInformationPage() {
     allRows.filter((row) => inView(row.stall, state)).length
 
   const query = search.trim().toLowerCase()
-  const inViewRows = allRows
-    .filter((row) => !tenant || row.user.id === tenant)
-    .filter(
-      (row) =>
-        !query ||
-        [
-          row.user.name,
-          row.user.email,
-          row.user.phone,
-          row.stall.stallName,
-          String(row.stall.stallNumber),
-        ].some((field) => field?.toLowerCase().includes(query)),
-    )
-  // Tab counts follow the tenant card and the search, the same rows the table shows.
+  const inViewRows = allRows.filter(
+    (row) =>
+      !query ||
+      [
+        row.user.name,
+        row.user.email,
+        row.user.phone,
+        row.stall.stallName,
+        String(row.stall.stallNumber),
+      ].some((field) => field?.toLowerCase().includes(query)),
+  )
+  // Tab counts follow the search, the same rows the table shows.
   const countInView = (state: View) =>
     inViewRows.filter((row) => inView(row.stall, state)).length
   const rows = inViewRows
@@ -115,61 +110,6 @@ export function TenantInformationPage() {
         <Panel>
           <PanelError what="tenants" onRetry={() => refetch()} />
         </Panel>
-      ) : null}
-
-      {tenants.length > 0 ? (
-        <div className="grid grid-cols-1 gap-3 xl:grid-cols-[260px_minmax(0,1fr)]">
-          <button
-            type="button"
-            aria-pressed={view === 'attention'}
-            onClick={() => setParams({ view: 'attention' }, { replace: true })}
-            className="bg-card hover:bg-accent focus-visible:ring-ring flex cursor-pointer flex-col justify-center rounded-xl border p-4 text-left outline-none focus-visible:ring-2"
-          >
-            <span className="type-body text-muted-foreground">
-              Needs follow-up
-            </span>
-            <span className="type-figure-lead">{past + ending}</span>
-            <span className="type-meta text-muted-foreground">
-              {past} past end date, {ending} ending in {ENDING_SOON_DAYS} days
-            </span>
-          </button>
-          <div
-            role="group"
-            aria-label="Filter by tenant"
-            className="bg-card -mx-4 flex divide-x overflow-x-auto border-y [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:divide-x-0 md:rounded-xl md:border"
-          >
-            {tenants.map((user) => {
-              const selected = tenant === user.id
-              return (
-                <button
-                  key={user.id}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => setTenant(selected ? null : user.id)}
-                  className={cn(
-                    'focus-visible:ring-ring flex w-56 shrink-0 cursor-pointer items-center gap-2.5 p-3 text-left outline-none first:rounded-l-xl last:rounded-r-xl focus-visible:ring-2 focus-visible:ring-inset md:w-auto',
-                    selected ? 'bg-brand-soft' : 'hover:bg-accent',
-                  )}
-                >
-                  <PersonAvatar
-                    id={user.id}
-                    name={user.name}
-                    image={user.image}
-                  />
-                  <span className="min-w-0">
-                    <span className="type-body line-clamp-2 leading-tight font-medium">
-                      {user.name}
-                    </span>
-                    <span className="type-meta text-muted-foreground mt-0.5 block truncate">
-                      {user.stalls.length} stall
-                      {user.stalls.length === 1 ? '' : 's'}
-                    </span>
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
       ) : null}
 
       <TablePanel>
@@ -236,7 +176,7 @@ export function TenantInformationPage() {
             <PanelEmpty>
               {allRows.length === 0
                 ? 'No tenant holds a stall yet. A lease appears here once a stall is rented.'
-                : 'No leases match. Change the tab, tenant or search.'}
+                : 'No leases match. Change the tab or the search.'}
             </PanelEmpty>
           </div>
         ) : null}
