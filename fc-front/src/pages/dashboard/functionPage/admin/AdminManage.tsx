@@ -13,7 +13,9 @@ export function AdminManage() {
     <div className="flex flex-col gap-4 md:gap-5">
       <PageHeader title="Admin">
         {data
-          ? `${users.length} accounts can sign in. ${banned} ${banned === 1 ? 'is' : 'are'} banned.`
+          ? banned
+            ? `${users.length} accounts. ${users.length - banned} can sign in, ${banned} ${banned === 1 ? 'is' : 'are'} banned.`
+            : `${users.length} accounts, all can sign in.`
           : 'Roles, bans and sign-in access for every account.'}
       </PageHeader>
       <UsersTable />

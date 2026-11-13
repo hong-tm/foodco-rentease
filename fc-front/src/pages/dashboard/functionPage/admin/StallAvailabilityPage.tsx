@@ -48,6 +48,12 @@ const filterLabels: { value: Filter; label: string }[] = [
   { value: 'all', label: 'All stalls' },
 ]
 
+const centreVerb: Record<BoardState, string> = {
+  free: 'are free',
+  followup: 'need follow-up',
+  let: 'are on lease',
+}
+
 function priceOf(stall: Stall) {
   const tierPrice = Number(stall.stallTierNumber?.tierPrice)
   const size = Number(stall.stallSize)
@@ -198,7 +204,7 @@ export function StallAvailabilityPage() {
                     <p className="type-body text-muted-foreground">
                       {filter === 'all'
                         ? 'stalls in the food court'
-                        : `of ${stalls.length} stalls: ${boardStateLabel[filter].toLowerCase()}`}
+                        : `of ${stalls.length} stalls ${centreVerb[filter]}`}
                     </p>
                     <p className="type-meta text-muted-foreground mt-2 hidden md:block">
                       Select a stall to {isAdmin ? 'edit' : 'apply'}.

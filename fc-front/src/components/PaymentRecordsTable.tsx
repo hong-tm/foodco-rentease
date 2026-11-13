@@ -236,6 +236,20 @@ export function PaymentRecordsTable({
           <StatStrip
             stats={[
               {
+                label: 'Rent',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType === 'rental')),
+                ),
+                note: 'Paid rent',
+              },
+              {
+                label: 'Utilities',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType !== 'rental')),
+                ),
+                note: 'Paid electric and water',
+              },
+              {
                 label: 'Collected',
                 value: formatRM(sumOf(paid)),
                 note: `${paid.length} payments, ${scopeLabel}`,
@@ -256,20 +270,6 @@ export function PaymentRecordsTable({
                         ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                     }
                   : undefined,
-              },
-              {
-                label: 'Rent',
-                value: formatRM(
-                  sumOf(paid.filter((r) => r.paymentType === 'rental')),
-                ),
-                note: 'Collected',
-              },
-              {
-                label: 'Utilities',
-                value: formatRM(
-                  sumOf(paid.filter((r) => r.paymentType !== 'rental')),
-                ),
-                note: 'Collected, electric and water',
               },
             ]}
           />

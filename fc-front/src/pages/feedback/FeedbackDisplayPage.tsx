@@ -284,6 +284,11 @@ export function FeedbackDisplayPage() {
                     <span className="font-medium tabular-nums">
                       {countOf(value)}
                     </span>
+                    <span className="text-muted-foreground w-10 text-right tabular-nums">
+                      {all.length
+                        ? `${Math.round((countOf(value) / all.length) * 100)}%`
+                        : '—'}
+                    </span>
                   </li>
                 ))}
               </ul>

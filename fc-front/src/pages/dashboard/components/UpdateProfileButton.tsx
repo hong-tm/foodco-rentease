@@ -130,7 +130,9 @@ export default function UpdateProfileButton({
         </Form>
       </ResponsiveFormDialog>
 
-      <Button onClick={() => setDialogOpen(true)}>Edit Name</Button>
+      <Button variant="outline" size="sm" onClick={() => setDialogOpen(true)}>
+        Edit name
+      </Button>
     </>
   )
 }
