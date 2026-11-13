@@ -76,7 +76,7 @@ export function AdminStallPayment() {
             label: 'Unpaid',
             value: formatRM(total(unpaid)),
             note: `${unpaid.length} bill${unpaid.length === 1 ? '' : 's'} waiting`,
-            tone: unpaid.length ? 'negative' : undefined,
+            tone: unpaid.length ? 'warning' : undefined,
           },
           {
             label: 'Paid, latest month',

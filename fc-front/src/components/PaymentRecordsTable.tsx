@@ -258,7 +258,7 @@ export function PaymentRecordsTable({
                 label: 'Outstanding',
                 value: formatRM(sumOf(pending)),
                 note: `${pending.length} unpaid, ${scopeLabel}`,
-                tone: pending.length ? 'negative' : undefined,
+                tone: pending.length ? 'warning' : undefined,
                 selected: selectedStatus === 'unpaid',
                 onSelect: pending.length
                   ? () => {

@@ -195,7 +195,7 @@ export function StatStrip({
     label: string
     value: React.ReactNode
     note?: React.ReactNode
-    tone?: 'negative'
+    tone?: 'warning'
     /** Makes the figure a shortcut to the rows behind it. */
     onSelect?: () => void
     selected?: boolean
@@ -231,7 +231,7 @@ export function StatStrip({
           <dd
             className={cn(
               'type-figure truncate',
-              stat.tone === 'negative' && 'text-negative-ink',
+              stat.tone === 'warning' && 'text-warning-ink',
             )}
           >
             {stat.value}
