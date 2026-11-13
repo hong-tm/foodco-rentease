@@ -147,18 +147,16 @@ export default function UsersTable() {
                     {user.phone || '—'}
                   </TableCell>
                   <TableCell className="max-md:hidden">
-                    <div className="flex items-center gap-1.5">
-                      {user.banned ? (
-                        <Badge variant="negative">Banned</Badge>
-                      ) : (
-                        <span className="type-body text-muted-foreground">
-                          Active
-                        </span>
-                      )}
-                      {user.emailVerified ? null : (
-                        <Badge variant="warning">Unverified</Badge>
-                      )}
-                    </div>
+                    {/* One state per row: banned, then unverified, then active. */}
+                    {user.banned ? (
+                      <Badge variant="negative">Banned</Badge>
+                    ) : !user.emailVerified ? (
+                      <Badge variant="warning">Email unverified</Badge>
+                    ) : (
+                      <span className="type-body text-muted-foreground">
+                        Active
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-md:hidden">
                     {formatDate(user.createdAt)}

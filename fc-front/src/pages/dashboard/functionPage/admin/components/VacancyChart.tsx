@@ -78,7 +78,6 @@ export function VacancyChart({ className }: { className?: string }) {
         stalls={stalls}
         size="compact"
         onOpen={setOpen}
-        matches={(stall) => boardState(stall) === 'followup'}
         className="min-h-60 flex-1"
         centre={
           <>

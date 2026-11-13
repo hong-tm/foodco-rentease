@@ -138,7 +138,7 @@ export function FeedbackDisplayPage() {
     <div className="flex flex-col gap-4 md:gap-5">
       <PageHeader title="Feedback">
         {data
-          ? `${all.length} responses across ${stalls.length} stalls, averaging ${average.toFixed(1)} out of 4. ${unhappy} ${unhappy === 1 ? 'is' : 'are'} unhappy.`
+          ? `${all.length} responses across ${stalls.length} stalls. Average rating ${average.toFixed(1)} of 4, with ${unhappy} unhappy or angry.`
           : 'What customers say about each stall.'}
       </PageHeader>
 
@@ -174,7 +174,12 @@ export function FeedbackDisplayPage() {
                       className="gap-1.5 px-2.5 max-md:h-11"
                     >
                       <Icon />
-                      <span className="tabular-nums">{countOf(value)}</span>
+                      <span className="max-xl:sr-only">
+                        {mood[value].label}
+                      </span>
+                      <span className="text-muted-foreground tabular-nums">
+                        {countOf(value)}
+                      </span>
                     </ToggleGroupItem>
                   )
                 })}

@@ -1,92 +1,96 @@
 import { useSession } from '@/api/adminApi'
-import { toast } from 'sonner'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+  Panel,
+  PanelError,
+  PanelHeader,
+  PanelRowsSkeleton,
+} from '@/components/ui/panel'
 
 import UpdateProfileButton from '../dashboard/components/UpdateProfileButton'
 
+const initialsOf = (name: string) =>
+  name
+    .split(' ')
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('')
+    .slice(0, 2) || '?'
+
 export default function UserProfilePage() {
   const { data: session, error, isLoading } = useSession()
-
-  if (error) {
-    toast.error('An error occurred: ' + error)
-  }
-
-  if (isLoading) return <div>Loading...</div>
-
-  if (!session?.user) return null
-
-  // Use session data directly
-  const userData = [
-    { label: 'Name', value: session.user.name || '' },
-    { label: 'Role', value: session.user.role || '' },
-    { label: 'Email', value: session.user.email || '' },
-    { label: 'User ID', value: session.user.id || '' },
-    {
-      label: 'Verified',
-      value: session.user.emailVerified ? 'Yes' : 'No',
-    },
-    { label: 'Phone', value: session.user.phone || 'Not available' },
-  ]
-
-  const getFallback = (name: string) => {
-    if (!name) return '??'
-    const initials = name
-      .split(' ')
-      .map((word) => word[0]?.toUpperCase() || '')
-      .join('')
-    return initials.slice(0, 2)
-  }
+  const user = session?.user
 
   return (
-    <div className="flex h-full items-center justify-center">
-      <Card className="space-y-6 border-none shadow-none md:w-3/4 lg:w-2/3 xl:w-1/2">
-        <CardHeader className="flex flex-col items-center">
-          <Avatar className="mb-3 h-16 w-16 rounded-full">
-            <AvatarImage
-              rel="preload"
-              src={session.user.image || ''}
-              alt={`${session.user.name}'s avatar`}
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader title="Account">
+        Your name, contact details and sign-in email.
+      </PageHeader>
+
+      <Panel className="max-w-3xl">
+        {isLoading ? <PanelRowsSkeleton rows={5} /> : null}
+        {error ? <PanelError what="your account" /> : null}
+        {user ? (
+          <>
+            <PanelHeader
+              title={
+                <span className="flex items-center gap-3">
+                  <Avatar className="size-10 rounded-full">
+                    <AvatarImage src={user.image ?? ''} alt="" />
+                    <AvatarFallback>
+                      {initialsOf(user.name ?? '')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="min-w-0">
+                    <span className="block truncate">{user.name}</span>
+                    <span className="type-meta text-muted-foreground block font-normal capitalize">
+                      {user.role}
+                    </span>
+                  </span>
+                </span>
+              }
+              action={<UpdateProfileButton onUpdate={() => {}} />}
             />
-            <AvatarFallback className="rounded-lg">
-              {getFallback(session.user.name || '')}
-            </AvatarFallback>
-          </Avatar>
-          <CardTitle className="mt-4 text-center text-2xl font-bold">
-            {`${session.user.name}'s Profile`}
-            <CardDescription></CardDescription>
-          </CardTitle>
-        </CardHeader>
+            <dl className="divide-y border-t">
+              <Row label="Email">
+                <span className="flex flex-wrap items-center gap-2">
+                  {user.email}
+                  <Badge variant={user.emailVerified ? 'positive' : 'warning'}>
+                    {user.emailVerified ? 'Verified' : 'Not verified'}
+                  </Badge>
+                </span>
+              </Row>
+              <Row label="Phone">
+                {user.phone && user.phone !== 'null' ? (
+                  user.phone
+                ) : (
+                  <span className="text-muted-foreground">Not added</span>
+                )}
+              </Row>
+              <Row label="User ID">
+                <span className="type-id break-all">{user.id}</span>
+              </Row>
+            </dl>
+          </>
+        ) : null}
+      </Panel>
+    </div>
+  )
+}
 
-        <CardContent className="gap-6">
-          <ul className="space-y-3">
-            {userData.map((data, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between border-b pb-2"
-              >
-                <span className="font-medium">{data.label}:</span>
-                <span className="text-neutral-500">{data.value}</span>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-
-        <CardFooter className="flex w-full flex-col items-center justify-center gap-2 text-center">
-          <div className="flex gap-8">
-            <UpdateProfileButton onUpdate={() => {}} />
-          </div>
-          <p className="mt-3 text-sm text-neutral-400">End of Profile</p>
-        </CardFooter>
-      </Card>
+function Row({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="type-body grid grid-cols-1 gap-1 py-3 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-4">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="min-w-0">{children}</dd>
     </div>
   )
 }
