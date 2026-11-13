@@ -1,8 +1,10 @@
 import { useSession } from '@/api/adminApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
+import { Link } from 'react-router-dom'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Panel,
   PanelError,
@@ -68,6 +70,16 @@ export default function UserProfilePage() {
                 ) : (
                   <span className="text-muted-foreground">Not added</span>
                 )}
+              </Row>
+              <Row label="Password">
+                <span className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-muted-foreground">
+                    Used with your email to sign in.
+                  </span>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/dashboard/change-password">Change password</Link>
+                  </Button>
+                </span>
               </Row>
               <Row label="User ID">
                 <span className="type-id break-all">{user.id}</span>

@@ -87,7 +87,8 @@ export default function LatestStallExpiryScrollArea({
                   </span>
                 </p>
               </div>
-              {stall.stallOwnerId ? (
+              {/* Only leases that need follow-up get a reminder; the rest are listed to plan ahead. */}
+              {stall.stallOwnerId && attention.includes(stall) ? (
                 <TenantActionButton
                   userName={stall.stallOwnerId.name}
                   userEmail={stall.stallOwnerId.email}

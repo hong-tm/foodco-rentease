@@ -21,7 +21,9 @@ import {
   CountTabs,
   PanelToolbar,
   SearchField,
+  TablePager,
   TablePanel,
+  usePager,
 } from '@/components/ui/panel-parts'
 import {
   Select,
@@ -94,6 +96,7 @@ export function TenantInformationPage() {
   const rows = inViewRows
     .filter((row) => inView(row.stall, view))
     .sort(sorters[sort])
+  const pager = usePager(rows, 15, `${view}-${search}-${sort}`)
 
   const past = countOf('past')
   const ending = countOf('ending')
@@ -180,7 +183,12 @@ export function TenantInformationPage() {
             </PanelEmpty>
           </div>
         ) : null}
-        {rows.length > 0 ? <RentalsTable rows={rows} /> : null}
+        {rows.length > 0 ? (
+          <>
+            <RentalsTable rows={pager.rows} />
+            <TablePager pager={pager} noun="leases" />
+          </>
+        ) : null}
       </TablePanel>
     </div>
   )

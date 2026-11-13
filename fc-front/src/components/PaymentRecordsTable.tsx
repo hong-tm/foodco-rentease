@@ -454,7 +454,7 @@ export function PaymentRecordsTable({
                     </TableCell>
                     <TableCell className="max-md:hidden">
                       {record.paymentStatus ? (
-                        <span className="text-muted-foreground">Paid</span>
+                        <Badge variant="neutral">Paid</Badge>
                       ) : (
                         <Badge variant="warning">Unpaid</Badge>
                       )}
