@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearch } from '@tanstack/react-router'
 
 import {
   ENDING_SOON_DAYS,
@@ -57,13 +57,15 @@ const sorters: Record<Sort, (a: RentalRow, b: RentalRow) => number> = {
 
 export function TenantInformationPage() {
   const { data, isLoading, error, refetch } = useQuery(fetchRentalsQueryOptions)
-  const [params, setParams] = useSearchParams()
+  const { view: requested } = useSearch({
+    from: '/dashboard/tenant-information',
+  })
+  const navigate = useNavigate({ from: '/dashboard/tenant-information' })
   const [search, setSearch] = useState('')
   const [tenant, setTenant] = useState<string | null>(null)
   const [sort, setSort] = useState<Sort>('end')
 
-  const requested = params.get('view') as View | null
-  const view: View = requested && views.includes(requested) ? requested : 'all'
+  const view: View = views.find((v) => v === requested) ?? 'all'
 
   const tenants = useMemo(
     () => (data?.user ?? []).filter((user) => user.stalls?.length),
@@ -122,7 +124,9 @@ export function TenantInformationPage() {
           <button
             type="button"
             aria-pressed={view === 'attention'}
-            onClick={() => setParams({ view: 'attention' }, { replace: true })}
+            onClick={() =>
+              navigate({ search: { view: 'attention' }, replace: true })
+            }
             className="bg-card hover:bg-accent focus-visible:ring-ring flex cursor-pointer flex-col justify-center rounded-xl border p-4 text-left outline-none focus-visible:ring-2"
           >
             <span className="type-body text-muted-foreground">
@@ -178,7 +182,10 @@ export function TenantInformationPage() {
             label="Lease state"
             value={view}
             onChange={(next) =>
-              setParams(next === 'all' ? {} : { view: next }, { replace: true })
+              navigate({
+                search: next === 'all' ? {} : { view: next },
+                replace: true,
+              })
             }
             tabs={[
               { value: 'all', label: 'All leases', count: countInView('all') },

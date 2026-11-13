@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import {
   BadgeCheckIcon,
   ChevronsUpDownIcon,
@@ -7,7 +8,6 @@ import {
   LogOutIcon,
   RectangleEllipsisIcon,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { authClient } from '@/lib/auth-client'
 
@@ -53,7 +53,7 @@ export function NavUser({
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            navigate('/', { replace: true })
+            navigate({ to: '/', replace: true })
             queryClient.clear()
           },
         },
@@ -133,7 +133,7 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onClick={() => navigate('/dashboard/change-password')}
+                onClick={() => navigate({ to: '/dashboard/change-password' })}
               >
                 <RectangleEllipsisIcon />
                 Change Password
@@ -142,7 +142,9 @@ export function NavUser({
 
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate('/dashboard/account')}>
+              <DropdownMenuItem
+                onClick={() => navigate({ to: '/dashboard/account' })}
+              >
                 <BadgeCheckIcon />
                 Account
               </DropdownMenuItem>

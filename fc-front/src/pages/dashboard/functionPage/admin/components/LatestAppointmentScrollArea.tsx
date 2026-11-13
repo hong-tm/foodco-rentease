@@ -4,8 +4,8 @@ import {
   notificationsQueryKey,
 } from '@/api/notificationApi'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { startOfDay } from 'date-fns'
-import { Link } from 'react-router-dom'
 
 import { formatDate } from '@/lib/format'
 

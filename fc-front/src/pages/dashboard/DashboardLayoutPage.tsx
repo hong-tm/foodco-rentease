@@ -1,7 +1,6 @@
 import { useSession } from '@/api/adminApi'
+import { Navigate, Outlet, useLocation } from '@tanstack/react-router'
 import Cookies from 'js-cookie'
-import { ErrorBoundary } from 'react-error-boundary'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { Separator } from '@/components/ui/separator'
@@ -98,15 +97,7 @@ export function DashboardLayoutPage() {
       <SidebarInset className="min-w-0">
         <DashboardTopBar />
         <div className="mx-auto flex w-full max-w-7xl min-w-0 flex-1 flex-col gap-4 px-4 pt-2 pb-8 md:px-8">
-          <ErrorBoundary
-            fallback={
-              <div className="p-2">
-                Something went wrong, please refresh the page ...
-              </div>
-            }
-          >
-            <Outlet />
-          </ErrorBoundary>
+          <Outlet />
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -1,7 +1,7 @@
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 import { ENDING_SOON_DAYS, countByState } from '@/lib/stall-lease'
 
@@ -30,7 +30,10 @@ export function AdminDashboard() {
               <Link to="/dashboard/admin-report">Financial report</Link>
             </Button>
             <Button asChild className="max-md:h-11">
-              <Link to="/dashboard/tenant-information?view=attention">
+              <Link
+                to="/dashboard/tenant-information"
+                search={{ view: 'attention' }}
+              >
                 Review leases
               </Link>
             </Button>

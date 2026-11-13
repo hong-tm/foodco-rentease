@@ -7,7 +7,7 @@ import {
 } from '@/pages/dashboard/components/StallFloorPlan'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 import { boardState, boardStateLabel, type BoardState } from '@/lib/stall-lease'
 
@@ -15,11 +15,19 @@ import { Badge } from '@/components/ui/badge'
 import { Panel, PanelError, PanelHeader } from '@/components/ui/panel'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const legend: { state: BoardState; to: string }[] = [
-  { state: 'followup', to: '/dashboard/tenant-information?view=attention' },
-  { state: 'free', to: '/dashboard/stall-availability' },
-  { state: 'let', to: '/dashboard/stall-availability?state=let' },
-]
+const legend = [
+  {
+    state: 'followup',
+    to: '/dashboard/tenant-information',
+    search: { view: 'attention' },
+  },
+  { state: 'free', to: '/dashboard/stall-availability', search: {} },
+  {
+    state: 'let',
+    to: '/dashboard/stall-availability',
+    search: { state: 'let' },
+  },
+] as const
 
 function occupancyStatus(rate: number) {
   if (rate >= 80)
@@ -97,6 +105,7 @@ export function VacancyChart({ className }: { className?: string }) {
           <li key={item.state}>
             <Link
               to={item.to}
+              search={item.search}
               className="type-body hover:bg-accent focus-visible:ring-ring -mx-1 flex min-h-11 items-center gap-2 rounded-md px-1 outline-none focus-visible:ring-2 md:min-h-8"
             >
               <StateSwatch state={item.state} />

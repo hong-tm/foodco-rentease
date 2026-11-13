@@ -1,6 +1,6 @@
 import * as React from 'react'
+import { Link, useLocation } from '@tanstack/react-router'
 import { type LucideIcon } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
 
 import {
   SidebarGroup,
@@ -33,10 +33,10 @@ export function NavSecondary({
                 size="sm"
                 isActive={pathname === item.url}
               >
-                <NavLink to={item.url}>
+                <Link to={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
-                </NavLink>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

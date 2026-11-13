@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSession } from '@/api/adminApi'
+import { useNavigate } from '@tanstack/react-router'
 import { MoonIcon, SearchIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/command'
 import { useTheme } from '@/components/theme-provider'
 
-import { navByRole, type Role } from './nav-data'
+import { navByRole, type AppPath, type Role } from './nav-data'
 
 /** Quick access: every destination for the current role, from the keyboard. */
 export function CommandMenu() {
@@ -36,9 +36,9 @@ export function CommandMenu() {
 
   const nav =
     navByRole[(session?.user?.role as Role) ?? 'user'] ?? navByRole.user
-  const go = (url: string) => {
+  const go = (url: AppPath) => {
     setOpen(false)
-    navigate(url)
+    navigate({ to: url })
   }
 
   return (

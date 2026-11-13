@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { signinFormSchema } from '@server/lib/sharedType'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { LoaderCircleIcon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { FaGithub } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
-import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
@@ -72,7 +72,7 @@ export default function SignInPage() {
         onSuccess: () => {
           form.reset()
           toast.success(`Welcome, ${email}!`)
-          navigate('/dashboard', { replace: true })
+          navigate({ to: '/dashboard', replace: true })
         },
         onError: async (ctx) => {
           toast.error(ctx.error.message ?? 'An error occurred')
@@ -178,7 +178,7 @@ export default function SignInPage() {
                             Password
                           </FormLabel>
                           <Link
-                            to="forget-password"
+                            to="/forget-password"
                             className="ml-auto inline-block text-sm underline"
                           >
                             Forgot your password?
@@ -283,7 +283,7 @@ export default function SignInPage() {
             </div>
             <div className="mt-4 text-center text-sm select-none">
               Don&apos;t have an account?{' '}
-              <Link to="signup" className="underline">
+              <Link to="/signup" className="underline">
                 Sign up
               </Link>
             </div>

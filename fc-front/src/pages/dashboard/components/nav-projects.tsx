@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   FolderIcon,
   MoreHorizontalIcon,
@@ -5,7 +6,6 @@ import {
   Trash2Icon,
   type LucideIcon,
 } from 'lucide-react'
-import { NavLink } from 'react-router-dom'
 
 import {
   DropdownMenu,
@@ -42,10 +42,10 @@ export function NavProjects({
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <NavLink to={item.url}>
+              <Link to={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
-              </NavLink>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

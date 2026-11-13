@@ -13,7 +13,7 @@ import {
 } from '@stripe/react-stripe-js'
 import type { StripeElementsOptions } from '@stripe/stripe-js'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -91,11 +91,10 @@ const CheckoutForm = ({
       console.log('Payment mutation success:', data)
       if (!originalPaymentId) {
         // For rental payments, navigate to success page
-        navigate(
-          `/dashboard/payment-success?payment_id=${
-            data?.paymentId || ''
-          }&stall_id=${stallId}`,
-        )
+        navigate({
+          to: '/dashboard/payment-success',
+          search: { payment_id: data?.paymentId || '', stall_id: stallId },
+        })
       } else {
         // For utility payments, just show toast and close modal
         toast.success('Payment successful and record saved!')

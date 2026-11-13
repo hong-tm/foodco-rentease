@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { signupformSchema } from '@server/lib/sharedType'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
@@ -65,7 +65,7 @@ export default function SignUpPage() {
         onSuccess: () => {
           form.reset()
           toast.success(`Check Your Email: ${email}!`)
-          navigate('/')
+          navigate({ to: '/' })
         },
         onError: (ctx) => {
           toast.error(ctx.error.message ?? 'An error occurred')

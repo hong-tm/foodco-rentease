@@ -1,5 +1,5 @@
+import { Link, useLocation } from '@tanstack/react-router'
 import { type LucideIcon } from 'lucide-react'
-import { NavLink, useLocation } from 'react-router-dom'
 
 import {
   SidebarGroup,
@@ -40,13 +40,13 @@ export function NavMain({
                   tooltip={item.title}
                   isActive={pathname === item.url}
                 >
-                  <NavLink
+                  <Link
                     to={item.url}
                     onClick={() => isMobile && setOpenMobile(false)}
                   >
                     <item.icon />
                     <span>{item.title}</span>
-                  </NavLink>
+                  </Link>
                 </SidebarMenuButton>
                 {item.badge ? (
                   <SidebarMenuBadge className="bg-brand-soft text-brand-ink rounded-full">

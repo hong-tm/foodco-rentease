@@ -6,6 +6,7 @@ import { NavMain } from '@/pages/dashboard/components/nav-main'
 import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
 import { NavUser } from '@/pages/dashboard/components/nav-user'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   CalendarClockIcon,
   ChartAreaIcon,
@@ -18,7 +19,6 @@ import {
   StoreIcon,
   UsersIcon,
 } from 'lucide-react'
-import { NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { authClient } from '@/lib/auth-client'
@@ -120,7 +120,7 @@ export default function UserDashboardSidebar({
       await refetch()
 
       toast.success('Impersonation stopped successfully.')
-      navigate('/dashboard/admin', { replace: true })
+      navigate({ to: '/dashboard/admin', replace: true })
     } catch (error) {
       toast.error('Failed to stop impersonating user: ' + error)
     }
@@ -335,7 +335,7 @@ export default function UserDashboardSidebar({
               asChild
               className="hover:bg-transparent active:bg-transparent"
             >
-              <NavLink to="/dashboard">
+              <Link to="/dashboard">
                 <span className="size-8 shrink-0">
                   <RentEaseMark className="size-full" />
                 </span>
@@ -347,7 +347,7 @@ export default function UserDashboardSidebar({
                     {userRole} workspace
                   </span>
                 </div>
-              </NavLink>
+              </Link>
             </SidebarMenuButton>
             {impersonateButton ? (
               <SidebarMenuButton asChild>{impersonateButton}</SidebarMenuButton>

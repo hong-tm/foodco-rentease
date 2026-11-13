@@ -1,7 +1,7 @@
 import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { format, isSameMonth, parse, startOfMonth, subMonths } from 'date-fns'
-import { Link } from 'react-router-dom'
 
 import { formatRM, formatSignedPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'

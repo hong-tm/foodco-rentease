@@ -1,6 +1,6 @@
 import { fetchStallsQueryOptions } from '@/api/stallApi'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 import {
   byEndDate,
@@ -43,7 +43,10 @@ export default function LatestStallExpiryScrollArea({
         meta={`${attention.length} past end date or ending within 30 days`}
         action={
           <Button variant="quiet" asChild>
-            <Link to="/dashboard/tenant-information?view=attention">
+            <Link
+              to="/dashboard/tenant-information"
+              search={{ view: 'attention' }}
+            >
               View all
             </Link>
           </Button>

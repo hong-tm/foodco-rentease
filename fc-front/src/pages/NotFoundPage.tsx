@@ -1,11 +1,12 @@
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { ChevronLeftIcon, Undo2Icon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { AuroraBackground } from '@/components/ui/aurora-background'
 import { Button } from '@/components/ui/button'
 
 export default function NotFoundPage() {
   const navigate = useNavigate()
+  const router = useRouter()
 
   return (
     <div>
@@ -19,13 +20,13 @@ export default function NotFoundPage() {
           </p>
 
           <div className="mt-4 flex flex-col gap-4">
-            <Button variant="default" onClick={() => navigate(-1)}>
+            <Button variant="default" onClick={() => router.history.back()}>
               <Undo2Icon />
               Previous Page
             </Button>
             <Button
               variant="secondary"
-              onClick={() => navigate('/', { replace: true })}
+              onClick={() => navigate({ to: '/', replace: true })}
             >
               <ChevronLeftIcon />
               Login Page
