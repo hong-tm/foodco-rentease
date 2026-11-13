@@ -34,5 +34,6 @@
     "types": "off",
     "enumMembers": "off",
     "duplicates": "off"
-  }
+  },
+  "entry": ["src/**/*.test.ts"]
 }
