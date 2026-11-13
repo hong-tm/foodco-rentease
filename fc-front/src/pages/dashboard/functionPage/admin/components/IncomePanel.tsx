@@ -91,7 +91,7 @@ export default function IncomePanel({ className }: { className?: string }) {
       figure: formatRM(current),
       note: previous
         ? `${formatSignedPercent(((current - previous) / previous) * 100)} on ${format(lastMonth, 'MMM')} 1–${day}`
-        : `Nothing paid by ${format(lastMonth, 'MMM')} ${day}`,
+        : `None on ${format(lastMonth, 'MMM')} 1–${day} to compare`,
     }
   }
   const rentPace = pace(['rental'])

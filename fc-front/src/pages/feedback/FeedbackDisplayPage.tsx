@@ -171,7 +171,7 @@ export function FeedbackDisplayPage() {
                       value={String(value)}
                       aria-label={`${mood[value].label}, ${countOf(value)}`}
                       title={mood[value].label}
-                      className="gap-1.5 px-2.5 max-md:h-11"
+                      className="gap-1.5 px-2.5 max-md:h-11 md:flex-none md:pr-3"
                     >
                       <Icon />
                       <span className="max-xl:sr-only">

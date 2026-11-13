@@ -237,7 +237,7 @@ export function StatStrip({
             {stat.value}
           </dd>
           {stat.note ? (
-            <dd className="type-meta text-muted-foreground truncate">
+            <dd className="type-meta text-muted-foreground line-clamp-2">
               {stat.note}
             </dd>
           ) : null}

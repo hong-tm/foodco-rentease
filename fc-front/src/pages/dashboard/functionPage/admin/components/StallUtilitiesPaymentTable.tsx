@@ -149,7 +149,7 @@ export default function StallUtilitiesPaymentTable() {
                 <TableHead className="max-md:hidden">Type</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="max-md:hidden">Status</TableHead>
-                <TableHead className="max-md:hidden">Payment ID</TableHead>
+                <TableHead className="max-md:hidden">Ref</TableHead>
                 <TableHead className="max-md:hidden">
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -171,7 +171,7 @@ export default function StallUtilitiesPaymentTable() {
                       userEmail={user.email}
                       userStallId={payment.stallId}
                       userStallName=""
-                      className="max-md:h-11"
+                      className="max-md:h-9"
                       email={{
                         subject: `Unpaid ${kind} bill for stall ${payment.stallId}`,
                         text: `Dear ${name},\n\nYour ${kind} bill for stall ${payment.stallId} is still unpaid.\n\nAmount: ${amount}\nBill date: ${date}\n\nPlease pay it in FoodCo RentEase.\n\nThank you!`,
@@ -203,9 +203,12 @@ export default function StallUtilitiesPaymentTable() {
                           <PaymentType type={payment.paymentType} />
                         )}
                       </p>
-                      {remind ? (
-                        <div className="mt-2 md:hidden">{remind}</div>
-                      ) : null}
+                      {payment.paymentStatus ? null : (
+                        <div className="mt-2 flex items-center gap-2 md:hidden">
+                          <Badge variant="warning">Unpaid</Badge>
+                          {remind}
+                        </div>
+                      )}
                     </TableCell>
                     <TableCell className="tabular-nums max-md:hidden">
                       {payment.stallId}
@@ -215,24 +218,19 @@ export default function StallUtilitiesPaymentTable() {
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">
                       {formatRM(Number(payment.paymentAmount))}
-                      {payment.paymentStatus ? null : (
-                        <div className="mt-1 md:hidden">
-                          <Badge variant="warning">Unpaid</Badge>
-                        </div>
-                      )}
                     </TableCell>
                     <TableCell className="max-md:hidden">
                       {payment.paymentStatus ? (
-                        <span className="text-muted-foreground">Paid</span>
+                        <Badge variant="neutral">Paid</Badge>
                       ) : (
                         <Badge variant="warning">Unpaid</Badge>
                       )}
                     </TableCell>
                     <TableCell
-                      className="type-id text-muted-foreground max-w-40 truncate max-md:hidden"
+                      className="type-id text-muted-foreground max-md:hidden"
                       title={payment.paymentId}
                     >
-                      {payment.paymentId}
+                      {payment.paymentId.slice(0, 8).toUpperCase()}
                     </TableCell>
                     <TableCell className="text-right max-md:hidden">
                       {remind}

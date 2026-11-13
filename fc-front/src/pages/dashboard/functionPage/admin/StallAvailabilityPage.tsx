@@ -168,7 +168,7 @@ export function StallAvailabilityPage() {
       ) : null}
 
       {!error ? (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <Panel>
             <CountTabs
               label="Filter stalls"
@@ -208,7 +208,7 @@ export function StallAvailabilityPage() {
               />
             )}
           </Panel>
-          <div className="flex min-w-0 flex-col gap-4 xl:h-0 xl:min-h-full">
+          <div className="flex min-w-0 flex-col gap-4">
             <Panel className="min-h-0 flex-1">
               <PanelHeader
                 title={filterLabels.find((f) => f.value === filter)?.label}

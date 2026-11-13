@@ -193,7 +193,8 @@ code {
   font-variant-numeric: tabular-nums;
 }
 @utility type-figure {
-  font-size: 1.5rem;
+  /* Two figures share a 390px row; shrink before they clip. */
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
   line-height: 2rem;
   font-weight: 650;
   letter-spacing: -0.015em;

@@ -102,7 +102,7 @@ export function TenantInformationPage() {
     <div className="flex flex-col gap-4 md:gap-5">
       <PageHeader title="Tenants">
         {data
-          ? `${tenants.length} tenants hold ${allRows.length} stalls. ${past} lease${past === 1 ? ' is' : 's are'} past the end date and ${ending} more end within ${ENDING_SOON_DAYS} days.`
+          ? `${tenants.length} tenants hold ${allRows.length} stalls. ${past} lease${past === 1 ? ' is' : 's are'} past the end date and ${ending} more ${ending === 1 ? 'ends' : 'end'} within ${ENDING_SOON_DAYS} days.`
           : 'Manage rentals and send email to tenants.'}
       </PageHeader>
 

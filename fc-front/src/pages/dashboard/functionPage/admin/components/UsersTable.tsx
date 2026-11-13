@@ -153,9 +153,7 @@ export default function UsersTable() {
                     ) : !user.emailVerified ? (
                       <Badge variant="warning">Email unverified</Badge>
                     ) : (
-                      <span className="type-body text-muted-foreground">
-                        Active
-                      </span>
+                      <Badge variant="neutral">Active</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-md:hidden">
