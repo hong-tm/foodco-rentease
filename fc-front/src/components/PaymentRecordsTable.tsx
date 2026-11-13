@@ -299,11 +299,11 @@ export function PaymentRecordsTable({
                 series={[
                   { key: 'paid', label: 'Collected', color: 'var(--chart-1)' },
                 ]}
-                // Full hue on one column: the chosen month, else the current one.
+                // Full hue on one column: the chosen month, else the calendar month.
                 colorOf={(point) =>
                   (
                     selectedMonth === 'all'
-                      ? point === chart[chart.length - 1]
+                      ? point.key === format(new Date(), 'yyyy-MM')
                       : point.key === selectedMonth
                   )
                     ? 'var(--chart-1)'

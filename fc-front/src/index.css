@@ -168,6 +168,11 @@ code {
 }
 
 /* Type roles. Sizes and weights change here, never at a call site. */
+/* A row that scrolls sideways fades at its right edge, so it reads as more. */
+@utility scroll-fade-x {
+  mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+}
+
 @utility type-title {
   font-size: 1.5rem;
   line-height: 2rem;

@@ -66,7 +66,7 @@ export function CountTabs<T extends string>({
       className={cn('min-w-0 max-md:w-full', className)}
     >
       {/* On a phone the tabs keep one row and scroll inside it. */}
-      <div className="max-md:overflow-x-auto max-md:[scrollbar-width:none]">
+      <div className="max-md:scroll-fade-x max-md:snap-x max-md:overflow-x-auto max-md:pr-8 max-md:[scrollbar-width:none]">
         <TabsList
           aria-label={label}
           className="max-md:h-auto max-md:min-h-11 max-md:w-max max-md:justify-start"
@@ -75,7 +75,7 @@ export function CountTabs<T extends string>({
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="px-2.5 max-md:h-11 max-md:flex-none"
+              className="px-2.5 max-md:h-11 max-md:flex-none max-md:snap-start"
             >
               {tab.label}
               {tab.count !== undefined ? (
