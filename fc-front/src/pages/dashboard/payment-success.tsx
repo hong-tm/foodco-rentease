@@ -1,5 +1,5 @@
+import { useNavigate } from '@tanstack/react-router'
 import { CheckCircleIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -22,7 +22,9 @@ export function PaymentSuccessPage() {
             payment!
           </p>
           <div className="flex justify-center">
-            <Button onClick={() => navigate('/dashboard/user-appointment')}>
+            <Button
+              onClick={() => navigate({ to: '/dashboard/user-appointment' })}
+            >
               Return to Appointments
             </Button>
           </div>

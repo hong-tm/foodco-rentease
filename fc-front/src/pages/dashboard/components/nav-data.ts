@@ -1,3 +1,4 @@
+import type { FileRouteTypes } from '@/routeTree.gen'
 import {
   BadgeDollarSignIcon,
   BellElectricIcon,
@@ -21,7 +22,10 @@ import {
 
 export type Role = 'admin' | 'user' | 'rental'
 
-export type NavLinkItem = { title: string; url: string; icon: LucideIcon }
+/** A path the router knows; a typo in the nav fails the typecheck. */
+export type AppPath = FileRouteTypes['to']
+
+export type NavLinkItem = { title: string; url: AppPath; icon: LucideIcon }
 export type NavSection = { title: string; items: NavLinkItem[] }
 
 export type RoleNav = {

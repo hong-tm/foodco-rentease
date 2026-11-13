@@ -1,5 +1,5 @@
+import { useNavigate } from '@tanstack/react-router'
 import { ChevronLeftIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 import { AuroraBackground } from '@/components/ui/aurora-background'
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ export function EmailVerifiedPage() {
           <div className="mt-4 flex flex-col gap-4">
             <Button
               variant="default"
-              onClick={() => navigate('/', { replace: true })}
+              onClick={() => navigate({ to: '/', replace: true })}
             >
               <ChevronLeftIcon />
               Login Page

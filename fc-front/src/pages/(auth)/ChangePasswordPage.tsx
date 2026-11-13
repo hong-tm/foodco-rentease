@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { changePasswordFormSchema } from '@server/lib/sharedType'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
@@ -55,7 +55,7 @@ export default function ChangePasswordPage() {
             id: 'change-password',
           })
           setPending(false)
-          navigate('/')
+          navigate({ to: '/' })
         },
         onError: (ctx) => {
           toast.error(ctx.error.message, { id: 'change-password' })

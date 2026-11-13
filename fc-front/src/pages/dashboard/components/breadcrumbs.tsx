@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, useLocation } from '@tanstack/react-router'
 
 import {
   Breadcrumb,
@@ -50,7 +50,7 @@ export default function Breadcrumbs() {
             <BreadcrumbPage>{crumbName}</BreadcrumbPage>
           ) : (
             <BreadcrumbLink asChild>
-              <NavLink to={currentLink}>{crumbName}</NavLink>
+              <Link to={currentLink}>{crumbName}</Link>
             </BreadcrumbLink>
           )}
         </BreadcrumbItem>

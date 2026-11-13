@@ -1,6 +1,8 @@
 import { fetchUsersQueryOptions } from '@/api/adminApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
+import type { AppPath } from '@/pages/dashboard/components/nav-data'
 import { useQuery } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import {
   addMonths,
   format,
@@ -8,7 +10,6 @@ import {
   startOfMonth,
   subMonths,
 } from 'date-fns'
-import { Link } from 'react-router-dom'
 
 import { cn } from '@/lib/utils'
 
@@ -31,7 +32,7 @@ function Trend({
   total: number
   note: string
   link: string
-  to: string
+  to: AppPath
   series: { label: string; value: number }[]
   color: string
 }) {

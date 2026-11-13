@@ -6,7 +6,7 @@ import { StallDialog } from '@/pages/dashboard/components/StallDialog'
 import { StallFloorPlan } from '@/pages/dashboard/components/StallFloorPlan'
 import type { StallUserAttributes } from '@server/db/userModel'
 import { useQuery } from '@tanstack/react-query'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearch } from '@tanstack/react-router'
 
 import { formatDate, formatRM, formatSize } from '@/lib/format'
 import {
@@ -95,13 +95,20 @@ function StallPeek({ stall }: { stall: Stall }) {
 export function StallAvailabilityPage() {
   const { data, isLoading, error, refetch } = useQuery(fetchStallsQueryOptions)
   const { data: session } = useSession()
-  const [params, setParams] = useSearchParams()
-  const requested = params.get('state') as Filter | null
+  const { state: requested } = useSearch({
+    from: '/dashboard/stall-availability',
+  })
+  const navigate = useNavigate({ from: '/dashboard/stall-availability' })
   const filter: Filter = filterLabels.some((f) => f.value === requested)
     ? (requested as Filter)
     : 'free'
   const setFilter = (next: Filter) =>
-    setParams(next === 'free' ? {} : { state: next }, { replace: true })
+    // A filter change keeps the scroll position, as setSearchParams did.
+    navigate({
+      search: next === 'free' ? {} : { state: next },
+      replace: true,
+      resetScroll: false,
+    })
   const [open, setOpen] = useState<Stall | null>(null)
 
   const stalls = data?.stall ?? []

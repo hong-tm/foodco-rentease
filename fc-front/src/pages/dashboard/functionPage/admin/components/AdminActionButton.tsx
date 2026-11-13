@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSession, usersQueryKey } from '@/api/adminApi'
 import { ResponsiveAlertDialog } from '@/pages/dashboard/components/ResponsiveAlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import {
   EllipsisVerticalIcon,
   UserPenIcon,
@@ -9,7 +10,6 @@ import {
   UserRoundCogIcon,
   UserXIcon,
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 import { authClient } from '@/lib/auth-client'
@@ -72,7 +72,7 @@ export function AdminActionButton({
       userId,
       fetchOptions: {
         onSuccess: () => {
-          navigate('/dashboard', { replace: true })
+          navigate({ to: '/dashboard', replace: true })
           toast.success('Impersonating user successfully')
           queryClient.invalidateQueries({
             queryKey: ['user-session'],

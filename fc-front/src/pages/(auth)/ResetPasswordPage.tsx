@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { resetPasswordFormSchema } from '@server/lib/sharedType'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
           form.reset()
           toast.success('Your password has been reset. You can now sign in.')
           setPending(false)
-          navigate('/')
+          navigate({ to: '/' })
         },
         onError: (ctx) => {
           toast.error(ctx.error.message)
