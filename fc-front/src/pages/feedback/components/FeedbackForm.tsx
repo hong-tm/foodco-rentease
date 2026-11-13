@@ -101,7 +101,7 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
                                 ? e.happiness === 4
                                   ? 'bg-positive-soft stroke-positive-ink hover:scale-125'
                                   : e.happiness === 3
-                                    ? 'bg-brand-soft stroke-brand-ink hover:scale-125'
+                                    ? 'bg-muted stroke-foreground hover:scale-125'
                                     : e.happiness === 2
                                       ? 'bg-warning-soft stroke-warning-ink hover:scale-125'
                                       : 'bg-negative-soft stroke-negative-ink hover:scale-125'
@@ -112,7 +112,7 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
                                 : e.happiness === 4
                                   ? 'hover:bg-positive-soft hover:stroke-positive-ink hover:scale-125'
                                   : e.happiness === 3
-                                    ? 'hover:bg-brand-soft hover:stroke-brand-ink hover:scale-125'
+                                    ? 'hover:bg-muted hover:stroke-foreground hover:scale-125'
                                     : e.happiness === 2
                                       ? 'hover:bg-warning-soft hover:stroke-warning-ink hover:scale-125'
                                       : 'hover:bg-negative-soft hover:stroke-negative-ink hover:scale-125',

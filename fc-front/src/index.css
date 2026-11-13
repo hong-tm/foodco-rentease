@@ -38,7 +38,7 @@ code {
   --brand: oklch(0.67 0.17 50);
   /* Undo-restore flash: one quiet wash derived from the accent. */
   --undo-restore: color-mix(in oklab, var(--primary) 18%, transparent);
-  --background: color-mix(in oklab, var(--brand) 1%, oklch(0.985 0.002 75));
+  --background: oklch(0.985 0.002 75);
   --foreground: oklch(0.21 0.008 60);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.21 0.008 60);
@@ -72,7 +72,7 @@ code {
   --chart-1: var(--brand); /* rent, let stalls */
   --chart-1-soft: color-mix(
     in oklab,
-    var(--brand) 38%,
+    var(--brand) 58%,
     white
   ); /* rent, earlier months */
   --chart-2: oklch(0.62 0.09 215); /* water */
@@ -94,7 +94,7 @@ code {
   --person-6-ink: oklch(0.42 0.07 340);
 
   --radius: 0.625rem;
-  --sidebar: color-mix(in oklab, var(--brand) 1%, oklch(0.975 0.002 75));
+  --sidebar: oklch(0.975 0.002 75);
   --sidebar-foreground: oklch(0.36 0.008 60);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
@@ -138,7 +138,7 @@ code {
   --negative-ink: oklch(0.84 0.09 25);
 
   --chart-1: var(--brand);
-  --chart-1-soft: color-mix(in oklab, var(--brand) 45%, var(--card));
+  --chart-1-soft: color-mix(in oklab, var(--brand) 58%, var(--card));
   --chart-2: oklch(0.72 0.09 215);
   --chart-3: oklch(0.82 0.11 80);
   --chart-4: oklch(0.73 0.09 165);
