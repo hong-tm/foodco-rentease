@@ -89,7 +89,7 @@ export default function NewTenantChart() {
           <CardTitle>User Registration</CardTitle>
           <CardDescription>Loading data...</CardDescription>
         </CardHeader>
-        <CardContent className="flex h-[200px] items-center justify-center">
+        <CardContent className="flex h-chart items-center justify-center">
           <div className="animate-pulse">Loading chart data...</div>
         </CardContent>
       </Card>
@@ -119,7 +119,7 @@ export default function NewTenantChart() {
       <CardContent className="flex flex-1 flex-col">
         <ChartContainer
           config={chartConfig}
-          className="h-full min-h-[220px] w-full"
+          className="h-full min-h-chart w-full"
         >
           <BarChart
             accessibilityLayer
@@ -149,6 +149,8 @@ export default function NewTenantChart() {
               fill="var(--color-users)"
               radius={4}
               stackId="stack"
+              animationDuration={400}
+              animationEasing="ease-out"
             >
               <LabelList
                 dataKey="month"

@@ -26,6 +26,14 @@ const CELL: Record<StallState, string> = {
   ended: 'bg-destructive-soft text-destructive-ink',
 }
 
+// Legend dots use saturated semantic indicators: the pale tile fills are
+// invisible at dot scale (DESIGN.md: graphics >=3:1).
+const LEGEND: Record<StallState, string> = {
+  rented: 'bg-muted-foreground',
+  vacant: 'bg-brand',
+  ended: 'bg-destructive',
+}
+
 function Cell({ stall }: { stall: StallUserAttributes }) {
   const state = stallState(stall)
   return (
@@ -46,7 +54,7 @@ function Key({ tone, label }: { tone: StallState; label: string }) {
     <li className="flex items-center gap-1.5">
       <span
         aria-hidden="true"
-        className={cn('size-3 rounded-sm', CELL[tone])}
+        className={cn('border-border size-3 rounded-sm border', LEGEND[tone])}
       />
       {label}
     </li>

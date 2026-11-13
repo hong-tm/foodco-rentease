@@ -32,6 +32,14 @@ import { InitialsAvatar } from '@/components/dashboard/InitialsAvatar'
 import { SummaryLine } from '@/components/dashboard/SpecStrip'
 import { StatusBadge } from '@/components/dashboard/StatusBadge'
 
+const DAY_MS = 24 * 60 * 60 * 1000
+
+// How long a record has been sitting here: the small line under its date.
+function daysOpen(value: Date) {
+  const days = Math.floor((Date.now() - new Date(value).getTime()) / DAY_MS)
+  return Number.isFinite(days) && days > 0 ? days : 0
+}
+
 type MonthSelectorProps = {
   value: string
   onValueChange: (value: string) => void
@@ -55,7 +63,7 @@ function MonthSelector({ value, onValueChange }: MonthSelectorProps) {
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[180px]" aria-label="Filter by month">
+      <SelectTrigger className="w-45" aria-label="Filter by month">
         <SelectValue placeholder="Filter by month" />
       </SelectTrigger>
       <SelectContent>
@@ -178,9 +186,10 @@ export function PaymentRecordsTable({
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
+  const amountOf = (record: PaymentRecord) =>
+    Number.parseFloat(record.paymentAmount) || 0
   const totalAmount = filteredRecords.reduce(
-    (sum, record) =>
-      sum + (Number.parseFloat(record.paymentAmount ?? '0') || 0),
+    (sum, record) => sum + amountOf(record),
     0,
   )
   const settledCount = filteredRecords.filter((r) => r.paymentStatus).length
@@ -238,7 +247,7 @@ export function PaymentRecordsTable({
               />
             )}
             <Select value={selectedType} onValueChange={setSelectedType}>
-              <SelectTrigger className="w-[180px]" aria-label="Filter by type">
+              <SelectTrigger className="w-45" aria-label="Filter by type">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
@@ -301,12 +310,7 @@ export function PaymentRecordsTable({
                 </TableHead>
               ) : null}
               <TableHead
-                className={`type-label text-muted-foreground h-12 text-left ${showUser ? '' : 'pl-6'}`}
-              >
-                Payment ID
-              </TableHead>
-              <TableHead
-                className={`type-label text-muted-foreground h-12 text-center`}
+                className={`type-label text-muted-foreground h-12 text-center ${showUser ? '' : 'pl-6'}`}
               >
                 Stall No.
               </TableHead>
@@ -321,11 +325,6 @@ export function PaymentRecordsTable({
                 Amount (RM)
               </TableHead>
               <TableHead
-                className={`type-label text-muted-foreground h-12 text-left`}
-              >
-                Status
-              </TableHead>
-              <TableHead
                 className={`type-label text-muted-foreground h-12 pr-6 text-left`}
               >
                 Date
@@ -336,7 +335,7 @@ export function PaymentRecordsTable({
             {filteredRecords.length === 0 && (
               <TableRow className="hover:bg-transparent">
                 <TableCell
-                  colSpan={showUser ? 7 : 6}
+                  colSpan={showUser ? 5 : 4}
                   className="text-muted-foreground py-10 text-center text-sm whitespace-normal"
                 >
                   {records.length === 0
@@ -364,36 +363,60 @@ export function PaymentRecordsTable({
                   </TableCell>
                 ) : null}
                 <TableCell
-                  className={`py-4 align-baseline ${showUser ? '' : 'pl-6'}`}
+                  className={`py-4 text-center align-baseline tabular-nums ${showUser ? '' : 'pl-6'}`}
                 >
-                  <span
-                    className="text-muted-foreground font-mono text-xs"
-                    title={record.paymentId}
-                  >
-                    {record.paymentId.length > 8
-                      ? `${record.paymentId.slice(0, 8)}…`
-                      : record.paymentId}
-                  </span>
-                </TableCell>
-                <TableCell className="py-4 text-center align-baseline tabular-nums">
                   {record.stallId}
                 </TableCell>
+                {/* Two lines in one cell: the type leads, its payment ID trails. */}
                 <TableCell className="py-4 align-baseline">
-                  <span className="text-muted-foreground text-sm capitalize">
-                    {record.paymentType}
-                  </span>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm font-medium capitalize">
+                      {record.paymentType}
+                    </span>
+                    <span
+                      className="text-muted-foreground font-mono text-xs"
+                      title={record.paymentId}
+                    >
+                      {record.paymentId.length > 8
+                        ? `${record.paymentId.slice(0, 8)}…`
+                        : record.paymentId}
+                    </span>
+                  </div>
                 </TableCell>
                 <TableCell className="py-4 text-right align-baseline tabular-nums">
-                  {record.paymentAmount}
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className="text-sm font-medium whitespace-nowrap">
+                      RM {rm(amountOf(record))}
+                    </span>
+                    {totalAmount > 0 ? (
+                      <span className="text-muted-foreground text-xs">
+                        ({((amountOf(record) / totalAmount) * 100).toFixed(1)}%)
+                      </span>
+                    ) : null}
+                  </div>
                 </TableCell>
-                <TableCell className="py-4 align-baseline">
-                  <StatusBadge
-                    label={record.paymentStatus ? 'Paid' : 'Pending'}
-                    tone={record.paymentStatus ? 'settled' : 'action'}
-                  />
-                </TableCell>
+                {/* Two lines in one cell: the date leads, its state trails. */}
                 <TableCell className="py-4 align-baseline whitespace-nowrap tabular-nums">
-                  {formatDay(record.paymentDate as unknown as Date)}
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-sm font-medium">
+                      {formatDay(record.paymentDate)}
+                    </span>
+                    <span className="text-xs">
+                      <span
+                        className={
+                          record.paymentStatus
+                            ? 'text-muted-foreground'
+                            : 'text-warning-ink font-medium'
+                        }
+                      >
+                        {record.paymentStatus ? 'Paid' : 'Pending'}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {' · '}
+                        {daysOpen(record.paymentDate)} d open
+                      </span>
+                    </span>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

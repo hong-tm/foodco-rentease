@@ -95,18 +95,18 @@ export default function RentalPaymentDetail({
       {isLoading ? (
         <div role="status" aria-busy="true" className="flex flex-col gap-2">
           <span className="sr-only">Loading payment history…</span>
-          <Skeleton className="h-[220px] w-full" />
+          <Skeleton className="h-chart w-full" />
           <Skeleton className="h-4 w-64" />
         </div>
       ) : !hasAnyPayments ? (
         <ChartEmpty message="No payments recorded in the last 6 months" />
       ) : (
         <>
-          <ChartContainer config={chartConfig} className="h-[220px] w-full">
+          <ChartContainer config={chartConfig} className="h-chart w-full">
             <BarChart
               accessibilityLayer
               data={data}
-              margin={{ top: 8, right: 0, left: 8, bottom: 0 }}
+              margin={{ top: 16, right: 0, left: 12, bottom: 0 }}
             >
               <CartesianGrid vertical={false} />
               <XAxis
@@ -116,9 +116,11 @@ export default function RentalPaymentDetail({
                 tickMargin={8}
               />
               <YAxis
-                width={52}
+                width={64}
                 tickFormatter={(v: number) =>
-                  'RM ' + new Intl.NumberFormat('en-MY').format(v)
+                  v >= 1000
+                    ? `RM ${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}k`
+                    : `RM ${v}`
                 }
                 tickLine={false}
                 axisLine={false}
@@ -141,6 +143,8 @@ export default function RentalPaymentDetail({
                 stackId="payments"
                 fill="var(--color-rental)"
                 maxBarSize={56}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
               <Bar
                 dataKey="utilities"
@@ -148,6 +152,8 @@ export default function RentalPaymentDetail({
                 fill="var(--color-utilities)"
                 radius={[3, 3, 0, 0]}
                 maxBarSize={56}
+                animationDuration={400}
+                animationEasing="ease-out"
               />
             </BarChart>
           </ChartContainer>

@@ -101,7 +101,7 @@ export default function FeedbackHapinessLineChart({
       <CardContent className="flex flex-1 flex-col overflow-x-auto px-2 pt-6 pb-0 sm:px-6">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-full min-h-[250px] w-full min-w-[500px]"
+          className="aspect-auto h-full min-h-chart w-full min-w-lg"
         >
           <BarChart
             accessibilityLayer
@@ -132,7 +132,7 @@ export default function FeedbackHapinessLineChart({
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px]"
+                  className="w-38"
                   nameKey="happiness"
                 />
               }
@@ -142,6 +142,8 @@ export default function FeedbackHapinessLineChart({
               fill="var(--color-happiness)"
               radius={3}
               maxBarSize={48}
+              animationDuration={400}
+              animationEasing="ease-out"
             />
           </BarChart>
         </ChartContainer>

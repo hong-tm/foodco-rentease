@@ -45,7 +45,7 @@ export function ResponsiveSheetDialog({
               <DrawerDescription>{description}</DrawerDescription>
             )}
           </DrawerHeader>
-          <div className="grid min-w-0 flex-1 auto-rows-min gap-6 overflow-x-hidden px-4">
+          <div className="grid min-w-0 flex-1 auto-rows-min gap-6 max-h-sheet overflow-y-auto overflow-x-hidden px-4">
             {children}
           </div>
           <DrawerFooter className="pt-2">
@@ -60,7 +60,7 @@ export function ResponsiveSheetDialog({
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetContent className="sm:max-w-[525px]">
+      <SheetContent className="sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
           {description && <SheetDescription>{description}</SheetDescription>}

@@ -222,8 +222,75 @@ export default function UserAppointmentTable() {
   return (
     <div className="flex flex-col gap-6">
       {specStrip}
-      <div className="border-border max-w-full overflow-x-auto rounded-xl border">
-        <Table className="w-full min-w-[380px]">
+
+      {/* Mobile card list: phone view avoids horizontal table overflow */}
+      <ul className="divide-border border-border bg-card divide-y rounded-xl border md:hidden">
+        {appointments.map((notification) => {
+          const approved = notification.notificationRead === true
+          const status =
+            notification.notificationRead === null
+              ? 'Pending'
+              : approved
+                ? 'Approved'
+                : 'Rejected'
+          const paid = isPaid(notification)
+          return (
+            <li
+              key={notification.notificationId}
+              className="flex flex-col gap-2 px-4 py-3"
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="min-w-0 font-medium text-sm">
+                  {notification.stallNumber
+                    ? `Stall ${notification.stallNumber} · viewing`
+                    : notification.notificationMessage}
+                </span>
+                <span className="text-muted-foreground text-xs tabular-nums whitespace-nowrap">
+                  {formatDay(notification.appointmentDate)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <StatusBadge
+                  label={status}
+                  tone={
+                    notification.notificationRead === false
+                      ? 'blocked'
+                      : approved && paid
+                        ? 'settled'
+                        : 'action'
+                  }
+                />
+                {approved && notification.stallNumber && !paid && (
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      handlePaymentClick({
+                        ...notification,
+                        notificationerror: '',
+                      })
+                    }
+                    disabled={paymentMutation.isPending}
+                    className="h-8 text-xs"
+                  >
+                    {paymentMutation.isPending
+                      ? 'Processing...'
+                      : `Pay RM ${calculateAmount({
+                          ...notification,
+                          notificationerror: '',
+                        }).toFixed(2)}`}
+                  </Button>
+                )}
+                {approved && notification.stallNumber && paid && (
+                  <StatusBadge label="Payment completed" tone="settled" />
+                )}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+
+      <div className="border-border max-w-full overflow-x-auto rounded-xl border max-md:hidden">
+        <Table className="w-full min-w-95">
           <TableCaption className="sr-only">
             Your appointment requests with status and payment action
           </TableCaption>

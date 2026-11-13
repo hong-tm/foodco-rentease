@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom'
 import { formatDay } from '@/lib/format'
 
 import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PageHeader } from '@/components/dashboard/PageHeader'
-import { SpecStrip } from '@/components/dashboard/SpecStrip'
 
 import FeedbackHapinessLineChart from './components/FeedbackHapinessLineChart'
 import LatestAppointmentScrollArea from './components/LatestAppointmentScrollArea'
@@ -116,22 +116,59 @@ export function AdminDashboard() {
             <Skeleton className="h-4 w-80" />
           </div>
         ) : (
-          <SpecStrip
-            value={`${occupancy}%`}
-            unit="occupancy"
-            cells={[
-              {
-                label: 'Due within 7 days',
-                value: expiringSoon,
-                anomaly: expiringSoon > 0,
-              },
-              {
-                label: 'Appointments pending',
-                value: pendingAppointments,
-                attention: pendingAppointments > 0,
-              },
-            ]}
-          />
+          <div className="flex flex-col gap-4">
+            {/* Occupancy: the number carries a bar, so 12 of 17 reads as a share. */}
+            <div className="flex min-w-0 flex-col gap-2">
+              <p className="flex min-w-0 items-baseline gap-2.5">
+                <span className="type-stat tabular-nums">{occupancy}%</span>
+                <span className="text-muted-foreground text-sm">occupancy</span>
+              </p>
+              <div className="flex items-center gap-3">
+                <Progress
+                  value={occupancy}
+                  aria-label={`${occupancy}% of stalls occupied`}
+                  className="bg-brand-muted [&_[data-slot=progress-indicator]]:bg-brand h-1.5 min-w-0 flex-1"
+                />
+                <span className="text-muted-foreground text-xs tabular-nums">
+                  {rentedStalls} of {totalStalls} stalls
+                </span>
+              </div>
+            </div>
+            {/* Same cell anatomy as SpecStrip, kept local so the occupancy bar
+                can sit under the value without touching that component. */}
+            <dl className="bg-card divide-border flex flex-col divide-y rounded-xl border sm:flex-row sm:divide-x sm:divide-y-0">
+              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-4 px-4 py-3 sm:flex-col sm:justify-start sm:gap-1 sm:px-5 sm:py-4">
+                <dt className="type-label text-muted-foreground">
+                  Due within 7 days
+                </dt>
+                <dd className="type-section-title flex items-baseline gap-2 tabular-nums max-sm:text-right">
+                  {expiringSoon > 0 ? (
+                    <span
+                      aria-hidden="true"
+                      className="bg-destructive size-2 shrink-0 self-center rounded-full"
+                    />
+                  ) : null}
+                  <span className="min-w-0 break-words">{expiringSoon}</span>
+                </dd>
+              </div>
+              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-4 px-4 py-3 sm:flex-col sm:justify-start sm:gap-1 sm:px-5 sm:py-4">
+                <dt className="type-label text-muted-foreground">
+                  Appointments pending
+                </dt>
+                <dd className="type-section-title flex items-baseline gap-2 tabular-nums max-sm:text-right">
+                  {pendingAppointments > 0 ? (
+                    <span
+                      aria-hidden="true"
+                      className="bg-primary size-2 shrink-0 self-center rounded-full"
+                    />
+                  ) : null}
+                  <span className="min-w-0 break-words">
+                    {pendingAppointments}
+                  </span>
+                </dd>
+              </div>
+            </dl>
+          </div>
         )}
       </section>
 

@@ -13,7 +13,7 @@ export function ChartEmpty({
     <div
       role="status"
       className={cn(
-        'text-muted-foreground flex h-[220px] items-center justify-center rounded-lg border border-dashed text-sm',
+        'text-muted-foreground flex h-chart items-center justify-center rounded-lg border border-dashed text-sm',
         className,
       )}
     >

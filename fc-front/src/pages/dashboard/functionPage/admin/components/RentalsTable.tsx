@@ -1,5 +1,6 @@
 import { fetchRentalsQueryOptions } from '@/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
+import { CalendarDaysIcon, StoreIcon, UserIcon, WalletIcon } from 'lucide-react'
 
 import { formatDay } from '@/lib/format'
 
@@ -157,8 +158,8 @@ export default function RentalsTable() {
               <TableHead
                 className={`type-label text-muted-foreground h-12 w-2/5 pl-6`}
               >
-                <span className="flex items-center gap-3">
-                  <span aria-hidden className="size-9" />
+                <span className="flex items-center gap-2">
+                  <UserIcon aria-hidden="true" className="size-3.5 shrink-0" />
                   Tenant
                 </span>
               </TableHead>
@@ -166,19 +167,34 @@ export default function RentalsTable() {
                 className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.stall }}
               >
-                Stall
+                <span className="flex items-center gap-2">
+                  <StoreIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  Stall
+                </span>
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground hidden h-12 xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.lease }}
               >
-                Lease period
+                <span className="flex items-center gap-2">
+                  <CalendarDaysIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Lease period
+                </span>
               </TableHead>
               <TableHead
                 className={`type-label text-muted-foreground hidden h-12 pr-6 text-right xl:table-cell`}
                 style={{ width: COLUMN_WIDTH.action }}
               >
-                Action
+                <span className="flex items-center justify-end gap-2">
+                  <WalletIcon
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0"
+                  />
+                  Action
+                </span>
               </TableHead>
             </TableRow>
           </TableHeader>

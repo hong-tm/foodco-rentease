@@ -127,7 +127,7 @@ export function NewStartRentalChart() {
       <CardContent className="flex flex-1 flex-col">
         <ChartContainer
           config={chartConfig}
-          className="h-full min-h-[220px] w-full"
+          className="h-full min-h-chart w-full"
         >
           <BarChart
             accessibilityLayer
@@ -154,6 +154,8 @@ export function NewStartRentalChart() {
               fill="var(--color-value)"
               radius={3}
               maxBarSize={48}
+              animationDuration={400}
+              animationEasing="ease-out"
             />
           </BarChart>
         </ChartContainer>
