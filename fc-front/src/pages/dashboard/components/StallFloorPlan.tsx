@@ -25,7 +25,7 @@ export function StateSwatch({ state }: { state: BoardState }) {
       aria-hidden="true"
       className={cn(
         'size-3 shrink-0 rounded-[4px]',
-        state === 'let' && 'bg-muted border-border border',
+        state === 'let' && 'bg-muted border-input border',
         state === 'followup' && 'bg-brand-soft border-primary border',
         state === 'free' && 'border-muted-foreground border border-dashed',
       )}
@@ -94,9 +94,9 @@ export function StallFloorPlan({
                 'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
                 // One look per state on every page: orange is only ever the exception.
                 state === 'free' &&
-                  'border-muted-foreground/50 bg-card hover:border-muted-foreground border-dashed',
+                  'border-muted-foreground bg-card hover:border-foreground border-dashed',
                 state === 'let' &&
-                  'bg-muted border-border hover:border-muted-foreground/60',
+                  'bg-muted border-input hover:border-muted-foreground',
                 state === 'followup' &&
                   'bg-brand-soft text-brand-ink border-primary',
                 // A filter dims the rest instead of recolouring the matches.

@@ -407,7 +407,7 @@ export function PaymentRecordsTable({
                   <TableHead className="max-md:hidden">Type</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
                   <TableHead className="max-md:hidden">Status</TableHead>
-                  <TableHead className="max-md:hidden">Payment ID</TableHead>
+                  <TableHead className="max-md:hidden">Ref</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -460,10 +460,11 @@ export function PaymentRecordsTable({
                       )}
                     </TableCell>
                     <TableCell
-                      className="type-id text-muted-foreground max-w-40 truncate max-md:hidden"
+                      className="type-id text-muted-foreground max-md:hidden"
                       title={record.paymentId}
                     >
-                      {record.paymentId}
+                      {/* Short reference; the full ID stays in the tooltip and search. */}
+                      {record.paymentId.slice(0, 8).toUpperCase()}
                     </TableCell>
                   </TableRow>
                 ))}
