@@ -183,7 +183,15 @@ export default function UserDashboardSidebar({
 
   const account = { name: userName, email: userEmail, avatar: userAvatar }
 
-  const data = {
+  // Typed through the nav props so every url must be a real route.
+  const data: Record<
+    Role,
+    {
+      user: typeof account
+      navMain: React.ComponentProps<typeof NavMain>['items']
+      navSecondary: React.ComponentProps<typeof NavSecondary>['items']
+    }
+  > = {
     admin: {
       user: account,
       navMain: [

@@ -11,6 +11,8 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 
+import type { AppPath } from './nav-data'
+
 export function NavMain({
   items,
 }: {
@@ -18,7 +20,7 @@ export function NavMain({
     title: string
     items: {
       title: string
-      url: string
+      url: AppPath
       icon: LucideIcon
       badge?: number
     }[]

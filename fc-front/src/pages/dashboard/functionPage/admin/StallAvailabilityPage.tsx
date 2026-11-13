@@ -103,7 +103,12 @@ export function StallAvailabilityPage() {
     ? (requested as Filter)
     : 'free'
   const setFilter = (next: Filter) =>
-    navigate({ search: next === 'free' ? {} : { state: next }, replace: true })
+    // A filter change keeps the scroll position, as setSearchParams did.
+    navigate({
+      search: next === 'free' ? {} : { state: next },
+      replace: true,
+      resetScroll: false,
+    })
   const [open, setOpen] = useState<Stall | null>(null)
 
   const stalls = data?.stall ?? []

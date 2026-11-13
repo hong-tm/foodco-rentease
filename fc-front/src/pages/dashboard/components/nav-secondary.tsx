@@ -10,13 +10,15 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
+import type { AppPath } from './nav-data'
+
 export function NavSecondary({
   items,
   ...props
 }: {
   items: {
     title: string
-    url: string
+    url: AppPath
     icon: LucideIcon
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {

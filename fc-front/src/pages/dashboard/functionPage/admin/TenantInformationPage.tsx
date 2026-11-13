@@ -125,7 +125,11 @@ export function TenantInformationPage() {
             type="button"
             aria-pressed={view === 'attention'}
             onClick={() =>
-              navigate({ search: { view: 'attention' }, replace: true })
+              navigate({
+                search: { view: 'attention' },
+                replace: true,
+                resetScroll: false,
+              })
             }
             className="bg-card hover:bg-accent focus-visible:ring-ring flex cursor-pointer flex-col justify-center rounded-xl border p-4 text-left outline-none focus-visible:ring-2"
           >
@@ -185,6 +189,7 @@ export function TenantInformationPage() {
               navigate({
                 search: next === 'all' ? {} : { view: next },
                 replace: true,
+                resetScroll: false,
               })
             }
             tabs={[
