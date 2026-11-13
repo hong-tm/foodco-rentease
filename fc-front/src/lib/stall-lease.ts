@@ -91,3 +91,13 @@ export function byEndDate<T extends LeaseFields>(a: T, b: T) {
   const right = b.endAt ? new Date(b.endAt).getTime() : Infinity
   return left - right
 }
+
+/** The backend's placeholder name for a stall nobody has named yet. */
+const UNNAMED_STALL = 'Still Empty...'
+
+/** A stall's display name; an unnamed (vacant) stall reads as 'Vacant'. */
+export function stallLabel(stall: { stallName?: string | null }) {
+  return !stall.stallName || stall.stallName === UNNAMED_STALL
+    ? 'Vacant'
+    : stall.stallName
+}

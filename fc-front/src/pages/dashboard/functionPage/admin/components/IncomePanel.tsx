@@ -146,6 +146,12 @@ export default function IncomePanel({ className }: { className?: string }) {
           <ColumnChart
             data={rent}
             series={[{ key: 'rent', label: 'Rent', color: 'var(--chart-1)' }]}
+            // The month in progress carries the full hue; closed months its tint.
+            colorOf={(datum) =>
+              datum === rent[rent.length - 1]
+                ? 'var(--chart-1)'
+                : 'var(--chart-1-soft)'
+            }
             height={208}
             formatTick={(value) =>
               value >= 1000 ? `${value / 1000}k` : String(value)

@@ -11,6 +11,7 @@ import {
   boardState,
   boardStateLabel,
   isUrgent,
+  stallLabel,
   timeLeftLabel,
 } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
@@ -40,7 +41,7 @@ export function StallDialog({
       setIsOpen={(open) => {
         if (!open) onClose()
       }}
-      title={`Stall ${stall.stallNumber}: ${stall.stallName}`}
+      title={`Stall ${stall.stallNumber}: ${stallLabel(stall)}`}
       description={[
         boardStateLabel[boardState(stall)],
         stall.stallSize ? formatSize(stall.stallSize) : null,

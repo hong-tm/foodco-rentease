@@ -14,6 +14,7 @@ import {
   boardStateLabel,
   byEndDate,
   isUrgent,
+  stallLabel,
   timeLeftLabel,
   type BoardState,
 } from '@/lib/stall-lease'
@@ -67,7 +68,7 @@ function StallPeek({ stall }: { stall: Stall }) {
           <span className="type-id text-muted-foreground mr-2">
             {stall.stallNumber}
           </span>
-          {stall.stallName}
+          {stallLabel(stall)}
         </p>
         <p className="type-meta text-muted-foreground line-clamp-2">
           {stall.description}
@@ -233,7 +234,7 @@ export function StallAvailabilityPage() {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="type-body block truncate font-medium">
-                              {stall.stallName}
+                              {stallLabel(stall)}
                             </span>
                             <span className="type-meta text-muted-foreground block truncate">
                               {stall.rentStatus

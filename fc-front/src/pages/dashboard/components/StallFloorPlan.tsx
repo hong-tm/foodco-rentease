@@ -7,6 +7,7 @@ import {
   boardState,
   isUrgent,
   pastLabel,
+  stallLabel,
   type BoardState,
 } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
@@ -88,7 +89,7 @@ export function StallFloorPlan({
               type="button"
               style={seatOf(index, ordered.length)}
               onClick={() => onOpen(stall)}
-              aria-label={`Stall ${stall.stallNumber}, ${stall.stallName}`}
+              aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
                 'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-colors outline-none focus-visible:ring-2',
                 state === 'free'
@@ -108,7 +109,9 @@ export function StallFloorPlan({
               {size === 'full' ? (
                 <span className="type-meta hidden min-w-0 md:contents">
                   <span className="line-clamp-2 font-medium">
-                    {stall.stallName}
+                    {state === 'free'
+                      ? formatSize(stall.stallSize)
+                      : stallLabel(stall)}
                   </span>
                   <span
                     className={cn(

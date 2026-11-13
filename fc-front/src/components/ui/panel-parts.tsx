@@ -65,10 +65,11 @@ export function CountTabs<T extends string>({
       onValueChange={(next) => onChange(next as T)}
       className={cn('min-w-0 max-md:w-full', className)}
     >
-      <div>
+      {/* On a phone the tabs keep one row and scroll inside it. */}
+      <div className="max-md:overflow-x-auto max-md:[scrollbar-width:none]">
         <TabsList
           aria-label={label}
-          className="max-md:h-auto max-md:min-h-11 max-md:flex-wrap max-md:justify-start"
+          className="max-md:h-auto max-md:min-h-11 max-md:w-max max-md:justify-start"
         >
           {tabs.map((tab) => (
             <TabsTrigger
