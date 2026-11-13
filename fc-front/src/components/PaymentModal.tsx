@@ -237,12 +237,25 @@ export default function PaymentModal({
     }
   }, [clientSecret])
 
+  // Stripe takes a plain colour string, so resolve the theme's primary to rgb.
+  const brandColour = () => {
+    const value = getComputedStyle(document.documentElement)
+      .getPropertyValue('--primary')
+      .trim()
+    const ctx = document.createElement('canvas').getContext('2d')
+    if (!ctx || !value) return '#0F172A'
+    ctx.fillStyle = value
+    ctx.fillRect(0, 0, 1, 1)
+    const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+    return `rgb(${r}, ${g}, ${b})`
+  }
+
   const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
       theme: 'stripe',
       variables: {
-        colorPrimary: '#0F172A',
+        colorPrimary: brandColour(),
       },
     },
   }
