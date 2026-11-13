@@ -32,7 +32,7 @@ export default function Breadcrumbs() {
     'rental-report': 'Rental Report',
     'user-report': 'User Report',
     'stall-payment': 'Utilities',
-    'stall-utilities': 'Stall Utilities',
+    'stall-utilities': 'Utilities',
   }
 
   let currentLink = ''

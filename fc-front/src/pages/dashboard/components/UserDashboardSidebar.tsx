@@ -256,7 +256,7 @@ export default function UserDashboardSidebar({
               icon: StoreIcon,
             },
             {
-              title: 'Stall Payment',
+              title: 'Utilities',
               url: '/dashboard/stall-utilities',
               icon: ReceiptTextIcon,
             },

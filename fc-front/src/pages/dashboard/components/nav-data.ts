@@ -67,7 +67,7 @@ export const navByRole: Record<Role, RoleNav> = {
             icon: UsersIcon,
           },
           {
-            title: 'Stall Utilities Payment',
+            title: 'Utilities',
             url: '/dashboard/stall-payment',
             icon: ZapIcon,
           },
@@ -117,7 +117,7 @@ export const navByRole: Record<Role, RoleNav> = {
             icon: StoreIcon,
           },
           {
-            title: 'Stall Payment',
+            title: 'Utilities',
             url: '/dashboard/stall-utilities',
             icon: ZapIcon,
           },
