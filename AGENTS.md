@@ -33,4 +33,5 @@ every fc-back import.
 Hard invariants:
 
 - There is no automated test suite yet; a UI change needs before/after screenshots as its proof.
+- Behavior changes are proven on the running app with `.agents/skills/verify-foodco` (own Postgres + seed, Playwright journeys that check the API call and the DB row). A toast or a passing typecheck is not proof.
 - Formatting is prettier's call: run `pnpm -C fc-front check` / `-C fc-back check` before committing.
