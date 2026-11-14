@@ -1,6 +1,6 @@
 import { useSession } from '@/api/adminApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { Link } from 'react-router-dom'
+import { Link } from '@tanstack/react-router'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
