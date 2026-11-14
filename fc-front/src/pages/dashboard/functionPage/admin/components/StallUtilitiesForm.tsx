@@ -7,7 +7,6 @@ import {
   stallUtilitiesFormSchema,
   type StallUtilitiesFormValues,
 } from '@server/lib/sharedType'
-import { createTransaction } from '@tanstack/react-db'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -65,23 +64,17 @@ export default function StallUtilitiesForm({
         throw new Error('Stall owner not found')
       }
 
-      // Persistence runs as a TanStack DB transaction; the payments
-      // collection refetch refreshes the shared cache.
-      const tx = createTransaction({
-        mutationFn: async () => {
-          await createUtilityPaymentRecord({
-            paymentId: `req_${crypto.randomUUID()}`,
-            stallId: data.stallId,
-            userId: selectedStall.stallOwner,
-            paymentAmount: data.paymentAmount.toString(),
-            paymentType: data.paymentType,
-            paymentStatus: false,
-            paymentDate: data.paymentDate.toISOString(),
-          })
-          await paymentsCollection.utils.refetch()
-        },
+      // The payments collection refetch refreshes the shared cache.
+      await createUtilityPaymentRecord({
+        paymentId: `req_${crypto.randomUUID()}`,
+        stallId: data.stallId,
+        userId: selectedStall.stallOwner,
+        paymentAmount: data.paymentAmount.toString(),
+        paymentType: data.paymentType,
+        paymentStatus: false,
+        paymentDate: data.paymentDate.toISOString(),
       })
-      await tx.commit()
+      await paymentsCollection.utils.refetch()
 
       return data
     },
