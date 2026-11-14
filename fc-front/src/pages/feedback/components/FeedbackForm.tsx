@@ -99,23 +99,23 @@ export const FeedbackForm = ({ onClose }: { onClose: () => void }) => {
                             className={twMerge(
                               happiness === e.happiness
                                 ? e.happiness === 4
-                                  ? 'bg-green-100 stroke-green-500 hover:scale-125 dark:bg-green-900 dark:stroke-green-400'
+                                  ? 'bg-positive-soft stroke-positive-ink hover:scale-125'
                                   : e.happiness === 3
-                                    ? 'bg-blue-100 stroke-blue-500 hover:scale-125 dark:bg-blue-900 dark:stroke-blue-400'
+                                    ? 'bg-muted stroke-foreground hover:scale-125'
                                     : e.happiness === 2
-                                      ? 'bg-yellow-100 stroke-yellow-500 hover:scale-125 dark:bg-yellow-900 dark:stroke-yellow-400'
-                                      : 'bg-red-100 stroke-red-500 hover:scale-125 dark:bg-red-900 dark:stroke-red-400'
-                                : 'stroke-neutral-500 dark:stroke-neutral-400',
+                                      ? 'bg-warning-soft stroke-warning-ink hover:scale-125'
+                                      : 'bg-negative-soft stroke-negative-ink hover:scale-125'
+                                : 'stroke-muted-foreground',
                               'flex h-8 w-8 items-center justify-center rounded-full transition-all',
                               happiness === e.happiness
                                 ? ''
                                 : e.happiness === 4
-                                  ? 'hover:scale-125 hover:bg-green-100 hover:stroke-green-500 hover:dark:bg-green-900 hover:dark:stroke-green-400'
+                                  ? 'hover:bg-positive-soft hover:stroke-positive-ink hover:scale-125'
                                   : e.happiness === 3
-                                    ? 'hover:scale-125 hover:bg-blue-100 hover:stroke-blue-500 hover:dark:bg-blue-900 hover:dark:stroke-blue-400'
+                                    ? 'hover:bg-muted hover:stroke-foreground hover:scale-125'
                                     : e.happiness === 2
-                                      ? 'hover:scale-125 hover:bg-yellow-100 hover:stroke-yellow-500 hover:dark:bg-yellow-900 hover:dark:stroke-yellow-400'
-                                      : 'hover:scale-125 hover:bg-red-100 hover:stroke-red-500 hover:dark:bg-red-900 hover:dark:stroke-red-400',
+                                      ? 'hover:bg-warning-soft hover:stroke-warning-ink hover:scale-125'
+                                      : 'hover:bg-negative-soft hover:stroke-negative-ink hover:scale-125',
                             )}
                             key={e.happiness}
                           >

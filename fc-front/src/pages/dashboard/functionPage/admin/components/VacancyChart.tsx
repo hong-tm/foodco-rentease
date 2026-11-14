@@ -86,7 +86,6 @@ export function VacancyChart({ className }: { className?: string }) {
         stalls={stalls}
         size="compact"
         onOpen={setOpen}
-        matches={(stall) => boardState(stall) === 'followup'}
         className="min-h-60 flex-1"
         centre={
           <>
@@ -100,7 +99,7 @@ export function VacancyChart({ className }: { className?: string }) {
           </>
         }
       />
-      <ul className="grid grid-cols-1 gap-x-4 gap-y-1 md:flex md:flex-wrap md:gap-x-5">
+      <ul className="flex flex-wrap gap-x-4 md:gap-x-5">
         {legend.map((item) => (
           <li key={item.state}>
             <Link
@@ -112,7 +111,7 @@ export function VacancyChart({ className }: { className?: string }) {
               <span className="text-muted-foreground">
                 {boardStateLabel[item.state]}
               </span>
-              <span className="font-medium max-md:ml-auto">
+              <span className="font-medium tabular-nums">
                 {counts[item.state]}
               </span>
             </Link>

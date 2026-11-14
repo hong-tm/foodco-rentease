@@ -41,7 +41,7 @@ export function AdminDashboard() {
         }
       >
         {data
-          ? `${rented} of ${stalls.length} stalls are let. ${counts.past} lease${counts.past === 1 ? ' has' : 's have'} run past the end date and ${counts.ending} more end within ${ENDING_SOON_DAYS} days.`
+          ? `${rented} of ${stalls.length} stalls are let. ${counts.past} lease${counts.past === 1 ? ' has' : 's have'} run past the end date and ${counts.ending} more ${counts.ending === 1 ? 'ends' : 'end'} within ${ENDING_SOON_DAYS} days.`
           : 'Loading the food court.'}
       </PageHeader>
       {/* Rail is fixed at 384px at xl so the lists keep one line width; the two

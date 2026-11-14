@@ -138,7 +138,7 @@ export function FeedbackDisplayPage() {
     <div className="flex flex-col gap-4 md:gap-5">
       <PageHeader title="Feedback">
         {data
-          ? `${all.length} responses across ${stalls.length} stalls, averaging ${average.toFixed(1)} out of 4. ${unhappy} ${unhappy === 1 ? 'is' : 'are'} unhappy.`
+          ? `${all.length} responses across ${stalls.length} stalls. Average rating ${average.toFixed(1)} of 4, with ${unhappy} unhappy or angry.`
           : 'What customers say about each stall.'}
       </PageHeader>
 
@@ -171,22 +171,28 @@ export function FeedbackDisplayPage() {
                       value={String(value)}
                       aria-label={`${mood[value].label}, ${countOf(value)}`}
                       title={mood[value].label}
-                      className="gap-1.5 px-2.5 max-md:h-11"
+                      className="gap-1.5 px-2.5 max-md:h-11 md:flex-none md:pr-3"
                     >
                       <Icon />
-                      <span className="tabular-nums">{countOf(value)}</span>
+                      <span className="max-xl:sr-only">
+                        {mood[value].label}
+                      </span>
+                      <span className="text-muted-foreground tabular-nums">
+                        {countOf(value)}
+                      </span>
                     </ToggleGroupItem>
                   )
                 })}
               </ToggleGroup>
-              <SearchField
-                value={search}
-                onChange={setSearch}
-                placeholder="Search comments"
-                label="Search comments"
-                className="md:w-52"
-              />
-              <div className="flex gap-2 max-md:w-full md:ml-auto">
+              {/* Second row: search grows, the two selects close it on one right edge. */}
+              <div className="flex w-full flex-wrap gap-2">
+                <SearchField
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search comments"
+                  label="Search comments"
+                  className="md:w-auto md:flex-1"
+                />
                 <Select value={stall} onValueChange={setStall}>
                   <SelectTrigger
                     aria-label="Filter by stall"
@@ -277,6 +283,11 @@ export function FeedbackDisplayPage() {
                     </span>
                     <span className="font-medium tabular-nums">
                       {countOf(value)}
+                    </span>
+                    <span className="text-muted-foreground w-10 text-right tabular-nums">
+                      {all.length
+                        ? `${Math.round((countOf(value) / all.length) * 100)}%`
+                        : '—'}
                     </span>
                   </li>
                 ))}

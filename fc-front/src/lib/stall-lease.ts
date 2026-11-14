@@ -91,3 +91,11 @@ export function byEndDate<T extends LeaseFields>(a: T, b: T) {
   const right = b.endAt ? new Date(b.endAt).getTime() : Infinity
   return left - right
 }
+
+/** A stall's display name; a vacant stall (no lease) reads as 'Vacant'. */
+export function stallLabel(stall: {
+  stallName?: string | null
+  rentStatus?: boolean | null
+}) {
+  return stall.rentStatus && stall.stallName ? stall.stallName : 'Vacant'
+}

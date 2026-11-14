@@ -136,7 +136,8 @@ export default function AdminAppointmentTable() {
             <TableHeader>
               <TableRow>
                 <TableHead className="max-md:hidden">Date</TableHead>
-                <TableHead>Applicant</TableHead>
+                <TableHead className="max-md:pl-4">Applicant</TableHead>
+                <TableHead className="max-md:hidden">Stall</TableHead>
                 <TableHead className="max-md:hidden">Request</TableHead>
                 <TableHead className="max-md:hidden">Status</TableHead>
                 <TableHead className="text-right">
@@ -170,7 +171,7 @@ export default function AdminAppointmentTable() {
                     <TableCell className="font-medium whitespace-nowrap max-md:hidden">
                       {formatDate(item.appointmentDate)}
                     </TableCell>
-                    <TableCell className="max-md:w-full max-md:max-w-0">
+                    <TableCell className="max-md:w-full max-md:max-w-0 max-md:pl-4">
                       <div className="flex min-w-0 items-center gap-2">
                         <PersonAvatar
                           id={item.userId}
@@ -185,6 +186,9 @@ export default function AdminAppointmentTable() {
                       <div className="mt-1.5 flex flex-col items-start gap-1 md:hidden">
                         <p className="type-meta text-muted-foreground">
                           {formatDate(item.appointmentDate)}
+                          {item.stallNumber
+                            ? ` · Stall ${item.stallNumber}`
+                            : ''}
                         </p>
                         <p className="type-meta text-muted-foreground whitespace-normal">
                           {item.notificationMessage}
@@ -200,6 +204,9 @@ export default function AdminAppointmentTable() {
                           </div>
                         ) : null}
                       </div>
+                    </TableCell>
+                    <TableCell className="type-id max-md:hidden">
+                      {item.stallNumber ?? '—'}
                     </TableCell>
                     <TableCell className="text-muted-foreground min-w-56 whitespace-normal max-md:hidden">
                       {item.notificationMessage}
@@ -227,7 +234,7 @@ export default function AdminAppointmentTable() {
               {pager.total === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="type-body text-muted-foreground py-8 text-center"
                   >
                     No appointments match these filters.
