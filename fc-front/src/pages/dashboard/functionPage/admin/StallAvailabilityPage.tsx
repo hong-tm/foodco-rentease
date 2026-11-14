@@ -204,7 +204,6 @@ export function StallAvailabilityPage() {
                 active={open?.stallNumber}
                 onOpen={setOpen}
                 peek={(stall) => <StallPeek stall={stall} />}
-                className="md:grid-rows-[repeat(5,100px)]"
                 centre={
                   <>
                     <p className="type-figure-lead">{listed.length}</p>
@@ -232,7 +231,7 @@ export function StallAvailabilityPage() {
                 <PanelEmpty>No stalls in this state.</PanelEmpty>
               ) : null}
               {listed.length > 0 ? (
-                <ul className="-mx-2 flex min-h-0 flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
+                <ul className="-mx-2 flex min-h-0 max-h-[560px] flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
                   {listed.map((stall) => {
                     const price = priceOf(stall)
                     return (

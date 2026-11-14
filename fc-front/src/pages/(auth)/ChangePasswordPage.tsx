@@ -8,15 +8,9 @@ import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
 import { authClient } from '@/lib/auth-client'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -26,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { PasswordInput } from '@/components/ui/passwod-input'
+import { Panel, PanelHeader } from '@/components/ui/panel'
 
 export default function ChangePasswordPage() {
   const form = useForm<z.infer<typeof changePasswordFormSchema>>({
@@ -66,93 +61,90 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center">
-      <Card className="w-full max-w-md rounded-2xl border-none shadow-none">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
-            Change Account Password
-          </CardTitle>
-          <CardDescription className="text-gray-500">
-            Enter your new password to change your password.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Current Password Field */}
-              <FormField
-                control={form.control}
-                name="currentPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Current Password</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        id="currentPassword"
-                        placeholder="******"
-                        autoComplete="current-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader title="Change password">
+        Set a new password for your account.
+      </PageHeader>
+      <Panel className="max-w-3xl">
+        <PanelHeader
+          title="Change Account Password"
+          meta="Enter your new password to change your password."
+        />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Current Password Field */}
+            <FormField
+              control={form.control}
+              name="currentPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Current Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      id="currentPassword"
+                      placeholder="******"
+                      autoComplete="current-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* New Password Field */}
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>New Password</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        id="password"
-                        placeholder="******"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* New Password Field */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      id="password"
+                      placeholder="******"
+                      autoComplete="new-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* Confirm Password Field */}
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
-                    <FormControl>
-                      <PasswordInput
-                        id="confirmPassword"
-                        placeholder="******"
-                        autoComplete="new-password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            {/* Confirm Password Field */}
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <PasswordInput
+                      id="confirmPassword"
+                      placeholder="******"
+                      autoComplete="new-password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <Button type="submit" className="w-full" disabled={pending}>
-                {pending ? (
-                  <>
-                    Reset Password
-                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  </>
-                ) : (
-                  'Reset Password'
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+            <Button type="submit" disabled={pending}>
+              {pending ? (
+                <>
+                  Reset Password
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                </>
+              ) : (
+                'Reset Password'
+              )}
+            </Button>
+          </form>
+        </Form>
+      </Panel>
     </div>
   )
 }

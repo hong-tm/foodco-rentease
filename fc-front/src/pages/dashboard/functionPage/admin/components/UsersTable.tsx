@@ -144,7 +144,7 @@ export default function UsersTable() {
                     {(user.role && roleLabel[user.role]) || user.role}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-md:hidden">
-                    {user.phone || '—'}
+                    {user.phone && user.phone !== 'null' ? user.phone : '—'}
                   </TableCell>
                   <TableCell className="max-md:hidden">
                     {/* One state per row: banned, then unverified, then active. */}

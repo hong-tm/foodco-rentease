@@ -70,15 +70,31 @@ export function StallFloorPlan({
 }) {
   const ordered = [...stalls].sort((a, b) => a.stallNumber - b.stallNumber)
   const isRing = ordered.length === 20
+  // Outside the 20-seat ring, pick the widest column count that divides the
+  // stalls evenly so no row is left with orphan tiles (8 stalls -> 4x2).
+  let cols = 7
+  if (!isRing && ordered.length > 0) {
+    for (const c of [7, 6, 5, 4, 3]) {
+      if (ordered.length % c === 0) {
+        cols = c
+        break
+      }
+    }
+  }
 
   return (
     <TooltipPrimitive.Provider delayDuration={250} skipDelayDuration={800}>
       <div
         className={cn(
-          'grid min-w-0 grid-cols-7 gap-[5px] md:gap-1.5',
-          isRing && 'grid-rows-5',
+          'grid min-w-0 gap-[5px] md:gap-1.5',
+          isRing ? 'grid-cols-7 grid-rows-5 md:grid-rows-[repeat(5,100px)]' : 'md:auto-rows-[100px]',
           className,
         )}
+        style={
+          isRing
+            ? undefined
+            : { gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }
+        }
       >
         {ordered.map((stall, index) => {
           const state = boardState(stall)
@@ -118,7 +134,7 @@ export function StallFloorPlan({
                   </span>
                   <span
                     className={cn(
-                      'mt-auto truncate whitespace-nowrap',
+                      'mt-auto w-full whitespace-normal break-words line-clamp-2 text-left',
                       state === 'followup' &&
                         isUrgent(stall.endAt) &&
                         'text-negative-ink font-medium',
