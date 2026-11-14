@@ -41,7 +41,7 @@ export function UndoToast({
         aria-hidden="true"
       >
         <circle
-          className="fill-none stroke-muted"
+          className="stroke-muted fill-none"
           cx="8"
           cy="8"
           r="7"

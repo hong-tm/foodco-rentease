@@ -6108,6 +6108,7 @@ snapshots:
       '@tanstack/react-query': 5.107.1(@types/react@18.3.27)(react@19.2.3)
       '@tanstack/react-query-devtools': 5.107.1(@tanstack/react-query@5.107.1(@types/react@18.3.27)(react@19.2.3))(@types/react@18.3.27)(csstype@3.2.3)(react@19.2.3)
       '@tanstack/react-router': 1.170.46(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tanstack/redact': 0.3.1(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
       '@types/js-cookie': 3.0.6
       better-auth: 1.7.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.18)
       blurhash: 2.0.5
@@ -6145,6 +6146,7 @@ snapshots:
       vite-plugin-oxlint: 1.4.0(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
       zod: 4.6.6
     transitivePeerDependencies:
+      - '@cloudflare/vite-plugin'
       - '@emotion/is-prop-valid'
       - '@lynx-js/react'
       - '@opentelemetry/api'
@@ -6167,6 +6169,7 @@ snapshots:
       - solid-js
       - svelte
       - typescript
+      - vinext
       - vite
       - vitest
       - vue

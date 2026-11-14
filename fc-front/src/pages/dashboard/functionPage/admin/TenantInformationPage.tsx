@@ -124,10 +124,10 @@ export function TenantInformationPage() {
             value={view}
             onChange={(next) =>
               navigate({
-              search: next === 'all' ? {} : { view: next },
-              replace: true,
-              resetScroll: false,
-            })
+                search: next === 'all' ? {} : { view: next },
+                replace: true,
+                resetScroll: false,
+              })
             }
             tabs={[
               { value: 'all', label: 'All leases', count: countInView('all') },
