@@ -18,7 +18,7 @@ step(`db before: ${stallRow()}`)
 const { browser, page, errors, shot } = await open('admin', '/dashboard/stall-availability')
 step(`screenshot before: ${await shot('lease-stall-before')}`)
 
-await page.getByRole('button', { name: /^2 Still Empty/ }).click()
+await page.getByRole('button', { name: /^2\s*Vacant/ }).click()
 const dialog = page.getByRole('dialog', { name: /Stall 2/ })
 await dialog.getByRole('textbox', { name: 'Stall Name' }).fill('Verify Satay Corner')
 await dialog.getByRole('combobox').filter({ hasText: 'admin@verify.test' }).click()
