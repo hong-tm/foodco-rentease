@@ -191,6 +191,11 @@ export const apiRoutes = app
 // Server static files
 app.use('*', serveStatic({ root: './webpage' }))
 
+// Missing build assets must 404, not fall back to index.html: the SPA
+// fallback answers HTML under /assets/* and an edge cache can pin
+// HTML-as-JS on a hashed chunk URL for hours (seen 2026-11-15).
+app.get('/assets/*', (c) => c.notFound())
+
 app.use('*', serveStatic({ path: './webpage/index.html' }))
 
 //sequalize

@@ -11,8 +11,9 @@ REMOTE_DIR=/www/wwwroot/foodco.nullsoul.com
 STAMP=$(date +%Y%m%d-%H%M%S)
 
 echo '--- build ---'
-pnpm -C fc-front build
-pnpm -C fc-back build
+# Tag both bundles with the shipped commit so Sentry groups errors per release.
+VITE_SENTRY_RELEASE="$(git rev-parse --short HEAD)" pnpm -C fc-front build
+SENTRY_RELEASE="$(git rev-parse --short HEAD)" pnpm -C fc-back build
 LOCAL_MD5=$(md5sum fc-back/webpage/index.html | awk '{print $1}')
 echo "local  md5: $LOCAL_MD5"
 

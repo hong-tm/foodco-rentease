@@ -7,5 +7,7 @@ export const initSentry = () => {
   Sentry.init({
     dsn: env.SENTRY_DSN,
     sendDefaultPii: true,
+    release: process.env.SENTRY_RELEASE || undefined,
+    environment: process.env.NODE_ENV || 'production',
   })
 }
