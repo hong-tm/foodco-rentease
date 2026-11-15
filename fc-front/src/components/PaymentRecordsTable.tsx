@@ -236,6 +236,20 @@ export function PaymentRecordsTable({
           <StatStrip
             stats={[
               {
+                label: 'Rent',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType === 'rental')),
+                ),
+                note: 'Paid rent',
+              },
+              {
+                label: 'Utilities',
+                value: formatRM(
+                  sumOf(paid.filter((r) => r.paymentType !== 'rental')),
+                ),
+                note: 'Paid electric and water',
+              },
+              {
                 label: 'Collected',
                 value: formatRM(sumOf(paid)),
                 note: `${paid.length} payments, ${scopeLabel}`,
@@ -244,7 +258,7 @@ export function PaymentRecordsTable({
                 label: 'Outstanding',
                 value: formatRM(sumOf(pending)),
                 note: `${pending.length} unpaid, ${scopeLabel}`,
-                tone: pending.length ? 'negative' : undefined,
+                tone: pending.length ? 'warning' : undefined,
                 selected: selectedStatus === 'unpaid',
                 onSelect: pending.length
                   ? () => {
@@ -256,20 +270,6 @@ export function PaymentRecordsTable({
                         ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                     }
                   : undefined,
-              },
-              {
-                label: 'Rent',
-                value: formatRM(
-                  sumOf(paid.filter((r) => r.paymentType === 'rental')),
-                ),
-                note: 'Collected',
-              },
-              {
-                label: 'Utilities',
-                value: formatRM(
-                  sumOf(paid.filter((r) => r.paymentType !== 'rental')),
-                ),
-                note: 'Collected, electric and water',
               },
             ]}
           />
@@ -299,8 +299,13 @@ export function PaymentRecordsTable({
                 series={[
                   { key: 'paid', label: 'Collected', color: 'var(--chart-1)' },
                 ]}
+                // Full hue on one column: the chosen month, else the calendar month.
                 colorOf={(point) =>
-                  selectedMonth === 'all' || point.key === selectedMonth
+                  (
+                    selectedMonth === 'all'
+                      ? point.key === format(new Date(), 'yyyy-MM')
+                      : point.key === selectedMonth
+                  )
                     ? 'var(--chart-1)'
                     : 'var(--chart-1-soft)'
                 }
@@ -402,7 +407,7 @@ export function PaymentRecordsTable({
                   <TableHead className="max-md:hidden">Type</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
                   <TableHead className="max-md:hidden">Status</TableHead>
-                  <TableHead className="max-md:hidden">Payment ID</TableHead>
+                  <TableHead className="max-md:hidden">Ref</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -441,24 +446,27 @@ export function PaymentRecordsTable({
                     </TableCell>
                     <TableCell className="text-right font-medium tabular-nums">
                       {formatRM(amountOf(record))}
-                      {record.paymentStatus ? null : (
-                        <div className="mt-1 md:hidden">
+                      <div className="mt-1 md:hidden">
+                        {record.paymentStatus ? (
+                          <Badge variant="neutral">Paid</Badge>
+                        ) : (
                           <Badge variant="warning">Unpaid</Badge>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="max-md:hidden">
                       {record.paymentStatus ? (
-                        <span className="text-muted-foreground">Paid</span>
+                        <Badge variant="neutral">Paid</Badge>
                       ) : (
                         <Badge variant="warning">Unpaid</Badge>
                       )}
                     </TableCell>
                     <TableCell
-                      className="type-id text-muted-foreground max-w-40 truncate max-md:hidden"
+                      className="type-id text-muted-foreground max-md:hidden"
                       title={record.paymentId}
                     >
-                      {record.paymentId}
+                      {/* Short reference; the full ID stays in the tooltip and search. */}
+                      {record.paymentId.slice(0, 8).toUpperCase()}
                     </TableCell>
                   </TableRow>
                 ))}

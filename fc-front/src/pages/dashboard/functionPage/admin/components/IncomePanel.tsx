@@ -18,11 +18,6 @@ const utilitySeries = [
   { key: 'water', label: 'Water', color: 'var(--chart-2)' },
 ]
 
-const changeNote = (latest?: number, previous?: number) =>
-  latest !== undefined && previous
-    ? `${formatSignedPercent(((latest - previous) / previous) * 100)} on last month`
-    : 'No earlier month to compare'
-
 function StatTab({
   value,
   label,
@@ -73,9 +68,34 @@ export default function IncomePanel({ className }: { className?: string }) {
         .reduce((sum, record) => sum + Number(record.paymentAmount), 0),
     }
   })
-  const rentMonths = rent.filter((point) => point.rent > 0)
-  const rentLatest = rentMonths[rentMonths.length - 1]?.rent
-  const rentPrevious = rentMonths[rentMonths.length - 2]?.rent
+  // Month to date against the same days of last month: a month in progress
+  // is never compared with a whole month.
+  const day = now.getDate()
+  const lastMonth = subMonths(now, 1)
+  const paidUpToDay = (types: string[], month: Date) =>
+    records
+      .filter((record) => {
+        const date = new Date(record.paymentDate)
+        return (
+          types.includes(record.paymentType) &&
+          record.paymentStatus &&
+          isSameMonth(date, month) &&
+          date.getDate() <= day
+        )
+      })
+      .reduce((sum, record) => sum + Number(record.paymentAmount), 0)
+  const pace = (types: string[]) => {
+    const current = paidUpToDay(types, now)
+    const previous = paidUpToDay(types, lastMonth)
+    return {
+      figure: formatRM(current),
+      note: previous
+        ? `${formatSignedPercent(((current - previous) / previous) * 100)} on ${format(lastMonth, 'MMM')} 1–${day}`
+        : `None on ${format(lastMonth, 'MMM')} 1–${day} to compare`,
+    }
+  }
+  const rentPace = pace(['rental'])
+  const utilityPace = pace(['electric', 'water'])
 
   const utilities = records.filter(
     (record) =>
@@ -104,11 +124,6 @@ export default function IncomePanel({ className }: { className?: string }) {
       label: format(parse(key, 'yyyy-MM', new Date()), 'MMM'),
       ...byMonth.get(key)!,
     }))
-  const totalOf = (point?: { electric: number; water: number }) =>
-    point ? point.electric + point.water : undefined
-  const utilityLatest = totalOf(utilityChart[utilityChart.length - 1])
-  const utilityPrevious = totalOf(utilityChart[utilityChart.length - 2])
-
   if (isLoading) {
     return (
       <Panel className={className}>
@@ -130,15 +145,15 @@ export default function IncomePanel({ className }: { className?: string }) {
         <TabsList className="grid h-auto w-full grid-cols-2 items-stretch rounded-none border-b bg-transparent p-0">
           <StatTab
             value="rent"
-            label="Rent collected"
-            figure={rentLatest !== undefined ? formatRM(rentLatest) : '—'}
-            note={changeNote(rentLatest, rentPrevious)}
+            label={`Rent, ${format(now, 'MMM')} to date`}
+            figure={rentPace.figure}
+            note={rentPace.note}
           />
           <StatTab
             value="utilities"
-            label="Utilities collected"
-            figure={utilityLatest !== undefined ? formatRM(utilityLatest) : '—'}
-            note={changeNote(utilityLatest, utilityPrevious)}
+            label={`Utilities, ${format(now, 'MMM')} to date`}
+            figure={utilityPace.figure}
+            note={utilityPace.note}
           />
         </TabsList>
         <TabsContent value="rent" className="flex flex-col gap-3 p-4 md:p-5">
@@ -146,6 +161,12 @@ export default function IncomePanel({ className }: { className?: string }) {
           <ColumnChart
             data={rent}
             series={[{ key: 'rent', label: 'Rent', color: 'var(--chart-1)' }]}
+            // The month in progress carries the full hue; closed months its tint.
+            colorOf={(datum) =>
+              datum === rent[rent.length - 1]
+                ? 'var(--chart-1)'
+                : 'var(--chart-1-soft)'
+            }
             height={208}
             formatTick={(value) =>
               value >= 1000 ? `${value / 1000}k` : String(value)

@@ -65,16 +65,17 @@ export function CountTabs<T extends string>({
       onValueChange={(next) => onChange(next as T)}
       className={cn('min-w-0 max-md:w-full', className)}
     >
+      {/* On a phone the tabs wrap, so every view stays in reach. */}
       <div>
         <TabsList
           aria-label={label}
-          className="max-md:h-auto max-md:min-h-11 max-md:flex-wrap max-md:justify-start"
+          className="max-md:h-auto max-md:min-h-11 max-md:w-full max-md:flex-wrap max-md:justify-start"
         >
           {tabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="px-2.5 max-md:h-11 max-md:flex-none"
+              className="px-2.5 max-md:h-10 max-md:flex-none"
             >
               {tab.label}
               {tab.count !== undefined ? (
@@ -194,7 +195,7 @@ export function StatStrip({
     label: string
     value: React.ReactNode
     note?: React.ReactNode
-    tone?: 'negative'
+    tone?: 'warning'
     /** Makes the figure a shortcut to the rows behind it. */
     onSelect?: () => void
     selected?: boolean
@@ -230,13 +231,13 @@ export function StatStrip({
           <dd
             className={cn(
               'type-figure truncate',
-              stat.tone === 'negative' && 'text-negative-ink',
+              stat.tone === 'warning' && 'text-warning-ink',
             )}
           >
             {stat.value}
           </dd>
           {stat.note ? (
-            <dd className="type-meta text-muted-foreground truncate">
+            <dd className="type-meta text-muted-foreground line-clamp-2">
               {stat.note}
             </dd>
           ) : null}

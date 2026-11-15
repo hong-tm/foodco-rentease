@@ -28,7 +28,7 @@ const SunIcon = () => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
+        className="size-5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
       >
         <circle cx="12" cy="12" r="4" />
         {[

@@ -14,6 +14,7 @@ import {
   boardStateLabel,
   byEndDate,
   isUrgent,
+  stallLabel,
   timeLeftLabel,
   type BoardState,
 } from '@/lib/stall-lease'
@@ -47,6 +48,12 @@ const filterLabels: { value: Filter; label: string }[] = [
   { value: 'all', label: 'All stalls' },
 ]
 
+const centreVerb: Record<BoardState, string> = {
+  free: 'are free',
+  followup: 'need follow-up',
+  let: 'are on lease',
+}
+
 function priceOf(stall: Stall) {
   const tierPrice = Number(stall.stallTierNumber?.tierPrice)
   const size = Number(stall.stallSize)
@@ -67,7 +74,7 @@ function StallPeek({ stall }: { stall: Stall }) {
           <span className="type-id text-muted-foreground mr-2">
             {stall.stallNumber}
           </span>
-          {stall.stallName}
+          {stallLabel(stall)}
         </p>
         <p className="type-meta text-muted-foreground line-clamp-2">
           {stall.description}
@@ -174,7 +181,7 @@ export function StallAvailabilityPage() {
       ) : null}
 
       {!error ? (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <Panel>
             <CountTabs
               label="Filter stalls"
@@ -197,14 +204,13 @@ export function StallAvailabilityPage() {
                 active={open?.stallNumber}
                 onOpen={setOpen}
                 peek={(stall) => <StallPeek stall={stall} />}
-                className="md:grid-rows-[repeat(5,100px)]"
                 centre={
                   <>
                     <p className="type-figure-lead">{listed.length}</p>
                     <p className="type-body text-muted-foreground">
                       {filter === 'all'
                         ? 'stalls in the food court'
-                        : `of ${stalls.length} stalls: ${boardStateLabel[filter].toLowerCase()}`}
+                        : `of ${stalls.length} stalls ${centreVerb[filter]}`}
                     </p>
                     <p className="type-meta text-muted-foreground mt-2 hidden md:block">
                       Select a stall to {isAdmin ? 'edit' : 'apply'}.
@@ -214,7 +220,7 @@ export function StallAvailabilityPage() {
               />
             )}
           </Panel>
-          <div className="flex min-w-0 flex-col gap-4 xl:h-0 xl:min-h-full">
+          <div className="flex min-w-0 flex-col gap-4">
             <Panel className="min-h-0 flex-1">
               <PanelHeader
                 title={filterLabels.find((f) => f.value === filter)?.label}
@@ -225,7 +231,7 @@ export function StallAvailabilityPage() {
                 <PanelEmpty>No stalls in this state.</PanelEmpty>
               ) : null}
               {listed.length > 0 ? (
-                <ul className="-mx-2 flex min-h-0 flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
+                <ul className="-mx-2 flex min-h-0 max-h-[560px] flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
                   {listed.map((stall) => {
                     const price = priceOf(stall)
                     return (
@@ -240,7 +246,7 @@ export function StallAvailabilityPage() {
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="type-body block truncate font-medium">
-                              {stall.stallName}
+                              {stallLabel(stall)}
                             </span>
                             <span className="type-meta text-muted-foreground block truncate">
                               {stall.rentStatus

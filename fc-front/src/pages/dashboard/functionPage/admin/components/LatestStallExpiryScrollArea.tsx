@@ -35,12 +35,18 @@ export default function LatestStallExpiryScrollArea({
     .filter((stall) => leaseState(stall) === 'let' && stall.endAt)
     .sort(byEndDate)
   const rows = [...attention, ...upcoming].slice(0, 5)
+  // The list tops up with the next leases to end; the count says so.
+  const nextShown = Math.max(0, rows.length - attention.length)
 
   return (
     <Panel className={className}>
       <PanelHeader
         title="Leases to act on"
-        meta={`${attention.length} past end date or ending within 30 days`}
+        meta={
+          nextShown > 0
+            ? `${attention.length} need follow-up, then the next ${nextShown} to end`
+            : `${attention.length} past end date or ending within 30 days`
+        }
         action={
           <Button variant="quiet" asChild>
             <Link
@@ -73,7 +79,7 @@ export default function LatestStallExpiryScrollArea({
                     {stall.stallName}
                   </span>
                 </p>
-                <p className="type-meta text-muted-foreground truncate">
+                <p className="type-meta text-muted-foreground">
                   {stall.stallOwnerId?.name} ·{' '}
                   <span
                     className={cn(
@@ -84,7 +90,8 @@ export default function LatestStallExpiryScrollArea({
                   </span>
                 </p>
               </div>
-              {stall.stallOwnerId ? (
+              {/* Only leases that need follow-up get a reminder; the rest are listed to plan ahead. */}
+              {stall.stallOwnerId && attention.includes(stall) ? (
                 <TenantActionButton
                   userName={stall.stallOwnerId.name}
                   userEmail={stall.stallOwnerId.email}

@@ -52,6 +52,11 @@ function Trend({
         bare
         data={series}
         series={[{ key: 'value', label: title, color }]}
+        colorOf={(point) =>
+          point.label === format(new Date(), 'MMM')
+            ? color
+            : 'var(--chart-1-soft)'
+        }
         height={88}
         ticks={[0, Math.max(1, ...series.map((point) => point.value))]}
       />

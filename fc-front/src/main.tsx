@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import * as Sentry from '@sentry/react'
 import { createRoot } from 'react-dom/client'
 
 import './index.css'
@@ -13,6 +14,15 @@ import { RouteError } from '@/components/route-error'
 import { ThemeProvider } from '@/components/theme-provider'
 
 import { routeTree } from './routeTree.gen'
+
+Sentry.init({
+  dsn:
+    import.meta.env.VITE_SENTRY_DSN ??
+    'https://b9dbcd2dee8f1c3285c6c88eb43c7dca@o4509593903497216.ingest.us.sentry.io/4512437299249152',
+  release: import.meta.env.VITE_SENTRY_RELEASE || undefined,
+  environment: import.meta.env.MODE,
+  tracesSampleRate: 0.1,
+})
 
 const router = createRouter({
   routeTree,

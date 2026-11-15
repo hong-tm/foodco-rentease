@@ -6,7 +6,6 @@
     "src/components/CheckoutForm.tsx",
     "src/components/avatar-user.tsx",
     "src/components/date-picker.tsx",
-    "src/hooks/use-toast.ts",
     "src/lib/try-catch.ts",
     "src/pages/dashboard/components/BlurhashComponent.tsx",
     "src/pages/dashboard/components/nav-projects.tsx"

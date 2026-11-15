@@ -164,7 +164,7 @@ export default function StallUtilitiesDetails() {
                 <div className="bg-muted/50 space-y-3 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <DropletIcon className="h-4 w-4 text-blue-500" />
+                      <DropletIcon className="text-chart-2 h-4 w-4" />
                       <div className="flex flex-col">
                         <span>Water Bill</span>
                         <span className="text-muted-foreground text-sm">
@@ -256,7 +256,7 @@ export default function StallUtilitiesDetails() {
                   ) : (
                     <>
                       Pay
-                      <DropletIcon className="h-4 w-4 text-blue-500" />
+                      <DropletIcon className="text-chart-2 h-4 w-4" />
                     </>
                   )}
                 </Button>

@@ -398,12 +398,12 @@ export default function UpdateStallForm({
   )
 
   return (
-    <div className="flex w-full flex-col px-12 md:px-0">
+    <div className="flex w-full flex-col px-1 md:px-0">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <div className="grid gap-5">
             {isMobile ? (
-              <ScrollArea className="h-[600px] gap-4 overflow-x-auto rounded-md">
+              <ScrollArea className="max-h-sheet gap-4 overflow-x-auto rounded-md">
                 {formContent}
               </ScrollArea>
             ) : (

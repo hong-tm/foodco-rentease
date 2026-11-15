@@ -34,11 +34,7 @@ export function PersonAvatar({
     <Avatar className={cn('size-8 shrink-0', className)}>
       <AvatarImage src={image ?? undefined} alt={name ?? ''} />
       <AvatarFallback
-        className={cn(
-          'type-meta font-semibold',
-          className?.includes('size-6') && 'text-[0.625rem]',
-          toneFor(id ?? name ?? '?'),
-        )}
+        className={cn('type-meta font-semibold', toneFor(id ?? name ?? '?'))}
       >
         {initials(name)}
       </AvatarFallback>

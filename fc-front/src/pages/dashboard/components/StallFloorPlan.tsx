@@ -7,6 +7,7 @@ import {
   boardState,
   isUrgent,
   pastLabel,
+  stallLabel,
   type BoardState,
 } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
@@ -17,15 +18,15 @@ function tileLeft(endAt: StallUserAttributes['endAt']) {
   return pastLabel(endAt)
 }
 
-/** Legend marker. Free is a hollow shape; only the highlighted set carries colour. */
+/** Legend marker. Free is a hollow shape; orange marks follow-up only. */
 export function StateSwatch({ state }: { state: BoardState }) {
   return (
     <span
       aria-hidden="true"
       className={cn(
         'size-3 shrink-0 rounded-[4px]',
-        state === 'let' && 'bg-muted-foreground/25',
-        state === 'followup' && 'bg-primary',
+        state === 'let' && 'bg-muted border-input border',
+        state === 'followup' && 'bg-brand-soft border-primary border',
         state === 'free' && 'border-muted-foreground border border-dashed',
       )}
     />
@@ -69,15 +70,31 @@ export function StallFloorPlan({
 }) {
   const ordered = [...stalls].sort((a, b) => a.stallNumber - b.stallNumber)
   const isRing = ordered.length === 20
+  // Outside the 20-seat ring, pick the widest column count that divides the
+  // stalls evenly so no row is left with orphan tiles (8 stalls -> 4x2).
+  let cols = 7
+  if (!isRing && ordered.length > 0) {
+    for (const c of [7, 6, 5, 4, 3]) {
+      if (ordered.length % c === 0) {
+        cols = c
+        break
+      }
+    }
+  }
 
   return (
     <TooltipPrimitive.Provider delayDuration={250} skipDelayDuration={800}>
       <div
         className={cn(
-          'grid min-w-0 grid-cols-7 gap-[5px] md:gap-1.5',
-          isRing && 'grid-rows-5',
+          'grid min-w-0 gap-[5px] md:gap-1.5',
+          isRing ? 'grid-cols-7 grid-rows-5 md:grid-rows-[repeat(5,100px)]' : 'md:auto-rows-[100px]',
           className,
         )}
+        style={
+          isRing
+            ? undefined
+            : { gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }
+        }
       >
         {ordered.map((stall, index) => {
           const state = boardState(stall)
@@ -88,15 +105,18 @@ export function StallFloorPlan({
               type="button"
               style={seatOf(index, ordered.length)}
               onClick={() => onOpen(stall)}
-              aria-label={`Stall ${stall.stallNumber}, ${stall.stallName}`}
+              aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
-                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-colors outline-none focus-visible:ring-2',
-                state === 'free'
-                  ? 'border-muted-foreground/50 bg-card border-dashed'
-                  : 'bg-muted/60 border-transparent',
-                highlighted
-                  ? 'bg-brand-soft text-brand-ink border-primary border-solid'
-                  : 'hover:border-muted-foreground/50',
+                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
+                // One look per state on every page: orange is only ever the exception.
+                state === 'free' &&
+                  'border-muted-foreground bg-card hover:border-foreground border-dashed',
+                state === 'let' &&
+                  'bg-muted border-input hover:border-muted-foreground',
+                state === 'followup' &&
+                  'bg-brand-soft text-brand-ink border-primary',
+                // A filter dims the rest instead of recolouring the matches.
+                matches && !highlighted && 'opacity-35 hover:opacity-70',
                 size === 'compact'
                   ? 'flex items-center justify-center'
                   : 'flex flex-col items-center justify-center p-1 md:items-start md:justify-start md:p-2',
@@ -108,11 +128,13 @@ export function StallFloorPlan({
               {size === 'full' ? (
                 <span className="type-meta hidden min-w-0 md:contents">
                   <span className="line-clamp-2 font-medium">
-                    {stall.stallName}
+                    {state === 'free'
+                      ? formatSize(stall.stallSize)
+                      : stallLabel(stall)}
                   </span>
                   <span
                     className={cn(
-                      'mt-auto truncate whitespace-nowrap',
+                      'mt-auto w-full whitespace-normal break-words line-clamp-2 text-left',
                       state === 'followup' &&
                         isUrgent(stall.endAt) &&
                         'text-negative-ink font-medium',

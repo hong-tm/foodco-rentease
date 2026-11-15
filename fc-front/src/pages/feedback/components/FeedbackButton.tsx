@@ -64,7 +64,7 @@ export function FeedbackButton() {
           Feedback without Account
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-auto sm:max-w-[425px]">
+      <DialogContent className="h-auto sm:max-w-md">
         <DialogHeader className="items-center justify-center">
           <DialogTitle>Feedback</DialogTitle>
           <DialogDescription>Like our service?</DialogDescription>
