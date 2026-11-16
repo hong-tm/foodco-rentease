@@ -4,6 +4,8 @@ Rental management site with two separately installed packages: `fc-back` (Hono/T
 
 写或改 `fc-front` 的 HTML/CSS/客户端 JS 前，先用 `modern-web-guidance` 技能检索对应的现代 web 平台做法（模态/表单/动画/无障碍/性能等），再动手写代码；用了就在交付说明里提一句。技能在 `.agents/skills/modern-web-guidance`（软链自 `/root/.agents/skills-shared/modern-web-guidance`）；更新走共享仓 `git pull`，别跑 `npx skills add`（会把软链换回实体拷贝）。写或改 UI 前另读根目录 `DESIGN.md`——你的 taste 规则与参照都在里面。
 
+不确定前端任务该用哪个技能时，在说得通的地方用 Emil Kowalski 的技能（`.agents/skills/` 下的 `emil-design-eng`、`animate`、`review-animations` 等）。设计纠正用 `learn-taste` 沉淀。
+
 ---
 
 # Agent workflow (four beats)
