@@ -46,6 +46,9 @@ jobs:
       - name: Lint frontend
         run: pnpm -C fc-front lint
 
+      - name: Guardrail ratchet
+        run: node scripts/check-guardrails.mjs
+
       # vite build does not typecheck; keep TS out of the merge path's blind spot.
       - name: Typecheck frontend
         run: pnpm -C fc-front typecheck

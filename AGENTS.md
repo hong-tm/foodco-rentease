@@ -21,6 +21,7 @@ Checks for this repo (all wired in CI; run the full set before a PR):
 pnpm -C fc-back build               # tsc -> dist
 pnpm -C fc-back check               # prettier --write (rewrites, run before committing)
 node scripts/check-design.mjs        # taste-rule lint (report-only, never rewrites code)
+node scripts/check-guardrails.mjs    # ratchet: useEffect / raw type size / palette colour / comments may fall, never rise
 pnpm -C fc-front typecheck          # tsc --noEmit (vite build does NOT typecheck)
 pnpm -C fc-front lint               # oxlint
 pnpm -C fc-front build              # vite build -> ../fc-back/webpage
@@ -38,4 +39,6 @@ Hard invariants:
 - There is no automated test suite yet; a UI change needs before/after screenshots as its proof.
 - Behavior changes are proven on the running app with `.agents/skills/verify-foodco` (own Postgres + seed, Playwright journeys that check the API call and the DB row). A toast or a passing typecheck is not proof.
 - Formatting is prettier's call: run `pnpm -C fc-front check` / `-C fc-back check` before committing.
+- 纠正 agent 一次，能机械判定的就写成检查：加进 `scripts/check-guardrails.mjs` 的 `RULES`，或 oxlint 规则，不往本文件加话。计数降了跑 `node scripts/check-guardrails.mjs --update` 锁定；基线只能手改调高，评审能看到。
+- 不写代码注释：约束写成类型、测试或检查，原因写进 commit message。
 - UI 改动的验收在真实渲染面上做：先有种子数据，agent 自己截图并看过；只审代码不算验收。
