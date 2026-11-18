@@ -26,7 +26,7 @@ export function StateSwatch({ state }: { state: BoardState }) {
       className={cn(
         'size-3 shrink-0 rounded-[4px]',
         state === 'let' && 'bg-muted border-input border',
-        state === 'followup' && 'bg-brand-soft border-primary border',
+        state === 'followup' && 'bg-primary',
         state === 'free' && 'border-muted-foreground border border-dashed',
       )}
     />

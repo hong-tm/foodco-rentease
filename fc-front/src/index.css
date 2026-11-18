@@ -68,7 +68,7 @@ code {
   --negative-ink: oklch(0.46 0.16 25);
 
   --chart-1: color-mix(in oklab, var(--brand) 88%, white);
-  --chart-1-soft: color-mix(in oklab, var(--brand) 42%, white);
+  --chart-1-soft: color-mix(in oklab, var(--brand) 70%, white);
   --chart-2: oklch(0.62 0.09 215);
   --chart-3: oklch(0.74 0.11 75);
   --chart-4: oklch(0.62 0.09 165);
@@ -132,7 +132,7 @@ code {
   --negative-ink: oklch(0.84 0.09 25);
 
   --chart-1: var(--brand);
-  --chart-1-soft: color-mix(in oklab, var(--brand) 48%, var(--card));
+  --chart-1-soft: color-mix(in oklab, var(--brand) 62%, var(--card));
   --chart-2: oklch(0.72 0.09 215);
   --chart-3: oklch(0.82 0.11 80);
   --chart-4: oklch(0.73 0.09 165);
@@ -332,5 +332,65 @@ code {
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+@property --fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@layer components {
+  .scroll-fade-x {
+    --fade-size: 3rem;
+    --fade-dir: right;
+    --fade-start-pos: 0;
+    --fade-end-pos: 100%;
+    mask:
+      linear-gradient(black, black) no-clip subtract,
+      linear-gradient(to var(--fade-dir), black, transparent)
+        var(--fade-start-pos) 0 / var(--fade-start) 100% no-repeat no-clip,
+      linear-gradient(to var(--fade-dir), transparent, black)
+        var(--fade-end-pos) 0 / var(--fade-end) 100% no-repeat no-clip;
+    animation:
+      reveal-fade-start linear both,
+      hide-fade-end linear both;
+    animation-timeline: scroll(self inline);
+    animation-range:
+      0 var(--fade-size),
+      calc(100% - var(--fade-size)) 100%;
+
+    &:dir(rtl) {
+      --fade-dir: left;
+      --fade-start-pos: 100%;
+      --fade-end-pos: 0;
+    }
+  }
+
+  @supports not (animation-timeline: scroll()) {
+    @media (width < 48rem) {
+      .scroll-fade-x {
+        mask: linear-gradient(to right, black calc(100% - 3rem), transparent);
+      }
+    }
+  }
+}
+
+@keyframes reveal-fade-start {
+  to {
+    --fade-start: var(--fade-size);
+  }
+}
+
+@keyframes hide-fade-end {
+  from {
+    --fade-end: var(--fade-size);
   }
 }

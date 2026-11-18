@@ -79,10 +79,18 @@ export default function LatestStallExpiryScrollArea({
                     {stall.stallName}
                   </span>
                 </p>
-                <p className="type-meta text-muted-foreground">
-                  {stall.stallOwnerId?.name} ·{' '}
+                <p className="type-meta text-muted-foreground flex min-w-0 gap-1">
+                  {stall.stallOwnerId?.name && (
+                    <>
+                      <span className="truncate">
+                        {stall.stallOwnerId.name}
+                      </span>
+                      <span aria-hidden="true">·</span>
+                    </>
+                  )}
                   <span
                     className={cn(
+                      'shrink-0 whitespace-nowrap',
                       isUrgent(stall.endAt) && 'text-negative-ink font-medium',
                     )}
                   >
@@ -90,7 +98,6 @@ export default function LatestStallExpiryScrollArea({
                   </span>
                 </p>
               </div>
-              {/* Only leases that need follow-up get a reminder; the rest are listed to plan ahead. */}
               {stall.stallOwnerId && attention.includes(stall) ? (
                 <TenantActionButton
                   userName={stall.stallOwnerId.name}

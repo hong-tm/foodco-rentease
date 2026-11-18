@@ -79,7 +79,7 @@ export default function FeedbackHapinessLineChart({
                         width: `${(row.average / 4) * 100}%`,
                         background: isLow
                           ? 'var(--destructive)'
-                          : 'var(--positive)',
+                          : 'var(--chart-1)',
                       }}
                     />
                   </span>

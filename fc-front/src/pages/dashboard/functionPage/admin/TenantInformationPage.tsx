@@ -157,7 +157,7 @@ export function TenantInformationPage() {
           <div
             role="group"
             aria-label="Filter by tenant"
-            className="bg-card -mx-4 flex divide-x overflow-x-auto border-y [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:divide-x-0 md:rounded-xl md:border"
+            className="bg-card scroll-fade-x -mx-4 flex divide-x overflow-x-auto border-y [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:divide-x-0 md:rounded-xl md:border"
           >
             {tenants.map((user) => {
               const selected = tenant === user.id
