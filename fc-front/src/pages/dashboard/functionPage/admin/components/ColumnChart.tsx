@@ -101,6 +101,7 @@ export function ColumnChart<T extends { label: string }>({
           />
           {series.map((s, index) => (
             <Bar
+              isAnimationActive={false}
               key={s.key}
               dataKey={s.key}
               stackId="stack"

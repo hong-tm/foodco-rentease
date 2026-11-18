@@ -1,0 +1,18 @@
+diff --git a/dist/react/class.js b/dist/react/class.js
+index 2c5d74f8ccd2f051daeed4ac89412da28e3fbd5f..7e4fd101966caae22a61aee0abd0f5cf55677575 100644
+--- a/dist/react/class.js
++++ b/dist/react/class.js
+@@ -7,11 +7,8 @@ const Component = function Component2(props, context) {
+ };
+ Object.assign(Component.prototype, {
+   setState(updater, callback) {
+-    if (!this._q) {
+-      if (process.env.NODE_ENV !== "production")
+-        throw new Error("Cannot call setState on an um component.");
+-      throw new Error();
+-    }
++    if (!this._q)
++      return;
+     this._q(updater, callback);
+   },
+   forceUpdate(callback) {

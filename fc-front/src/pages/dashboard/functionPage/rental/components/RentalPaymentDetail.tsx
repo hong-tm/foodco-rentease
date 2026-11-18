@@ -161,6 +161,7 @@ export default function RentalPaymentDetail() {
               content={<ChartTooltipContent indicator="line" />}
             />
             <Area
+              isAnimationActive={false}
               dataKey="rental"
               type="natural"
               fill="var(--color-rental)"
@@ -169,6 +170,7 @@ export default function RentalPaymentDetail() {
               stackId="a"
             />
             <Area
+              isAnimationActive={false}
               dataKey="water"
               type="natural"
               fill="var(--color-water)"
@@ -177,6 +179,7 @@ export default function RentalPaymentDetail() {
               stackId="a"
             />
             <Area
+              isAnimationActive={false}
               dataKey="electric"
               type="natural"
               fill="var(--color-electric)"
