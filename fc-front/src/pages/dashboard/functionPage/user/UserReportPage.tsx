@@ -15,7 +15,7 @@ export function UserReportPage() {
 
   return (
     <PaymentRecordsTable
-      title="User Records"
+      title="Payment records"
       description="Initial payment records for your stall"
       records={userRecords}
       showMonthFilter={false}

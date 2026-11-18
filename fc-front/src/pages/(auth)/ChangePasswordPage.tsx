@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { changePasswordFormSchema } from '@server/lib/sharedType'
 import { useNavigate } from '@tanstack/react-router'
@@ -8,7 +9,6 @@ import { toast } from 'sonner'
 import { z } from 'zod/v4'
 
 import { authClient } from '@/lib/auth-client'
-import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -19,8 +19,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { PasswordInput } from '@/components/ui/passwod-input'
 import { Panel, PanelHeader } from '@/components/ui/panel'
+import { PasswordInput } from '@/components/ui/passwod-input'
 
 export default function ChangePasswordPage() {
   const form = useForm<z.infer<typeof changePasswordFormSchema>>({

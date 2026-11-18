@@ -81,7 +81,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Export Financial Report',
+            title: 'Financial report',
             url: '/dashboard/admin-report',
             icon: BadgeDollarSignIcon,
           },
@@ -116,7 +116,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Stall',
         items: [
           {
-            title: 'Stall Information',
+            title: 'Your stalls',
             url: '/dashboard/rental-dashboard',
             icon: StoreIcon,
           },
@@ -136,7 +136,7 @@ export const navByRole: Record<Role, RoleNav> = {
             icon: LayoutGridIcon,
           },
           {
-            title: 'Appointment',
+            title: 'Appointments',
             url: '/dashboard/user-appointment',
             icon: CalendarClockIcon,
           },
@@ -146,7 +146,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Export Financial Report',
+            title: 'Payment records',
             url: '/dashboard/rental-report',
             icon: BadgeDollarSignIcon,
           },
@@ -156,7 +156,7 @@ export const navByRole: Record<Role, RoleNav> = {
     secondary: [],
     quick: [
       {
-        title: 'Payments',
+        title: 'Payment records',
         url: '/dashboard/rental-report',
         icon: CreditCardIcon,
       },
@@ -178,7 +178,7 @@ export const navByRole: Record<Role, RoleNav> = {
             icon: LayoutGridIcon,
           },
           {
-            title: 'Appointment',
+            title: 'Appointments',
             url: '/dashboard/user-appointment',
             icon: CalendarClockIcon,
           },
@@ -188,7 +188,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Payments',
+            title: 'Payment records',
             url: '/dashboard/user-report',
             icon: ReceiptTextIcon,
           },
@@ -203,7 +203,7 @@ export const navByRole: Record<Role, RoleNav> = {
         icon: FileUserIcon,
       },
       {
-        title: 'Payment History',
+        title: 'Payment records',
         url: '/dashboard/user-report',
         icon: HistoryIcon,
       },

@@ -259,7 +259,7 @@ export default function UserDashboardSidebar({
           title: 'Stall',
           items: [
             {
-              title: 'Stall Information',
+              title: 'Your stalls',
               url: '/dashboard/rental-dashboard',
               icon: StoreIcon,
             },
@@ -279,7 +279,7 @@ export default function UserDashboardSidebar({
               icon: SignatureIcon,
             },
             {
-              title: 'Appointment',
+              title: 'Appointments',
               url: '/dashboard/user-appointment',
               icon: CalendarClockIcon,
             },
@@ -289,7 +289,7 @@ export default function UserDashboardSidebar({
           title: 'Financial',
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Payment records',
               url: '/dashboard/rental-report',
               icon: FileDownIcon,
             },
@@ -310,7 +310,7 @@ export default function UserDashboardSidebar({
               icon: SignatureIcon,
             },
             {
-              title: 'Appointment',
+              title: 'Appointments',
               url: '/dashboard/user-appointment',
               icon: CalendarClockIcon,
             },
@@ -320,7 +320,7 @@ export default function UserDashboardSidebar({
           title: 'Financial',
           items: [
             {
-              title: 'Payments',
+              title: 'Payment records',
               url: '/dashboard/user-report',
               icon: CreditCardIcon,
             },
