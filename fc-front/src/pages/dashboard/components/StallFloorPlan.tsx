@@ -18,7 +18,7 @@ function tileLeft(endAt: StallUserAttributes['endAt']) {
   return pastLabel(endAt)
 }
 
-/** Legend marker. Free is a hollow shape; orange marks follow-up only. */
+/** Legend marker. Free is a hollow shape; the brand tint marks follow-up only. */
 export function StateSwatch({ state }: { state: BoardState }) {
   return (
     <span
@@ -87,7 +87,11 @@ export function StallFloorPlan({
       <div
         className={cn(
           'grid min-w-0 gap-[5px] md:gap-1.5',
-          isRing ? 'grid-cols-7 grid-rows-5 md:grid-rows-[repeat(5,100px)]' : 'md:auto-rows-[100px]',
+          isRing && 'grid-cols-7 grid-rows-5',
+          size === 'full' &&
+            (isRing
+              ? 'md:grid-rows-[repeat(5,100px)]'
+              : 'md:auto-rows-[100px]'),
           className,
         )}
         style={
@@ -108,15 +112,15 @@ export function StallFloorPlan({
               aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
                 'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
-                // One look per state on every page: orange is only ever the exception.
                 state === 'free' &&
                   'border-muted-foreground bg-card hover:border-foreground border-dashed',
                 state === 'let' &&
                   'bg-muted border-input hover:border-muted-foreground',
                 state === 'followup' &&
                   'bg-brand-soft text-brand-ink border-primary',
-                // A filter dims the rest instead of recolouring the matches.
-                matches && !highlighted && 'opacity-35 hover:opacity-70',
+                highlighted &&
+                  'bg-brand-soft text-brand-ink border-primary border-solid',
+                matches && !highlighted && 'opacity-40 hover:opacity-75',
                 size === 'compact'
                   ? 'flex items-center justify-center'
                   : 'flex flex-col items-center justify-center p-1 md:items-start md:justify-start md:p-2',
@@ -134,7 +138,7 @@ export function StallFloorPlan({
                   </span>
                   <span
                     className={cn(
-                      'mt-auto w-full whitespace-normal break-words line-clamp-2 text-left',
+                      'mt-auto line-clamp-2 w-full text-left break-words whitespace-normal',
                       state === 'followup' &&
                         isUrgent(stall.endAt) &&
                         'text-negative-ink font-medium',

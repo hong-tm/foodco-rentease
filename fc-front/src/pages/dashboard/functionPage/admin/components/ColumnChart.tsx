@@ -136,7 +136,7 @@ export function ChartLegend({ series }: { series: ColumnSeries[] }) {
         <li key={s.key} className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
-            className="size-2.5 rounded-[3px]"
+            className="size-2.5 rounded-xs"
             style={{ background: s.color }}
           />
           {s.label}

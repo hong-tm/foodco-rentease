@@ -169,7 +169,7 @@ export function StallAvailabilityPage() {
       >
         {data
           ? freeNumbers.length
-            ? `${freeNumbers.length} of ${stalls.length} stalls are free: ${joinList(freeNumbers)}. ${counts.followup} lease${counts.followup === 1 ? ' needs' : 's need'} follow-up.`
+            ? `${freeNumbers.length} of ${stalls.length} stalls are free: ${joinList(freeNumbers)}.${isAdmin ? ` ${counts.followup} lease${counts.followup === 1 ? ' needs' : 's need'} follow-up.` : ''}`
             : `All ${stalls.length} stalls are let.`
           : 'Loading the food court.'}
       </PageHeader>
@@ -187,12 +187,14 @@ export function StallAvailabilityPage() {
               label="Filter stalls"
               value={filter}
               onChange={setFilter}
-              tabs={filterLabels.map((item) => ({
-                value: item.value,
-                label: item.label,
-                count:
-                  item.value === 'all' ? stalls.length : counts[item.value],
-              }))}
+              tabs={filterLabels
+                .filter((item) => isAdmin || item.value !== 'followup')
+                .map((item) => ({
+                  value: item.value,
+                  label: item.label,
+                  count:
+                    item.value === 'all' ? stalls.length : counts[item.value],
+                }))}
             />
             {isLoading ? (
               <Skeleton className="h-[230px] md:h-[524px]" />
@@ -231,7 +233,7 @@ export function StallAvailabilityPage() {
                 <PanelEmpty>No stalls in this state.</PanelEmpty>
               ) : null}
               {listed.length > 0 ? (
-                <ul className="-mx-2 flex min-h-0 max-h-[560px] flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
+                <ul className="-mx-2 flex max-h-[560px] min-h-0 flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
                   {listed.map((stall) => {
                     const price = priceOf(stall)
                     return (
