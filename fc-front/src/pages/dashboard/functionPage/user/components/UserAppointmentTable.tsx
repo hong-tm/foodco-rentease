@@ -8,26 +8,28 @@ import {
 } from '@/api/paymentApi'
 import type { GetStallsResponse } from '@/api/stallApi'
 import { fetchStallsQueryOptions } from '@/api/stallApi'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import type {
   PaymentIntentResponse,
   PaymentNotification,
 } from '@server/lib/sharedType'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
+import { format } from 'date-fns'
+import { CheckIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { formatRM } from '@/lib/format'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+  Panel,
+  PanelEmpty,
+  PanelError,
+  PanelHeader,
+  PanelRowsSkeleton,
+} from '@/components/ui/panel'
 import PaymentModal from '@/components/PaymentModal'
 
 type PaymentIntentParams = {
@@ -119,18 +121,6 @@ export default function UserAppointmentTable() {
     })
   }
 
-  if (isLoading) {
-    return <div className="justify-center p-4">Loading...</div>
-  }
-
-  if (error) {
-    return <div className="justify-center p-4">Error: {error.message}</div>
-  }
-
-  if (!notifications || notifications.length === 0) {
-    return <div className="justify-center p-4">No notifications found</div>
-  }
-
   const getPaymentStatus = (stallId: number) => {
     return payments?.some(
       (payment) =>
@@ -140,103 +130,149 @@ export default function UserAppointmentTable() {
     )
   }
 
+  const rows = notifications ?? []
+  const toPay = rows.filter(
+    (notification) =>
+      notification.notificationRead &&
+      notification.stallNumber &&
+      !getPaymentStatus(notification.stallNumber),
+  )
+  const pending = rows.filter(
+    (notification) => notification.notificationRead === null,
+  )
+
   return (
-    <div className="grid grid-cols-1 gap-4">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableCaption>A list of your notifications.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead></TableHead>
-              <TableHead>Message</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-center">Action</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {notifications.map((notification) => (
-              <TableRow key={notification.notificationId}>
-                <TableCell>
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      rel="preload"
-                      src={session?.user?.image || ''}
-                      alt="User Avatar"
-                    />
-                    <AvatarFallback>
-                      {session?.user?.name?.[0] || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className="font-medium">
-                  {notification.notificationMessage}
-                </TableCell>
-                <TableCell>
-                  {new Date(notification.appointmentDate).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      notification.notificationRead === null
-                        ? 'secondary'
-                        : notification.notificationRead
-                          ? 'default'
-                          : 'destructive'
-                    }
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader
+        title="Appointments"
+        actions={
+          <Button variant="outline" asChild>
+            <Link to="/dashboard/stall-availability">Apply for a stall</Link>
+          </Button>
+        }
+      >
+        {isLoading || error
+          ? 'Your stall viewings and their status.'
+          : rows.length === 0
+            ? 'You have no appointments yet. Pick a free stall to book one.'
+            : [
+                `${rows.length} appointment${rows.length === 1 ? '' : 's'}.`,
+                toPay.length > 0
+                  ? `${toPay.length} approved and waiting for your first payment.`
+                  : '',
+                pending.length > 0
+                  ? `${pending.length} still waiting for the admin.`
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+      </PageHeader>
+
+      <Panel>
+        <PanelHeader
+          title="Your appointments"
+          meta="Approved stalls need the first rental payment to start the lease"
+        />
+        {isLoading ? (
+          <PanelRowsSkeleton rows={3} />
+        ) : error ? (
+          <PanelError what="your appointments" />
+        ) : rows.length === 0 ? (
+          <PanelEmpty>No appointments yet.</PanelEmpty>
+        ) : (
+          <ul className="flex flex-col divide-y">
+            {rows.map((notification) => {
+              const date = new Date(notification.appointmentDate)
+              const status =
+                notification.notificationRead === null
+                  ? 'pending'
+                  : notification.notificationRead
+                    ? 'approved'
+                    : 'rejected'
+              const paid = notification.stallNumber
+                ? getPaymentStatus(notification.stallNumber)
+                : false
+              const amount = calculateAmount({
+                ...notification,
+                notificationerror: '',
+              })
+              const starting =
+                paymentMutation.isPending &&
+                paymentMutation.variables?.stallId === notification.stallNumber
+              return (
+                <li
+                  key={notification.notificationId}
+                  className="flex min-h-15 flex-wrap items-center gap-x-3 gap-y-2 py-2.5"
+                >
+                  <time
+                    dateTime={date.toISOString()}
+                    className="bg-muted flex size-11 shrink-0 flex-col items-center justify-center rounded-lg leading-none"
                   >
-                    {notification.notificationRead === null
-                      ? 'Pending'
-                      : notification.notificationRead
-                        ? 'Approved'
-                        : 'Rejected'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-center">
-                  {notification.notificationRead && notification.stallNumber ? (
-                    getPaymentStatus(notification.stallNumber) ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-green-100 text-green-800"
-                        onClick={() =>
-                          toast.info(
-                            'You have already made the payment for this stall.',
-                          )
-                        }
-                      >
-                        Payment Completed
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handlePaymentClick({
-                            ...notification,
-                            notificationerror: '',
-                          })
-                        }
-                        disabled={paymentMutation.isPending}
-                      >
-                        {paymentMutation.isPending
-                          ? 'Processing...'
-                          : `Make Payment (RM${calculateAmount({
+                    <span className="type-strong">{date.getDate()}</span>
+                    <span className="type-meta text-muted-foreground">
+                      {format(date, 'MMM')}
+                    </span>
+                  </time>
+                  <div className="min-w-0 flex-1">
+                    <p className="type-body truncate font-medium">
+                      {notification.stallNumber
+                        ? `Stall ${notification.stallNumber}`
+                        : 'Stall viewing'}
+                    </p>
+                    <p className="type-meta text-muted-foreground truncate">
+                      {notification.notificationMessage}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 max-md:w-full max-md:justify-between max-md:pl-14">
+                    <Badge
+                      variant={
+                        status === 'pending'
+                          ? 'warning'
+                          : status === 'approved'
+                            ? 'positive'
+                            : 'negative'
+                      }
+                    >
+                      {status === 'pending'
+                        ? 'Pending'
+                        : status === 'approved'
+                          ? 'Approved'
+                          : 'Rejected'}
+                    </Badge>
+                    {status === 'approved' && notification.stallNumber ? (
+                      paid ? (
+                        <span className="type-meta text-muted-foreground flex w-36 items-center justify-end gap-1">
+                          <CheckIcon
+                            aria-hidden="true"
+                            className="text-positive size-3.5"
+                          />
+                          Paid
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="w-36"
+                          onClick={() =>
+                            handlePaymentClick({
                               ...notification,
                               notificationerror: '',
-                            })})`}
-                      </Button>
-                    )
-                  ) : (
-                    ''
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-          <TableFooter></TableFooter>
-        </Table>
-      </div>
+                            })
+                          }
+                          disabled={paymentMutation.isPending}
+                        >
+                          {starting ? 'Starting…' : `Pay ${formatRM(amount)}`}
+                        </Button>
+                      )
+                    ) : (
+                      <span aria-hidden="true" className="w-36 max-md:hidden" />
+                    )}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </Panel>
 
       {clientSecret && selectedNotification && (
         <PaymentModal
