@@ -1,6 +1,56 @@
 # DESIGN — FoodCo RentEase
 
+先看图，再读字。`docs/design/anchor/` 里的截图就是规格：新改动和它对不上、又不在本次 PR 说明的改动范围内，就是 bug。下面的文字只解释截图里的数值和规则；文字与截图冲突时以截图为准，并在同一个 PR 里修正文字。
+
 规则分两层：**Taste rules** 全部来自 Yihong 的原话纠正（日期与原话在条目注释里，learn-taste 2026-11-12 采集）；**Inspirations** 是参照物，不是规则，违反它不算错。与 glue-system/DESIGN.md 共用的规则两边各留一份。
+
+## Anchor
+
+起点是版本 E（`a6c23bd` / `35ea6d8`，2026-11 他认可的那一版）：靛蓝 268 单一品牌色、冷中性 265、环形座次板、租户跟进板。之后几轮越改越差，原因是三件事叠加：分支没从 E 往下走；本文件旧版写着「橙色签名色」与 E 矛盾，两轮 agent 互相推翻；评审读 diff 不看像素，删掉了跟进板这类页面锚点。
+
+| 截图 | 页面锚点元素 |
+|---|---|
+| [overview](docs/design/anchor/overview.webp) · [dark](docs/design/anchor/overview-dark.webp) · [390](docs/design/anchor/overview-mobile.webp) | 环形座次板（7/6/7，中间是占用率陈述） |
+| [availability](docs/design/anchor/availability.webp) | 座次板 + Free 列表 |
+| [tenants](docs/design/anchor/tenants.webp) | 跟进板 + 表格 |
+| [feedback](docs/design/anchor/feedback.webp) | 评论列表 + 评分分布 + 按铺位排序 |
+| [your-stalls](docs/design/anchor/your-stalls.webp) · [390](docs/design/anchor/your-stalls-mobile.webp) | 租期轨道（起止日期 + 剩余天数） |
+| [utilities](docs/design/anchor/utilities.webp) | 账单矩阵（每铺位一行，租金/电/水三格） |
+| [appointments](docs/design/anchor/appointments.webp) | 日期方块列表 + 行内付款按钮 |
+
+每页只有一个锚点元素，它是这页的身份。为了满足某条规则去删或换锚点元素，先问。
+
+### Tokens（`fc-front/src/index.css`）
+
+改色只改这里；页面里不写颜色值。
+
+| token | light | dark |
+|---|---|---|
+| `--brand`（= primary） | `oklch(0.5 0.13 268)` | `oklch(0.72 0.11 268)` |
+| `--background` | `oklch(0.985 0.002 265)` | `oklch(0.15 0.004 265)` |
+| `--card` | `oklch(1 0 0)` | `oklch(0.18 0.004 265)` |
+| `--sidebar` | `oklch(0.975 0.002 265)` | `oklch(0.135 0.004 265)` |
+| `--muted` | `oklch(0.955 0.003 265)` | `oklch(0.235 0.005 265)` |
+| `--muted-foreground` | `oklch(0.49 0.012 265)` | `oklch(0.72 0.008 265)` |
+| `--border` | `oklch(0.92 0.004 265)` | `oklch(0.27 0.005 265)` |
+| `--brand-soft` / `--brand-ink` | `color-mix(in oklab, …)` 派生自 `--brand` | 同左 |
+| `--chart-2` / `--chart-3` | `oklch(0.62 0.09 215)` / `oklch(0.74 0.11 75)` | `oklch(0.72 0.09 215)` / `oklch(0.82 0.11 80)` |
+| `--radius` | `0.625rem` | 同左 |
+
+品牌色相只有 268。品牌色只出现在：primary 按钮、选中导航、当月柱、follow-up 铺位、focus ring。中性色相固定 265，不向品牌色靠（「neutrals warmed toward the brand」就是米色站的来源）。
+
+### Layout 数值
+
+- 内容区 `max-w-7xl`，左右 `px-4 md:px-8`；页内间距 `gap-4 md:gap-5`；Panel 内边距 `p-4 md:p-5`。
+- Overview 网格 `md:grid-cols-2 xl:grid-cols-[1fr_1fr_384px]`；Availability `xl:grid-cols-[1fr_360px]`。
+- 页头 = breadcrumb → h1 → 一句数据结论（不是功能描述）→ 至多两个动作，主动作在右。
+- 列表行优先于宽表：铺位方块 / 日期方块 + 两行文字 + 右侧金额或动作。
+
+### 证据与改动预算
+
+- UI PR 附锚点截图同页的新截图：1440 与 390、亮与暗，密集种子（`.agents/skills/verify-foodco`）。评审比像素，不比 diff 条目。
+- 一个 PR 只重排一页；其他页只允许动 token。改了锚点页，同 PR 更新 `docs/design/anchor/` 里的图。
+- 已知坑：图表在 Redact 下要 `isAnimationActive={false}`；SVG 属性（`textAnchor`、`fontSize` 等）靠 `fc-front/patches/@tanstack__redact@0.3.1.patch` 转成连字符，升级 Redact 时先确认上游修了再删补丁。
 
 ## 目标
 
@@ -28,7 +78,7 @@
 
 ## Color
 
-- **不做全站单色：图表 series、状态色保留语义色，中性只做底。橙色是主要操作的签名色。**
+- **不做全站单色：图表 series、状态色保留语义色，中性只做底。主要操作用品牌靛蓝（见 Anchor › Tokens）。**
   Why: 全灰单调；数据面需要颜色。
   <!-- 2026-11-02: 「你把 dashboard 改得太無色了，只剩 monochrome 了，這不太行」 -->
 - **暗色模式单独过一遍对比度；亮色调完不算完。**
