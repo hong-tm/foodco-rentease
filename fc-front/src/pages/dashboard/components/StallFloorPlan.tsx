@@ -113,7 +113,7 @@ export function StallFloorPlan({
               onClick={() => onOpen(stall)}
               aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
-                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
+                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity,scale] outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 motion-safe:active:scale-95',
                 matches && !highlighted
                   ? 'bg-muted/40 text-muted-foreground hover:border-muted-foreground hover:text-foreground border-transparent'
                   : [

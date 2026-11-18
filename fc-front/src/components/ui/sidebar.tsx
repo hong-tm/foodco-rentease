@@ -9,15 +9,15 @@ import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/hooks/use-mobile'
 
 import { Button } from '@/components/ui/button'
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Tooltip,
@@ -183,26 +183,25 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-        <SheetContent
+      <Drawer open={openMobile} onOpenChange={setOpenMobile} direction={side}>
+        <DrawerContent
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sidebar text-sidebar-foreground p-0 shadow-lg data-[vaul-drawer-direction=left]:w-(--sidebar-width) data-[vaul-drawer-direction=right]:w-(--sidebar-width)"
           style={
             {
               '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
             } as React.CSSProperties
           }
-          side={side}
         >
-          <SheetHeader className="sr-only">
-            <SheetTitle>Sidebar</SheetTitle>
-            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-          </SheetHeader>
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>Sidebar</DrawerTitle>
+            <DrawerDescription>Displays the mobile sidebar.</DrawerDescription>
+          </DrawerHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
-        </SheetContent>
-      </Sheet>
+        </DrawerContent>
+      </Drawer>
     )
   }
 
@@ -484,8 +483,8 @@ const sidebarMenuButtonVariants = cva(
           'bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]',
       },
       size: {
-        default: 'h-8 text-sm',
-        sm: 'h-7 text-xs',
+        default: 'h-8 text-sm pointer-coarse:h-11',
+        sm: 'h-7 text-xs pointer-coarse:h-11',
         lg: 'h-12 text-sm group-data-[collapsible=icon]:p-0!',
       },
     },
@@ -566,7 +565,7 @@ function SidebarMenuAction({
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 md:after:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
-        'peer-data-[size=default]/menu-button:top-1.5',
+        'peer-data-[size=default]/menu-button:top-1.5 pointer-coarse:peer-data-[size=default]/menu-button:top-3 pointer-coarse:peer-data-[size=sm]/menu-button:top-3',
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
         showOnHover &&
@@ -590,7 +589,7 @@ function SidebarMenuBadge({
         'text-sidebar-foreground pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums select-none',
         'peer-hover/menu-button:text-sidebar-accent-foreground peer-data-[active=true]/menu-button:text-sidebar-accent-foreground',
         'peer-data-[size=sm]/menu-button:top-1',
-        'peer-data-[size=default]/menu-button:top-1.5',
+        'peer-data-[size=default]/menu-button:top-1.5 pointer-coarse:peer-data-[size=default]/menu-button:top-3 pointer-coarse:peer-data-[size=sm]/menu-button:top-3',
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
         className,
