@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { fetchUsersQueryOptions } from '@/api/adminApi'
-import {
-  getAllNotificationQueryOptions,
-  notificationsQueryKey,
-} from '@/api/notificationApi'
+import { useNotificationRows } from '@/db/collections'
 import { useQuery } from '@tanstack/react-query'
 import { format, startOfDay } from 'date-fns'
 
@@ -54,10 +51,7 @@ export default function AdminAppointmentTable() {
     error,
     isLoading,
     refetch,
-  } = useQuery({
-    ...getAllNotificationQueryOptions,
-    queryKey: notificationsQueryKey.notifications(),
-  })
+  } = useNotificationRows()
 
   // Past appointments have nothing left to act on, so this list leaves them out.
   const today = startOfDay(new Date())

@@ -1,4 +1,3 @@
-// Run: node --test src/components/undo-window.test.ts
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 
@@ -18,34 +17,42 @@ function setup() {
   const calls: string[] = []
   const w = createUndoWindow({
     ms: 5000,
-    commit: () => calls.push('commit'),
-    rollback: () => calls.push('rollback'),
-    onCommitted: () => calls.push('dismiss'),
+    undo: () => calls.push('undo'),
+    onExpired: () => calls.push('expired'),
     setTimer: clock.setTimer,
     clearTimer: clock.clearTimer,
   })
   return { w, clock, calls }
 }
 
-test('commits and dismisses when the window runs out', () => {
+test('expires quietly when nobody undoes', () => {
   const { w, clock, calls } = setup()
   clock.fire()
-  assert.deepEqual(calls, ['commit', 'dismiss'])
-  assert.equal(w.state, 'committed')
+  assert.deepEqual(calls, ['expired'])
+  assert.equal(w.state, 'expired')
 })
 
-test('undo after the window committed does nothing', () => {
+test('undo after the window expired does nothing', () => {
   const { w, clock, calls } = setup()
   clock.fire()
   assert.equal(w.undo(), false)
-  assert.deepEqual(calls, ['commit', 'dismiss'])
+  assert.deepEqual(calls, ['expired'])
 })
 
-test('undo inside the window rolls back once and never commits', () => {
+test('undo inside the window runs once and the window never expires', () => {
   const { w, clock, calls } = setup()
   assert.equal(w.undo(), true)
   assert.equal(w.undo(), false)
   clock.fire()
-  assert.deepEqual(calls, ['rollback'])
+  assert.deepEqual(calls, ['undo'])
   assert.equal(w.state, 'undone')
+})
+
+test('a failed change closes the window so undo cannot fire', () => {
+  const { w, clock, calls } = setup()
+  assert.equal(w.fail(), true)
+  assert.equal(w.undo(), false)
+  clock.fire()
+  assert.deepEqual(calls, [])
+  assert.equal(w.state, 'failed')
 })

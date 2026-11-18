@@ -124,6 +124,11 @@ const feedbackSchema = z.object({
 
 export const createFeedbackSchema = feedbackSchema.omit({ id: true })
 
+export const restoreFeedbackSchema = feedbackSchema.extend({
+  feedbackContent: z.string().max(255).nullable(),
+  createdAt: z.coerce.date(),
+})
+
 export const updateStallSchema = z
   .object({
     stallNumber: z.number().int().positive().min(1),
@@ -170,7 +175,7 @@ export const createAppointmentSchema = appointmentSchema.omit({
 
 export const updateAppointmentStatusSchema = z.object({
   notificationId: z.number().int().positive().min(1),
-  notificationRead: z.boolean(),
+  notificationRead: z.boolean().nullable(),
   stallNumber: z.number().int().positive().min(1),
 })
 

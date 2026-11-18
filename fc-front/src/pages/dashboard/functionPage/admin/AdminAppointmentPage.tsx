@@ -1,17 +1,11 @@
-import { useSession } from '@/api/adminApi'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { useNotificationRows } from '@/db/collections'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { useQuery } from '@tanstack/react-query'
 import { startOfDay } from 'date-fns'
 
 import AdminAppointmentTable from './components/AdminAppointmentTable'
 
 export function AdminAppointmentPage() {
-  const { data: session } = useSession()
-  const { data } = useQuery({
-    ...getAllNotificationQueryOptions,
-    queryKey: ['get-notifications', session?.user?.id],
-  })
+  const { data } = useNotificationRows()
   const today = startOfDay(new Date())
   const current = (data ?? []).filter(
     (item) => startOfDay(new Date(item.appointmentDate)) >= today,

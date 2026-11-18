@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { deleteFeedback, type Feedback } from '@/api/feedbackApi'
+import { type Feedback } from '@/api/feedbackApi'
+import { changeFeedback } from '@/db/actions'
 import { feedbackCollection } from '@/db/collections'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { createTransaction, useLiveQuery } from '@tanstack/react-db'
+import { useLiveQuery } from '@tanstack/react-db'
 import {
   AngryIcon,
   FrownIcon,
@@ -45,7 +46,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { holdTransactionForUndo } from '@/components/undo-action'
+import { offerUndo } from '@/components/undo-action'
 
 const mood: Record<
   Feedback['happiness'],
@@ -386,7 +387,7 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
           size="icon"
           aria-label={`Delete feedback ${feedback.id}`}
           className="text-muted-foreground hover:text-destructive size-8 max-md:size-11"
-          onClick={() => deleteWithUndo(feedback.id)}
+          onClick={() => deleteWithUndo(feedback)}
         >
           <Trash2Icon className="size-4" />
         </Button>
@@ -395,8 +396,6 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   )
 }
 
-// The row is back in the collection the moment Undo rolls the transaction
-// back; flash it so the eye can find what returned, and scroll it into view.
 function revealRestoredRow(id: number) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
@@ -414,27 +413,19 @@ function revealRestoredRow(id: number) {
   requestAnimationFrame(find)
 }
 
-// Instant delete with an undo window: the row leaves the collection the
-// moment the trash is clicked, a ring counts down, and only when the ring
-// runs out does the transaction commit and fire the server DELETE.
-function deleteWithUndo(id: number) {
-  const tx = createTransaction({
-    autoCommit: false,
-    mutationFn: async () => {
-      try {
-        await deleteFeedback({ id })
-      } finally {
-        await feedbackCollection.utils.refetch()
-      }
-    },
-  })
-
-  tx.mutate(() => {
-    feedbackCollection.delete(id)
-  })
-
-  holdTransactionForUndo(tx, {
-    message: `Feedback ${id} deleted`,
-    onUndo: () => revealRestoredRow(id),
+function deleteWithUndo(row: Feedback) {
+  const feedback: Feedback = {
+    id: row.id,
+    happiness: row.happiness,
+    stall: row.stall,
+    feedbackContent: row.feedbackContent,
+    createdAt: row.createdAt,
+  }
+  const change = changeFeedback({ kind: 'delete', feedback })
+  offerUndo(change, {
+    message: `Feedback ${feedback.id} deleted`,
+    failed: `Could not delete feedback ${feedback.id}. It is back in the list.`,
+    undo: () => changeFeedback({ kind: 'restore', feedback }),
+    onUndone: () => revealRestoredRow(feedback.id),
   })
 }

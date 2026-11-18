@@ -426,7 +426,7 @@ export class Notification extends Model<
   declare notificationMessage: CreationOptional<string>
 
   @Attribute(DataTypes.BOOLEAN)
-  declare notificationRead: CreationOptional<boolean>
+  declare notificationRead: CreationOptional<boolean | null>
 
   @Attribute(DataTypes.DATE)
   declare appointmentDate: CreationOptional<Date>

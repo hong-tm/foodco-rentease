@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/api/adminApi'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { useNotificationRows } from '@/db/collections'
 import { NavMain } from '@/pages/dashboard/components/nav-main'
 import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
 import { NavUser } from '@/pages/dashboard/components/nav-user'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   CalendarClockIcon,
@@ -64,11 +64,9 @@ export default function UserDashboardSidebar({
 
   const navigate = useNavigate()
 
-  // A count on the nav only for the queue that needs a reply.
-  const { data: notifications } = useQuery({
-    ...getAllNotificationQueryOptions,
-    enabled: session?.user?.role === 'admin',
-  })
+  const { data: notifications } = useNotificationRows(
+    session?.user?.role === 'admin',
+  )
   const pendingAppointments =
     notifications?.filter((n) => n.notificationRead === null).length ?? 0
 

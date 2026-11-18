@@ -1,44 +1,41 @@
-/**
- * One undo window, one clock. The window either commits when it runs out
- * or is undone before that — never both, and nothing after it settles.
- * Kept free of React and sonner so the rule can be tested on its own.
- */
-export type UndoWindowState = 'pending' | 'undone' | 'committed'
+export type UndoWindowState = 'open' | 'undone' | 'expired' | 'failed'
 
 export function createUndoWindow({
   ms,
-  commit,
-  rollback,
-  onCommitted,
+  undo,
+  onExpired,
   setTimer = (fn, delay) => window.setTimeout(fn, delay),
   clearTimer = (id) => window.clearTimeout(id as number),
 }: {
   ms: number
-  commit: () => void
-  rollback: () => void
-  onCommitted?: () => void
+  undo: () => void
+  onExpired?: () => void
   setTimer?: (fn: () => void, delay: number) => unknown
   clearTimer?: (id: unknown) => void
 }) {
-  let state: UndoWindowState = 'pending'
+  let state: UndoWindowState = 'open'
 
   const timer = setTimer(() => {
-    if (state !== 'pending') return
-    state = 'committed'
-    commit()
-    onCommitted?.()
+    if (state !== 'open') return
+    state = 'expired'
+    onExpired?.()
   }, ms)
 
   return {
     get state() {
       return state
     },
-    /** Returns false when the window already committed (or was undone). */
     undo() {
-      if (state !== 'pending') return false
+      if (state !== 'open') return false
       state = 'undone'
       clearTimer(timer)
-      rollback()
+      undo()
+      return true
+    },
+    fail() {
+      if (state !== 'open') return false
+      state = 'failed'
+      clearTimer(timer)
       return true
     },
   }
