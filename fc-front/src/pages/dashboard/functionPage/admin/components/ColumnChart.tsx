@@ -72,6 +72,7 @@ export function ColumnChart<T extends { label: string }>({
             hide={bare}
             width={36}
             ticks={yTicks}
+            interval={0}
             domain={[0, yTicks[yTicks.length - 1]]}
             tickFormatter={formatTick}
             tickLine={false}
@@ -106,7 +107,7 @@ export function ColumnChart<T extends { label: string }>({
               dataKey={s.key}
               stackId="stack"
               fill={s.color}
-              maxBarSize={36}
+              maxBarSize={48}
               className={onSelect ? 'cursor-pointer' : undefined}
               onClick={
                 onSelect

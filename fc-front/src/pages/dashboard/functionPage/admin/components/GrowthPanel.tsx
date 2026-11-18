@@ -51,7 +51,7 @@ function Trend({
         <p className="type-meta text-muted-foreground">{note}</p>
       </div>
       {total === 0 ? (
-        <p className="type-meta text-muted-foreground grid min-h-28 place-items-center rounded-lg border border-dashed px-4 text-center">
+        <p className="type-meta text-muted-foreground grid h-22 place-items-center text-center">
           {empty}
         </p>
       ) : (

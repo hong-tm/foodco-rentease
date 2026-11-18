@@ -5,8 +5,9 @@ import { PaymentType } from '@/pages/dashboard/components/PaymentType'
 import { ColumnChart } from '@/pages/dashboard/functionPage/admin/components/ColumnChart'
 import type { PaymentRecord } from '@server/lib/sharedType'
 import { useMutation } from '@tanstack/react-query'
+import { Link } from '@tanstack/react-router'
 import { format, parse } from 'date-fns'
-import { FileDownIcon } from 'lucide-react'
+import { FileDownIcon, ReceiptIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { api } from '@/lib/api'
@@ -16,11 +17,14 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import {
-  Panel,
-  PanelEmpty,
-  PanelHeader,
-  PanelRowsSkeleton,
-} from '@/components/ui/panel'
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
+import { Panel, PanelHeader, PanelRowsSkeleton } from '@/components/ui/panel'
 import {
   CountTabs,
   PanelToolbar,
@@ -226,8 +230,29 @@ export function PaymentRecordsTable({
       ) : null}
 
       {!isLoading && records.length === 0 ? (
-        <Panel>
-          <PanelEmpty>No payment records yet.</PanelEmpty>
+        <Panel className="min-h-80">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ReceiptIcon />
+              </EmptyMedia>
+              <EmptyTitle>No payments yet</EmptyTitle>
+              <EmptyDescription>
+                {session?.user?.role === 'user'
+                  ? 'Your first rental payment shows here once you pay for an approved stall.'
+                  : 'Payments show here as soon as a tenant pays.'}
+              </EmptyDescription>
+            </EmptyHeader>
+            {session?.user?.role === 'user' ? (
+              <EmptyContent>
+                <Button asChild className="max-md:h-11">
+                  <Link to="/dashboard/user-appointment">
+                    Go to appointments
+                  </Link>
+                </Button>
+              </EmptyContent>
+            ) : null}
+          </Empty>
         </Panel>
       ) : null}
 

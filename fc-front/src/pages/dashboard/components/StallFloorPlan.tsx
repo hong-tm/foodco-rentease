@@ -24,10 +24,10 @@ export function StateSwatch({ state }: { state: BoardState }) {
     <span
       aria-hidden="true"
       className={cn(
-        'size-3 shrink-0 rounded-[4px]',
-        state === 'let' && 'bg-muted border-input border',
-        state === 'followup' && 'bg-primary',
-        state === 'free' && 'border-muted-foreground border border-dashed',
+        'size-3.5 shrink-0 rounded-[4px] border',
+        state === 'let' && 'bg-muted border-muted-foreground/40',
+        state === 'followup' && 'bg-brand-soft border-primary',
+        state === 'free' && 'bg-card border-muted-foreground border-dashed',
       )}
     />
   )
@@ -120,7 +120,9 @@ export function StallFloorPlan({
                   'bg-brand-soft text-brand-ink border-primary',
                 highlighted &&
                   'bg-brand-soft text-brand-ink border-primary border-solid',
-                matches && !highlighted && 'opacity-40 hover:opacity-75',
+                matches &&
+                  !highlighted &&
+                  'bg-card border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground border-solid',
                 size === 'compact'
                   ? 'flex items-center justify-center'
                   : 'flex flex-col items-center justify-center p-1 md:items-start md:justify-start md:p-2',

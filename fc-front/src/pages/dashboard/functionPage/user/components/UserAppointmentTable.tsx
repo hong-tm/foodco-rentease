@@ -20,6 +20,7 @@ import { CheckIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { formatRM } from '@/lib/format'
+import { payRows } from '@/lib/pay-rows'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -72,7 +73,9 @@ export default function UserAppointmentTable() {
     },
     onError: (error: Error) => {
       console.error('Error creating payment:', error)
-      toast.error('Failed to initiate payment')
+      toast.error('Payment could not start', {
+        description: 'Nothing was charged. Try again in a moment.',
+      })
     },
   })
 
@@ -131,12 +134,7 @@ export default function UserAppointmentTable() {
   }
 
   const rows = notifications ?? []
-  const toPay = rows.filter(
-    (notification) =>
-      notification.notificationRead &&
-      notification.stallNumber &&
-      !getPaymentStatus(notification.stallNumber),
-  )
+  const payRow = payRows(rows, (stall) => Boolean(getPaymentStatus(stall)))
   const pending = rows.filter(
     (notification) => notification.notificationRead === null,
   )
@@ -157,8 +155,8 @@ export default function UserAppointmentTable() {
             ? 'You have no appointments yet. Pick a free stall to book one.'
             : [
                 `${rows.length} appointment${rows.length === 1 ? '' : 's'}.`,
-                toPay.length > 0
-                  ? `${toPay.length} approved and waiting for your first payment.`
+                payRow.size > 0
+                  ? `${payRow.size} stall${payRow.size === 1 ? '' : 's'} approved and waiting for your first payment.`
                   : '',
                 pending.length > 0
                   ? `${pending.length} still waiting for the admin.`
@@ -203,6 +201,9 @@ export default function UserAppointmentTable() {
                 ...notification,
                 notificationerror: '',
               })
+              const payOn = notification.stallNumber
+                ? payRow.get(notification.stallNumber)
+                : undefined
               const starting =
                 paymentMutation.isPending &&
                 paymentMutation.variables?.stallId === notification.stallNumber
@@ -256,6 +257,12 @@ export default function UserAppointmentTable() {
                             className="text-positive size-3.5"
                           />
                           Paid
+                        </span>
+                      ) : payOn &&
+                        payOn.notificationId !== notification.notificationId ? (
+                        <span className="type-meta text-muted-foreground w-36 text-right">
+                          Same stall · see{' '}
+                          {format(new Date(payOn.appointmentDate), 'd MMM')}
                         </span>
                       ) : (
                         <Button

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 import { formatDate } from '@/lib/format'
+import { ratingColor } from '@/lib/rating'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -62,7 +63,7 @@ const mood: Record<
     label: 'Happy',
     icon: SmileIcon,
     tone: 'bg-muted text-muted-foreground',
-    bar: 'var(--chart-1-soft)',
+    bar: 'var(--chart-1)',
   },
   2: {
     label: 'Unhappy',
@@ -320,10 +321,7 @@ export function FeedbackDisplayPage() {
                             className="block h-full rounded-full"
                             style={{
                               width: `${(row.average / 4) * 100}%`,
-                              background:
-                                row.average < 2.5
-                                  ? 'var(--destructive)'
-                                  : 'var(--chart-1)',
+                              background: ratingColor(row.average),
                             }}
                           />
                         </span>

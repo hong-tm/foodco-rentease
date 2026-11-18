@@ -2,6 +2,7 @@ import { getAllFeedbackQueryOptions } from '@/api/feedbackApi'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 
+import { ratingColor } from '@/lib/rating'
 import { cn } from '@/lib/utils'
 
 import { Badge } from '@/components/ui/badge'
@@ -77,9 +78,7 @@ export default function FeedbackHapinessLineChart({
                       className="block h-full rounded-full"
                       style={{
                         width: `${(row.average / 4) * 100}%`,
-                        background: isLow
-                          ? 'var(--destructive)'
-                          : 'var(--chart-1)',
+                        background: ratingColor(row.average),
                       }}
                     />
                   </span>

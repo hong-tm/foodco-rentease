@@ -47,7 +47,7 @@ export function CommandMenu() {
         variant="outline"
         onClick={() => setOpen(true)}
         aria-label="Open quick access"
-        className="text-muted-foreground size-9 p-0 font-normal md:w-56 md:justify-start md:px-3"
+        className="text-muted-foreground size-11 p-0 font-normal md:size-9 md:w-56 md:justify-start md:px-3"
       >
         <SearchIcon />
         <span className="type-meta hidden md:inline">Quick access</span>

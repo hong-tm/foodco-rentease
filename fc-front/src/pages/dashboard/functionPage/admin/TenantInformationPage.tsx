@@ -157,7 +157,7 @@ export function TenantInformationPage() {
           <div
             role="group"
             aria-label="Filter by tenant"
-            className="bg-card scroll-fade-x -mx-4 flex divide-x overflow-x-auto border-y [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:divide-x-0 md:rounded-xl md:border"
+            className="bg-card scroll-fade-x -mx-4 flex snap-x snap-mandatory scroll-px-4 divide-x overflow-x-auto border-y [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:divide-x-0 md:rounded-xl md:border"
           >
             {tenants.map((user) => {
               const selected = tenant === user.id
@@ -168,7 +168,7 @@ export function TenantInformationPage() {
                   aria-pressed={selected}
                   onClick={() => setTenant(selected ? null : user.id)}
                   className={cn(
-                    'focus-visible:ring-ring flex w-56 shrink-0 cursor-pointer items-center gap-2.5 p-3 text-left outline-none first:rounded-l-xl last:rounded-r-xl focus-visible:ring-2 focus-visible:ring-inset md:w-auto',
+                    'focus-visible:ring-ring flex w-56 shrink-0 cursor-pointer snap-start items-center gap-2.5 p-3 text-left outline-none first:rounded-l-xl last:rounded-r-xl focus-visible:ring-2 focus-visible:ring-inset md:w-auto',
                     selected ? 'bg-brand-soft' : 'hover:bg-accent',
                   )}
                 >

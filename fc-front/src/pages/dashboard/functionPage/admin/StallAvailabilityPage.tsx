@@ -13,7 +13,7 @@ import {
   boardState,
   boardStateLabel,
   byEndDate,
-  isUrgent,
+  leaseToneClass,
   stallLabel,
   timeLeftLabel,
   type BoardState,
@@ -265,10 +265,8 @@ export function StallAvailabilityPage() {
                           </span>
                           <span
                             className={cn(
-                              'type-meta shrink-0 text-right',
-                              stall.rentStatus && isUrgent(stall.endAt)
-                                ? 'text-negative-ink font-medium'
-                                : 'text-muted-foreground',
+                              'type-meta text-muted-foreground shrink-0 text-right',
+                              stall.rentStatus && leaseToneClass(stall.endAt),
                             )}
                           >
                             {stall.rentStatus

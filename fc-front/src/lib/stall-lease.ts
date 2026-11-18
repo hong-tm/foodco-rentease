@@ -65,6 +65,22 @@ export function isUrgent(endAt?: Date | string | null) {
   return days !== null && days <= URGENT_DAYS
 }
 
+export type LeaseTone = 'negative' | 'warning' | null
+
+export function leaseTone(endAt?: Date | string | null): LeaseTone {
+  const days = daysLeft(endAt)
+  if (days === null) return null
+  if (days <= URGENT_DAYS) return 'negative'
+  return days <= ENDING_SOON_DAYS ? 'warning' : null
+}
+
+export function leaseToneClass(endAt?: Date | string | null) {
+  const tone = leaseTone(endAt)
+  if (tone === 'negative') return 'text-negative-ink font-medium'
+  if (tone === 'warning') return 'text-warning-ink font-medium'
+  return undefined
+}
+
 /** Short label for a stall tile: "16 days over", "1 day over", else the usual label. */
 export function pastLabel(endAt?: Date | string | null) {
   const days = daysLeft(endAt)

@@ -2,13 +2,7 @@ import type { GetStallCurrentResponse } from '@/api/stallApi'
 import { Link } from '@tanstack/react-router'
 
 import { formatDate, formatRM, formatSize } from '@/lib/format'
-import {
-  ENDING_SOON_DAYS,
-  daysLeft,
-  isUrgent,
-  stallLabel,
-  timeLeftLabel,
-} from '@/lib/stall-lease'
+import { leaseTone, stallLabel, timeLeftLabel } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -32,13 +26,7 @@ function LeaseRow({ stall }: { stall: LeasedStall }) {
     end > start
       ? Math.min(1, Math.max(0, (Date.now() - start) / (end - start)))
       : 1
-  const days = daysLeft(stall.endAt)
-  const tone =
-    days !== null && (days < 0 || isUrgent(stall.endAt))
-      ? 'negative'
-      : days !== null && days <= ENDING_SOON_DAYS
-        ? 'warning'
-        : 'neutral'
+  const tone = leaseTone(stall.endAt)
 
   return (
     <li className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 px-4 py-3.5 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1.4fr)_8rem] md:px-5">
