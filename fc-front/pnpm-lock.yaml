@@ -34,7 +34,7 @@ overrides:
   yaml: 2.8.3
 
 patchedDependencies:
-  '@tanstack/redact@0.3.1': 5a2ff618dc1b12594418eb39c53a5396d0eb4d0d83d5adedf1c8949f317f65de
+  '@tanstack/redact@0.3.1': 0933d1c4ce8702163d15a66a100226acf8a7322e7683c87bb834672c5b669283
 
 importers:
 
@@ -87,7 +87,7 @@ importers:
         version: 1.170.46(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/redact':
         specifier: ^0.3.1
-        version: 0.3.1(patch_hash=5a2ff618dc1b12594418eb39c53a5396d0eb4d0d83d5adedf1c8949f317f65de)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
+        version: 0.3.1(patch_hash=0933d1c4ce8702163d15a66a100226acf8a7322e7683c87bb834672c5b669283)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
       '@types/js-cookie':
         specifier: ^3.0.6
         version: 3.0.6
@@ -5783,7 +5783,7 @@ snapshots:
       react-dom: 19.2.3(react@19.2.3)
       use-sync-external-store: 1.7.0(react@19.2.3)
 
-  '@tanstack/redact@0.3.1(patch_hash=5a2ff618dc1b12594418eb39c53a5396d0eb4d0d83d5adedf1c8949f317f65de)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))':
+  '@tanstack/redact@0.3.1(patch_hash=0933d1c4ce8702163d15a66a100226acf8a7322e7683c87bb834672c5b669283)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))':
     dependencies:
       '@jridgewell/remapping': 2.3.5
       acorn: 8.19.0
@@ -6198,7 +6198,7 @@ snapshots:
       '@tanstack/react-query': 5.107.1(@types/react@18.3.27)(react@19.2.3)
       '@tanstack/react-query-devtools': 5.107.1(@tanstack/react-query@5.107.1(@types/react@18.3.27)(react@19.2.3))(@types/react@18.3.27)(csstype@3.2.3)(react@19.2.3)
       '@tanstack/react-router': 1.170.46(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@tanstack/redact': 0.3.1(patch_hash=5a2ff618dc1b12594418eb39c53a5396d0eb4d0d83d5adedf1c8949f317f65de)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
+      '@tanstack/redact': 0.3.1(patch_hash=0933d1c4ce8702163d15a66a100226acf8a7322e7683c87bb834672c5b669283)(rolldown-vite@7.3.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.16.3)(jiti@2.4.2)(sass@1.89.2)(yaml@2.8.3))
       '@types/js-cookie': 3.0.6
       better-auth: 1.7.19(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(solid-js@1.9.18)
       blurhash: 2.0.5
