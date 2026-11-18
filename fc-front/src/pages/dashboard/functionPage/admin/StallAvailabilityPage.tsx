@@ -106,9 +106,15 @@ export function StallAvailabilityPage() {
     from: '/dashboard/stall-availability',
   })
   const navigate = useNavigate({ from: '/dashboard/stall-availability' })
-  const filter: Filter = filterLabels.some((f) => f.value === requested)
-    ? (requested as Filter)
-    : 'free'
+  const isAdmin = session?.user.role === 'admin'
+  const stateOf = (stall: Stall): BoardState =>
+    isAdmin ? boardState(stall) : stall.rentStatus ? 'let' : 'free'
+  const known = filterLabels.some((f) => f.value === requested)
+  const filter: Filter = !known
+    ? 'free'
+    : requested === 'followup' && !isAdmin
+      ? 'let'
+      : (requested as Filter)
   const setFilter = (next: Filter) =>
     // A filter change keeps the scroll position, as setSearchParams did.
     navigate({
@@ -121,10 +127,10 @@ export function StallAvailabilityPage() {
   const stalls = data?.stall ?? []
   const counts: Record<BoardState, number> = { free: 0, followup: 0, let: 0 }
   stalls.forEach((stall) => {
-    counts[boardState(stall)] += 1
+    counts[stateOf(stall)] += 1
   })
   const matches = (stall: Stall) =>
-    filter === 'all' || boardState(stall) === filter
+    filter === 'all' || stateOf(stall) === filter
   const listed = stalls
     .filter(matches)
     .sort((a, b) =>
@@ -136,7 +142,6 @@ export function StallAvailabilityPage() {
     .filter((stall) => !stall.rentStatus)
     .map((stall) => stall.stallNumber)
     .sort((a, b) => a - b)
-  const isAdmin = session?.user.role === 'admin'
 
   const tiers = new Map<
     string,
@@ -202,6 +207,7 @@ export function StallAvailabilityPage() {
               <StallFloorPlan
                 stalls={stalls}
                 size="full"
+                stateOf={stateOf}
                 matches={filter === 'all' ? undefined : matches}
                 active={open?.stallNumber}
                 onOpen={setOpen}

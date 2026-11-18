@@ -56,6 +56,7 @@ export function StallFloorPlan({
   peek,
   centre,
   className,
+  stateOf = boardState,
 }: {
   stalls: StallUserAttributes[]
   size: 'compact' | 'full'
@@ -67,6 +68,7 @@ export function StallFloorPlan({
   peek?: (stall: StallUserAttributes) => React.ReactNode
   centre?: React.ReactNode
   className?: string
+  stateOf?: (stall: StallUserAttributes) => BoardState
 }) {
   const ordered = [...stalls].sort((a, b) => a.stallNumber - b.stallNumber)
   const isRing = ordered.length === 20
@@ -86,7 +88,7 @@ export function StallFloorPlan({
     <TooltipPrimitive.Provider delayDuration={250} skipDelayDuration={800}>
       <div
         className={cn(
-          'grid min-w-0 gap-[5px] md:gap-1.5',
+          'grid min-w-0 gap-0.5 max-md:-mx-2 md:gap-1.5',
           isRing && 'grid-cols-7 grid-rows-5',
           size === 'full' &&
             (isRing
@@ -101,7 +103,7 @@ export function StallFloorPlan({
         }
       >
         {ordered.map((stall, index) => {
-          const state = boardState(stall)
+          const state = stateOf(stall)
           const highlighted = matches?.(stall)
           const tile = (
             <button
@@ -112,17 +114,16 @@ export function StallFloorPlan({
               aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
                 'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
-                state === 'free' &&
-                  'border-muted-foreground bg-card hover:border-foreground border-dashed',
-                state === 'let' &&
-                  'bg-muted border-input hover:border-muted-foreground',
-                state === 'followup' &&
-                  'bg-brand-soft text-brand-ink border-primary',
-                highlighted &&
-                  'bg-brand-soft text-brand-ink border-primary border-solid',
-                matches &&
-                  !highlighted &&
-                  'bg-card border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground border-solid',
+                matches && !highlighted
+                  ? 'bg-muted/40 text-muted-foreground hover:border-muted-foreground hover:text-foreground border-transparent'
+                  : [
+                      state === 'free' &&
+                        'border-muted-foreground bg-card hover:border-foreground border-dashed',
+                      state === 'let' &&
+                        'bg-muted border-input hover:border-muted-foreground',
+                      state === 'followup' &&
+                        'bg-brand-soft text-brand-ink border-primary',
+                    ],
                 size === 'compact'
                   ? 'flex items-center justify-center'
                   : 'flex flex-col items-center justify-center p-1 md:items-start md:justify-start md:p-2',
