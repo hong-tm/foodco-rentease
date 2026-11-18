@@ -3,16 +3,13 @@ import { useSession } from '@/api/adminApi'
 import {
   createPaymentIntent,
   getAllPaymentRecordsQueryOptions,
-  type PaymentRecord,
 } from '@/api/paymentApi'
-import {
-  fetchStallCurrentQueryOptions,
-  type GetStallCurrentResponse,
-} from '@/api/stallApi'
+import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { CheckIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { formatDate, formatRM, formatSize } from '@/lib/format'
 import { stallLabel } from '@/lib/stall-lease'
@@ -27,47 +24,21 @@ import {
 } from '@/components/ui/panel'
 import PaymentModal from '@/components/PaymentModal'
 
-type BillKind = 'water' | 'electric' | 'rental'
-type LeasedStall = GetStallCurrentResponse['stalls'][number]
-type Bill = {
-  kind: BillKind
-  label: string
-  color: string
-  amount: number
-  record?: PaymentRecord
-  missing: string
-}
+import { billsDue, stallBills, type Bill } from '../bills'
 
-const kinds: { kind: BillKind; label: string; color: string }[] = [
-  { kind: 'rental', label: 'Rental fee', color: 'var(--chart-1)' },
-  { kind: 'electric', label: 'Electric', color: 'var(--chart-3)' },
-  { kind: 'water', label: 'Water', color: 'var(--chart-2)' },
-]
-
-function billsOf(stall: LeasedStall, records: PaymentRecord[]): Bill[] {
-  return kinds.map(({ kind, label, color }) => {
-    const record = records.find(
-      (payment) =>
-        payment.stallId === stall.stallNumber && payment.paymentType === kind,
-    )
-    const amount =
-      kind === 'rental'
-        ? Number(stall.stallTierNumber?.tierPrice ?? 0) *
-          Number(stall.stallSize ?? 0)
-        : Number(record?.paymentAmount ?? 0)
-    return {
-      kind,
-      label,
-      color,
-      amount,
-      record,
-      missing: kind === 'rental' ? 'No fee set' : 'No bill yet',
-    }
-  })
-}
-
-function BillCell({ bill, onPay }: { bill: Bill; onPay: () => void }) {
+function BillCell({
+  bill,
+  starting,
+  busy,
+  onPay,
+}: {
+  bill: Bill
+  starting: boolean
+  busy: boolean
+  onPay: () => void
+}) {
   const paid = Boolean(bill.record?.paymentStatus)
+  const more = bill.unpaidCount - 1
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <span className="type-meta text-muted-foreground flex items-center gap-1.5">
@@ -89,9 +60,21 @@ function BillCell({ bill, onPay }: { bill: Bill; onPay: () => void }) {
           Paid {formatDate(bill.record!.paymentDate)}
         </span>
       ) : (
-        <Button size="sm" className="self-start" onClick={onPay}>
-          Pay {bill.label.toLowerCase()}
-        </Button>
+        <>
+          <Button
+            size="sm"
+            className="self-start max-md:min-h-11"
+            disabled={busy}
+            onClick={onPay}
+          >
+            {starting ? 'Starting…' : `Pay ${bill.label.toLowerCase()}`}
+          </Button>
+          {more > 0 && (
+            <span className="type-meta text-warning-ink">
+              {more} older unpaid
+            </span>
+          )}
+        </>
       )}
     </div>
   )
@@ -109,6 +92,7 @@ export default function StallUtilitiesDetails() {
     paymentId?: string
   } | null>(null)
   const [clientSecret, setClientSecret] = useState('')
+  const [startingKey, setStartingKey] = useState<string | null>(null)
 
   const stallsQuery = useQuery({
     ...fetchStallCurrentQueryOptions(userId || ''),
@@ -122,27 +106,26 @@ export default function StallUtilitiesDetails() {
     stallId: number,
     paymentId: string,
   ) => {
-    if (!userId) return
-
+    if (!userId || startingKey) return
+    setStartingKey(`${stallId}-${type}`)
     try {
       const response = await createPaymentIntent(amount, stallId, userId)
       setClientSecret(response.clientSecret)
       setSelectedPayment({ type, amount, stallId, paymentId })
       setIsPaymentModalOpen(true)
-    } catch (error) {
-      console.error('Error creating payment intent:', error)
+    } catch {
+      toast.error('Could not start the payment. Try again.')
+    } finally {
+      setStartingKey(null)
     }
   }
 
   const stalls = stallsQuery.data?.stalls ?? []
   const rows = stalls.map((stall) => ({
     stall,
-    bills: billsOf(stall, paymentsQuery.data ?? []),
+    bills: stallBills(stall, paymentsQuery.data ?? [], userId ?? ''),
   }))
-  const due = rows.flatMap(({ bills }) =>
-    bills.filter((bill) => bill.amount > 0 && !bill.record?.paymentStatus),
-  )
-  const dueTotal = due.reduce((sum, bill) => sum + bill.amount, 0)
+  const due = billsDue(rows.flatMap(({ bills }) => bills))
   const isLoading = stallsQuery.isLoading || paymentsQuery.isLoading
   const error = stallsQuery.error || paymentsQuery.error
 
@@ -158,16 +141,16 @@ export default function StallUtilitiesDetails() {
       >
         {isLoading || error
           ? 'Rent, water and electric bills for your stalls.'
-          : due.length > 0
-            ? `${due.length} bill${due.length === 1 ? '' : 's'} to pay, ${formatRM(dueTotal)} in total.`
+          : due.count > 0
+            ? `${due.count} bill${due.count === 1 ? '' : 's'} to pay, ${formatRM(due.total)} in total.`
             : `Every bill is paid across your ${stalls.length} stall${stalls.length === 1 ? '' : 's'}.`}
       </PageHeader>
 
       <Panel className="gap-0 pb-0 md:pb-0">
         <PanelHeader
           className="pb-3"
-          title="Latest bills"
-          meta="The most recent bill of each kind, per stall"
+          title="Bills"
+          meta="Oldest unpaid bill first, otherwise the latest one"
         />
         {isLoading ? (
           <div className="pb-4 md:pb-5">
@@ -210,6 +193,10 @@ export default function StallUtilitiesDetails() {
                     <BillCell
                       key={bill.kind}
                       bill={bill}
+                      starting={
+                        startingKey === `${stall.stallNumber}-${bill.kind}`
+                      }
+                      busy={startingKey !== null}
                       onPay={() =>
                         handlePayment(
                           bill.kind,

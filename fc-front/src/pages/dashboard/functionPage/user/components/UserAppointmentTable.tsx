@@ -227,6 +227,8 @@ export default function UserAppointmentTable() {
                         : 'Stall viewing'}
                     </p>
                     <p className="type-meta text-muted-foreground truncate">
+                      {date.getFullYear() !== new Date().getFullYear() &&
+                        `${date.getFullYear()} · `}
                       {notification.notificationMessage}
                     </p>
                   </div>
@@ -258,7 +260,7 @@ export default function UserAppointmentTable() {
                       ) : (
                         <Button
                           size="sm"
-                          className="w-36"
+                          className="w-36 max-md:min-h-11"
                           onClick={() =>
                             handlePaymentClick({
                               ...notification,

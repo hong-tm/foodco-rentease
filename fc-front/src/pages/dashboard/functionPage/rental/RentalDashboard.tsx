@@ -10,6 +10,7 @@ import { byEndDate, stallLabel, timeLeftLabel } from '@/lib/stall-lease'
 
 import { Button } from '@/components/ui/button'
 
+import { billsDue, stallBills } from './bills'
 import RentalPaymentDetail from './components/RentalPaymentDetail'
 import RentalStallsDetail from './components/RentalStallsDetail'
 
@@ -31,10 +32,10 @@ export function RentalDashboard() {
   const payments = (paymentsQuery.data ?? []).filter(
     (payment) => payment.userId === userId,
   )
-  const unpaid = payments.filter((payment) => !payment.paymentStatus)
-  const unpaidTotal = unpaid.reduce(
-    (sum, payment) => sum + Number(payment.paymentAmount),
-    0,
+  const due = billsDue(
+    (stallsQuery.data?.stalls ?? []).flatMap((stall) =>
+      stallBills(stall, paymentsQuery.data ?? [], userId),
+    ),
   )
   const next = stalls[0]
 
@@ -44,8 +45,8 @@ export function RentalDashboard() {
           ? 'You hold no stalls yet.'
           : `${stalls.length} stall${stalls.length === 1 ? '' : 's'} on lease. ${stallLabel(next)} ends first: ${timeLeftLabel(next.endAt).toLowerCase()}.`,
         paymentsQuery.data
-          ? unpaid.length > 0
-            ? `${formatRM(unpaidTotal)} unpaid across ${unpaid.length} bill${unpaid.length === 1 ? '' : 's'}.`
+          ? due.count > 0
+            ? `${formatRM(due.total)} unpaid across ${due.count} bill${due.count === 1 ? '' : 's'}.`
             : 'Every bill is paid.'
           : '',
       ]
@@ -58,7 +59,7 @@ export function RentalDashboard() {
       <PageHeader
         title="Your stalls"
         actions={
-          unpaid.length > 0 ? (
+          due.count > 0 ? (
             <Button asChild>
               <Link to="/dashboard/stall-utilities">Pay bills</Link>
             </Button>
@@ -79,6 +80,7 @@ export function RentalDashboard() {
       />
       <RentalPaymentDetail
         payments={payments}
+        due={due}
         isLoading={paymentsQuery.isLoading}
         error={Boolean(paymentsQuery.error)}
         onRetry={() => paymentsQuery.refetch()}

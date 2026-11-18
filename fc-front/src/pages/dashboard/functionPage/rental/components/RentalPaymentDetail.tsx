@@ -68,11 +68,13 @@ function SeriesToggle({
 
 export default function RentalPaymentDetail({
   payments,
+  due,
   isLoading,
   error,
   onRetry,
 }: {
   payments: PaymentRecord[]
+  due: { count: number; total: number }
   isLoading: boolean
   error: boolean
   onRetry: () => void
@@ -80,7 +82,6 @@ export default function RentalPaymentDetail({
   const [hidden, setHidden] = useState<PaymentKind[]>([])
   const now = new Date()
   const paid = payments.filter((payment) => payment.paymentStatus)
-  const unpaid = payments.filter((payment) => !payment.paymentStatus)
   const paidIn = (month: Date) =>
     paid.filter((payment) => isSameMonth(new Date(payment.paymentDate), month))
 
@@ -143,11 +144,11 @@ export default function RentalPaymentDetail({
               },
               {
                 label: 'Unpaid',
-                value: formatRM(sum(unpaid)),
-                tone: unpaid.length > 0 ? 'warning' : undefined,
+                value: formatRM(due.total),
+                tone: due.count > 0 ? 'warning' : undefined,
                 note:
-                  unpaid.length > 0
-                    ? `${unpaid.length} bill${unpaid.length === 1 ? '' : 's'} waiting`
+                  due.count > 0
+                    ? `${due.count} bill${due.count === 1 ? '' : 's'} waiting`
                     : 'Nothing waiting',
               },
             ]}
