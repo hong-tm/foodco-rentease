@@ -119,6 +119,7 @@ export function SearchField({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={label}
+        className="max-md:h-full"
       />
     </InputGroup>
   )

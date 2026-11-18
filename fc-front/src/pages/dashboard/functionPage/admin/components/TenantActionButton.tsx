@@ -5,6 +5,8 @@ import { useMutation } from '@tanstack/react-query'
 import { MailIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 
 type UserAction = {
@@ -74,7 +76,7 @@ export function TenantActionButton({
       <Button
         variant="outline"
         size="sm"
-        className={className}
+        className={cn('max-md:h-11', className)}
         disabled={mutation.isPending}
         aria-label={`Send reminder email to ${userName} for stall ${userStallId}`}
         onClick={() => setOpenSendReminder(true)}

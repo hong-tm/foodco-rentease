@@ -220,7 +220,7 @@ export function StallAvailabilityPage() {
                         ? 'stalls in the food court'
                         : `of ${stalls.length} stalls ${centreVerb[filter]}`}
                     </p>
-                    <p className="type-meta text-muted-foreground mt-2 hidden md:block">
+                    <p className="type-meta text-muted-foreground mt-1 md:mt-2">
                       Select a stall to {isAdmin ? 'edit' : 'apply'}.
                     </p>
                   </>

@@ -55,9 +55,10 @@ function BillCell({
       {bill.amount <= 0 ? (
         <span className="type-meta text-muted-foreground">{bill.missing}</span>
       ) : paid ? (
-        <span className="type-meta text-muted-foreground flex items-center gap-1">
+        <span className="type-meta text-muted-foreground flex items-center gap-1 whitespace-nowrap">
           <CheckIcon aria-hidden="true" className="text-positive size-3.5" />
-          Paid {formatDate(bill.record!.paymentDate)}
+          <span className="max-md:sr-only">Paid </span>
+          {formatDate(bill.record!.paymentDate)}
         </span>
       ) : (
         <>

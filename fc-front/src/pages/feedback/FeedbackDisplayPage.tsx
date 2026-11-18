@@ -160,9 +160,12 @@ export function FeedbackDisplayPage() {
                 value={level}
                 onValueChange={(next) => setLevel(next || 'all')}
                 aria-label="Filter by rating"
-                className="max-md:w-full"
+                className="max-md:grid max-md:w-full max-md:grid-cols-2 max-md:gap-2 max-md:shadow-none"
               >
-                <ToggleGroupItem value="all" className="px-3 max-md:h-11">
+                <ToggleGroupItem
+                  value="all"
+                  className="px-3 max-md:col-span-2 max-md:h-11 max-md:rounded-md max-md:shadow-xs"
+                >
                   All
                 </ToggleGroupItem>
                 {levels.map((value) => {
@@ -173,10 +176,10 @@ export function FeedbackDisplayPage() {
                       value={String(value)}
                       aria-label={`${mood[value].label}, ${countOf(value)}`}
                       title={mood[value].label}
-                      className="gap-1.5 px-2.5 max-md:h-11 md:flex-none md:pr-3"
+                      className="gap-1.5 px-2.5 max-md:h-11 max-md:justify-start max-md:rounded-md max-md:shadow-xs max-md:data-[variant=outline]:border-l md:flex-none md:pr-3"
                     >
                       <Icon />
-                      <span className="max-xl:sr-only">
+                      <span className="md:max-xl:sr-only">
                         {mood[value].label}
                       </span>
                       <span className="text-muted-foreground tabular-nums">
