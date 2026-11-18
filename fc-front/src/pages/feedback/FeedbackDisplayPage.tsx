@@ -160,11 +160,11 @@ export function FeedbackDisplayPage() {
                 value={level}
                 onValueChange={(next) => setLevel(next || 'all')}
                 aria-label="Filter by rating"
-                className="max-md:grid max-md:w-full max-md:grid-cols-2 max-md:gap-2 max-md:shadow-none"
+                className="max-lg:grid max-lg:w-full max-lg:grid-cols-2 max-lg:gap-2 max-lg:shadow-none"
               >
                 <ToggleGroupItem
                   value="all"
-                  className="px-3 max-md:col-span-2 max-md:h-11 max-md:rounded-md max-md:shadow-xs"
+                  className="px-3 max-lg:col-span-2 max-lg:h-11 max-lg:rounded-md max-lg:shadow-xs"
                 >
                   All
                 </ToggleGroupItem>
@@ -176,12 +176,10 @@ export function FeedbackDisplayPage() {
                       value={String(value)}
                       aria-label={`${mood[value].label}, ${countOf(value)}`}
                       title={mood[value].label}
-                      className="gap-1.5 px-2.5 max-md:h-11 max-md:justify-start max-md:rounded-md max-md:shadow-xs max-md:data-[variant=outline]:border-l md:flex-none md:pr-3"
+                      className="gap-1.5 px-2.5 max-lg:h-11 max-lg:justify-start max-lg:gap-1 max-lg:rounded-md max-lg:px-2 max-lg:shadow-xs max-lg:data-[variant=outline]:border-l lg:flex-none lg:pr-3"
                     >
                       <Icon />
-                      <span className="md:max-xl:sr-only">
-                        {mood[value].label}
-                      </span>
+                      <span>{mood[value].label}</span>
                       <span className="text-muted-foreground tabular-nums">
                         {countOf(value)}
                       </span>
