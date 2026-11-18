@@ -128,10 +128,10 @@ export const navByRole: Record<Role, RoleNav> = {
         ],
       },
       {
-        title: 'New Stall',
+        title: 'Applications',
         items: [
           {
-            title: 'Apply New Stall',
+            title: 'Apply for a stall',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
@@ -161,7 +161,7 @@ export const navByRole: Record<Role, RoleNav> = {
         icon: CreditCardIcon,
       },
       {
-        title: 'Apply New Stall',
+        title: 'Apply for a stall',
         url: '/dashboard/stall-availability',
         icon: HousePlusIcon,
       },
@@ -170,10 +170,10 @@ export const navByRole: Record<Role, RoleNav> = {
   user: {
     main: [
       {
-        title: 'Main Features',
+        title: 'Applications',
         items: [
           {
-            title: 'Apply Stall',
+            title: 'Apply for a stall',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
@@ -198,7 +198,7 @@ export const navByRole: Record<Role, RoleNav> = {
     secondary: [],
     quick: [
       {
-        title: 'Apply Stall',
+        title: 'Apply for a stall',
         url: '/dashboard/stall-availability',
         icon: FileUserIcon,
       },

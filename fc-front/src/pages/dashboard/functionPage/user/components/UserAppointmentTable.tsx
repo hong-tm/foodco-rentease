@@ -168,19 +168,26 @@ export default function UserAppointmentTable() {
                 .join(' ')}
       </PageHeader>
 
-      <Panel>
+      <Panel className="gap-0 pb-0 md:pb-0">
         <PanelHeader
+          className="pb-3"
           title="Your appointments"
           meta="Approved stalls need the first rental payment to start the lease"
         />
         {isLoading ? (
-          <PanelRowsSkeleton rows={3} />
+          <div className="pb-4 md:pb-5">
+            <PanelRowsSkeleton rows={3} />
+          </div>
         ) : error ? (
-          <PanelError what="your appointments" />
+          <div className="pb-4 md:pb-5">
+            <PanelError what="your appointments" />
+          </div>
         ) : rows.length === 0 ? (
-          <PanelEmpty>No appointments yet.</PanelEmpty>
+          <div className="pb-4 md:pb-5">
+            <PanelEmpty>No appointments yet.</PanelEmpty>
+          </div>
         ) : (
-          <ul className="flex flex-col divide-y">
+          <ul className="-mx-4 divide-y border-t md:-mx-5">
             {rows.map((notification) => {
               const date = new Date(notification.appointmentDate)
               const status =
@@ -202,7 +209,7 @@ export default function UserAppointmentTable() {
               return (
                 <li
                   key={notification.notificationId}
-                  className="flex min-h-15 flex-wrap items-center gap-x-3 gap-y-2 py-2.5"
+                  className="flex min-h-15 flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3.5 md:px-5"
                 >
                   <time
                     dateTime={date.toISOString()}
@@ -223,7 +230,7 @@ export default function UserAppointmentTable() {
                       {notification.notificationMessage}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 max-md:w-full max-md:justify-between max-md:pl-14">
+                  <div className="flex items-center gap-3 max-md:w-full max-md:justify-between max-md:pl-15">
                     <Badge
                       variant={
                         status === 'pending'

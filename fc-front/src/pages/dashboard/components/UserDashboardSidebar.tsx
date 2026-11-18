@@ -271,10 +271,10 @@ export default function UserDashboardSidebar({
           ],
         },
         {
-          title: 'New Stall',
+          title: 'Applications',
           items: [
             {
-              title: 'Apply New Stall',
+              title: 'Apply for a stall',
               url: '/dashboard/stall-availability',
               icon: SignatureIcon,
             },
@@ -302,10 +302,10 @@ export default function UserDashboardSidebar({
       user: account,
       navMain: [
         {
-          title: 'Main Features',
+          title: 'Applications',
           items: [
             {
-              title: 'Apply Stall',
+              title: 'Apply for a stall',
               url: '/dashboard/stall-availability',
               icon: SignatureIcon,
             },
