@@ -1,231 +1,169 @@
-import { useSession } from '@/api/adminApi'
-import { getAllPaymentRecordsQueryOptions } from '@/api/paymentApi'
-import { useQuery } from '@tanstack/react-query'
-import { Loader2Icon, TrendingDownIcon, TrendingUpIcon } from 'lucide-react'
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
-
+import { useState } from 'react'
+import type { PaymentRecord } from '@/api/paymentApi'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import type { ChartConfig } from '@/components/ui/chart'
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart'
+  ColumnChart,
+  type ColumnSeries,
+} from '@/pages/dashboard/functionPage/admin/components/ColumnChart'
+import { format, isSameMonth, startOfMonth, subMonths } from 'date-fns'
 
-const chartConfig = {
-  electric: {
-    label: 'Electric',
-    color: 'hsl(var(--chart-1))',
-  },
-  water: {
-    label: 'Water',
-    color: 'hsl(var(--chart-2))',
-  },
-  rental: {
-    label: 'Rental',
-    color: 'hsl(var(--chart-3))',
-  },
-} satisfies ChartConfig
+import { formatRM } from '@/lib/format'
+import { cn } from '@/lib/utils'
 
-export default function RentalPaymentDetail() {
-  const { data: session } = useSession()
-  const userId = session?.user?.id
+import { Panel, PanelError, PanelHeader } from '@/components/ui/panel'
+import { StatStrip } from '@/components/ui/panel-parts'
+import { Skeleton } from '@/components/ui/skeleton'
 
-  const { data: payments, isLoading } = useQuery({
-    ...getAllPaymentRecordsQueryOptions,
-    select: (data) => {
-      if (!data) return []
+type PaymentKind = 'rental' | 'electric' | 'water'
 
-      // Filter payments by status and type
-      const validPayments = data.filter(
-        (payment) =>
-          payment.paymentStatus &&
-          ['water', 'electric', 'rental'].includes(payment.paymentType) &&
-          payment.userId === userId,
-      )
+const series: (ColumnSeries & { key: PaymentKind })[] = [
+  { key: 'rental', label: 'Rent', color: 'var(--chart-1)' },
+  { key: 'electric', label: 'Electric', color: 'var(--chart-3)' },
+  { key: 'water', label: 'Water', color: 'var(--chart-2)' },
+]
 
-      // Group payments by month
-      const monthlyPayments = validPayments.reduce(
-        (acc, payment) => {
-          const date = new Date(payment.paymentDate)
-          const monthKey = `${date.getFullYear()}-${String(
-            date.getMonth() + 1,
-          ).padStart(2, '0')}`
-          const monthName = date.toLocaleString('default', { month: 'long' })
+const sum = (records: PaymentRecord[]) =>
+  records.reduce((total, record) => total + Number(record.paymentAmount), 0)
 
-          if (!acc[monthKey]) {
-            acc[monthKey] = {
-              month: monthName,
-              monthKey,
-              electric: 0,
-              water: 0,
-              rental: 0,
-              total: 0,
-            }
-          }
-          const amount = parseFloat(payment.paymentAmount)
-          if (payment.paymentType === 'electric') {
-            acc[monthKey].electric += amount
-          } else if (payment.paymentType === 'water') {
-            acc[monthKey].water += amount
-          } else if (payment.paymentType === 'rental') {
-            acc[monthKey].rental += amount
-          }
-          acc[monthKey].total += amount
+function SeriesToggle({
+  hidden,
+  onToggle,
+}: {
+  hidden: PaymentKind[]
+  onToggle: (key: PaymentKind) => void
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Show or hide a payment type"
+      className="flex flex-wrap gap-1"
+    >
+      {series.map((s) => {
+        const shown = !hidden.includes(s.key)
+        return (
+          <button
+            key={s.key}
+            type="button"
+            aria-pressed={shown}
+            onClick={() => onToggle(s.key)}
+            className={cn(
+              'type-meta hover:bg-accent focus-visible:ring-ring inline-flex h-11 items-center gap-1.5 rounded-md px-2.5 outline-none focus-visible:ring-2 md:h-8',
+              shown ? 'text-foreground' : 'text-muted-foreground line-through',
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className="size-2.5 rounded-xs border-2"
+              style={{
+                borderColor: s.color,
+                background: shown ? s.color : 'transparent',
+              }}
+            />
+            {s.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
-          return acc
-        },
-        {} as Record<
-          string,
-          {
-            month: string
-            monthKey: string
-            electric: number
-            water: number
-            rental: number
-            total: number
-          }
-        >,
-      )
+export default function RentalPaymentDetail({
+  payments,
+  isLoading,
+  error,
+  onRetry,
+}: {
+  payments: PaymentRecord[]
+  isLoading: boolean
+  error: boolean
+  onRetry: () => void
+}) {
+  const [hidden, setHidden] = useState<PaymentKind[]>([])
+  const now = new Date()
+  const paid = payments.filter((payment) => payment.paymentStatus)
+  const unpaid = payments.filter((payment) => !payment.paymentStatus)
+  const paidIn = (month: Date) =>
+    paid.filter((payment) => isSameMonth(new Date(payment.paymentDate), month))
 
-      // Convert to array and sort by date
-      return Object.values(monthlyPayments)
-        .sort((a, b) => a.monthKey.localeCompare(b.monthKey))
-        .map(({ monthKey, ...rest }) => ({
-          ...rest,
-          monthKey: monthKey.toString(),
-        }))
-    },
+  const months = Array.from({ length: 6 }, (_, i) =>
+    startOfMonth(subMonths(now, 5 - i)),
+  )
+  const chart = months.map((month) => {
+    const inMonth = paidIn(month)
+    return {
+      label: format(month, 'MMM'),
+      ...Object.fromEntries(
+        series.map((s) => [
+          s.key,
+          sum(inMonth.filter((payment) => payment.paymentType === s.key)),
+        ]),
+      ),
+    }
   })
+  const lastMonth = subMonths(now, 1)
+  const thisMonthTotal = sum(paidIn(now))
+  const lastMonthTotal = sum(paidIn(lastMonth))
+  const windowRecords = months.flatMap(paidIn)
+  const rentTotal = sum(
+    windowRecords.filter((payment) => payment.paymentType === 'rental'),
+  )
+  const windowTotal = sum(windowRecords)
 
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="flex min-h-[300px] items-center justify-center">
-          <Loader2Icon className="h-8 w-8 animate-spin" />
-        </CardContent>
-      </Card>
+  const toggle = (key: PaymentKind) =>
+    setHidden((current) =>
+      current.includes(key)
+        ? current.filter((k) => k !== key)
+        : current.length === series.length - 1
+          ? current
+          : [...current, key],
     )
-  }
-
-  if (!payments || payments.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex min-h-[300px] items-center justify-center">
-          <p className="text-muted-foreground">No payment records found.</p>
-        </CardContent>
-      </Card>
-    )
-  }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle>Payment Details</CardTitle>
-        <CardDescription>
-          onthly payment breakdown for utilities and rental
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pb-2">
-        <ChartContainer config={chartConfig}>
-          <AreaChart
-            accessibilityLayer
-            data={payments}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 8,
-              bottom: 0,
-            }}
-            stackOffset="expand"
-            height={80}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={4}
-              tickFormatter={(value) => value.slice(0, 3)}
-              height={20}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
-            />
-            <Area
-              isAnimationActive={false}
-              dataKey="rental"
-              type="natural"
-              fill="var(--color-rental)"
-              fillOpacity={0.1}
-              stroke="var(--color-rental)"
-              stackId="a"
-            />
-            <Area
-              isAnimationActive={false}
-              dataKey="water"
-              type="natural"
-              fill="var(--color-water)"
-              fillOpacity={0.4}
-              stroke="var(--color-water)"
-              stackId="a"
-            />
-            <Area
-              isAnimationActive={false}
-              dataKey="electric"
-              type="natural"
-              fill="var(--color-electric)"
-              fillOpacity={0.4}
-              stroke="var(--color-electric)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              {(() => {
-                const curr = payments[payments.length - 1]?.total
-                const prev = payments[payments.length - 2]?.total
-                if (!curr || !prev) {
-                  return <span>No earlier month to compare</span>
-                }
-                const delta = ((curr - prev) / prev) * 100
-                if (delta >= 0) {
-                  return (
-                    <>
-                      Total expenses increased by{' '}
-                      <TrendingUpIcon className="h-4 w-4" />
-                      {delta.toFixed(1)}% this month
-                    </>
-                  )
-                }
-                return (
-                  <>
-                    Total expenses decreased by{' '}
-                    <TrendingDownIcon className="h-4 w-4" />
-                    {Math.abs(delta).toFixed(1)}% this month
-                  </>
-                )
-              })()}
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              {payments[0]?.month} - {payments[payments.length - 1]?.month}{' '}
-              {new Date().getFullYear()}
-            </div>
-          </div>
-        </div>
-      </CardFooter>
-    </Card>
+    <Panel>
+      <PanelHeader
+        title="Payments"
+        meta={`Paid each month, ${format(months[0], 'MMM')} to ${format(now, 'MMM yyyy')}`}
+      />
+      {isLoading ? (
+        <Skeleton className="h-72" />
+      ) : error ? (
+        <PanelError what="your payments" onRetry={onRetry} />
+      ) : (
+        <>
+          <StatStrip
+            stats={[
+              {
+                label: `Paid in ${format(now, 'MMMM')}`,
+                value: formatRM(thisMonthTotal),
+                note: `${formatRM(lastMonthTotal)} in ${format(lastMonth, 'MMMM')}`,
+              },
+              {
+                label: 'Last 6 months',
+                value: formatRM(windowTotal),
+                note: `Rent ${formatRM(rentTotal)} · utilities ${formatRM(windowTotal - rentTotal)}`,
+              },
+              {
+                label: 'Unpaid',
+                value: formatRM(sum(unpaid)),
+                tone: unpaid.length > 0 ? 'warning' : undefined,
+                note:
+                  unpaid.length > 0
+                    ? `${unpaid.length} bill${unpaid.length === 1 ? '' : 's'} waiting`
+                    : 'Nothing waiting',
+              },
+            ]}
+          />
+          <SeriesToggle hidden={hidden} onToggle={toggle} />
+          <ColumnChart
+            data={chart}
+            series={series.filter((s) => !hidden.includes(s.key))}
+            height={224}
+            formatTick={(value) =>
+              value >= 1000 ? `${value / 1000}k` : String(value)
+            }
+            formatValue={formatRM}
+          />
+        </>
+      )}
+    </Panel>
   )
 }

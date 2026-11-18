@@ -15,7 +15,7 @@ export function RentalReportPage() {
 
   return (
     <PaymentRecordsTable
-      title="Rental Records"
+      title="Payment records"
       description="Monthly rental records for your stalls"
       records={userRecords}
       showMonthFilter={true}
