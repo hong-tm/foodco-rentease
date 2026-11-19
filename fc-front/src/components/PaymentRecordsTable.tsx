@@ -238,12 +238,12 @@ export function PaymentRecordsTable({
               </EmptyMedia>
               <EmptyTitle>No payments yet</EmptyTitle>
               <EmptyDescription>
-                {session?.user?.role === 'user'
+                {session?.user?.role !== 'admin'
                   ? 'Your first rental payment shows here once you pay for an approved stall.'
                   : 'Payments show here as soon as a tenant pays.'}
               </EmptyDescription>
             </EmptyHeader>
-            {session?.user?.role === 'user' ? (
+            {session?.user?.role !== 'admin' ? (
               <EmptyContent>
                 <Button asChild className="max-md:h-11">
                   <Link to="/dashboard/user-appointment">

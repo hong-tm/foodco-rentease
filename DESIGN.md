@@ -50,7 +50,7 @@
 
 - UI PR 附锚点截图同页的新截图：1440 与 390、亮与暗，密集种子（`.agents/skills/verify-foodco`）。评审比像素，不比 diff 条目。
 - 一个 PR 只重排一页；其他页只允许动 token。改了锚点页，同 PR 更新 `docs/design/anchor/` 里的图。
-- 已知坑：图表在 Redact 下要 `isAnimationActive={false}`；SVG 属性（`textAnchor`、`fontSize` 等）靠 `fc-front/patches/@tanstack__redact@0.3.1.patch` 转成连字符，升级 Redact 时先确认上游修了再删补丁。
+- 已知坑：图表在 Redact 下要 `isAnimationActive={false}`；SVG 属性（`textAnchor`、`fontSize` 等）靠 `fc-front/patches/@tanstack__redact@0.3.1.patch` 转成连字符；同一补丁还把已卸载组件上的 `setState` 改成静默返回（原版会抛错）。升级 Redact 时先确认上游修了这两个问题再删补丁。
 
 ## 目标
 

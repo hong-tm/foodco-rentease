@@ -72,7 +72,7 @@ function BillCell({
           </Button>
           {more > 0 && (
             <span className="type-meta text-warning-ink">
-              {more} older unpaid
+              {more} more unpaid
             </span>
           )}
         </>
@@ -121,7 +121,9 @@ export default function StallUtilitiesDetails() {
     }
   }
 
-  const stalls = stallsQuery.data?.stalls ?? []
+  const stalls = (stallsQuery.data?.stalls ?? []).filter(
+    (stall) => stall.rentStatus,
+  )
   const rows = stalls.map((stall) => ({
     stall,
     bills: stallBills(stall, paymentsQuery.data ?? [], userId ?? ''),
@@ -144,7 +146,9 @@ export default function StallUtilitiesDetails() {
           ? 'Rent, water and electric bills for your stalls.'
           : due.count > 0
             ? `${due.count} bill${due.count === 1 ? '' : 's'} to pay, ${formatRM(due.total)} in total.`
-            : `Every bill is paid across your ${stalls.length} stall${stalls.length === 1 ? '' : 's'}.`}
+            : stalls.length === 0
+              ? 'You hold no stalls, so there are no bills.'
+              : `Every bill is paid across your ${stalls.length} stall${stalls.length === 1 ? '' : 's'}.`}
       </PageHeader>
 
       <Panel className="gap-0 pb-0 md:pb-0">

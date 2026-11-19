@@ -132,13 +132,15 @@ export function TenantInformationPage() {
           <button
             type="button"
             aria-pressed={view === 'attention'}
-            onClick={() =>
+            onClick={() => {
+              setSearch('')
+              setTenant(null)
               navigate({
                 search: { view: 'attention' },
                 replace: true,
                 resetScroll: false,
               })
-            }
+            }}
             className={cn(
               'bg-card focus-visible:ring-ring flex cursor-pointer flex-col justify-center rounded-xl border p-4 text-left outline-none focus-visible:ring-2',
               view === 'attention'

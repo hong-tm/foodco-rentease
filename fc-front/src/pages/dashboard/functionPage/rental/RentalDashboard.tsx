@@ -32,11 +32,11 @@ export function RentalDashboard() {
   const payments = (paymentsQuery.data ?? []).filter(
     (payment) => payment.userId === userId,
   )
-  const due = billsDue(
-    (stallsQuery.data?.stalls ?? []).flatMap((stall) =>
-      stallBills(stall, paymentsQuery.data ?? [], userId),
-    ),
-  )
+  const records = paymentsQuery.data
+  const due =
+    stallsQuery.data && records
+      ? billsDue(stalls.flatMap((stall) => stallBills(stall, records, userId)))
+      : { count: 0, total: 0 }
   const next = stalls[0]
 
   const finding = stallsQuery.data
@@ -44,7 +44,7 @@ export function RentalDashboard() {
         stalls.length === 0
           ? 'You hold no stalls yet.'
           : `${stalls.length} stall${stalls.length === 1 ? '' : 's'} on lease. ${stallLabel(next)} ends first: ${timeLeftLabel(next.endAt).toLowerCase()}.`,
-        paymentsQuery.data
+        records && stalls.length > 0
           ? due.count > 0
             ? `${formatRM(due.total)} unpaid across ${due.count} bill${due.count === 1 ? '' : 's'}.`
             : 'Every bill is paid.'

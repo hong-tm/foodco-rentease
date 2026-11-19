@@ -183,7 +183,12 @@ function Sidebar({
 
   if (isMobile) {
     return (
-      <Drawer open={openMobile} onOpenChange={setOpenMobile} direction={side}>
+      <Drawer
+        open={openMobile}
+        onOpenChange={setOpenMobile}
+        direction={side}
+        autoFocus
+      >
         <DrawerContent
           data-sidebar="sidebar"
           data-slot="sidebar"

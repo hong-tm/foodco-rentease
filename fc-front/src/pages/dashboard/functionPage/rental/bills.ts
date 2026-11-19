@@ -43,7 +43,9 @@ export function stallBills(
     const unpaid = mine.filter((payment) => !payment.paymentStatus)
     const record = unpaid[0] ?? mine.at(-1)
     const priceOf = (payment?: PaymentRecord) =>
-      kind === 'rental' ? rentalFee : Number(payment?.paymentAmount ?? 0)
+      kind === 'rental'
+        ? Number(payment?.paymentAmount ?? rentalFee)
+        : Number(payment?.paymentAmount ?? 0)
     const amount = priceOf(record)
     const owesFirstRent = kind === 'rental' && !record && amount > 0
     return {

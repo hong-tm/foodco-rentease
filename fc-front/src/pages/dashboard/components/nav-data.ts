@@ -51,12 +51,12 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Stall',
         items: [
           {
-            title: 'Stall Availability',
+            title: 'Stall availability',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
           {
-            title: 'Stall Appointments',
+            title: 'Stall appointments',
             url: '/dashboard/admin-appointment',
             icon: CalendarClockIcon,
           },
@@ -66,7 +66,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Tenant',
         items: [
           {
-            title: 'Tenant Information',
+            title: 'Tenants',
             url: '/dashboard/tenant-information',
             icon: UsersIcon,
           },
@@ -94,17 +94,17 @@ export const navByRole: Record<Role, RoleNav> = {
     ],
     quick: [
       {
-        title: 'Tenant Information',
+        title: 'Tenants',
         url: '/dashboard/tenant-information',
         icon: BellElectricIcon,
       },
       {
-        title: 'Export Report',
+        title: 'Financial report',
         url: '/dashboard/admin-report',
         icon: BookDownIcon,
       },
       {
-        title: 'Stall Appointments',
+        title: 'Stall appointments',
         url: '/dashboard/admin-appointment',
         icon: ScrollIcon,
       },
