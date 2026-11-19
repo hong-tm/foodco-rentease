@@ -19,13 +19,9 @@ import {
   type GetStallsResponse,
 } from '@/api/stallApi'
 import { queryCollectionOptions } from '@tanstack/query-db-collection'
-import { createCollection } from '@tanstack/react-db'
+import { createCollection, useLiveQuery } from '@tanstack/react-db'
 
 import { queryClient } from '@/lib/query-client'
-
-// Collections share their queryKey with the existing react-query reads, so
-// writes that go through a collection and call refetch() refresh every page
-// still reading that key — no read-side rewrite required.
 
 export const feedbackCollection = createCollection(
   queryCollectionOptions<Feedback>({
@@ -69,3 +65,16 @@ export const paymentsCollection = createCollection(
     getKey: (payment) => payment.paymentId,
   }),
 )
+
+export function useNotificationRows(enabled = true) {
+  const live = useLiveQuery((q) =>
+    enabled ? q.from({ n: notificationsCollection }) : undefined,
+  )
+  const failed = live.status === 'error' || live.status === 'crashed'
+  return {
+    data: live.isReady ? live.data : undefined,
+    isLoading: live.status === 'loading' || live.status === 'idle',
+    error: failed ? new Error('Failed to load appointments') : null,
+    refetch: () => notificationsCollection.utils.refetch(),
+  }
+}

@@ -72,6 +72,7 @@ export function ColumnChart<T extends { label: string }>({
             hide={bare}
             width={36}
             ticks={yTicks}
+            interval={0}
             domain={[0, yTicks[yTicks.length - 1]]}
             tickFormatter={formatTick}
             tickLine={false}
@@ -101,11 +102,12 @@ export function ColumnChart<T extends { label: string }>({
           />
           {series.map((s, index) => (
             <Bar
+              isAnimationActive={false}
               key={s.key}
               dataKey={s.key}
               stackId="stack"
               fill={s.color}
-              maxBarSize={36}
+              maxBarSize={48}
               className={onSelect ? 'cursor-pointer' : undefined}
               onClick={
                 onSelect
@@ -135,7 +137,7 @@ export function ChartLegend({ series }: { series: ColumnSeries[] }) {
         <li key={s.key} className="flex items-center gap-1.5">
           <span
             aria-hidden="true"
-            className="size-2.5 rounded-[3px]"
+            className="size-2.5 rounded-xs"
             style={{ background: s.color }}
           />
           {s.label}

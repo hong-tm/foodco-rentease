@@ -27,8 +27,10 @@ function Trend({
   to,
   series,
   color,
+  empty,
 }: {
   title: string
+  empty: string
   total: number
   note: string
   link: string
@@ -48,18 +50,24 @@ function Trend({
         <p className="type-figure">{total}</p>
         <p className="type-meta text-muted-foreground">{note}</p>
       </div>
-      <ColumnChart
-        bare
-        data={series}
-        series={[{ key: 'value', label: title, color }]}
-        colorOf={(point) =>
-          point.label === format(new Date(), 'MMM')
-            ? color
-            : 'var(--chart-1-soft)'
-        }
-        height={88}
-        ticks={[0, Math.max(1, ...series.map((point) => point.value))]}
-      />
+      {total === 0 ? (
+        <p className="type-meta text-muted-foreground grid h-22 place-items-center text-center">
+          {empty}
+        </p>
+      ) : (
+        <ColumnChart
+          bare
+          data={series}
+          series={[{ key: 'value', label: title, color }]}
+          colorOf={(point) =>
+            point.label === format(new Date(), 'MMM')
+              ? color
+              : 'var(--chart-1-soft)'
+          }
+          height={88}
+          ticks={[0, Math.max(1, ...series.map((point) => point.value))]}
+        />
+      )}
     </div>
   )
 }
@@ -129,6 +137,7 @@ export default function GrowthPanel({ className }: { className?: string }) {
         to="/dashboard/tenant-information"
         series={starts}
         color="var(--chart-1)"
+        empty="No lease starts in this window."
       />
       <Trend
         title="New registrations"
@@ -138,6 +147,7 @@ export default function GrowthPanel({ className }: { className?: string }) {
         to="/dashboard/admin"
         series={signups}
         color="var(--chart-1)"
+        empty="No new accounts in this window."
       />
     </Panel>
   )

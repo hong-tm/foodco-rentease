@@ -4,8 +4,8 @@ import { Link } from '@tanstack/react-router'
 
 import {
   byEndDate,
-  isUrgent,
   leaseState,
+  leaseToneClass,
   timeLeftLabel,
 } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
@@ -79,27 +79,31 @@ export default function LatestStallExpiryScrollArea({
                     {stall.stallName}
                   </span>
                 </p>
-                <p className="type-meta text-muted-foreground">
-                  {stall.stallOwnerId?.name} ·{' '}
-                  <span
-                    className={cn(
-                      isUrgent(stall.endAt) && 'text-negative-ink font-medium',
-                    )}
-                  >
-                    {timeLeftLabel(stall.endAt)}
-                  </span>
-                </p>
+                {stall.stallOwnerId?.name ? (
+                  <p className="type-meta text-muted-foreground truncate">
+                    {stall.stallOwnerId.name}
+                  </p>
+                ) : null}
               </div>
-              {/* Only leases that need follow-up get a reminder; the rest are listed to plan ahead. */}
-              {stall.stallOwnerId && attention.includes(stall) ? (
-                <TenantActionButton
-                  userName={stall.stallOwnerId.name}
-                  userEmail={stall.stallOwnerId.email}
-                  userStallId={stall.stallNumber}
-                  userStallName={stall.stallName}
-                  stallEndAt={stall.endAt}
-                />
-              ) : null}
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span
+                  className={cn(
+                    'type-meta text-muted-foreground whitespace-nowrap',
+                    leaseToneClass(stall.endAt),
+                  )}
+                >
+                  {timeLeftLabel(stall.endAt)}
+                </span>
+                {stall.stallOwnerId && attention.includes(stall) ? (
+                  <TenantActionButton
+                    userName={stall.stallOwnerId.name}
+                    userEmail={stall.stallOwnerId.email}
+                    userStallId={stall.stallNumber}
+                    userStallName={stall.stallName}
+                    stallEndAt={stall.endAt}
+                  />
+                ) : null}
+              </div>
             </li>
           ))}
         </ul>

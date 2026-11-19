@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { deleteFeedback, type Feedback } from '@/api/feedbackApi'
+import { type Feedback } from '@/api/feedbackApi'
+import { changeFeedback } from '@/db/actions'
 import { feedbackCollection } from '@/db/collections'
 import { PageHeader } from '@/pages/dashboard/components/PageHeader'
-import { createTransaction, useLiveQuery } from '@tanstack/react-db'
+import { useLiveQuery } from '@tanstack/react-db'
 import {
   AngryIcon,
   FrownIcon,
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react'
 
 import { formatDate } from '@/lib/format'
+import { ratingColor } from '@/lib/rating'
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
@@ -45,7 +47,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { holdTransactionForUndo } from '@/components/undo-action'
+import { offerUndo } from '@/components/undo-action'
 
 const mood: Record<
   Feedback['happiness'],
@@ -61,7 +63,7 @@ const mood: Record<
     label: 'Happy',
     icon: SmileIcon,
     tone: 'bg-muted text-muted-foreground',
-    bar: 'var(--chart-1-soft)',
+    bar: 'var(--chart-1)',
   },
   2: {
     label: 'Unhappy',
@@ -158,9 +160,12 @@ export function FeedbackDisplayPage() {
                 value={level}
                 onValueChange={(next) => setLevel(next || 'all')}
                 aria-label="Filter by rating"
-                className="max-md:w-full"
+                className="max-lg:grid max-lg:w-full max-lg:grid-cols-2 max-lg:gap-2 max-lg:shadow-none"
               >
-                <ToggleGroupItem value="all" className="px-3 max-md:h-11">
+                <ToggleGroupItem
+                  value="all"
+                  className="px-3 max-lg:col-span-2 max-lg:h-11 max-lg:rounded-md max-lg:shadow-xs"
+                >
                   All
                 </ToggleGroupItem>
                 {levels.map((value) => {
@@ -171,12 +176,10 @@ export function FeedbackDisplayPage() {
                       value={String(value)}
                       aria-label={`${mood[value].label}, ${countOf(value)}`}
                       title={mood[value].label}
-                      className="gap-1.5 px-2.5 max-md:h-11 md:flex-none md:pr-3"
+                      className="gap-1.5 px-2.5 max-lg:h-11 max-lg:justify-start max-lg:gap-1 max-lg:rounded-md max-lg:px-2 max-lg:shadow-xs max-lg:data-[variant=outline]:border-l lg:flex-none lg:pr-3"
                     >
                       <Icon />
-                      <span className="max-xl:sr-only">
-                        {mood[value].label}
-                      </span>
+                      <span>{mood[value].label}</span>
                       <span className="text-muted-foreground tabular-nums">
                         {countOf(value)}
                       </span>
@@ -319,10 +322,7 @@ export function FeedbackDisplayPage() {
                             className="block h-full rounded-full"
                             style={{
                               width: `${(row.average / 4) * 100}%`,
-                              background:
-                                row.average < 2.5
-                                  ? 'var(--destructive)'
-                                  : 'var(--chart-1)',
+                              background: ratingColor(row.average),
                             }}
                           />
                         </span>
@@ -386,7 +386,7 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
           size="icon"
           aria-label={`Delete feedback ${feedback.id}`}
           className="text-muted-foreground hover:text-destructive size-8 max-md:size-11"
-          onClick={() => deleteWithUndo(feedback.id)}
+          onClick={() => deleteWithUndo(feedback)}
         >
           <Trash2Icon className="size-4" />
         </Button>
@@ -395,8 +395,6 @@ function FeedbackRow({ feedback }: { feedback: Feedback }) {
   )
 }
 
-// The row is back in the collection the moment Undo rolls the transaction
-// back; flash it so the eye can find what returned, and scroll it into view.
 function revealRestoredRow(id: number) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
@@ -414,27 +412,19 @@ function revealRestoredRow(id: number) {
   requestAnimationFrame(find)
 }
 
-// Instant delete with an undo window: the row leaves the collection the
-// moment the trash is clicked, a ring counts down, and only when the ring
-// runs out does the transaction commit and fire the server DELETE.
-function deleteWithUndo(id: number) {
-  const tx = createTransaction({
-    autoCommit: false,
-    mutationFn: async () => {
-      try {
-        await deleteFeedback({ id })
-      } finally {
-        await feedbackCollection.utils.refetch()
-      }
-    },
-  })
-
-  tx.mutate(() => {
-    feedbackCollection.delete(id)
-  })
-
-  holdTransactionForUndo(tx, {
-    message: `Feedback ${id} deleted`,
-    onUndo: () => revealRestoredRow(id),
+function deleteWithUndo(row: Feedback) {
+  const feedback: Feedback = {
+    id: row.id,
+    happiness: row.happiness,
+    stall: row.stall,
+    feedbackContent: row.feedbackContent,
+    createdAt: row.createdAt,
+  }
+  const change = changeFeedback({ kind: 'delete', feedback })
+  offerUndo(change, {
+    message: `Feedback ${feedback.id} deleted`,
+    failed: `Could not delete feedback ${feedback.id}. It is back in the list.`,
+    undo: () => changeFeedback({ kind: 'restore', feedback }),
+    onUndone: () => revealRestoredRow(feedback.id),
   })
 }

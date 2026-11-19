@@ -1,8 +1,5 @@
 import { fetchUsersQueryOptions } from '@/api/adminApi'
-import {
-  getAllNotificationQueryOptions,
-  notificationsQueryKey,
-} from '@/api/notificationApi'
+import { useNotificationRows } from '@/db/collections'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { startOfDay } from 'date-fns'
@@ -30,10 +27,7 @@ export default function LatestAppointmentScrollArea({
     isLoading,
     error,
     refetch,
-  } = useQuery({
-    ...getAllNotificationQueryOptions,
-    queryKey: notificationsQueryKey.notifications(),
-  })
+  } = useNotificationRows()
 
   const today = startOfDay(new Date())
   const rows = (notifications ?? [])
@@ -57,12 +51,14 @@ export default function LatestAppointmentScrollArea({
       user: users?.users.find((user) => user.id === notification.userId),
     }))
   const waiting = rows.filter((row) => row.notificationRead === null).length
+  const shown = rows.slice(0, 5)
+  const more = rows.length - shown.length
 
   return (
     <Panel className={className}>
       <PanelHeader
         title="Upcoming appointments"
-        meta={`${waiting} pending`}
+        meta={`${rows.length} coming up, ${waiting} pending`}
         action={
           <Button variant="quiet" asChild>
             <Link to="/dashboard/admin-appointment">View all</Link>
@@ -78,7 +74,7 @@ export default function LatestAppointmentScrollArea({
       ) : null}
       {rows.length > 0 ? (
         <ul className="flex flex-1 flex-col divide-y">
-          {rows.map((row) => (
+          {shown.map((row) => (
             <li
               key={row.notificationId ?? `${row.userId}-${row.appointmentDate}`}
               className="flex min-h-13 flex-1 items-center gap-3 py-1.5"
@@ -128,6 +124,11 @@ export default function LatestAppointmentScrollArea({
             </li>
           ))}
         </ul>
+      ) : null}
+      {more > 0 ? (
+        <Button variant="quiet" asChild className="self-start">
+          <Link to="/dashboard/admin-appointment">+{more} more</Link>
+        </Button>
       ) : null}
     </Panel>
   )

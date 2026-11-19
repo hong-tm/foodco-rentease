@@ -4,7 +4,7 @@ import { formatDate, formatSize } from '@/lib/format'
 import {
   boardState,
   daysLeft,
-  isUrgent,
+  leaseToneClass,
   timeLeftLabel,
 } from '@/lib/stall-lease'
 import { cn } from '@/lib/utils'
@@ -48,7 +48,7 @@ function TimeLeft({ stall }: { stall: RentalRow['stall'] }) {
       className={cn(
         'type-body',
         days === null && 'text-muted-foreground',
-        isUrgent(stall.endAt) && 'text-negative-ink font-medium',
+        leaseToneClass(stall.endAt),
       )}
     >
       {timeLeftLabel(stall.endAt)}

@@ -13,7 +13,7 @@ import {
   boardState,
   boardStateLabel,
   byEndDate,
-  isUrgent,
+  leaseToneClass,
   stallLabel,
   timeLeftLabel,
   type BoardState,
@@ -106,9 +106,15 @@ export function StallAvailabilityPage() {
     from: '/dashboard/stall-availability',
   })
   const navigate = useNavigate({ from: '/dashboard/stall-availability' })
-  const filter: Filter = filterLabels.some((f) => f.value === requested)
-    ? (requested as Filter)
-    : 'free'
+  const isAdmin = session?.user.role === 'admin'
+  const stateOf = (stall: Stall): BoardState =>
+    isAdmin ? boardState(stall) : stall.rentStatus ? 'let' : 'free'
+  const known = filterLabels.some((f) => f.value === requested)
+  const filter: Filter = !known
+    ? 'free'
+    : requested === 'followup' && !isAdmin
+      ? 'let'
+      : (requested as Filter)
   const setFilter = (next: Filter) =>
     // A filter change keeps the scroll position, as setSearchParams did.
     navigate({
@@ -121,10 +127,10 @@ export function StallAvailabilityPage() {
   const stalls = data?.stall ?? []
   const counts: Record<BoardState, number> = { free: 0, followup: 0, let: 0 }
   stalls.forEach((stall) => {
-    counts[boardState(stall)] += 1
+    counts[stateOf(stall)] += 1
   })
   const matches = (stall: Stall) =>
-    filter === 'all' || boardState(stall) === filter
+    filter === 'all' || stateOf(stall) === filter
   const listed = stalls
     .filter(matches)
     .sort((a, b) =>
@@ -136,7 +142,6 @@ export function StallAvailabilityPage() {
     .filter((stall) => !stall.rentStatus)
     .map((stall) => stall.stallNumber)
     .sort((a, b) => a - b)
-  const isAdmin = session?.user.role === 'admin'
 
   const tiers = new Map<
     string,
@@ -169,7 +174,7 @@ export function StallAvailabilityPage() {
       >
         {data
           ? freeNumbers.length
-            ? `${freeNumbers.length} of ${stalls.length} stalls are free: ${joinList(freeNumbers)}. ${counts.followup} lease${counts.followup === 1 ? ' needs' : 's need'} follow-up.`
+            ? `${freeNumbers.length} of ${stalls.length} stalls are free: ${joinList(freeNumbers)}.${isAdmin ? ` ${counts.followup} lease${counts.followup === 1 ? ' needs' : 's need'} follow-up.` : ''}`
             : `All ${stalls.length} stalls are let.`
           : 'Loading the food court.'}
       </PageHeader>
@@ -187,12 +192,14 @@ export function StallAvailabilityPage() {
               label="Filter stalls"
               value={filter}
               onChange={setFilter}
-              tabs={filterLabels.map((item) => ({
-                value: item.value,
-                label: item.label,
-                count:
-                  item.value === 'all' ? stalls.length : counts[item.value],
-              }))}
+              tabs={filterLabels
+                .filter((item) => isAdmin || item.value !== 'followup')
+                .map((item) => ({
+                  value: item.value,
+                  label: item.label,
+                  count:
+                    item.value === 'all' ? stalls.length : counts[item.value],
+                }))}
             />
             {isLoading ? (
               <Skeleton className="h-[230px] md:h-[524px]" />
@@ -200,6 +207,7 @@ export function StallAvailabilityPage() {
               <StallFloorPlan
                 stalls={stalls}
                 size="full"
+                stateOf={stateOf}
                 matches={filter === 'all' ? undefined : matches}
                 active={open?.stallNumber}
                 onOpen={setOpen}
@@ -212,7 +220,7 @@ export function StallAvailabilityPage() {
                         ? 'stalls in the food court'
                         : `of ${stalls.length} stalls ${centreVerb[filter]}`}
                     </p>
-                    <p className="type-meta text-muted-foreground mt-2 hidden md:block">
+                    <p className="type-meta text-muted-foreground mt-1 md:mt-2">
                       Select a stall to {isAdmin ? 'edit' : 'apply'}.
                     </p>
                   </>
@@ -231,7 +239,7 @@ export function StallAvailabilityPage() {
                 <PanelEmpty>No stalls in this state.</PanelEmpty>
               ) : null}
               {listed.length > 0 ? (
-                <ul className="-mx-2 flex min-h-0 max-h-[560px] flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
+                <ul className="-mx-2 flex max-h-[560px] min-h-0 flex-1 flex-col divide-y overflow-y-auto [scrollbar-width:thin]">
                   {listed.map((stall) => {
                     const price = priceOf(stall)
                     return (
@@ -263,10 +271,8 @@ export function StallAvailabilityPage() {
                           </span>
                           <span
                             className={cn(
-                              'type-meta shrink-0 text-right',
-                              stall.rentStatus && isUrgent(stall.endAt)
-                                ? 'text-negative-ink font-medium'
-                                : 'text-muted-foreground',
+                              'type-meta text-muted-foreground shrink-0 text-right',
+                              stall.rentStatus && leaseToneClass(stall.endAt),
                             )}
                           >
                             {stall.rentStatus

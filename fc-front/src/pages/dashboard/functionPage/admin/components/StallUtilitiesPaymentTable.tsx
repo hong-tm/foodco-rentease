@@ -171,7 +171,6 @@ export default function StallUtilitiesPaymentTable() {
                       userEmail={user.email}
                       userStallId={payment.stallId}
                       userStallName=""
-                      className="max-md:h-9"
                       email={{
                         subject: `Unpaid ${kind} bill for stall ${payment.stallId}`,
                         text: `Dear ${name},\n\nYour ${kind} bill for stall ${payment.stallId} is still unpaid.\n\nAmount: ${amount}\nBill date: ${date}\n\nPlease pay it in FoodCo RentEase.\n\nThank you!`,

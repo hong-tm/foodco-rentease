@@ -10,7 +10,7 @@ import { formatSize } from '@/lib/format'
 import {
   boardState,
   boardStateLabel,
-  isUrgent,
+  leaseToneClass,
   stallLabel,
   timeLeftLabel,
 } from '@/lib/stall-lease'
@@ -63,7 +63,7 @@ export function StallDialog({
             <dd
               className={cn(
                 'type-body font-medium',
-                isUrgent(stall.endAt) && 'text-negative-ink',
+                leaseToneClass(stall.endAt),
               )}
             >
               {timeLeftLabel(stall.endAt)}

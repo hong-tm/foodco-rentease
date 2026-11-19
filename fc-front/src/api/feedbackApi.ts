@@ -1,4 +1,7 @@
-import { createFeedbackSchema } from '@server/lib/sharedType'
+import {
+  createFeedbackSchema,
+  restoreFeedbackSchema,
+} from '@server/lib/sharedType'
 import { queryOptions } from '@tanstack/react-query'
 import { z } from 'zod/v4'
 
@@ -81,6 +84,17 @@ export async function createFeedback(
 
   const data = await res.json()
   return data.feedback
+}
+
+export async function restoreFeedback(
+  values: z.input<typeof restoreFeedbackSchema>,
+) {
+  const res = await api.feedbacks.restore.$post({ json: values })
+
+  if (!res.ok) {
+    const data = await res.json()
+    throw new Error('message' in data ? data.message : data.error)
+  }
 }
 
 export async function deleteFeedback({ id }: { id: number }) {

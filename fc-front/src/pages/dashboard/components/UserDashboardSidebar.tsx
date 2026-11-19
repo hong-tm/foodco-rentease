@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useSession } from '@/api/adminApi'
-import { getAllNotificationQueryOptions } from '@/api/notificationApi'
+import { useNotificationRows } from '@/db/collections'
 import { NavMain } from '@/pages/dashboard/components/nav-main'
 import { NavSecondary } from '@/pages/dashboard/components/nav-secondary'
 import { NavUser } from '@/pages/dashboard/components/nav-user'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   CalendarClockIcon,
@@ -64,11 +64,9 @@ export default function UserDashboardSidebar({
 
   const navigate = useNavigate()
 
-  // A count on the nav only for the queue that needs a reply.
-  const { data: notifications } = useQuery({
-    ...getAllNotificationQueryOptions,
-    enabled: session?.user?.role === 'admin',
-  })
+  const { data: notifications } = useNotificationRows(
+    session?.user?.role === 'admin',
+  )
   const pendingAppointments =
     notifications?.filter((n) => n.notificationRead === null).length ?? 0
 
@@ -259,7 +257,7 @@ export default function UserDashboardSidebar({
           title: 'Stall',
           items: [
             {
-              title: 'Stall Information',
+              title: 'Your stalls',
               url: '/dashboard/rental-dashboard',
               icon: StoreIcon,
             },
@@ -271,15 +269,15 @@ export default function UserDashboardSidebar({
           ],
         },
         {
-          title: 'New Stall',
+          title: 'Applications',
           items: [
             {
-              title: 'Apply New Stall',
+              title: 'Apply for a stall',
               url: '/dashboard/stall-availability',
               icon: SignatureIcon,
             },
             {
-              title: 'Appointment',
+              title: 'Appointments',
               url: '/dashboard/user-appointment',
               icon: CalendarClockIcon,
             },
@@ -289,7 +287,7 @@ export default function UserDashboardSidebar({
           title: 'Financial',
           items: [
             {
-              title: 'Export Financial Report',
+              title: 'Payment records',
               url: '/dashboard/rental-report',
               icon: FileDownIcon,
             },
@@ -302,15 +300,15 @@ export default function UserDashboardSidebar({
       user: account,
       navMain: [
         {
-          title: 'Main Features',
+          title: 'Applications',
           items: [
             {
-              title: 'Apply Stall',
+              title: 'Apply for a stall',
               url: '/dashboard/stall-availability',
               icon: SignatureIcon,
             },
             {
-              title: 'Appointment',
+              title: 'Appointments',
               url: '/dashboard/user-appointment',
               icon: CalendarClockIcon,
             },
@@ -320,7 +318,7 @@ export default function UserDashboardSidebar({
           title: 'Financial',
           items: [
             {
-              title: 'Payments',
+              title: 'Payment records',
               url: '/dashboard/user-report',
               icon: CreditCardIcon,
             },

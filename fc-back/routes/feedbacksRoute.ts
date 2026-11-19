@@ -4,7 +4,10 @@ import { z } from 'zod/v4'
 
 import { Feedback as FeedbackTable } from '../db/userModel.js'
 import type { AuthType } from '../lib/auth.js'
-import { createFeedbackSchema } from '../lib/sharedType.js'
+import {
+  createFeedbackSchema,
+  restoreFeedbackSchema,
+} from '../lib/sharedType.js'
 import { tryCatch } from '../lib/try-catch.js'
 import { adminVerify } from '../lib/verifyuser.js'
 
@@ -42,6 +45,33 @@ export const feedbacksRoute = new Hono<AuthType>()
 
       if (!feedback) {
         return c.json({ message: 'Feedback not found!' }, 404)
+      }
+
+      return c.json({ feedback: feedback }, 201)
+    },
+  )
+  .post(
+    '/restore',
+    adminVerify(),
+    zValidator('json', restoreFeedbackSchema, (result, c) => {
+      if (!result.success) {
+        return c.json({ message: 'Invalid feedback data!' }, 400)
+      }
+    }),
+    async (c) => {
+      const { data: feedback, error } = await tryCatch(
+        FeedbackTable.create({
+          ...c.req.valid('json'),
+          feedbackContent: c.req.valid('json').feedbackContent ?? undefined,
+        }),
+      )
+
+      if (error) {
+        c.var.logger.error(
+          { cause: error.cause, message: error.message },
+          'Restore Feedback Error',
+        )
+        return c.json({ message: 'Internal Server Error!' }, 500)
       }
 
       return c.json({ feedback: feedback }, 201)

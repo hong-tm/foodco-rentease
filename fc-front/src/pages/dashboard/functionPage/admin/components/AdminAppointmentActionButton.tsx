@@ -1,6 +1,4 @@
-import { updateAppointmentStatus } from '@/api/notificationApi'
-import { notificationsCollection } from '@/db/collections'
-import { createTransaction, useLiveQuery } from '@tanstack/react-db'
+import { decideAppointment, type AppointmentDecision } from '@/db/actions'
 import {
   CircleCheckBigIcon,
   CircleOffIcon,
@@ -16,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { holdTransactionForUndo } from '@/components/undo-action'
+import { offerUndo } from '@/components/undo-action'
 
 type AppointmentData = {
   appointmentId: number
@@ -24,52 +22,23 @@ type AppointmentData = {
   stallNumber: number
 }
 
-// Approve/reject act immediately — no confirmation dialog. The row flips
-// optimistically in the collection, a ring counts down, and Undo rolls the
-// TanStack DB transaction back so the server is never contacted. When the
-// ring runs out the transaction commits and persists the decision.
 export default function AdminAppointmentActionButton({
   appointmentId,
   appointmentStatus,
   stallNumber,
 }: AppointmentData) {
-  // Subscribe so the collection is synced before we write to it — the
-  // pages read through useQuery, and nothing else would have loaded the
-  // collection data the optimistic update needs.
-  useLiveQuery({ query: (q) => q.from({ n: notificationsCollection }) })
-
-  function setStatus(read: boolean) {
-    const tx = createTransaction({
-      autoCommit: false,
-      mutationFn: async () => {
-        try {
-          await updateAppointmentStatus({
-            notificationId: appointmentId,
-            notificationRead: read,
-            stallNumber,
-          })
-        } finally {
-          await notificationsCollection.utils.refetch()
-        }
-      },
-    })
-
-    tx.mutate(() => {
-      notificationsCollection.update(appointmentId, (draft) => {
-        draft.notificationRead = read
-      })
-    })
-
-    holdTransactionForUndo(tx, {
-      message: read
-        ? `Appointment ${stallNumber} approved`
-        : `Appointment ${stallNumber} rejected`,
+  function setStatus(decision: boolean) {
+    const previous: AppointmentDecision = appointmentStatus
+    const change = decideAppointment({ id: appointmentId, decision })
+    offerUndo(change, {
+      message: `Appointment for stall ${stallNumber} ${decision ? 'approved' : 'rejected'}`,
+      failed: `Could not save the decision for stall ${stallNumber}. It is back to how it was.`,
+      undo: () => decideAppointment({ id: appointmentId, decision: previous }),
     })
   }
 
   return (
     <>
-      {/* A pending row answers inline; a decided row keeps the compact menu. */}
       {appointmentStatus === null ? (
         <>
           <Button

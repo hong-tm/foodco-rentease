@@ -65,17 +65,22 @@ export function CountTabs<T extends string>({
       onValueChange={(next) => onChange(next as T)}
       className={cn('min-w-0 max-md:w-full', className)}
     >
-      {/* On a phone the tabs wrap, so every view stays in reach. */}
       <div>
         <TabsList
           aria-label={label}
-          className="max-md:h-auto max-md:min-h-11 max-md:w-full max-md:flex-wrap max-md:justify-start"
+          className={cn(
+            'max-md:grid max-md:h-auto max-md:w-full',
+            tabs.length === 3 ? 'max-md:grid-cols-3' : 'max-md:grid-cols-2',
+          )}
         >
           {tabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="px-2.5 max-md:h-10 max-md:flex-none"
+              className={cn(
+                'px-2.5 max-md:h-11',
+                tabs.length !== 3 && 'max-md:last:odd:col-span-2',
+              )}
             >
               {tab.label}
               {tab.count !== undefined ? (
@@ -114,6 +119,7 @@ export function SearchField({
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         aria-label={label}
+        className="max-md:h-full"
       />
     </InputGroup>
   )
@@ -213,7 +219,7 @@ export function StatStrip({
         <div
           key={stat.label}
           className={cn(
-            'relative flex min-w-0 flex-col gap-0.5 border-b p-4 last:border-b-0 even:border-l md:border-b-0 md:not-first:border-l md:even:border-l',
+            'relative flex min-w-0 flex-col gap-0.5 border-b p-4 last:border-b-0 even:border-l max-md:last:odd:col-span-2 md:border-b-0 md:not-first:border-l md:even:border-l max-md:[&:nth-last-child(2):nth-child(odd)]:border-b-0',
             stat.onSelect && 'hover:bg-accent/60 cursor-pointer',
             stat.selected && 'bg-brand-soft hover:bg-brand-soft',
           )}

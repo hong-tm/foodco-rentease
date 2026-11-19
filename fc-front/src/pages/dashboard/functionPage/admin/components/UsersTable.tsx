@@ -147,13 +147,12 @@ export default function UsersTable() {
                     {user.phone && user.phone !== 'null' ? user.phone : '—'}
                   </TableCell>
                   <TableCell className="max-md:hidden">
-                    {/* One state per row: banned, then unverified, then active. */}
                     {user.banned ? (
                       <Badge variant="negative">Banned</Badge>
                     ) : !user.emailVerified ? (
                       <Badge variant="warning">Email unverified</Badge>
                     ) : (
-                      <Badge variant="neutral">Active</Badge>
+                      <span className="text-muted-foreground">Active</span>
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground max-md:hidden">

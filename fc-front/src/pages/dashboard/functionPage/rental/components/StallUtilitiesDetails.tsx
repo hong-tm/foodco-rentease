@@ -5,24 +5,84 @@ import {
   getAllPaymentRecordsQueryOptions,
 } from '@/api/paymentApi'
 import { fetchStallCurrentQueryOptions } from '@/api/stallApi'
+import { PageHeader } from '@/pages/dashboard/components/PageHeader'
 import { useQuery } from '@tanstack/react-query'
-import { DropletIcon, HomeIcon, Loader2Icon, ZapIcon } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { CheckIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
-import { Badge } from '@/components/ui/badge'
+import { formatDate, formatRM, formatSize } from '@/lib/format'
+import { stallLabel } from '@/lib/stall-lease'
+
 import { Button } from '@/components/ui/button'
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+  Panel,
+  PanelEmpty,
+  PanelError,
+  PanelHeader,
+  PanelRowsSkeleton,
+} from '@/components/ui/panel'
 import PaymentModal from '@/components/PaymentModal'
 
+import { billsDue, stallBills, type Bill } from '../bills'
+
+function BillCell({
+  bill,
+  starting,
+  busy,
+  onPay,
+}: {
+  bill: Bill
+  starting: boolean
+  busy: boolean
+  onPay: () => void
+}) {
+  const paid = Boolean(bill.record?.paymentStatus)
+  const more = bill.unpaidCount - 1
+  return (
+    <div className="flex min-w-0 flex-col gap-1">
+      <span className="type-meta text-muted-foreground flex items-center gap-1.5">
+        <span
+          aria-hidden="true"
+          className="size-2 shrink-0 rounded-xs"
+          style={{ background: bill.color }}
+        />
+        {bill.label}
+      </span>
+      <span className="type-body font-medium tabular-nums">
+        {bill.amount > 0 ? formatRM(bill.amount) : '—'}
+      </span>
+      {bill.amount <= 0 ? (
+        <span className="type-meta text-muted-foreground">{bill.missing}</span>
+      ) : paid ? (
+        <span className="type-meta text-muted-foreground flex items-center gap-1 whitespace-nowrap">
+          <CheckIcon aria-hidden="true" className="text-positive size-3.5" />
+          <span className="max-md:sr-only">Paid </span>
+          {formatDate(bill.record!.paymentDate)}
+        </span>
+      ) : (
+        <>
+          <Button
+            size="sm"
+            className="self-start max-md:min-h-11"
+            disabled={busy}
+            onClick={onPay}
+          >
+            {starting ? 'Starting…' : `Pay ${bill.label.toLowerCase()}`}
+          </Button>
+          {more > 0 && (
+            <span className="type-meta text-warning-ink">
+              {more} more unpaid
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function StallUtilitiesDetails() {
-  const { data: session, isLoading: isSessionLoading } = useSession()
+  const { data: session } = useSession()
   const userId = session?.user?.id
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
@@ -33,21 +93,13 @@ export default function StallUtilitiesDetails() {
     paymentId?: string
   } | null>(null)
   const [clientSecret, setClientSecret] = useState('')
+  const [startingKey, setStartingKey] = useState<string | null>(null)
 
-  const {
-    data: stallData,
-    isLoading: isStallLoading,
-    error: stallError,
-  } = useQuery({
+  const stallsQuery = useQuery({
     ...fetchStallCurrentQueryOptions(userId || ''),
     enabled: Boolean(userId),
   })
-
-  const {
-    data: paymentRecords,
-    isLoading: isPaymentLoading,
-    error: paymentError,
-  } = useQuery(getAllPaymentRecordsQueryOptions)
+  const paymentsQuery = useQuery(getAllPaymentRecordsQueryOptions)
 
   const handlePayment = async (
     type: string,
@@ -55,273 +107,117 @@ export default function StallUtilitiesDetails() {
     stallId: number,
     paymentId: string,
   ) => {
-    if (!userId) return
-
+    if (!userId || startingKey) return
+    setStartingKey(`${stallId}-${type}`)
     try {
       const response = await createPaymentIntent(amount, stallId, userId)
       setClientSecret(response.clientSecret)
       setSelectedPayment({ type, amount, stallId, paymentId })
       setIsPaymentModalOpen(true)
-    } catch (error) {
-      console.error('Error creating payment intent:', error)
+    } catch {
+      toast.error('Could not start the payment. Try again.')
+    } finally {
+      setStartingKey(null)
     }
   }
 
-  if (isSessionLoading || isStallLoading || isPaymentLoading) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <Loader2Icon className="h-8 w-8 animate-spin" />
-      </div>
-    )
-  }
-
-  if (!userId) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-muted-foreground">
-          Please log in to view your stalls.
-        </p>
-      </div>
-    )
-  }
-
-  if (stallError || paymentError) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-destructive">
-          Error loading data. Please try again later.
-        </p>
-      </div>
-    )
-  }
-
-  if (!stallData?.stalls || stallData.stalls.length === 0) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <p className="text-muted-foreground">No stalls found.</p>
-      </div>
-    )
-  }
+  const stalls = (stallsQuery.data?.stalls ?? []).filter(
+    (stall) => stall.rentStatus,
+  )
+  const rows = stalls.map((stall) => ({
+    stall,
+    bills: stallBills(stall, paymentsQuery.data ?? [], userId ?? ''),
+  }))
+  const due = billsDue(rows.flatMap(({ bills }) => bills))
+  const isLoading = stallsQuery.isLoading || paymentsQuery.isLoading
+  const error = stallsQuery.error || paymentsQuery.error
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {stallData.stalls.map((stall) => {
-          const waterPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'water',
-            ) || []
-          const electricPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'electric',
-            ) || []
-          const rentalPayments =
-            paymentRecords?.filter(
-              (payment) =>
-                payment.stallId === stall.stallNumber &&
-                payment.paymentType === 'rental',
-            ) || []
+    <div className="flex flex-col gap-4 md:gap-5">
+      <PageHeader
+        title="Utilities"
+        actions={
+          <Button variant="outline" asChild>
+            <Link to="/dashboard/rental-report">Payment records</Link>
+          </Button>
+        }
+      >
+        {isLoading || error
+          ? 'Rent, water and electric bills for your stalls.'
+          : due.count > 0
+            ? `${due.count} bill${due.count === 1 ? '' : 's'} to pay, ${formatRM(due.total)} in total.`
+            : stalls.length === 0
+              ? 'You hold no stalls, so there are no bills.'
+              : `Every bill is paid across your ${stalls.length} stall${stalls.length === 1 ? '' : 's'}.`}
+      </PageHeader>
 
-          const latestWaterPayment = waterPayments[0]
-          const latestElectricPayment = electricPayments[0]
-          const latestRentalPayment = rentalPayments[0]
-
-          const waterAmount = latestWaterPayment?.paymentAmount
-            ? parseFloat(latestWaterPayment.paymentAmount)
-            : 0
-          const electricAmount = latestElectricPayment?.paymentAmount
-            ? parseFloat(latestElectricPayment.paymentAmount)
-            : 0
-          const rentalAmount =
-            stall.stallTierNumber?.tierPrice && stall.stallSize
-              ? (typeof stall.stallTierNumber.tierPrice === 'string'
-                  ? parseFloat(stall.stallTierNumber.tierPrice)
-                  : stall.stallTierNumber.tierPrice) *
-                (typeof stall.stallSize === 'string'
-                  ? parseFloat(stall.stallSize)
-                  : stall.stallSize)
-              : 0
-
-          return (
-            <Card
-              key={stall.stallNumber}
-              className="w-full border-none shadow-none"
-            >
-              <CardHeader>
-                <CardTitle className="flex">
-                  <CardDescription></CardDescription>
-                  <Badge variant="secondary">Stall #{stall.stallNumber}</Badge>
-                  <span className="text-muted-foreground text-sm font-normal">
-                    {stall.stallName}
-                  </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-muted/50 space-y-3 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <DropletIcon className="text-chart-2 h-4 w-4" />
-                      <div className="flex flex-col">
-                        <span>Water Bill</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestWaterPayment
-                            ? latestWaterPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestWaterPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : 'No bill yet'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {waterAmount > 0 ? `RM ${waterAmount.toFixed(2)}` : '-'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <ZapIcon className="h-4 w-4 text-yellow-500" />
-                      <div className="flex flex-col">
-                        <span>Electric Bill</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestElectricPayment
-                            ? latestElectricPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestElectricPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : 'No bill yet'}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {electricAmount > 0
-                        ? `RM ${electricAmount.toFixed(2)}`
-                        : '-'}
-                    </span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <HomeIcon className="h-4 w-4 text-green-500" />
-                      <div className="flex flex-col">
-                        <span>Rental Fee</span>
-                        <span className="text-muted-foreground text-sm">
-                          {latestRentalPayment
-                            ? latestRentalPayment.paymentStatus
-                              ? 'Paid on ' +
-                                new Date(
-                                  latestRentalPayment.paymentDate,
-                                ).toLocaleDateString()
-                              : 'Payment pending'
-                            : `Monthly rental (${stall.stallSize} m²)`}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="font-semibold">
-                      {stall.stallTierNumber?.tierPrice
-                        ? `RM ${rentalAmount.toFixed(2)}`
-                        : '-'}
-                    </span>
-                  </div>
+      <Panel className="gap-0 pb-0 md:pb-0">
+        <PanelHeader
+          className="pb-3"
+          title="Bills"
+          meta="Oldest unpaid bill first, otherwise the latest one"
+        />
+        {isLoading ? (
+          <div className="pb-4 md:pb-5">
+            <PanelRowsSkeleton rows={3} />
+          </div>
+        ) : error ? (
+          <div className="pb-4 md:pb-5">
+            <PanelError
+              what="your bills"
+              onRetry={() => {
+                stallsQuery.refetch()
+                paymentsQuery.refetch()
+              }}
+            />
+          </div>
+        ) : rows.length === 0 ? (
+          <div className="pb-4 md:pb-5">
+            <PanelEmpty>You hold no stalls, so there are no bills.</PanelEmpty>
+          </div>
+        ) : (
+          <ul className="-mx-4 divide-y border-t md:-mx-5">
+            {rows.map(({ stall, bills }) => (
+              <li
+                key={stall.stallNumber}
+                className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-4 gap-y-3 px-4 py-4 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,2fr)] md:px-5"
+              >
+                <span className="bg-muted type-section grid size-11 place-items-center rounded-lg border tabular-nums">
+                  {stall.stallNumber}
+                </span>
+                <div className="min-w-0 self-center">
+                  <p className="type-body truncate font-medium">
+                    {stallLabel(stall)}
+                  </p>
+                  <p className="type-meta text-muted-foreground truncate">
+                    Stall {stall.stallNumber} · {formatSize(stall.stallSize)}
+                  </p>
                 </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-2">
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'water',
-                      waterAmount,
-                      stall.stallNumber,
-                      latestWaterPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={!waterAmount || latestWaterPayment?.paymentStatus}
-                  variant={
-                    latestWaterPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!waterAmount ? (
-                    'No Water Bill'
-                  ) : latestWaterPayment?.paymentStatus ? (
-                    'Water Bill Paid'
-                  ) : (
-                    <>
-                      Pay
-                      <DropletIcon className="text-chart-2 h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'electric',
-                      electricAmount,
-                      stall.stallNumber,
-                      latestElectricPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={
-                    !electricAmount || latestElectricPayment?.paymentStatus
-                  }
-                  variant={
-                    latestElectricPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!electricAmount ? (
-                    'No Electric Bill'
-                  ) : latestElectricPayment?.paymentStatus ? (
-                    'Electric Bill Paid'
-                  ) : (
-                    <>
-                      Pay
-                      <ZapIcon className="h-4 w-4 text-yellow-500" />
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={() =>
-                    handlePayment(
-                      'rental',
-                      rentalAmount,
-                      stall.stallNumber,
-                      latestRentalPayment?.paymentId || '',
-                    )
-                  }
-                  className="w-full"
-                  disabled={
-                    !stall.stallTierNumber?.tierPrice ||
-                    latestRentalPayment?.paymentStatus
-                  }
-                  variant={
-                    latestRentalPayment?.paymentStatus ? 'outline' : 'default'
-                  }
-                >
-                  {!stall.stallTierNumber?.tierPrice ? (
-                    'No Rental Fee Set'
-                  ) : latestRentalPayment?.paymentStatus ? (
-                    'Rental Fee Paid'
-                  ) : (
-                    <>
-                      Pay
-                      <HomeIcon className="h-4 w-4 text-green-500" />
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          )
-        })}
-      </div>
+                <div className="col-span-full grid grid-cols-3 gap-4 md:col-span-1">
+                  {bills.map((bill) => (
+                    <BillCell
+                      key={bill.kind}
+                      bill={bill}
+                      starting={
+                        startingKey === `${stall.stallNumber}-${bill.kind}`
+                      }
+                      busy={startingKey !== null}
+                      onPay={() =>
+                        handlePayment(
+                          bill.kind,
+                          bill.amount,
+                          stall.stallNumber,
+                          bill.record?.paymentId || '',
+                        )
+                      }
+                    />
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
 
       {selectedPayment && clientSecret && (
         <PaymentModal

@@ -109,7 +109,7 @@ function DashboardTopBar() {
     <header className="bg-background sticky top-0 z-20 flex h-12 shrink-0 items-center justify-between gap-2 px-4 md:px-8">
       <div className="flex min-w-0 items-center gap-2">
         {/* On desktop the trigger sits in the gutter so the crumb starts on the content edge. */}
-        <SidebarTrigger className="-ml-2 md:absolute md:left-0.5 md:ml-0" />
+        <SidebarTrigger className="-ml-3 size-11 md:absolute md:left-0.5 md:ml-0 md:size-7" />
         <Separator orientation="vertical" className="mr-1 h-4! md:hidden" />
         <Breadcrumbs />
       </div>

@@ -11,20 +11,13 @@ const REWIND_MS = 350
 const prefersReducedMotion = () =>
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-/**
- * The undo affordance: countdown ring + message + a shadcn Undo button on
- * a popover surface (toast.custom renders unstyled, so the surface lives
- * here). The ring can visibly rewind after Undo before the toast closes.
- */
 function UndoToastContent({
   message,
   startedAt,
   onUndo,
 }: {
   message: string
-  /** performance.now() when the window opened; the ring reads the same clock as the commit timer. */
   startedAt: number
-  /** Claims the undo; false when the window already committed. */
   onUndo: () => boolean
 }) {
   const [progress, setProgress] = useState(100)
@@ -80,40 +73,42 @@ function UndoToastContent({
   )
 }
 
-/**
- * Hold a TanStack DB transaction open for the undo window:
- * the optimistic state is already applied by the caller; when the window
- * expires the transaction commits (mutationFn persists to the server) and
- * the toast closes with it. Undo rolls the transaction back at the click,
- * so the server is never contacted, then the ring rewinds and the toast
- * closes. One clock drives both: hovering the toast pauses nothing.
- */
-type UndoableTransaction = {
-  // TanStack DB transactions return themselves from rollback and a
-  // promise from commit; both suffice for fire-and-forget control here.
-  commit: () => Promise<unknown> | unknown
-  rollback: () => Promise<unknown> | unknown
-}
+type Settles = { when: (state: 'settled') => Promise<unknown> }
 
-export function holdTransactionForUndo(
-  tx: UndoableTransaction,
-  { message, onUndo }: { message: string; onUndo?: () => void },
+export function offerUndo(
+  change: Settles,
+  {
+    message,
+    failed,
+    undo,
+    onUndone,
+  }: {
+    message: string
+    failed: string
+    undo: () => Settles
+    onUndone?: () => void
+  },
 ) {
   const toastId = `undo-${Math.random().toString(36).slice(2)}`
   const startedAt = performance.now()
 
   const undoWindow = createUndoWindow({
     ms: UNDO_WINDOW_MS,
-    commit: () => {
-      void Promise.resolve(tx.commit()).catch(() => {
-        toast.error('The change could not be saved — restored from server')
-      })
+    undo: () => {
+      undo()
+        .when('settled')
+        .catch(() => {
+          toast.error('Undo could not be saved. The change is still in place.')
+        })
+      onUndone?.()
     },
-    rollback: () => {
-      void Promise.resolve(tx.rollback())
-      onUndo?.()
-    },
-    onCommitted: () => toast.dismiss(toastId),
+    onExpired: () => toast.dismiss(toastId),
+  })
+
+  change.when('settled').catch(() => {
+    undoWindow.fail()
+    toast.dismiss(toastId)
+    toast.error(failed)
   })
 
   toast.custom(

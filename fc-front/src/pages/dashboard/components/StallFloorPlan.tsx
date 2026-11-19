@@ -18,16 +18,16 @@ function tileLeft(endAt: StallUserAttributes['endAt']) {
   return pastLabel(endAt)
 }
 
-/** Legend marker. Free is a hollow shape; orange marks follow-up only. */
+/** Legend marker. Free is a hollow shape; the brand tint marks follow-up only. */
 export function StateSwatch({ state }: { state: BoardState }) {
   return (
     <span
       aria-hidden="true"
       className={cn(
-        'size-3 shrink-0 rounded-[4px]',
-        state === 'let' && 'bg-muted border-input border',
-        state === 'followup' && 'bg-brand-soft border-primary border',
-        state === 'free' && 'border-muted-foreground border border-dashed',
+        'size-3.5 shrink-0 rounded-[4px] border',
+        state === 'let' && 'bg-muted border-muted-foreground/40',
+        state === 'followup' && 'bg-brand-soft border-primary',
+        state === 'free' && 'bg-card border-muted-foreground border-dashed',
       )}
     />
   )
@@ -56,6 +56,7 @@ export function StallFloorPlan({
   peek,
   centre,
   className,
+  stateOf = boardState,
 }: {
   stalls: StallUserAttributes[]
   size: 'compact' | 'full'
@@ -67,6 +68,7 @@ export function StallFloorPlan({
   peek?: (stall: StallUserAttributes) => React.ReactNode
   centre?: React.ReactNode
   className?: string
+  stateOf?: (stall: StallUserAttributes) => BoardState
 }) {
   const ordered = [...stalls].sort((a, b) => a.stallNumber - b.stallNumber)
   const isRing = ordered.length === 20
@@ -86,8 +88,12 @@ export function StallFloorPlan({
     <TooltipPrimitive.Provider delayDuration={250} skipDelayDuration={800}>
       <div
         className={cn(
-          'grid min-w-0 gap-[5px] md:gap-1.5',
-          isRing ? 'grid-cols-7 grid-rows-5 md:grid-rows-[repeat(5,100px)]' : 'md:auto-rows-[100px]',
+          'grid min-w-0 gap-0.5 max-md:-mx-2 md:gap-1.5',
+          isRing && 'grid-cols-7 grid-rows-5',
+          size === 'full' &&
+            (isRing
+              ? 'md:grid-rows-[repeat(5,100px)]'
+              : 'md:auto-rows-[100px]'),
           className,
         )}
         style={
@@ -97,7 +103,7 @@ export function StallFloorPlan({
         }
       >
         {ordered.map((stall, index) => {
-          const state = boardState(stall)
+          const state = stateOf(stall)
           const highlighted = matches?.(stall)
           const tile = (
             <button
@@ -107,16 +113,17 @@ export function StallFloorPlan({
               onClick={() => onOpen(stall)}
               aria-label={`Stall ${stall.stallNumber}, ${stallLabel(stall)}`}
               className={cn(
-                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity] outline-none focus-visible:ring-2',
-                // One look per state on every page: orange is only ever the exception.
-                state === 'free' &&
-                  'border-muted-foreground bg-card hover:border-foreground border-dashed',
-                state === 'let' &&
-                  'bg-muted border-input hover:border-muted-foreground',
-                state === 'followup' &&
-                  'bg-brand-soft text-brand-ink border-primary',
-                // A filter dims the rest instead of recolouring the matches.
-                matches && !highlighted && 'opacity-35 hover:opacity-70',
+                'focus-visible:ring-ring min-h-11 min-w-0 cursor-pointer overflow-hidden rounded-lg border text-left transition-[color,background-color,border-color,opacity,scale] outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 motion-safe:active:scale-95',
+                matches && !highlighted
+                  ? 'bg-muted/40 text-muted-foreground hover:border-muted-foreground hover:text-foreground border-transparent'
+                  : [
+                      state === 'free' &&
+                        'border-muted-foreground bg-card hover:border-foreground border-dashed',
+                      state === 'let' &&
+                        'bg-muted border-input hover:border-muted-foreground',
+                      state === 'followup' &&
+                        'bg-brand-soft text-brand-ink border-primary',
+                    ],
                 size === 'compact'
                   ? 'flex items-center justify-center'
                   : 'flex flex-col items-center justify-center p-1 md:items-start md:justify-start md:p-2',
@@ -134,7 +141,7 @@ export function StallFloorPlan({
                   </span>
                   <span
                     className={cn(
-                      'mt-auto w-full whitespace-normal break-words line-clamp-2 text-left',
+                      'mt-auto line-clamp-2 w-full text-left break-words whitespace-normal',
                       state === 'followup' &&
                         isUrgent(stall.endAt) &&
                         'text-negative-ink font-medium',

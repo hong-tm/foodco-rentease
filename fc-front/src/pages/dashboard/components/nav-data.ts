@@ -51,12 +51,12 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Stall',
         items: [
           {
-            title: 'Stall Availability',
+            title: 'Stall availability',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
           {
-            title: 'Stall Appointments',
+            title: 'Stall appointments',
             url: '/dashboard/admin-appointment',
             icon: CalendarClockIcon,
           },
@@ -66,7 +66,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Tenant',
         items: [
           {
-            title: 'Tenant Information',
+            title: 'Tenants',
             url: '/dashboard/tenant-information',
             icon: UsersIcon,
           },
@@ -81,7 +81,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Export Financial Report',
+            title: 'Financial report',
             url: '/dashboard/admin-report',
             icon: BadgeDollarSignIcon,
           },
@@ -94,17 +94,17 @@ export const navByRole: Record<Role, RoleNav> = {
     ],
     quick: [
       {
-        title: 'Tenant Information',
+        title: 'Tenants',
         url: '/dashboard/tenant-information',
         icon: BellElectricIcon,
       },
       {
-        title: 'Export Report',
+        title: 'Financial report',
         url: '/dashboard/admin-report',
         icon: BookDownIcon,
       },
       {
-        title: 'Stall Appointments',
+        title: 'Stall appointments',
         url: '/dashboard/admin-appointment',
         icon: ScrollIcon,
       },
@@ -116,7 +116,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Stall',
         items: [
           {
-            title: 'Stall Information',
+            title: 'Your stalls',
             url: '/dashboard/rental-dashboard',
             icon: StoreIcon,
           },
@@ -128,15 +128,15 @@ export const navByRole: Record<Role, RoleNav> = {
         ],
       },
       {
-        title: 'New Stall',
+        title: 'Applications',
         items: [
           {
-            title: 'Apply New Stall',
+            title: 'Apply for a stall',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
           {
-            title: 'Appointment',
+            title: 'Appointments',
             url: '/dashboard/user-appointment',
             icon: CalendarClockIcon,
           },
@@ -146,7 +146,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Export Financial Report',
+            title: 'Payment records',
             url: '/dashboard/rental-report',
             icon: BadgeDollarSignIcon,
           },
@@ -156,12 +156,12 @@ export const navByRole: Record<Role, RoleNav> = {
     secondary: [],
     quick: [
       {
-        title: 'Payments',
+        title: 'Payment records',
         url: '/dashboard/rental-report',
         icon: CreditCardIcon,
       },
       {
-        title: 'Apply New Stall',
+        title: 'Apply for a stall',
         url: '/dashboard/stall-availability',
         icon: HousePlusIcon,
       },
@@ -170,15 +170,15 @@ export const navByRole: Record<Role, RoleNav> = {
   user: {
     main: [
       {
-        title: 'Main Features',
+        title: 'Applications',
         items: [
           {
-            title: 'Apply Stall',
+            title: 'Apply for a stall',
             url: '/dashboard/stall-availability',
             icon: LayoutGridIcon,
           },
           {
-            title: 'Appointment',
+            title: 'Appointments',
             url: '/dashboard/user-appointment',
             icon: CalendarClockIcon,
           },
@@ -188,7 +188,7 @@ export const navByRole: Record<Role, RoleNav> = {
         title: 'Financial',
         items: [
           {
-            title: 'Payments',
+            title: 'Payment records',
             url: '/dashboard/user-report',
             icon: ReceiptTextIcon,
           },
@@ -198,12 +198,12 @@ export const navByRole: Record<Role, RoleNav> = {
     secondary: [],
     quick: [
       {
-        title: 'Apply Stall',
+        title: 'Apply for a stall',
         url: '/dashboard/stall-availability',
         icon: FileUserIcon,
       },
       {
-        title: 'Payment History',
+        title: 'Payment records',
         url: '/dashboard/user-report',
         icon: HistoryIcon,
       },
